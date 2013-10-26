@@ -470,7 +470,8 @@ safest to attach them to the start of each source file to most effectively
 convey the exclusion of warranty; and each file should have at least the
 "copyright" line and a pointer to where the full notice is found.
 
-    Arduino library for SDI-12 communications to a wide variety of environmental sensors. This library provides a general software solution, without requiring any additional hardware.
+    Arduino library for SDI-12 communications to a wide variety of environmental sensors. 
+    This library provides a general software solution, without requiring any additional hardware.
     Copyright (C) 2013  Stroud Water Research Center
 
     This library is free software; you can redistribute it and/or
