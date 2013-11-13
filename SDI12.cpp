@@ -102,9 +102,9 @@ SDI-12.org, official site of the SDI-12 Support Group.
 
 0.1 - Include the header file for this library. 
 0.2 - defines the size of the buffer
-0.3 - defines value for DISABLED sate (see section 2)
+0.3 - defines value for DISABLED state (see section 2)
 0.4 - defines value for ENABLED state (not used, reserved for future) 
-0.5 - defines value for DISABLED sate (see section 2)
+0.5 - defines value for DISABLED state (see section 2)
 0.6 - defines value for TRANSMITTING state (see section 2)
 0.7 - defines value for LISTENING state
 0.8 - defines value for the spacing of bits. 
@@ -120,9 +120,9 @@ SDI-12.org, official site of the SDI-12 Support Group.
 #include <SDI12.h>						// 0.1 header file for this library
 
 #define _BUFFER_SIZE 64 				// 0.2 max RX buffer size		
-#define DISABLED 0						// 0.3 value for DISABLED sate
-#define ENABLED 1						// 0.4 value for ENABLED sate
-#define HOLDING 2 						// 0.5 value for DISABLED sate
+#define DISABLED 0						// 0.3 value for DISABLED state
+#define ENABLED 1						// 0.4 value for ENABLED state
+#define HOLDING 2 						// 0.5 value for DISABLED state
 #define TRANSMITTING 3					// 0.6 value for TRANSMITTING state
 #define LISTENING 4						// 0.7 value for LISTENING state
 #define SPACING 830						// 0.8 bit timing in microseconds
