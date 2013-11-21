@@ -1,0 +1,21 @@
+
+# Syntax Coloring Map for SDI12 when 
+# using the Arduino IDE. 
+
+### Classes (KEYWORD1)
+
+SDI12	KEYWORD1
+
+### Methods and Functions (KEYWORD2)
+
+begin	KEYWORD2
+end	KEYWORD2
+forceHold	KEYWORD2
+sendCommand	KEYWORD2
+available	KEYWORD2
+peek		KEYWORD2
+read		KEYWORD2
+flush		KEYWORD2
+setActive	KEYWORD2
+isActive	KEYWORD2
+
