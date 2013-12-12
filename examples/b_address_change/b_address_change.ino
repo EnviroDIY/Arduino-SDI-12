@@ -50,7 +50,7 @@ void loop(){
     }
   }
 
-  for(byte i = 'A'; i <= 'Z'; i++){    // scan address space a-Z
+  for(byte i = 'A'; i <= 'Z'; i++){    // scan address space A-Z
     if(found) break;
     if(checkActive(i)){
       found = true;  
