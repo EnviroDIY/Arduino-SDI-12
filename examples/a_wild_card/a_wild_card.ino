@@ -1,7 +1,5 @@
 /*
-Example A: Using the wildcard, EDIT. 
-
-
+Example A: Using the wildcard. 
 
 This is a simple demonstration of the SDI-12 library for Arduino.
 It requests information about the attached sensor, including its address and manufacturer info. 
