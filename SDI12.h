@@ -46,8 +46,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <Arduino.h>            // Arduino core library
 #include <Stream.h>				// Arduino Stream library
 
-class SDI12
+class SDI12 : public Stream
 {
+protected:
+  int peekNextDigit();			// override of Stream equivalent to allow custom TIMEOUT
 private:
   static SDI12 *_activeObject;	// static pointer to active SDI12 instance
   void setState(uint8_t state); // sets the state of the SDI12 objects
@@ -68,7 +70,7 @@ public:
   int peek();				// reveals next byte in buffer without consuming
   int read();				// returns next byte in the buffer (consumes)
   void flush();				// clears the buffer 
-  virtual size_t write(uint8_t byte); // dummy function required to inherit from Stream
+  virtual size_t write(uint8_t byte){}; // dummy function required to inherit from Stream
 
   bool setActive(); 		// set this instance as the active SDI-12 instance
   bool isActive();			// check if this instance is active

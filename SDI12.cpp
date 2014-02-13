@@ -787,7 +787,7 @@ void SDI12::receiveChar()
   }
 }
 
-int SDI12_Stream::peekNextDigit()
+int SDI12::peekNextDigit()
 {
   int c;
   while (1) {
