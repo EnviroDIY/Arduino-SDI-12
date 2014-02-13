@@ -211,7 +211,7 @@ Some vocabulary:
 Registers: PCMSK0, PCMSK1, PCMSK2 :registers that enable or disable
 pin-change interrupts on individual pins
 
-PCICR : a resister where the three least significant bits enable or
+PCICR : a register where the three least significant bits enable or
 disable pin change interrupts on a range of pins, i.e.
 {0,0,0,0,0,PCIE2,PCIE1,PCIE0}, where PCIE2 maps to PCMSK2, PCIE1 maps to
 PCMSK1, and PCIE0 maps to PCMSK0.
