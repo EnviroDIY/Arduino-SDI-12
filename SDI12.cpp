@@ -375,12 +375,12 @@ void SDI12::setState(uint8_t state){
     pinMode(_dataPin,OUTPUT);
     digitalWrite(_dataPin,LOW);
     *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
-    return(); 
+    return; 
   }
   if(state == TRANSMITTING){
     pinMode(_dataPin,OUTPUT);
     noInterrupts(); 			// supplied by Arduino.h, same as cli()
-    return(); 
+    return; 
   }
   if(state == LISTENING) {
     digitalWrite(_dataPin,LOW);
