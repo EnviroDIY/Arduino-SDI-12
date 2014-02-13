@@ -110,7 +110,9 @@ SDI-12.org, official site of the SDI-12 Support Group.
 0.8 - defines value for the spacing of bits. 
 	1200 bits per second implies 833 microseconds per bit.
 	830 seems to be a reliable value given the overhead of the call.
-0.9	- defines the value to indicate a TIMEOUT has occurred from parseInt() or parseFloat()
+0.9	- holds a custom value that indicates a
+    TIMEOUT has occurred from parseInt() or parseFloat(). This should not be set to 
+    a possible data value. 
 
 0.10 - a static pointer to the active object. See section 6. 
 0.11 - a reference to the data pin, used throughout the library
@@ -127,7 +129,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 #define TRANSMITTING 3					// 0.6 value for TRANSMITTING state
 #define LISTENING 4						// 0.7 value for LISTENING state
 #define SPACING 830						// 0.8 bit timing in microseconds
-int TIMEOUT -9999					// 0.9 value to return to indicate TIMEOUT
+int TIMEOUT = -9999;					// 0.9 value to return to indicate TIMEOUT
 
 SDI12 *SDI12::_activeObject = NULL;		// 0.10 pointer to active SDI12 object
 uint8_t _dataPin; 						// 0.11 reference to the data pin
@@ -601,6 +603,14 @@ the character, meaning it can not be read from the buffer again. If you
 would rather see the character, but leave the index to head intact, you
 should use peek(); 
 
+5.5 - peekNextDigit() is called by the Stream class. It is overridden 
+here to allow for a custom TIMEOUT value. The default value for the 
+Stream class is to return 0. This makes distinguishing timeouts from 
+true zero readings impossible. Therefore the default value has been
+set to -9999 in section 0 of the code. It is a public variable and
+can be changed dynamically within a program by calling:
+	mySDI12.TIMEOUT = (int) newValue
+
 */
 
 // 5.1 - reveals the number of characters available in the buffer
@@ -635,6 +645,18 @@ int SDI12::read()
   return nextChar;									 	// return the char
 }
 
+// 5.5 - this function is called by the Stream class when parsing digits
+int SDI12::peekNextDigit()
+{
+  int c;
+  while (1) {
+    c = timedPeek();
+    if (c < 0) return TIMEOUT; // timeout
+    if (c == '-') return c;
+    if (c >= '0' && c <= '9') return c;
+    read(); // discard non-numeric
+  }
+}
 
 /* ============= 6. Using more than one SDI-12 object.  ===================
 
@@ -784,18 +806,6 @@ void SDI12::receiveChar()
       _rxBuffer[_rxBufferTail] = newChar; 
       _rxBufferTail = (_rxBufferTail + 1) % _BUFFER_SIZE;
     }
-  }
-}
-
-int SDI12::peekNextDigit()
-{
-  int c;
-  while (1) {
-    c = timedPeek();
-    if (c < 0) return TIMEOUT; // timeout
-    if (c == '-') return c;
-    if (c >= '0' && c <= '9') return c;
-    read(); // discard non-numeric
   }
 }
 
