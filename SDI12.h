@@ -58,6 +58,7 @@ private:
   void receiveChar();			// used by the ISR to grab a char from data line
   
 public:
+  int TIMEOUT
   SDI12(uint8_t dataPin);		// constructor
   ~SDI12();						// destructor
   void begin();					// enable SDI-12 object

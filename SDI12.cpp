@@ -127,7 +127,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 #define TRANSMITTING 3					// 0.6 value for TRANSMITTING state
 #define LISTENING 4						// 0.7 value for LISTENING state
 #define SPACING 830						// 0.8 bit timing in microseconds
-#define TIMEOUT -9999					// 0.9 value to return to indicate TIMEOUT
+int TIMEOUT -9999					// 0.9 value to return to indicate TIMEOUT
 
 SDI12 *SDI12::_activeObject = NULL;		// 0.10 pointer to active SDI12 object
 uint8_t _dataPin; 						// 0.11 reference to the data pin
@@ -377,12 +377,12 @@ void SDI12::setState(uint8_t state){
     pinMode(_dataPin,OUTPUT);
     digitalWrite(_dataPin,LOW);
     *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
-    return(); 
+    return; 
   }
   if(state == TRANSMITTING){
     pinMode(_dataPin,OUTPUT);
     noInterrupts(); 			// supplied by Arduino.h, same as cli()
-    return(); 
+    return; 
   }
   if(state == LISTENING) {
     digitalWrite(_dataPin,LOW);
