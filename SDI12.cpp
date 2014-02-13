@@ -211,7 +211,7 @@ Some vocabulary:
 Registers: PCMSK0, PCMSK1, PCMSK2 :registers that enable or disable
 pin-change interrupts on individual pins
 
-PCICR : a resister where the three least significant bits enable or
+PCICR : a register where the three least significant bits enable or
 disable pin change interrupts on a range of pins, i.e.
 {0,0,0,0,0,PCIE2,PCIE1,PCIE0}, where PCIE2 maps to PCMSK2, PCIE1 maps to
 PCMSK1, and PCIE0 maps to PCMSK0.
@@ -375,10 +375,12 @@ void SDI12::setState(uint8_t state){
     pinMode(_dataPin,OUTPUT);
     digitalWrite(_dataPin,LOW);
     *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
+    return(); 
   }
   if(state == TRANSMITTING){
     pinMode(_dataPin,OUTPUT);
     noInterrupts(); 			// supplied by Arduino.h, same as cli()
+    return(); 
   }
   if(state == LISTENING) {
     digitalWrite(_dataPin,LOW);
