@@ -110,10 +110,11 @@ SDI-12.org, official site of the SDI-12 Support Group.
 0.8 - defines value for the spacing of bits. 
 	1200 bits per second implies 833 microseconds per bit.
 	830 seems to be a reliable value given the overhead of the call.
+0.9	- defines the value to indicate a TIMEOUT has occurred from parseInt() or parseFloat()
 
-0.9 - a static pointer to the active object. See section 6. 
-0.10 - a reference to the data pin, used throughout the library
-0.11 - holds the buffer overflow status
+0.10 - a static pointer to the active object. See section 6. 
+0.11 - a reference to the data pin, used throughout the library
+0.12 - holds the buffer overflow status
 
 */
 
@@ -126,10 +127,11 @@ SDI-12.org, official site of the SDI-12 Support Group.
 #define TRANSMITTING 3					// 0.6 value for TRANSMITTING state
 #define LISTENING 4						// 0.7 value for LISTENING state
 #define SPACING 830						// 0.8 bit timing in microseconds
+#define TIMEOUT -9999					// 0.9 value to return to indicate TIMEOUT
 
-SDI12 *SDI12::_activeObject = NULL;		// 0.9 pointer to active SDI12 object
-uint8_t _dataPin; 						// 0.10 reference to the data pin
-bool _bufferOverflow;					// 0.11 buffer overflow status
+SDI12 *SDI12::_activeObject = NULL;		// 0.10 pointer to active SDI12 object
+uint8_t _dataPin; 						// 0.11 reference to the data pin
+bool _bufferOverflow;					// 0.12 buffer overflow status
 
 /* =========== 1. Buffer Setup ============================================
 
@@ -782,6 +784,18 @@ void SDI12::receiveChar()
       _rxBuffer[_rxBufferTail] = newChar; 
       _rxBufferTail = (_rxBufferTail + 1) % _BUFFER_SIZE;
     }
+  }
+}
+
+int SDI12_Stream::peekNextDigit()
+{
+  int c;
+  while (1) {
+    c = timedPeek();
+    if (c < 0) return TIMEOUT; // timeout
+    if (c == '-') return c;
+    if (c >= '0' && c <= '9') return c;
+    read(); // discard non-numeric
   }
 }
 
