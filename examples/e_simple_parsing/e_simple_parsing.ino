@@ -1,5 +1,9 @@
 /*
-Example E: This example demonstrates the ability to parse integers and floats from the buffer. 
+########################
+#        OVERVIEW      #
+########################
+
+ Example E: This example demonstrates the ability to parse integers and floats from the buffer. 
 
  It is based closely on example D, however, every other time it prints out data, it multiplies the data by a factor of 2. 
  
@@ -27,11 +31,13 @@ Other notes:
  to the same request and the output will not be readable by the Arduino. 
  
  To address a sensor, please see Example B: b_address_change.ino
+
+#########################
+#      THE CIRCUIT      #
+#########################
  
- The SDI-12 specification is available at: http://www.sdi-12.org/
- The library is available at: https://github.com/StroudCenter/arduino-SDI-12
+ You  may use one or more pre-adressed sensors.  
  
- The circuit: You  may use one or more pre-adressed sensors.  
  See:
  https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/basic_setup_usb_multiple_sensors.png
  or
@@ -41,9 +47,33 @@ Other notes:
  or
  https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/compat_setup_usb.png
  
+###########################
+#      COMPATIBILITY      #
+###########################
+ 
+ This library requires the use of pin change interrupts (PCINT). 
+ Not all Arduino boards have the same pin capabilities. 
+ The known compatibile pins for common variants are shown below.
+ 
+ Arduino Uno: 	All pins. 
+
+ Arduino Mega or Mega 2560:
+ 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), 
+ A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
+
+ Arduino Leonardo:
+ 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
+
+#########################
+#      RESOURCES        #
+#########################
+
  Written by Kevin M. Smith in 2013. 
  Contact: SDI12@ethosengineering.org
- */
+
+ The SDI-12 specification is available at: http://www.sdi-12.org/
+ The library is available at: https://github.com/StroudCenter/Arduino-SDI-12
+*/
 
 
 #include <SDI12.h>
