@@ -433,7 +433,7 @@ destructor, as it will maintain the memory buffer.
 //	3.1	Constructor
 SDI12::SDI12(uint8_t dataPin){ _bufferOverflow = false; _dataPin = dataPin; }   
 
-//	3.2	Destrutor
+//	3.2	Destructor
 SDI12::~SDI12(){ setState(DISABLED); }
 
 //  3.3 Begin
@@ -723,25 +723,25 @@ bool SDI12::setActive()
 bool SDI12::isActive() { return this == _activeObject; }
 
 
-/* ============== 6. Interrupt Service Routine  ===================
+/* ============== 7. Interrupt Service Routine  ===================
 
 We have received an interrupt signal, what should we do?
 
-6.1 - Passes off responsibility for the interrupt to the active object.
+7.1 - Passes off responsibility for the interrupt to the active object.
 
-6.2 - This function quickly reads a new character from the data line in
+7.2 - This function quickly reads a new character from the data line in
 to the buffer. It takes place over a series of key steps.
 
-+ 6.2.1 - Check for the start bit. If it is not there, interrupt may be
++ 7.2.1 - Check for the start bit. If it is not there, interrupt may be
 from interference or an interrupt we are not interested in, so return.
 
-+ 6.2.2 - Make space in memory for the new character "newChar".
++ 7.2.2 - Make space in memory for the new character "newChar".
 
-+ 6.2.3 - Wait half of a SPACING to help center on the next bit. It will
++ 7.2.3 - Wait half of a SPACING to help center on the next bit. It will
 not actually be centered, or even approximately so until
 delayMicroseconds(SPACING) is called again.
 
-+ 6.2.4 - For each of the 8 bits in the payload, read wether or not the
++ 7.2.4 - For each of the 8 bits in the payload, read wether or not the
 line state is HIGH or LOW. We use a moving mask here, as was previously
 demonstrated in the writeByte() function. 
 
@@ -758,35 +758,35 @@ masks following masks: 00000001
 Here we use an if / else structure that helps to balance the time it
 takes to either a HIGH vs a LOW, and helps maintain a constant timing.
 
-+ 6.2.5 - Skip the parity bit. There is no error checking.
++ 7.2.5 - Skip the parity bit. There is no error checking.
 
-+ 6.2.6 - Skip the stop bit.
++ 7.2.6 - Skip the stop bit.
 
-+ 6.2.7 - Check for an overflow. We do this by checking if advancing the
++ 7.2.7 - Check for an overflow. We do this by checking if advancing the
 tail would make it have the same index as the head (in a circular
 fashion).
 
-+ 6.2.8 - Save the byte into the buffer if there has not been an
++ 7.2.8 - Save the byte into the buffer if there has not been an
 overflow, and then advance the tail index.
 
-6.3 - Check if the various interrupt vectors are defined. If they are
+7.3 - Check if the various interrupt vectors are defined. If they are
 the ISR is instructed to call _handleInterrupt() when they trigger. */
 
-// 6.1 - Passes off responsibility for the interrupt to the active object. 
+// 7.1 - Passes off responsibility for the interrupt to the active object. 
 inline void SDI12::handleInterrupt(){
   if (_activeObject) _activeObject->receiveChar();
 }
 
-// 6.2 - Quickly reads a new character into the buffer. 
+// 7.2 - Quickly reads a new character into the buffer. 
 void SDI12::receiveChar()
 {
-  if (digitalRead(_dataPin))				// 6.2.1 - Start bit?
+  if (digitalRead(_dataPin))				// 7.2.1 - Start bit?
   {
-  	uint8_t newChar = 0;					// 6.2.2 - Make room for char.
+  	uint8_t newChar = 0;					// 7.2.2 - Make room for char.
   	
-    delayMicroseconds(SPACING/2);			// 6.2.3 - Wait 1/2 SPACING
+    delayMicroseconds(SPACING/2);			// 7.2.3 - Wait 1/2 SPACING
 
-    for (uint8_t i=0x1; i<0x80; i <<= 1)	// 6.2.4 - read the 7 data bits
+    for (uint8_t i=0x1; i<0x80; i <<= 1)	// 7.2.4 - read the 7 data bits
     {
       delayMicroseconds(SPACING);
       uint8_t noti = ~i;
@@ -796,20 +796,20 @@ void SDI12::receiveChar()
         newChar &= noti;
     }
     
-    delayMicroseconds(SPACING);				// 6.2.5 - Skip the parity bit. 
-	delayMicroseconds(SPACING);				// 6.2.6 - Skip the stop bit. 
+    delayMicroseconds(SPACING);				// 7.2.5 - Skip the parity bit. 
+	delayMicroseconds(SPACING);				// 7.2.6 - Skip the stop bit. 
 
-										// 6.2.7 - Overflow? If not, proceed.
+										// 7.2.7 - Overflow? If not, proceed.
     if ((_rxBufferTail + 1) % _BUFFER_SIZE == _rxBufferHead) 
     { _bufferOverflow = true; 
-    } else {							// 6.2.8 - Save char, advance tail. 
+    } else {							// 7.2.8 - Save char, advance tail. 
       _rxBuffer[_rxBufferTail] = newChar; 
       _rxBufferTail = (_rxBufferTail + 1) % _BUFFER_SIZE;
     }
   }
 }
 
-//6.3
+//7.3
 #if defined(PCINT0_vect)
 ISR(PCINT0_vect){ SDI12::handleInterrupt(); }
 #endif
