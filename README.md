@@ -2,6 +2,7 @@ Arduino-SDI-12
 ==============
 
 Arduino library for SDI-12 communications to a wide variety of environmental sensors.
+For more information about how to use this library, visit the [Arduino-SDI-12 wiki](https://github.com/StroudCenter/Arduino-SDI-12/wiki).
 
 This library provides a general software solution, without requiring any additional hardware, to implement the SDI-12 communication protocol between an Arduino-based data logger and SDI12-enabled sensors.
 
