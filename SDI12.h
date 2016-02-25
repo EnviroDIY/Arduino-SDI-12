@@ -44,9 +44,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <avr/parity.h>         // optimized parity bit handling
 #include <inttypes.h>			// integer types library
 #include <Arduino.h>            // Arduino core library
+#include <Stream.h>				// Arduino Stream library
 
-class SDI12
+class SDI12 : public Stream
 {
+protected:
+  int peekNextDigit();			// override of Stream equivalent to allow custom TIMEOUT
 private:
   static SDI12 *_activeObject;	// static pointer to active SDI12 instance
   void setState(uint8_t state); // sets the state of the SDI12 objects
@@ -55,6 +58,7 @@ private:
   void receiveChar();			// used by the ISR to grab a char from data line
   
 public:
+  int TIMEOUT;
   SDI12(uint8_t dataPin);		// constructor
   ~SDI12();						// destructor
   void begin();					// enable SDI-12 object
@@ -67,6 +71,7 @@ public:
   int peek();				// reveals next byte in buffer without consuming
   int read();				// returns next byte in the buffer (consumes)
   void flush();				// clears the buffer 
+  virtual size_t write(uint8_t byte){}; // dummy function required to inherit from Stream
 
   bool setActive(); 		// set this instance as the active SDI-12 instance
   bool isActive();			// check if this instance is active

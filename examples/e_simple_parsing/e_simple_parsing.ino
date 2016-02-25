@@ -2,8 +2,23 @@
 ########################
 #        OVERVIEW      #
 ########################
- Example D: Checks all addresses for active sensors, and logs data for each sensor every minute. 
+
+ Example E: This example demonstrates the ability to parse integers and floats from the buffer. 
+
+ It is based closely on example D, however, every other time it prints out data, it multiplies the data by a factor of 2. 
  
+ Time Elapsed (s), Sensor Address and ID, Measurement 1, Measurement 2, ... etc.
+ -------------------------------------------------------------------------------
+ 6,c13SENSOR ATM    311,0.62 x 2 = 1.24,19.80 x 2 = 39.60
+ 17,c13SENSOR ATM   311,0.62,19.7
+ 29,c13SENSOR ATM   311,0.62 x 2 = 1.2419.70 x 2 = 39.40
+ 41,c13SENSOR ATM   311,0.62,19.8
+ 
+ This is a trivial and nonsensical example, but it does demonstrate the ability to manipulate incoming data.
+ 
+ At this point in the example series, the most relavent function to study is printBufferToScreen(). 
+
+Other notes: 
  This is a simple demonstration of the SDI-12 library for Arduino.
  
  It discovers the address of all sensors active on a single bus and takes measurements from them.
@@ -16,7 +31,7 @@
  to the same request and the output will not be readable by the Arduino. 
  
  To address a sensor, please see Example B: b_address_change.ino
- 
+
 #########################
 #      THE CIRCUIT      #
 #########################
@@ -66,11 +81,64 @@
 #define DATAPIN 9         // change to the proper pin
 SDI12 mySDI12(DATAPIN); 
 
+boolean flip = 1;             // variable that alternates output type back and forth. 
+
+// The code below alternates printing in non-parsed, and parsed mode. 
+//
+// The parseInt() and parseFloat() functions will timeout if they do not
+// find a candidate INT or FLOAT. 
+//
+// The value returned when a TIMEOUT is encountered
+// is set in SDI12.cpp by default to -9999. 
+//
+// You can change the default setting directly:
+//    mySDI12.TIMEOUT = (int) newValue
+// The value of TIMEOUT should not be a possible data value. 
+//
+// You should always check for timeouts before interpreting data, as 
+// shown in the example below. 
+
+void printBufferToScreen(){
+
+  flip = !flip; // flip the switch
+  
+  if(flip){    // print out the buffer as a string, as in example D
+    boolean firstPass = true;
+    String buffer = "";
+    mySDI12.read(); // consume address
+    while(mySDI12.available()){
+      char c = mySDI12.read();
+      if(c == '+' || c == '-'){
+        buffer += ',';   
+        if(c == '-') buffer += '-'; 
+      } 
+      else {
+        buffer += c;  
+      }
+      firstPass = false; 
+      delay(100); 
+    }
+    Serial.print(buffer);
+  } 
+  else {       // parse buffer for floats and multiply by 2 before printing
+    while(mySDI12.available()){
+        float that = mySDI12.parseFloat();
+        if(that != mySDI12.TIMEOUT){    //check for timeout
+          float doubleThat = that * 2;   
+          Serial.print(",");
+          Serial.print(that);
+          Serial.print(" x 2 = "); 
+          Serial.print(doubleThat);
+        }
+    } 
+    Serial.println(); 
+  }
+}
+
 // keeps track of active addresses
 // each bit represents an address:
 // 1 is active (taken), 0 is inactive (available)
 // setTaken('A') will set the proper bit for sensor 'A'
-// set 
 byte addressRegister[8] = { 
   0B00000000, 
   0B00000000, 
@@ -115,8 +183,8 @@ void setup(){
     Serial.println("No sensors found, please check connections and restart the Arduino."); 
     while(true);
   } // stop here
-  
-  Serial.println(); 
+
+    Serial.println(); 
   Serial.println("Time Elapsed (s), Sensor Address and ID, Measurement 1, Measurement 2, ... etc."); 
   Serial.println("-------------------------------------------------------------------------------");
 }
@@ -127,7 +195,7 @@ void loop(){
   for(char i = '0'; i <= '9'; i++) if(isTaken(i)){
     Serial.print(millis()/1000);
     Serial.print(",");
-    printInfo(i);   
+    printInfo(i);
     takeMeasurement(i);
   }
 
@@ -135,7 +203,7 @@ void loop(){
   for(char i = 'a'; i <= 'z'; i++) if(isTaken(i)){
     Serial.print(millis()/1000);
     Serial.print(",");
-    printInfo(i);   
+    printInfo(i); 
     takeMeasurement(i);
   } 
 
@@ -146,7 +214,7 @@ void loop(){
     printInfo(i);   
     takeMeasurement(i);
   };   
-  
+
   delay(10000); // wait ten seconds between measurement attempts. 
 
 }
@@ -158,24 +226,24 @@ void takeMeasurement(char i){
   mySDI12.sendCommand(command); 
   while(!mySDI12.available()>5); // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of measurments available, 0-9]
   delay(100); 
-  
+
   mySDI12.read(); //consume address
-  
+
   // find out how long we have to wait (in seconds).
   int wait = 0; 
   wait += 100 * mySDI12.read()-'0';
   wait += 10 * mySDI12.read()-'0';
   wait += 1 * mySDI12.read()-'0';
-  
+
   mySDI12.read(); // ignore # measurements, for this simple examlpe
   mySDI12.read(); // ignore carriage return
   mySDI12.read(); // ignore line feed
-  
-  long timerStart = millis(); 
+
+    long timerStart = millis(); 
   while((millis() - timerStart) > (1000 * wait)){
     if(mySDI12.available()) break;                //sensor can interrupt us to let us know it is done early
   }
-  
+
   // in this example we will only take the 'DO' measurement  
   mySDI12.flush(); 
   command = "";
@@ -186,23 +254,6 @@ void takeMeasurement(char i){
   delay(300); // let the data transfer
   printBufferToScreen(); 
   mySDI12.flush(); 
-}
-
-void printBufferToScreen(){
-  String buffer = "";
-  mySDI12.read(); // consume address
-  while(mySDI12.available()){
-    char c = mySDI12.read();
-    if(c == '+' || c == '-'){
-      buffer += ',';   
-      if(c == '-') buffer += '-'; 
-    } 
-    else {
-      buffer += c;  
-    }
-    delay(100); 
-  }
- Serial.print(buffer);
 }
 
 
@@ -270,12 +321,8 @@ char printInfo(char i){
   String command = "";
   command += (char) i; 
   command += "I!";
-  for(j = 0; j < 1; j++){
-    mySDI12.sendCommand(command);
-    delay(30); 
-    if(mySDI12.available()>1) break;
-    if(mySDI12.available()) mySDI12.read(); 
-  }
+  mySDI12.sendCommand(command);
+  delay(30); 
 
   while(mySDI12.available()){
     char c = mySDI12.read();
@@ -300,4 +347,5 @@ char decToChar(byte i){
   if((i >= 10) && (i <= 36)) return i + 'a' - 10;
   if((i >= 37) && (i <= 62)) return i + 'A' - 37;
 }
+
 
