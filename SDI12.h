@@ -76,7 +76,9 @@ public:
   bool setActive();         // set this instance as the active SDI-12 instance
   bool isActive();          // check if this instance is active
 
+#if defined(ARDUINO_ARCH_SAMD)
   void attachInterrupt(uint8_t pin);
+#endif
   static inline void handleInterrupt(); // intermediary used by the ISR
 
   static void setDiagStream(Stream & stream);
