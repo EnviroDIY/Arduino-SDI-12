@@ -84,7 +84,10 @@ byte addressRegister[8] = {
 
 
 void setup(){
-  Serial.begin(9600); 
+  Serial.begin(57600);
+
+  // Enable diag
+  mySDI12.setDiagStream(Serial);
   mySDI12.begin(); 
   delay(500); // allow things to settle
 

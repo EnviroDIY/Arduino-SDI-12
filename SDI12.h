@@ -54,7 +54,9 @@ private:
   void wakeSensors();           // used to wake up the SDI12 bus
   void writeChar(uint8_t out);  // used to send a char out on the data line
   void receiveChar();           // used by the ISR to grab a char from data line
-  
+
+  static const char * getStateName(uint8_t state);     // get state name (in ASCII)
+
 public:
   int TIMEOUT;
   SDI12(uint8_t dataPin);       // constructor
@@ -76,6 +78,9 @@ public:
 
   void attachInterrupt(uint8_t pin);
   static inline void handleInterrupt(); // intermediary used by the ISR
+
+  static void setDiagStream(Stream & stream);
+  static void setDiagStream(Stream * stream);
 };
 
 #endif

@@ -129,14 +129,30 @@ SDI-12.org, official site of the SDI-12 Support Group.
 #elif defined(ARDUINO_ARCH_SAMD)
 static uint8_t parity_even_bit(uint8_t val)
 {
-    // TODO
-    return 0;
+    // Brian Kernighan's way
+    uint8_t count = 0;
+    for (count = 0; val != 0; ++count) {
+        val &= val - 1;
+    }
+    // If count is odd the even parity bit is 1
+    return (count & 1) == 1;
 }
 #else
 #error "Please select AVR or SAMD"
 #endif
 
 #include "SDI12.h"                      // 0.1 header file for this library
+
+#define ENABLE_CONFIG_DIAG             1
+
+static Stream * _diagStream;
+#if ENABLE_CONFIG_DIAG
+  #define myDiagPrint(...) do { if (_diagStream) _diagStream->print(__VA_ARGS__); } while (0)
+  #define myDiagPrintLn(...) do { if (_diagStream) _diagStream->println(__VA_ARGS__); } while (0)
+#else
+  #define myDiagPrint(...)
+  #define myDiagPrintLn(...)
+#endif
 
 #define _BUFFER_SIZE 64                 // 0.2 max RX buffer size       
 #define DISABLED 0                      // 0.3 value for DISABLED state
@@ -389,9 +405,27 @@ Therefore if we evaluate to TRUE, we should tidy up:
 
 */
 
+const char *SDI12::getStateName(uint8_t state)
+{
+    const char * retval = "UNKNOWN";
+    if (state == HOLDING) {
+        retval = "HOLDING";
+    }
+    else if (state == TRANSMITTING) {
+        retval = "TRANSMITTING";
+    }
+    else if (state == LISTENING) {
+        retval = "LISTENING";
+    }
+    else if (state == DISABLED) {
+        retval = "DISABLED";
+    }
+    return retval;
+}
 // 2.1 - sets the state of the SDI-12 object. 
 void SDI12::setState(uint8_t state)
 {
+    myDiagPrintLn(String("setState - ") + getStateName(state));
 #if defined(ARDUINO_ARCH_AVR)
   if(state == HOLDING){
     pinMode(_dataPin,OUTPUT);
@@ -497,6 +531,8 @@ void SDI12::begin() { setState(HOLDING); setActive(); }
 //  3.4 End
 void SDI12::end() { setState(DISABLED); }
 
+void SDI12::setDiagStream(Stream & stream) { _diagStream = &stream; }
+void SDI12::setDiagStream(Stream * stream) { _diagStream = stream; }
 
 /* ============= 4. Waking up, and talking to, the sensors. ===================
 
@@ -828,8 +864,11 @@ overflow, and then advance the tail index.
 the ISR is instructed to call _handleInterrupt() when they trigger. */
 
 // 7.1 - Passes off responsibility for the interrupt to the active object. 
-inline void SDI12::handleInterrupt(){
-  if (_activeObject) _activeObject->receiveChar();
+inline void SDI12::handleInterrupt()
+{
+    myDiagPrint('+');
+    if (_activeObject)
+        _activeObject->receiveChar();
 }
 
 // 7.2 - Quickly reads a new character into the buffer. 
