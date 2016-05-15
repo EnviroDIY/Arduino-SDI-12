@@ -126,6 +126,14 @@ SDI-12.org, official site of the SDI-12 Support Group.
 #if defined(ARDUINO_ARCH_AVR)
 #include <avr/interrupt.h>      // interrupt handling
 #include <avr/parity.h>         // optimized parity bit handling
+#elif defined(ARDUINO_ARCH_SAMD)
+static uint8_t parity_even_bit(uint8_t val)
+{
+    // TODO
+    return 0;
+}
+#else
+#error "Please select AVR or SAMD"
 #endif
 
 #include "SDI12.h"                      // 0.1 header file for this library
@@ -382,7 +390,9 @@ Therefore if we evaluate to TRUE, we should tidy up:
 */
 
 // 2.1 - sets the state of the SDI-12 object. 
-void SDI12::setState(uint8_t state){
+void SDI12::setState(uint8_t state)
+{
+#if defined(ARDUINO_ARCH_AVR)
   if(state == HOLDING){
     pinMode(_dataPin,OUTPUT);
     digitalWrite(_dataPin,LOW);
@@ -408,6 +418,43 @@ void SDI12::setState(uint8_t state){
         *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
     }
   }
+#elif defined(ARDUINO_ARCH_SAMD)
+  // TODO
+  if(state == HOLDING){
+    pinMode(_dataPin,OUTPUT);
+    digitalWrite(_dataPin,LOW);
+    // Disable interrupts on data line ????
+    //*digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
+  }
+
+  else if(state == TRANSMITTING){
+    pinMode(_dataPin,OUTPUT);
+    noInterrupts();             // supplied by Arduino.h, same as cli()
+  }
+
+  else if(state == LISTENING) {
+    digitalWrite(_dataPin,LOW);
+    pinMode(_dataPin,INPUT);
+    interrupts();               // supplied by Arduino.h, same as sei()
+    // Enable interrupt on data line ????
+    //*digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));
+    //*digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));
+  }
+
+  else if(state == DISABLED) {
+      digitalWrite(_dataPin,LOW);
+      pinMode(_dataPin,INPUT);
+      // ????
+      //*digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
+      //if(!*digitalPinToPCMSK(_dataPin)){
+      //    *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
+      //}
+  }
+
+  else {
+    // unknown state
+  }
+#endif
 }
 
 // 2.2 - forces a HOLDING state. 
@@ -818,6 +865,7 @@ void SDI12::receiveChar()
 }
 
 //7.3
+#if defined(ARDUINO_ARCH_AVR)
 #if defined(PCINT0_vect)
 ISR(PCINT0_vect){ SDI12::handleInterrupt(); }
 #endif
@@ -833,4 +881,14 @@ ISR(PCINT2_vect){ SDI12::handleInterrupt(); }
 #if defined(PCINT3_vect)
 ISR(PCINT3_vect){ SDI12::handleInterrupt(); }
 #endif
-
+#elif defined(ARDUINO_ARCH_SAMD)
+static void my_data_handler()
+{
+    SDI12::handleInterrupt();
+}
+void SDI12::attachInterrupt(uint8_t pin)
+{
+    ::attachInterrupt(pin, my_data_handler, CHANGE);
+}
+#else
+#endif

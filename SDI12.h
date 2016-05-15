@@ -69,11 +69,12 @@ public:
   int peek();               // reveals next byte in buffer without consuming
   int read();               // returns next byte in the buffer (consumes)
   void flush();             // clears the buffer 
-  virtual size_t write(uint8_t byte){}; // dummy function required to inherit from Stream
+  virtual size_t write(uint8_t byte){return 1;} // dummy function required to inherit from Stream
 
   bool setActive();         // set this instance as the active SDI-12 instance
   bool isActive();          // check if this instance is active
 
+  void attachInterrupt(uint8_t pin);
   static inline void handleInterrupt(); // intermediary used by the ISR
 };
 
