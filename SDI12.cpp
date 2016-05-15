@@ -120,7 +120,15 @@ SDI-12.org, official site of the SDI-12 Support Group.
 
 */
 
-#include <SDI12.h>                      // 0.1 header file for this library
+#include <inttypes.h>           // integer types library
+#include <Arduino.h>            // Arduino core library
+#include <Stream.h>             // Arduino Stream library
+#if defined(ARDUINO_ARCH_AVR)
+#include <avr/interrupt.h>      // interrupt handling
+#include <avr/parity.h>         // optimized parity bit handling
+#endif
+
+#include "SDI12.h"                      // 0.1 header file for this library
 
 #define _BUFFER_SIZE 64                 // 0.2 max RX buffer size       
 #define DISABLED 0                      // 0.3 value for DISABLED state

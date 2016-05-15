@@ -40,8 +40,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #define SDI12_h
 
                                 //  Import Required Libraries
-#include <avr/interrupt.h>      // interrupt handling
-#include <avr/parity.h>         // optimized parity bit handling
 #include <inttypes.h>           // integer types library
 #include <Arduino.h>            // Arduino core library
 #include <Stream.h>             // Arduino Stream library
