@@ -143,7 +143,7 @@ static uint8_t parity_even_bit(uint8_t val)
 
 #include "SDI12.h"                      // 0.1 header file for this library
 
-#define ENABLE_CONFIG_DIAG             1
+//#define ENABLE_CONFIG_DIAG             1
 
 static Stream * _diagStream;
 #if ENABLE_CONFIG_DIAG
@@ -428,7 +428,7 @@ const char *SDI12::getStateName(uint8_t state)
 // 2.1 - sets the state of the SDI-12 object. 
 void SDI12::setState(uint8_t state)
 {
-    myDiagPrintLn(String("setState - ") + getStateName(state));
+    //myDiagPrintLn(String("setState - ") + getStateName(state));
 #if defined(ARDUINO_ARCH_AVR)
   if(state == HOLDING){
     pinMode(_dataPin,OUTPUT);
@@ -642,12 +642,14 @@ void SDI12::writeChar(uint8_t out)
 }
 
 //  4.3 - this function sends out the characters of the String cmd, one by one
-void SDI12::sendCommand(String cmd){
-  wakeSensors();                            // wake up sensors
-  for (int i = 0; i < cmd.length(); i++){
-    writeChar(cmd[i]);                      // write each characters
-  } 
-  setState(LISTENING);                      // listen for reply
+void SDI12::sendCommand(String cmd)
+{
+    //myDiagPrintLn(String("sendCommand - cmd ") + cmd);
+    wakeSensors();                            // wake up sensors
+    for (int i = 0; i < cmd.length(); i++) {
+        writeChar(cmd[i]);                      // write each characters
+    }
+    setState(LISTENING);                      // listen for reply
 }
 
 
@@ -935,7 +937,7 @@ static void my_data_interrupt_handler()
 }
 void SDI12::attachInterrupt(uint8_t pin)
 {
-    myDiagPrintLn(String("attachInterrupt - pin ") + pin);
+    //myDiagPrintLn(String("attachInterrupt - pin ") + pin);
     ::attachInterrupt(pin, my_data_interrupt_handler, RISING);
 }
 #else

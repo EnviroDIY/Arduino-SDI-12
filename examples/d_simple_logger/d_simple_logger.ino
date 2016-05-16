@@ -88,9 +88,6 @@ void setup(){
 
   // Enable diag
   mySDI12.setDiagStream(Serial);
-#if defined(ARDUINO_ARCH_SAMD)
-  mySDI12.attachInterrupt(DATAPIN);
-#endif
   mySDI12.begin(); 
   delay(500); // allow things to settle
 
