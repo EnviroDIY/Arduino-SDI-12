@@ -417,6 +417,9 @@ const char *SDI12::getStateName(uint8_t state)
     else if (state == LISTENING) {
         retval = "LISTENING";
     }
+    else if (state == ENABLED) {
+        retval = "ENABLED";
+    }
     else if (state == DISABLED) {
         retval = "DISABLED";
     }
@@ -470,6 +473,7 @@ void SDI12::setState(uint8_t state)
     digitalWrite(_dataPin,LOW);
     pinMode(_dataPin,INPUT);
     interrupts();               // supplied by Arduino.h, same as sei()
+    attachInterrupt(_dataPin);
     // Enable interrupt on data line ????
     //*digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));
     //*digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));
@@ -526,7 +530,11 @@ SDI12::SDI12(uint8_t dataPin){ _bufferOverflow = false; _dataPin = dataPin; }
 SDI12::~SDI12(){ setState(DISABLED); }
 
 //  3.3 Begin
-void SDI12::begin() { setState(HOLDING); setActive(); }   
+void SDI12::begin()
+{
+    //setState(HOLDING);        // Already done in setActive()
+    setActive();
+}
 
 //  3.4 End
 void SDI12::end() { setState(DISABLED); }
@@ -866,7 +874,6 @@ the ISR is instructed to call _handleInterrupt() when they trigger. */
 // 7.1 - Passes off responsibility for the interrupt to the active object. 
 inline void SDI12::handleInterrupt()
 {
-    myDiagPrint('+');
     if (_activeObject)
         _activeObject->receiveChar();
 }
@@ -921,13 +928,15 @@ ISR(PCINT2_vect){ SDI12::handleInterrupt(); }
 ISR(PCINT3_vect){ SDI12::handleInterrupt(); }
 #endif
 #elif defined(ARDUINO_ARCH_SAMD)
-static void my_data_handler()
+static void my_data_interrupt_handler()
 {
+    //myDiagPrint('+');
     SDI12::handleInterrupt();
 }
 void SDI12::attachInterrupt(uint8_t pin)
 {
-    ::attachInterrupt(pin, my_data_handler, CHANGE);
+    myDiagPrintLn(String("attachInterrupt - pin ") + pin);
+    ::attachInterrupt(pin, my_data_interrupt_handler, RISING);
 }
 #else
 #endif
