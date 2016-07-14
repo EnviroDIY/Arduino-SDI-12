@@ -520,6 +520,19 @@ void SDI12::wakeSensors(){
 }
 
 // 4.2 - this function writes a character out on the data line
+uint8_t parity_even_bit(uint8_t b)
+{
+  uint8_t count = 0;
+
+  for (uint8_t i = 0; i<8; i++) {
+    if (b & (1 << i)) {
+      count++;
+    }
+  }
+
+  return (count + 1) % 2;
+}
+
 void SDI12::writeChar(uint8_t out)
 {
 
