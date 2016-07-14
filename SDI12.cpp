@@ -374,11 +374,16 @@ Therefore if we evaluate to TRUE, we should tidy up:
 */
 
 // 2.1 - sets the state of the SDI-12 object. 
+void ISR_Handler()
+{
+  SDI12::handleInterrupt();
+}
+
 void SDI12::setState(uint8_t state){
   if(state == HOLDING){
     pinMode(_dataPin,OUTPUT);
     digitalWrite(_dataPin,LOW);
-    *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
+    detachInterrupt(_dataPin);
     return; 
   }
   if(state == TRANSMITTING){
@@ -390,15 +395,11 @@ void SDI12::setState(uint8_t state){
     digitalWrite(_dataPin,LOW);
     pinMode(_dataPin,INPUT); 
     interrupts();				// supplied by Arduino.h, same as sei()
-	*digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));
-    *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));
+    attachInterrupt(_dataPin, ISR_Handler, CHANGE);
   } else { 						// implies state==DISABLED 
   	digitalWrite(_dataPin,LOW); 
   	pinMode(_dataPin,INPUT);
-  	*digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
-  	if(!*digitalPinToPCMSK(_dataPin)){
-  		*digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
-  	}
+    detachInterrupt(_dataPin);
   }
 }
 
@@ -821,21 +822,3 @@ void SDI12::receiveChar()
     }
   }
 }
-
-//7.3
-#if defined(PCINT0_vect)
-ISR(PCINT0_vect){ SDI12::handleInterrupt(); }
-#endif
-
-#if defined(PCINT1_vect)
-ISR(PCINT1_vect){ SDI12::handleInterrupt(); }
-#endif
-
-#if defined(PCINT2_vect)
-ISR(PCINT2_vect){ SDI12::handleInterrupt(); }
-#endif
-
-#if defined(PCINT3_vect)
-ISR(PCINT3_vect){ SDI12::handleInterrupt(); }
-#endif
-
