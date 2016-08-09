@@ -10,7 +10,7 @@
  * 
  * Sketch requires the SDI-12 library from SWRC, modified to add public void forceListen() and
  * public void sendResponse().  
- * https://github.com/EnviroDIY/Arduino-SDI-12
+ * https://github.com/dwasielewski/Arduino-SDI-12
  * 
  * D. Wasielewski, 2016
  * Builds upon work started by:
