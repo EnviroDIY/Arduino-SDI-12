@@ -203,11 +203,14 @@ internally. It uses #define values of HOLDING, TRANSMITTING, LISTENING,
 and DISABLED to determine which state should be set. The grid above
 defines the settings applied in changing to each state.
 
-
 2.2 - A public function which forces the line into a "holding" state.
 This is generally unneeded, but for deployments where interference is an
 issue, it should be used after all expected bytes have been returned
 from the sensor.
+
+2.3 - A public function which forces the line into a "listening" state.
+This may be needed for implementing a slave-side device, which should
+relinquish control of the data line when not transmitting.
 
 ------------------------|  Overview of Interrupts |-------------------------
 
@@ -407,6 +410,11 @@ void SDI12::forceHold(){
 	setState(HOLDING); 
 }
 
+// 2.3 - forces a LISTENING state. 
+void SDI12::forceListen(){
+	setState(LISTENING); 
+}
+
 /* ======= 3. Constructor, Destructor, SDI12.begin(), and SDI12.end()  =======
 
 3.1 - The constructor requires a single parameter: the pin to be used
@@ -506,7 +514,10 @@ if(out & mask){
 write the dataPin LOW for SPACING microseconds.
 
 4.3 - sendCommand(String cmd) is a publicly accessible function that
-sends out a String byte by byte the command line. 
+wakes sensors and sends out a String byte by byte the command line. 
+
+4.4 - sendResponse(String resp) is a publicly accessible function that
+sends out an 8.33 ms marking and a String byte by byte the command line.
 
 */ 
 
@@ -551,6 +562,17 @@ void SDI12::sendCommand(String cmd){
   setState(LISTENING); 						// listen for reply
 }
 
+//  4.4 - this function sets up for a response, then sends ou the characters
+//		  of String resp, one by one (for slave)
+void SDI12::sendResponse(String resp){
+  setState(TRANSMITTING);					// 8.33 ms marking before response
+  digitalWrite(_dataPin, LOW);
+  delayMicroseconds(8330);
+  for (int i = 0; i < resp.length(); i++){
+	writeChar(resp[i]); 						// write each characters
+  }	
+  setState(LISTENING); 						// return to listening state
+}
 
 /* ============= 5. Reading from the SDI-12 object.  ===================
 
