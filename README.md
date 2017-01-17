@@ -7,7 +7,7 @@ Arduino library for SDI-12 communications to a wide variety of environmental sen
 
 This project is part of the [EnviroDIY](http://envirodiy.org/) vision to create an open source hardware and software stack to deliver near real time environmental data from wireless sensor networks, such as the Arduino-compatible [EnviroDIY™ Mayfly Data Logger](http://envirodiy.org/mayfly/).
 
-Note that to use this library will conflict with SoftwareSerial and the Sodaq PCInt libraries.  To use in combination with those libraries, use the branch "Mayfly."  This branch has been specifically modified to interact properly with the SoftwareSerial and Sodaq libraries that power the Mayfly.
+Note that this library will conflict with SoftwareSerial and the Sodaq PCInt libraries.  To use in combination with those libraries, use the branch "Mayfly."  This branch has been specifically modified to interact properly with the SoftwareSerial and Sodaq libraries that power the Mayfly.
 
 ##Getting Started
 
