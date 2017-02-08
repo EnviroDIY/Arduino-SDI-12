@@ -5,7 +5,7 @@
   "repository":
   {
     "type": "git",
-    "url": "https://github.com/EnviroDIY/Arduino-SDI-12.git"
+    "url": "https://github.com/EnviroDIY/Arduino-SDI-12.git",
     "branch": "Mayfly"
   },
   "authors":
@@ -19,7 +19,7 @@
     {
       "name": "Shannon Hicks",
       "email": "shicks@stroudcenter.org"
-    },
+    }
   ],
   "dependencies":
   {
