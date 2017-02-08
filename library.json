@@ -5,7 +5,8 @@
   "repository":
   {
     "type": "git",
-    "url": "https://github.com/EnviroDIY/Arduino-SDI-12.git"
+    "url": "https://github.com/EnviroDIY/Arduino-SDI-12.git",
+    "branch": "master"
   },
   "authors":
   [
