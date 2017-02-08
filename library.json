@@ -1,0 +1,29 @@
+{
+  "name": "Arduino-SDI-12_Mod",
+  "keywords": "SDI-12, SDI12, EnvioDIY, sensor, serial",
+  "description": "Arduino library for SDI-12 communications to a wide variety of environmental sensors.",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/EnviroDIY/Arduino-SDI-12.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Kevin M. Smith",
+      "email": "Kevin@elite-education.org",
+      "url": "http://www.milesburton.com",
+      "maintainer": true
+    },
+    {
+      "name": "Shannon Hicks",
+      "email": "shicks@stroudcenter.org"
+    },
+  ],
+  "dependencies":
+  {
+  },
+  "version": "0.1.0",
+  "frameworks": "arduino",
+  "platforms": "*"
+}
