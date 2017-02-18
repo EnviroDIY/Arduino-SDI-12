@@ -63,7 +63,7 @@
 
 #include <SDI12.h>
 
-#define DATAPIN 9         // change to the proper pin
+#define DATAPIN 2         // change to the proper pin
 SDI12 mySDI12(DATAPIN); 
 
 // keeps track of active addresses
@@ -84,7 +84,10 @@ byte addressRegister[8] = {
 
 
 void setup(){
-  Serial.begin(9600); 
+  Serial.begin(57600);
+
+  // Enable diag
+  mySDI12.setDiagStream(Serial);
   mySDI12.begin(); 
   delay(500); // allow things to settle
 
