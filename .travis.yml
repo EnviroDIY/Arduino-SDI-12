@@ -1,65 +1,27 @@
-# Continuous Integration (CI) is the practice, in software
-# engineering, of merging all developer working copies with a shared mainline
-# several times a day < http://docs.platformio.org/page/ci/index.html >
-#
-# Documentation:
-#
-# * Travis CI Embedded Builds with PlatformIO
-#   < https://docs.travis-ci.com/user/integration/platformio/ >
-#
-# * PlatformIO integration with Travis CI
-#   < http://docs.platformio.org/page/ci/travis.html >
-#
-# * User Guide for `platformio ci` command
-#   < http://docs.platformio.org/page/userguide/cmd_ci.html >
-#
-#
-# Please choice one of the following templates (proposed below) and uncomment
-# it (remove "# " before each line) or use own configuration according to the
-# Travis CI documentation (see above).
-#
+language: python
+python:
+    - "2.7"
 
+sudo: false
+cache:
+    directories:
+        - "~/.platformio"
 
-#
-# Template #1: General project. Test it using existing `platformio.ini`.
-#
+env:
+    - PLATFORMIO_CI_SRC=examples/a_wild_card/a_wild_card.ino
+    - PLATFORMIO_CI_SRC=examples/b_address_change/b_address_change.ino
+    - PLATFORMIO_CI_SRC=examples/c_check_all_addresses/c_check_all_addresses.ino
+    - PLATFORMIO_CI_SRC=examples/d_simple_logger/d_simple_logger.ino
+    - PLATFORMIO_CI_SRC=examples/e_simple_parsing/e_simple_parsing.ino
+    - PLATFORMIO_CI_SRC=examples/e_terminal_window/e_terminal_window.ino
+    - PLATFORMIO_CI_SRC=examples/f_basic_data_request/f_basic_data_request.ino
+    - PLATFORMIO_CI_SRC=examples/g_SDI-12_slave_implementation/g_SDI-12_slave_implementation.ino
+    - PLATFORMIO_CI_SRC=examples/h_SDI-12_interface/h_SDI-12_interface.ino
 
-# language: python
-# python:
-#     - "2.7"
-#
-# sudo: false
-# cache:
-#     directories:
-#         - "~/.platformio"
-#
-# install:
-#     - pip install -U platformio
-#
-# script:
-#     - platformio run
+install:
+    - pip install -U platformio
+    - pio upgrade
+    - pio update
 
-
-#
-# Template #2: The project is intended to by used as a library with examples
-#
-
-# language: python
-# python:
-#     - "2.7"
-#
-# sudo: false
-# cache:
-#     directories:
-#         - "~/.platformio"
-#
-# env:
-#     - PLATFORMIO_CI_SRC=path/to/test/file.c
-#     - PLATFORMIO_CI_SRC=examples/file.ino
-#     - PLATFORMIO_CI_SRC=path/to/test/directory
-#
-# install:
-#     - pip install -U platformio
-#
-# script:
-#     - platformio ci --lib="." --board=ID_1 --board=ID_2 --board=ID_N
+script:
+    - platformio ci --lib="." --board=mayfly
