@@ -2,19 +2,19 @@
 ########################
 #        OVERVIEW      #
 ########################
- 
- Example B: Changing the address of a sensor. 
- 
+
+ Example B: Changing the address of a sensor.
+
  This is a simple demonstration of the SDI-12 library for arduino.
  It discovers the address of the attached sensor and allows you to change it.
 
 #########################
 #      THE CIRCUIT      #
 #########################
- 
- The circuit: You should not have more than one SDI-12 device attached for this example. 
- 
- See: 
+
+ The circuit: You should not have more than one SDI-12 device attached for this example.
+
+ See:
  https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/basic_setup_no_usb.png
  or
  https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/compat_setup_usb.png
@@ -22,15 +22,15 @@
 ###########################
 #      COMPATIBILITY      #
 ###########################
- 
- This library requires the use of pin change interrupts (PCINT). 
- Not all Arduino boards have the same pin capabilities. 
+
+ This library requires the use of pin change interrupts (PCINT).
+ Not all Arduino boards have the same pin capabilities.
  The known compatibile pins for common variants are shown below.
- 
- Arduino Uno: 	All pins. 
+
+ Arduino Uno: 	All pins.
 
  Arduino Mega or Mega 2560:
- 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), 
+ 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62),
  A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
 
  Arduino Leonardo:
@@ -40,7 +40,7 @@
 #      RESOURCES        #
 #########################
 
- Written by Kevin M. Smith in 2013. 
+ Written by Kevin M. Smith in 2013.
  Contact: SDI12@ethosengineering.org
 
  The SDI-12 specification is available at: http://www.sdi-12.org/
@@ -51,14 +51,45 @@
 #include <SDI12.h>
 
 #define DATAPIN 9         // change to the proper pin
-SDI12 mySDI12(DATAPIN); 
+SDI12 mySDI12(DATAPIN);
 
 String myCommand = "";   // empty to start
 char oldAddress = '!';   // invalid address as placeholder
 
+
+
+
+// this checks for activity at a particular address
+// expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
+boolean checkActive(byte i){              // this checks for activity at a particular address
+  Serial.print("Checking address ");
+  Serial.print((char)i);
+  Serial.print("...");
+  myCommand = "";
+  myCommand += (char) i;                 // sends basic 'acknowledge' command [address][!]
+  myCommand += "!";
+
+  for(int j = 0; j < 3; j++){            // goes through three rapid contact attempts
+    mySDI12.sendCommand(myCommand);
+    if(mySDI12.available()>1) break;
+    delay(30);
+  }
+  if(mySDI12.available()>2){             // if it hears anything it assumes the address is occupied
+    Serial.println("Occupied");
+    mySDI12.flush();
+    return true;
+  }
+  else {
+    Serial.println("Vacant");           // otherwise it is vacant.
+    mySDI12.flush();
+  }
+  return false;
+}
+
+
 void setup(){
-  Serial.begin(9600); 
-  mySDI12.begin(); 
+  Serial.begin(9600);
+  mySDI12.begin();
 }
 
 void loop(){
@@ -67,51 +98,51 @@ void loop(){
   for(byte i = '0'; i <= '9'; i++){    // scan address space 0-9
     if(found) break;
     if(checkActive(i)){
-      found = true;  
-      oldAddress = i; 
+      found = true;
+      oldAddress = i;
     }
   }
 
   for(byte i = 'a'; i <= 'z'; i++){    // scan address space a-z
     if(found) break;
     if(checkActive(i)){
-      found = true;  
-      oldAddress = i; 
+      found = true;
+      oldAddress = i;
     }
   }
 
   for(byte i = 'A'; i <= 'Z'; i++){    // scan address space A-Z
     if(found) break;
     if(checkActive(i)){
-      found = true;  
-      oldAddress = i; 
+      found = true;
+      oldAddress = i;
     }
   }
 
-  if(!found){ 
+  if(!found){
     Serial.println("No sensor detected. Check physical connections."); // couldn't find a sensor. check connections..
   }
   else{
     Serial.print("Sensor active at address ");                        // found a sensor!
-    Serial.print(oldAddress); 
-    Serial.println("."); 
+    Serial.print(oldAddress);
+    Serial.println(".");
 
     Serial.println("Enter new address.");                             // prompt for a new address
-    while(!Serial.available()); 
+    while(!Serial.available());
     char newAdd= Serial.read();
-    
+
     // wait for valid response
     while( ((newAdd<'0') || (newAdd>'9')) && ((newAdd<'a') || (newAdd>'z')) && ((newAdd<'A') || (newAdd>'Z'))){
-      if(!(newAdd =='\n') || (newAdd =='\r') || (newAdd ==' ')) { 
-        Serial.println("Not a valid address. Please enter '0'-'9', 'a'-'A', or 'z'-'Z'."); 
+      if(!(newAdd =='\n') || (newAdd =='\r') || (newAdd ==' ')) {
+        Serial.println("Not a valid address. Please enter '0'-'9', 'a'-'A', or 'z'-'Z'.");
       }
-      while(!Serial.available()); 
+      while(!Serial.available());
       newAdd = Serial.read();
-    } 
+    }
 
 /* the syntax of the change address command is:
 [currentAddress]A[newAddress]! */
-   
+
     Serial.println("Readdressing sensor.");
     myCommand = "";
     myCommand += (char) oldAddress;
@@ -123,35 +154,8 @@ void loop(){
 /* wait for the response then throw it away by
 clearing the buffer with flush()  */
     delay(300);
-    mySDI12.flush(); 
-    
-    Serial.println("Success. Rescanning for verification."); 
+    mySDI12.flush();
+
+    Serial.println("Success. Rescanning for verification.");
   }
 }
-
-
-boolean checkActive(byte i){              // this checks for activity at a particular address
-  Serial.print("Checking address ");
-  Serial.print((char)i);
-  Serial.print("..."); 
-  myCommand = "";
-  myCommand += (char) i;                 // sends basic 'acknowledge' command [address][!]
-  myCommand += "!";
-
-  for(int j = 0; j < 3; j++){            // goes through three rapid contact attempts
-    mySDI12.sendCommand(myCommand);
-    if(mySDI12.available()>1) break;
-    delay(30); 
-  }
-  if(mySDI12.available()>2){             // if it hears anything it assumes the address is occupied
-    Serial.println("Occupied");
-    mySDI12.flush(); 
-    return true;
-  } 
-  else {
-    Serial.println("Vacant");           // otherwise it is vacant. 
-    mySDI12.flush(); 
-  }
-  return false; 
-}
-

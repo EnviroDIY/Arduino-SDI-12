@@ -1,0 +1,27 @@
+language: python
+python:
+    - "2.7"
+
+sudo: false
+cache:
+    directories:
+        - "~/.platformio"
+
+env:
+    - PLATFORMIO_CI_SRC=examples/a_wild_card/a_wild_card.ino
+    - PLATFORMIO_CI_SRC=examples/b_address_change/b_address_change.ino
+    - PLATFORMIO_CI_SRC=examples/c_check_all_addresses/c_check_all_addresses.ino
+    - PLATFORMIO_CI_SRC=examples/d_simple_logger/d_simple_logger.ino
+    - PLATFORMIO_CI_SRC=examples/e_simple_parsing/e_simple_parsing.ino
+    - PLATFORMIO_CI_SRC=examples/e_terminal_window/e_terminal_window.ino
+    - PLATFORMIO_CI_SRC=examples/f_basic_data_request/f_basic_data_request.ino
+    - PLATFORMIO_CI_SRC=examples/g_SDI-12_slave_implementation/g_SDI-12_slave_implementation.ino
+    - PLATFORMIO_CI_SRC=examples/h_SDI-12_interface/h_SDI-12_interface.ino
+
+install:
+    - pip install -U platformio
+    - pio upgrade
+    - pio update
+
+script:
+    - platformio ci --lib="." --board=mayfly
