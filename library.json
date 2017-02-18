@@ -1,6 +1,6 @@
 {
-  "name": "Arduino-SDI-12_Mod",
-  "keywords": "SDI-12, SDI12, EnvioDIY, sensor, serial",
+  "name": "Arduino-SDI-12",
+  "keywords": "SDI-12, SDI12, EnvioDIY, sensor, serial, Communication",
   "description": "Arduino library for SDI-12 communications to a wide variety of environmental sensors.",
   "repository":
   {
