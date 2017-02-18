@@ -966,6 +966,7 @@ ISR(PCINT2_vect){ SDI12::handleInterrupt(); }
 #if defined(PCINT3_vect)
 ISR(PCINT3_vect){ SDI12::handleInterrupt(); }
 #endif
+
 #elif defined(ARDUINO_ARCH_SAMD)
 static void my_data_interrupt_handler()
 {

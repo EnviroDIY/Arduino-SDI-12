@@ -1,7 +1,7 @@
 /* ======================== Arduino SDI-12 =================================
 
-Arduino library for SDI-12 communications to a wide variety of environmental 
-sensors. This library provides a general software solution, without requiring 
+Arduino library for SDI-12 communications to a wide variety of environmental
+sensors. This library provides a general software solution, without requiring
 any additional hardware.
 
 ======================== Attribution & License =============================
@@ -45,7 +45,7 @@ communicate with up to 62 uniquely addressed sensors. So long as each
 sensor supports SDI-12, mixed sensor types can appear on the same data
 bus. Each address is a single character. The valid ranges are 0-9, a-z,
 and A-Z. Only the datalogger can initiate communications on the data
-bus. 
+bus.
 
 It does so by pulling the data line into a 5v state for at least 12
 milliseconds to wake up all the sensors, before returning the line into
@@ -54,86 +54,117 @@ contains both the action to be taken, and the address of the device who
 should respond. If there is a sensor on the bus with that address, it is
 responsible for responding to the command. Sensors should ignore
 commands that were not issued to them, and should return to a sleep
-state until the datalogger again issues the wakeup sequence. 
+state until the datalogger again issues the wakeup sequence.
 
-Physical Connections:			1 data line (0v - 5.5v)
-								1 12v power line (9.6v - 16v)
-								1 ground line 
+Physical Connections:           1 data line (0v - 5.5v)
+                                1 12v power line (9.6v - 16v)
+                                1 ground line
 
-Baud Rate: 						1200 bits per second
+Baud Rate:                      1200 bits per second
 
-Data Frame Format:				10 bits per data frame 		
-								1 start bit
-								7 data bits (least significant bit first)
-								1 even parity bit
-								1 stop bit	
+Data Frame Format:              10 bits per data frame
+                                1 start bit
+                                7 data bits (least significant bit first)
+                                1 even parity bit
+                                1 stop bit
 
-Data Line: 						SDI-12 communication uses a single
-								bi-directional data line 
-								with three-state, inverse logic.			
-			
-			LINE CONDITION	|  BINARY STATE | VOLTAGE RANGE	
-			-----------------------------------------------
-			marking				1				-0.5 to 1.0 volts
-			spacing				0				3.5 to 5.5 volts
-			transition			undefined		1.0 to 3.5 volts
-			
-      _____       _____	      _____       _____       _____     spacing
-5v   |     |     |     |     |     |     |     |     |     |	 
-     |  0  |  1  |  0  |  1  |  0  |  1  |  0  |  1  |  0  | transition		
-Ov___|     |_____|     |_____|     |_____|     |_____|     |___ marking  
+Data Line:                      SDI-12 communication uses a single
+                                bi-directional data line
+                                with three-state, inverse logic.
+
+            LINE CONDITION  |  BINARY STATE | VOLTAGE RANGE
+            -----------------------------------------------
+            marking             1               -0.5 to 1.0 volts
+            spacing             0               3.5 to 5.5 volts
+            transition          undefined       1.0 to 3.5 volts
+
+      _____       _____       _____       _____       _____     spacing
+5v   |     |     |     |     |     |     |     |     |     |
+     |  0  |  1  |  0  |  1  |  0  |  1  |  0  |  1  |  0  | transition
+Ov___|     |_____|     |_____|     |_____|     |_____|     |___ marking
 
 
-For more information, and for a list of commands and responses, please see 
-SDI-12.org, official site of the SDI-12 Support Group. 
+For more information, and for a list of commands and responses, please see
+SDI-12.org, official site of the SDI-12 Support Group.
 
 
 ==================== Code Organization ======================
-0.	Includes, Defines, & Variable Declarations
-1.	Buffer Setup
-2.	Data Line States, Overview of Interrupts 
-3.	Constructor, Destructor, SDI12.begin(), and SDI12.end() 
+0.  Includes, Defines, & Variable Declarations
+1.  Buffer Setup
+2.  Data Line States, Overview of Interrupts
+3.  Constructor, Destructor, SDI12.begin(), and SDI12.end()
 4.  Waking up, and talking to, the sensors.
-5.	Reading from the SDI-12 object. available(), peek(), read(), flush()
-6. 	Using more than one SDI-12 object, isActive() and setActive().
-7.	Interrupt Service Routine (getting the data into the buffer)
+5.  Reading from the SDI-12 object. available(), peek(), read(), flush()
+6.  Using more than one SDI-12 object, isActive() and setActive().
+7.  Interrupt Service Routine (getting the data into the buffer)
 
 =========== 0. Includes, Defines, & Variable Declarations =============
 
-0.1 - Include the header file for this library. 
+0.1 - Include the header file for this library.
 0.2 - defines the size of the buffer
 0.3 - defines value for DISABLED state (see section 2)
-0.4 - defines value for ENABLED state (not used, reserved for future) 
+0.4 - defines value for ENABLED state (not used, reserved for future)
 0.5 - defines value for DISABLED state (see section 2)
 0.6 - defines value for TRANSMITTING state (see section 2)
 0.7 - defines value for LISTENING state
-0.8 - defines value for the spacing of bits. 
-	1200 bits per second implies 833 microseconds per bit.
-	830 seems to be a reliable value given the overhead of the call.
-0.9	- holds a custom value that indicates a
-    TIMEOUT has occurred from parseInt() or parseFloat(). This should not be set to 
-    a possible data value. 
+0.8 - defines value for the spacing of bits.
+    1200 bits per second implies 833 microseconds per bit.
+    830 seems to be a reliable value given the overhead of the call.
+0.9 - holds a custom value that indicates a
+    TIMEOUT has occurred from parseInt() or parseFloat(). This should not be set to
+    a possible data value.
 
-0.10 - a static pointer to the active object. See section 6. 
+0.10 - a static pointer to the active object. See section 6.
 0.11 - a reference to the data pin, used throughout the library
 0.12 - holds the buffer overflow status
 
 */
 
-#include <SDI12_Mod.h>						// 0.1 header file for this library
+#include <inttypes.h>           // integer types library
+#include <Arduino.h>            // Arduino core library
+#include <Stream.h>             // Arduino Stream library
+#if defined(ARDUINO_ARCH_AVR)
+#include <avr/interrupt.h>      // interrupt handling
+#elif defined(ARDUINO_ARCH_SAMD)
+static uint8_t parity_even_bit(uint8_t val)
+{
+    // Brian Kernighan's way
+    uint8_t count = 0;
+    for (count = 0; val != 0; ++count) {
+        val &= val - 1;
+    }
+    // If count is odd the even parity bit is 1
+    return (count & 1) == 1;
+}
+#else
+#error "Please select AVR or SAMD"
+#endif
 
-#define _BUFFER_SIZE 64 				// 0.2 max RX buffer size		
-#define DISABLED 0						// 0.3 value for DISABLED state
-#define ENABLED 1						// 0.4 value for ENABLED state
-#define HOLDING 2 						// 0.5 value for DISABLED state
-#define TRANSMITTING 3					// 0.6 value for TRANSMITTING state
-#define LISTENING 4						// 0.7 value for LISTENING state
-#define SPACING 830						// 0.8 bit timing in microseconds
-int TIMEOUT = -9999;					// 0.9 value to return to indicate TIMEOUT
+#include "SDI12_PCINT3.h"                       // 0.1 header file for this library
 
-SDI12 *SDI12::_activeObject = NULL;		// 0.10 pointer to active SDI12 object
-uint8_t _dataPin; 						// 0.11 reference to the data pin
-bool _bufferOverflow;					// 0.12 buffer overflow status
+//#define ENABLE_CONFIG_DIAG             1
+
+static Stream * _diagStream;
+#if ENABLE_CONFIG_DIAG
+  #define myDiagPrint(...) do { if (_diagStream) _diagStream->print(__VA_ARGS__); } while (0)
+  #define myDiagPrintLn(...) do { if (_diagStream) _diagStream->println(__VA_ARGS__); } while (0)
+#else
+  #define myDiagPrint(...)
+  #define myDiagPrintLn(...)
+#endif
+
+#define _BUFFER_SIZE 64                 // 0.2 max RX buffer size
+#define DISABLED 0                      // 0.3 value for DISABLED state
+#define ENABLED 1                       // 0.4 value for ENABLED state
+#define HOLDING 2                       // 0.5 value for DISABLED state
+#define TRANSMITTING 3                  // 0.6 value for TRANSMITTING state
+#define LISTENING 4                     // 0.7 value for LISTENING state
+#define SPACING 830                     // 0.8 bit timing in microseconds
+int TIMEOUT = -9999;                    // 0.9 value to return to indicate TIMEOUT
+
+SDI12 *SDI12::_activeObject = NULL;     // 0.10 pointer to active SDI12 object
+uint8_t _dataPin;                       // 0.11 reference to the data pin
+bool _bufferOverflow;                   // 0.12 buffer overflow status
 
 /* =========== 1. Buffer Setup ============================================
 
@@ -142,7 +173,7 @@ Characters are read into the buffer when an interrupt is received on the
 data line. The buffer uses a circular implementation with pointers to
 both the head and the tail. There is one buffer per instance of the
 SDI-12 object. This will consume a good deal of RAM, so be prudent in
-running multiple instances. 
+running multiple instances.
 
 For more information on circular buffers:
 http://en.wikipedia.org/wiki/Circular_buffer
@@ -158,10 +189,10 @@ buffer tail. (unsigned 8-bit integer, can map from 0-255)
 
 */
 
-// See section 0 above.			// 1.1 - max buffer size
-char _rxBuffer[_BUFFER_SIZE]; 	// 1.2 - buff for incoming
-uint8_t _rxBufferHead = 0;		// 1.3 - index of buff head
-uint8_t _rxBufferTail = 0;		// 1.4 - index of buff tail
+// See section 0 above.         // 1.1 - max buffer size
+char _rxBuffer[_BUFFER_SIZE];   // 1.2 - buff for incoming
+uint8_t _rxBufferHead = 0;      // 1.3 - index of buff head
+uint8_t _rxBufferTail = 0;      // 1.4 - index of buff tail
 
 /* =========== 2. Data Line States ===============================
 
@@ -182,18 +213,18 @@ state, removing the interrupt associated with the dataPin. For
 predictability, we set the pin to a LOW level high impedance state
 (INPUT).
 
-State					Interrupts		Pin Mode	Pin Level
-HOLDING					Pin Disable		OUTPUT		LOW
-TRANSMITTING			All Disable		OUTPUT		VARYING
-LISTENING 				All Enable		INPUT		LOW
-DISABLED				Pin Disable		INPUT		LOW
+State                   Interrupts      Pin Mode    Pin Level
+HOLDING                 Pin Disable     OUTPUT      LOW
+TRANSMITTING            All Disable     OUTPUT      VARYING
+LISTENING               All Enable      INPUT       LOW
+DISABLED                Pin Disable     INPUT       LOW
 
 ------------------------------|  Sequencing |------------------------------
 
-Generally, this is acceptable. 
+Generally, this is acceptable.
 HOLDING --> TRANSMITTING --> LISTENING --> TRANSMITTING --> LISTENING -->
 
-If you have interference, you should force a hold, using forceHold(); 
+If you have interference, you should force a hold, using forceHold();
 HOLDING --> TRANSMITTING --> LISTENING --> done reading, forceHold(); HOLDING
 
 -------------------------|  Function Descriptions |-------------------------
@@ -203,15 +234,18 @@ internally. It uses #define values of HOLDING, TRANSMITTING, LISTENING,
 and DISABLED to determine which state should be set. The grid above
 defines the settings applied in changing to each state.
 
-
 2.2 - A public function which forces the line into a "holding" state.
 This is generally unneeded, but for deployments where interference is an
 issue, it should be used after all expected bytes have been returned
 from the sensor.
 
+2.3 - A public function which forces the line into a "listening" state.
+This may be needed for implementing a slave-side device, which should
+relinquish control of the data line when not transmitting.
+
 ------------------------|  Overview of Interrupts |-------------------------
 
-Some vocabulary: 
+Some vocabulary:
 Registers: PCMSK0, PCMSK1, PCMSK2 :registers that enable or disable
 pin-change interrupts on individual pins
 
@@ -222,7 +256,7 @@ PCMSK1, and PCIE0 maps to PCMSK0.
 
 noInterrupts() globally disables interrupts (of all types), while interrupts()
 globally enables interrupts (of all types), but they will only occur if
-the requisite registers are set (e.g. PCMSK and PCICR). 
+the requisite registers are set (e.g. PCMSK and PCICR).
 
 --------------|    What is an interrupt?
 An interrupt is a signal that causes the microcontroller to halt
@@ -247,33 +281,33 @@ pins at a single time.
 
 There are also three registers that store the state (enabled/disabled) of the
 pin change interrupts: PCMSK0, PCMSK1, and PCMSK2. Each bit stores a 1
-(enabled) or 0 (disabled). 
+(enabled) or 0 (disabled).
 
-For example, PCMSK0 holds an 8 bits which represent: 
-		PCMSK0 {PCINT7, PCINT6, PCINT5, PCINT4, PCINT3, PCINT2, PCINT1, PCINT0}
+For example, PCMSK0 holds an 8 bits which represent:
+        PCMSK0 {PCINT7, PCINT6, PCINT5, PCINT4, PCINT3, PCINT2, PCINT1, PCINT0}
 
 On an Arduino Uno, these map to:
-		PCMSK0 {XTAL2, XTAL1, Pin 13, Pin 12, Pin 11, Pin 10, Pin 9, Pin 8}
+        PCMSK0 {XTAL2, XTAL1, Pin 13, Pin 12, Pin 11, Pin 10, Pin 9, Pin 8}
 
-==================================================| Enabling an interrupt. 
-		
+==================================================| Enabling an interrupt.
+
 Initially, no interrupts are enabled, so PCMSK0 looks like: {00000000}.
 If we were to use pin 9 as the data pin, we would set the bit in the pin
-9 position to 1, like so: {00000010}. 
+9 position to 1, like so: {00000010}.
 
-To accomplish this, we can make use of some predefined macros. 
+To accomplish this, we can make use of some predefined macros.
 
 One macro "digitalPinToPCMSK" is defined in "pins_arduino.h" which
 allows us to quickly get the proper register (PCMSK0, PCMSK1, or PCMSK2)
 given the number of the Arduino pin. So when we write:
 digitalPinToPCMSK(9), the address of PCMSK0 is returned. We can use the
-dereferencing operator '*' to get the value of the address. 
+dereferencing operator '*' to get the value of the address.
 
 That is, *digitalPinToPCMSK(9) returns: {00000000}.
 
 Another macro , "digitalPinToPCMSKbit" is also defined in
 "pins_arduino.h" and returns the position of the bit of interest within
-the PCMSK of interest. 
+the PCMSK of interest.
 
 So when we write: digitalPinToPCMSKbit(9), the value returned is 1,
 because pin 9 is represented by the "1st bit" within PCMSK0, which has a
@@ -282,10 +316,10 @@ zero-based index. That is: PCMSK { 7th bit, 6th bit, 5th bit, 4th bit,
 
 The leftward bit shift operator "<<" can then used to create a "mask".
 Masks are data that are used during bitwise operations to manipulate
-(enable / disable)   one or more individual bits simultaneously. 
+(enable / disable)   one or more individual bits simultaneously.
 
-The syntax for the operator is (variable << number_of_bits). 
-Some examples: 
+The syntax for the operator is (variable << number_of_bits).
+Some examples:
 byte a = 5;       // binary: a =  00000101
 byte b = a << 4;  // binary: b =  01010000
 
@@ -294,38 +328,38 @@ Or equivalently:  (1<<1), we get: {00000010}.
 
 To use the mask to set the bit of interest we use the bitwise or
 operator '|'. We will use the compact '|=' notation which does the
-operation and then stores the result back into the left hand side. 
+operation and then stores the result back into the left hand side.
 
 So the operation:
 *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(9));
 
-Accomplishes: 
-	(1<<digitalPinToPCMSKbit(9))					{00000010}
-	PCMSK0										|	{00000000}
-												-------------
-													{00000010}
+Accomplishes:
+    (1<<digitalPinToPCMSKbit(9))                    {00000010}
+    PCMSK0                                      |   {00000000}
+                                                -------------
+                                                    {00000010}
 
 We must also enable the global control for the interrupt. This is done
-in a similar fashion. 
+in a similar fashion.
 *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));
 
 Now let's assume that part of your Arduino sketch outside of SDI-12 had
 set a pin change interrupt on pin 13. Pin 9 and pin 13 are on the same
-PCMSK in the case of the Arduino Uno. 
+PCMSK in the case of the Arduino Uno.
 
-This time before we set the bit for pin nine, 
+This time before we set the bit for pin nine,
 *digitalPinToPCMSK(9) returns: {00100000}.
 
 So now:
-	(1<<digitalPinToPCMSKbit(9))					{00000010}
-	PCMSK0										|	{00100000}
-												-------------
-													{00100010}
+    (1<<digitalPinToPCMSKbit(9))                    {00000010}
+    PCMSK0                                      |   {00100000}
+                                                -------------
+                                                    {00100010}
 
 By using a bitmask and bitwise operation, we have successfully enabled
-pin 9 without effecting the state of pin 13. 
+pin 9 without effecting the state of pin 13.
 
-================================================= Disabling an interrupt. 
+================================================= Disabling an interrupt.
 
 When the we would like to put the SDI-12 object in the DISABLED state,
 (e.g. the destructor is called), we need to make sure the bit
@@ -347,64 +381,134 @@ Again 1<<digitalPinToPCMSKbit(9) returns {00000010}
 
 The inversion symbol ~ modifies the result to {11111101}
 
-So to finish our example: 
-	~(1<<digitalPinToPCMSKbit(9))					{11111101}
-	PCMSK0										&	{00100010}
-												-------------
-													{00100000}
-													
+So to finish our example:
+    ~(1<<digitalPinToPCMSKbit(9))                   {11111101}
+    PCMSK0                                      &   {00100010}
+                                                -------------
+                                                    {00100000}
+
 So only the interrupt on pin 13 remains set. As a matter of book
 keeping, if we unset the last bit in the PCMSK, we ought to also unset
 the respective bit in the PCICR.
 
-	!(*digitalPinToPCMSK(9)
-		will evaluate TRUE if PCMSK {00000000}
-		will evaluate FALSE if PCMSK != {00000000}
+    !(*digitalPinToPCMSK(9)
+        will evaluate TRUE if PCMSK {00000000}
+        will evaluate FALSE if PCMSK != {00000000}
 
 In this case, pin 13 is set, so the expression would be FALSE. If we go
 back to the original case without pin 13, the expression after disabling
-pin 9 would evaluate to TRUE. 
+pin 9 would evaluate to TRUE.
 
 Therefore if we evaluate to TRUE, we should tidy up:
-	
-	if(!*digitalPinToPCMSK(_dataPin)){
-  		*digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
-  	}
+
+    if(!*digitalPinToPCMSK(_dataPin)){
+          *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
+      }
 
 */
 
-// 2.1 - sets the state of the SDI-12 object. 
-void SDI12::setState(uint8_t state){
+// Handle interrupts
+void ISR_Handler()
+{
+  SDI12::handleInterrupt();
+}
+
+// 2.1 - gets and sets the state of the SDI-12 object.
+const char *SDI12::getStateName(uint8_t state)
+{
+    const char * retval = "UNKNOWN";
+    if (state == HOLDING) {
+        retval = "HOLDING";
+    }
+    else if (state == TRANSMITTING) {
+        retval = "TRANSMITTING";
+    }
+    else if (state == LISTENING) {
+        retval = "LISTENING";
+    }
+    else if (state == ENABLED) {
+        retval = "ENABLED";
+    }
+    else if (state == DISABLED) {
+        retval = "DISABLED";
+    }
+    return retval;
+}
+
+// 2.1 - sets the state of the SDI-12 object.
+void SDI12::setState(uint8_t state)
+{
+    //myDiagPrintLn(String("setState - ") + getStateName(state));
+#if defined(ARDUINO_ARCH_AVR)
   if(state == HOLDING){
     pinMode(_dataPin,OUTPUT);
     digitalWrite(_dataPin,LOW);
-    *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
-    return; 
+    detachInterrupt(_dataPin);
+    return;
   }
   if(state == TRANSMITTING){
     pinMode(_dataPin,OUTPUT);
-    noInterrupts(); 			// supplied by Arduino.h, same as cli()
-    return; 
+    noInterrupts();             // supplied by Arduino.h, same as cli()
+    return;
   }
   if(state == LISTENING) {
     digitalWrite(_dataPin,LOW);
-    pinMode(_dataPin,INPUT); 
-    interrupts();				// supplied by Arduino.h, same as sei()
-	*digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));
-    *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));
-  } else { 						// implies state==DISABLED 
-  	digitalWrite(_dataPin,LOW); 
-  	pinMode(_dataPin,INPUT);
-  	*digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
-  	if(!*digitalPinToPCMSK(_dataPin)){
-  		*digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
-  	}
+    pinMode(_dataPin,INPUT);
+    interrupts();                // supplied by Arduino.h, same as sei()
+    attachInterrupt(_dataPin, ISR_Handler, CHANGE);
+  } else {                         // implies state==DISABLED
+      digitalWrite(_dataPin,LOW);
+      pinMode(_dataPin,INPUT);
+    detachInterrupt(_dataPin);
+      }
+#elif defined(ARDUINO_ARCH_SAMD)
+  // TODO
+  if(state == HOLDING){
+    pinMode(_dataPin,OUTPUT);
+    digitalWrite(_dataPin,LOW);
+    // Disable interrupts on data line ????
+    //*digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
   }
+
+  else if(state == TRANSMITTING){
+    pinMode(_dataPin,OUTPUT);
+    noInterrupts();             // supplied by Arduino.h, same as cli()
 }
 
-// 2.2 - forces a HOLDING state. 
+  else if(state == LISTENING) {
+    digitalWrite(_dataPin,LOW);
+    pinMode(_dataPin,INPUT);
+    interrupts();               // supplied by Arduino.h, same as sei()
+    attachInterrupt(_dataPin);
+    // Enable interrupt on data line ????
+    //*digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));
+    //*digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));
+  }
+
+  else if(state == DISABLED) {
+      digitalWrite(_dataPin,LOW);
+      pinMode(_dataPin,INPUT);
+      // ????
+      //*digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
+      //if(!*digitalPinToPCMSK(_dataPin)){
+      //    *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
+      //}
+  }
+
+  else {
+    // unknown state
+  }
+#endif
+}
+
+// 2.2 - forces a HOLDING state.
 void SDI12::forceHold(){
-	setState(HOLDING); 
+    setState(HOLDING);
+}
+
+// 2.3 - forces a LISTENING state.
+void SDI12::forceListen(){
+    setState(LISTENING);
 }
 
 /* ======= 3. Constructor, Destructor, SDI12.begin(), and SDI12.end()  =======
@@ -417,7 +521,7 @@ private variable "_dataPin".
 3.2 - When the destructor is called, it's main task is to disable any
 interrupts that had been previously assigned to the pin, so that the pin
 will behave as expected when used for other purposes. This is achieved
-by putting the SDI-12 object in the DISABLED state. 
+by putting the SDI-12 object in the DISABLED state.
 
 3.3 - This is called to begin the functionality of the SDI-12 object. It
 has no parameters as the SDI-12 protocol is fully specified (e.g. the
@@ -426,22 +530,27 @@ SDI-12 instances are being used simultaneously).
 
 3.4 - This can be called to temporarily cease all functionality of the
 SDI-12 object. It is not as harsh as destroying the object with the
-destructor, as it will maintain the memory buffer. 
+destructor, as it will maintain the memory buffer.
 
 */
 
-//	3.1	Constructor
-SDI12::SDI12(uint8_t dataPin){ _bufferOverflow = false; _dataPin = dataPin; }   
+//  3.1 Constructor
+SDI12::SDI12(uint8_t dataPin){ _bufferOverflow = false; _dataPin = dataPin; }
 
-//	3.2	Destrutor
+//  3.2 Destructor
 SDI12::~SDI12(){ setState(DISABLED); }
 
 //  3.3 Begin
-void SDI12::begin() { setState(HOLDING); setActive(); }   
+void SDI12::begin()
+{
+    setActive();
+}
 
 //  3.4 End
 void SDI12::end() { setState(DISABLED); }
 
+void SDI12::setDiagStream(Stream & stream) { _diagStream = &stream; }
+void SDI12::setDiagStream(Stream * stream) { _diagStream = stream; }
 
 /* ============= 4. Waking up, and talking to, the sensors. ===================
 
@@ -451,35 +560,35 @@ milliseconds followed immediately by a pulse of LOW voltage for at least
 8.3 milliseconds. The values here are close to those values, but provide
 100 extra microseconds of wiggle room. Setting the SDI-12 object into
 the TRANSMITTING allows us to assert control of the line without
-triggering any interrupts. 
+triggering any interrupts.
 
 4.2 - This function writes a character out to the data line. SDI-12
 specifies the general transmission format of a single character as:
 
-			10 bits per data frame 		
-				1 start bit
-				7 data bits (least significant bit first)
-				1 even parity bit
-				1 stop bit	
+            10 bits per data frame
+                1 start bit
+                7 data bits (least significant bit first)
+                1 even parity bit
+                1 stop bit
 
 We also recall that we are using inverse logic, so HIGH represents 0,
 and LOW represents a 1. If you are unclear on any of these terms, I
 would recommend that you look them up before proceeding. They will be
 better explained elsewhere.
 
-The transmission takes several steps. 
-The variable name for the outgoing character is "out". 
+The transmission takes several steps.
+The variable name for the outgoing character is "out".
 
 + 4.2.1 - Determine the proper even parity bit (will an additional 1 or 0
 make the final number of 1's even?)
 
 First we grab the bit using an optimized macro from parity.h
-		parity_even_bit(out)
+        parity_even_bit(out)
 
 Then we bit shift it into the proper place, which is the most
 significant bit position, since the characters we are using are only
-7-bits. 
-		(parity_even_bit(out)<<7);
+7-bits.
+        (parity_even_bit(out)<<7);
 
 Then we use the '|=' operator to set the bit if necessary.
 
@@ -490,9 +599,9 @@ write the dataPin HIGH for SPACING microseconds.
 significant bit first. This is accomplished bitwise AND operations on a
 moving mask (00000001) --> (00000010) --> (00000100)... and so on. This
 functionality makes use of the '<<=' operator which stores the result of
-the bit-shift back into the left hand side. 
+the bit-shift back into the left hand side.
 
-If the result of (out & mask) determines whether a 1 or 0 should be sent. 
+If the result of (out & mask) determines whether a 1 or 0 should be sent.
 Again, here inverse logic may lead to easy confusion.
 
 if(out & mask){
@@ -500,57 +609,86 @@ if(out & mask){
     }
     else{
       digitalWrite(_dataPin, HIGH);
-	} 
+    }
 
 + 4.2.4 - Send the stop bit. The stop bit is always a '1', so we simply
 write the dataPin LOW for SPACING microseconds.
 
 4.3 - sendCommand(String cmd) is a publicly accessible function that
-sends out a String byte by byte the command line. 
+wakes sensors and sends out a String byte by byte the command line.
 
-*/ 
+4.4 - sendResponse(String resp) is a publicly accessible function that
+sends out an 8.33 ms marking and a String byte by byte the command line.
+
+*/
 
 // 4.1 - this function wakes up the entire sensor bus
 void SDI12::wakeSensors(){
-  setState(TRANSMITTING); 
-  digitalWrite(_dataPin, HIGH); 
-  delayMicroseconds(12100); 
-  digitalWrite(_dataPin, LOW); 
+  setState(TRANSMITTING);
+  digitalWrite(_dataPin, HIGH);
+  delayMicroseconds(12100);
+  digitalWrite(_dataPin, LOW);
   delayMicroseconds(8400);
 }
 
 // 4.2 - this function writes a character out on the data line
+uint8_t parity_even_bit(uint8_t b)
+{
+  uint8_t count = 0;
+
+  for (uint8_t i = 0; i<8; i++) {
+    if (b & (1 << i)) {
+      count++;
+    }
+  }
+
+  return (count + 1) % 2;
+}
+
 void SDI12::writeChar(uint8_t out)
 {
 
-  out |= (parity_even_bit(out)<<7);			// 4.2.1 - parity bit
+  out |= (parity_even_bit(out)<<7);         // 4.2.1 - parity bit
 
-  digitalWrite(_dataPin, HIGH); 			// 4.2.2 - start bit
+  digitalWrite(_dataPin, HIGH);             // 4.2.2 - start bit
   delayMicroseconds(SPACING);
 
-  for (byte mask = 0x01; mask; mask<<=1){	// 4.2.3 - send payload
+  for (byte mask = 0x01; mask; mask<<=1){   // 4.2.3 - send payload
     if(out & mask){
       digitalWrite(_dataPin, LOW);
     }
     else{
       digitalWrite(_dataPin, HIGH);
-    } 
+    }
     delayMicroseconds(SPACING);
   }
-  
-  digitalWrite(_dataPin, LOW);				// 4.2.4 - stop bit
-  delayMicroseconds(SPACING); 
+
+  digitalWrite(_dataPin, LOW);              // 4.2.4 - stop bit
+  delayMicroseconds(SPACING);
 }
 
-//	4.3	- this function sends out the characters of the String cmd, one by one
-void SDI12::sendCommand(String cmd){
-  wakeSensors();							// wake up sensors
-  for (int i = 0; i < cmd.length(); i++){
-	writeChar(cmd[i]); 						// write each characters
-  }	
-  setState(LISTENING); 						// listen for reply
+//  4.3 - this function sends out the characters of the String cmd, one by one
+void SDI12::sendCommand(String cmd)
+{
+    //myDiagPrintLn(String("sendCommand - cmd ") + cmd);
+  wakeSensors();                            // wake up sensors
+    for (unsigned i = 0; i < cmd.length(); i++) {
+        writeChar(cmd[i]);                 // write each characters
+  }
+    setState(LISTENING);                   // listen for reply
 }
 
+//  4.4 - this function sets up for a response, then sends ou the characters
+//          of String resp, one by one (for slave)
+void SDI12::sendResponse(String resp){
+  setState(TRANSMITTING);                    // 8.33 ms marking before response
+  digitalWrite(_dataPin, LOW);
+  delayMicroseconds(8330);
+  for (unsigned i = 0; i < resp.length(); i++){
+    writeChar(resp[i]);                         // write each characters
+  }
+  setState(LISTENING);                         // return to listening state
+}
 
 /* ============= 5. Reading from the SDI-12 object.  ===================
 
@@ -559,12 +697,12 @@ characters available in the buffer.
 
 To understand how:
 _rxBufferTail + _BUFFER_SIZE - _rxBufferHead) % _BUFFER_SIZE;
-accomplishes this task, we will use a few examples. 
+accomplishes this task, we will use a few examples.
 
 To start take the buffer below that has _BUFFER_SIZE = 10. The
 message "abc" has been wrapped around (circular buffer).
 
-_rxBufferTail = 1 // points to the '-' after c 
+_rxBufferTail = 1 // points to the '-' after c
 _rxBufferHead = 8 // points to 'a'
 
 [ c ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ]  [ a ] [ b ]
@@ -576,7 +714,7 @@ by another. In integer arithmetic 3 / 10 = 0, but has a remainder of 3.
 We can only get the remainder by using the the modulo '%'. 3 % 10 = 3.
 This next case demonstrates more clearly why the modulo is used.
 
-_rxBufferTail = 4 // points to the '-' after c 
+_rxBufferTail = 4 // points to the '-' after c
 _rxBufferHead = 1 // points to 'a'
 
 [ a ] [ b ] [ c ] [ - ] [ - ] [ - ] [ - ] [ - ]  [ - ] [ - ]
@@ -585,10 +723,10 @@ The number of available characters is (4 + 10 - 1) % 10 = 3
 
 If we did not use the modulo we would get either ( 4 + 10 - 1 ) = 13
 characters or ( 4 + 10 - 1 ) / 10 = 1 character. Obviously neither is
-correct. 
-									
-If there has been a buffer overflow, available() will return -1.	
-					
+correct.
+
+If there has been a buffer overflow, available() will return -1.
+
 5.2 - peek() is a public function that allows the user to look at the
 character that is at the head of the buffer. Unlike read() it does not
 consume the character (i.e. the index addressed by _rxBufferHead is not
@@ -601,48 +739,48 @@ setting the index for both head and tail back to zero.
 after incrementing the index of the buffer head. This action 'consumes'
 the character, meaning it can not be read from the buffer again. If you
 would rather see the character, but leave the index to head intact, you
-should use peek(); 
+should use peek();
 
-5.5 - peekNextDigit() is called by the Stream class. It is overridden 
-here to allow for a custom TIMEOUT value. The default value for the 
-Stream class is to return 0. This makes distinguishing timeouts from 
+5.5 - peekNextDigit() is called by the Stream class. It is overridden
+here to allow for a custom TIMEOUT value. The default value for the
+Stream class is to return 0. This makes distinguishing timeouts from
 true zero readings impossible. Therefore the default value has been
 set to -9999 in section 0 of the code. It is a public variable and
 can be changed dynamically within a program by calling:
-	mySDI12.TIMEOUT = (int) newValue
+    mySDI12.TIMEOUT = (int) newValue
 
 */
 
 // 5.1 - reveals the number of characters available in the buffer
 int SDI12::available()
 {
-  if(_bufferOverflow) return -1; 
+  if(_bufferOverflow) return -1;
   return (_rxBufferTail + _BUFFER_SIZE - _rxBufferHead) % _BUFFER_SIZE;
 }
 
 // 5.2 - reveals the next character in the buffer without consuming
 int SDI12::peek()
 {
-  if (_rxBufferHead == _rxBufferTail) return -1;	 // Empty buffer? If yes, -1
-  return _rxBuffer[_rxBufferHead];  			// Otherwise, read from "head"
+  if (_rxBufferHead == _rxBufferTail) return -1;     // Empty buffer? If yes, -1
+  return _rxBuffer[_rxBufferHead];              // Otherwise, read from "head"
 }
 
 // 5.3 - a public function that clears the buffer contents and
-// resets the status of the buffer overflow. 
+// resets the status of the buffer overflow.
 void SDI12::flush()
 {
   _rxBufferHead = _rxBufferTail = 0;
-  _bufferOverflow = false; 
+  _bufferOverflow = false;
 }
 
 // 5.4 - reads in the next character from the buffer (and moves the index ahead)
 int SDI12::read()
 {
-  _bufferOverflow = false; 			//reading makes room in the buffer
-  if (_rxBufferHead == _rxBufferTail) return -1;	 // Empty buffer? If yes, -1
-  uint8_t nextChar = _rxBuffer[_rxBufferHead]; 	// Otherwise, grab char at head
-  _rxBufferHead = (_rxBufferHead + 1) % _BUFFER_SIZE;  	// increment head
-  return nextChar;									 	// return the char
+  _bufferOverflow = false;             //reading makes room in the buffer
+  if (_rxBufferHead == _rxBufferTail) return -1;       // Empty buffer? If yes, -1
+  uint8_t nextChar = _rxBuffer[_rxBufferHead];         // Otherwise, grab char at head
+  _rxBufferHead = (_rxBufferHead + 1) % _BUFFER_SIZE;  // increment head
+  return nextChar;                                     // return the char
 }
 
 // 5.5 - this function is called by the Stream class when parsing digits
@@ -674,10 +812,10 @@ pin the interrupt occurred on). The active object is the only object
 that will respond properly to interrupts. However promoting another
 instance to Active status does not automatically remove the interrupts
 on the other pin. For proper behavior it is recommended to use this
-pattern: 
+pattern:
 
-			mySDI12.forceHold(); 
-			myOtherSDI12.setActive(); 
+            mySDI12.forceHold();
+            myOtherSDI12.setActive();
 
 Other notes: Promoting an object into the Active state will set it as
 HOLDING. See 6.1 for more information.
@@ -703,7 +841,7 @@ Otherwise, if the object is currently the active instance, it will
 remain unchanged and return FALSE.
 
 6.2 - a method for checking if the object is the active object. Returns
-true if the object is currently the active object, false otherwise. 
+true if the object is currently the active object, false otherwise.
 
 */
 
@@ -712,7 +850,7 @@ bool SDI12::setActive()
 {
   if (_activeObject != this)
   {
-    setState(HOLDING); 
+    setState(HOLDING);
     _activeObject = this;
     return true;
   }
@@ -723,27 +861,27 @@ bool SDI12::setActive()
 bool SDI12::isActive() { return this == _activeObject; }
 
 
-/* ============== 6. Interrupt Service Routine  ===================
+/* ============== 7. Interrupt Service Routine  ===================
 
 We have received an interrupt signal, what should we do?
 
-6.1 - Passes off responsibility for the interrupt to the active object.
+7.1 - Passes off responsibility for the interrupt to the active object.
 
-6.2 - This function quickly reads a new character from the data line in
+7.2 - This function quickly reads a new character from the data line in
 to the buffer. It takes place over a series of key steps.
 
-+ 6.2.1 - Check for the start bit. If it is not there, interrupt may be
++ 7.2.1 - Check for the start bit. If it is not there, interrupt may be
 from interference or an interrupt we are not interested in, so return.
 
-+ 6.2.2 - Make space in memory for the new character "newChar".
++ 7.2.2 - Make space in memory for the new character "newChar".
 
-+ 6.2.3 - Wait half of a SPACING to help center on the next bit. It will
++ 7.2.3 - Wait half of a SPACING to help center on the next bit. It will
 not actually be centered, or even approximately so until
 delayMicroseconds(SPACING) is called again.
 
-+ 6.2.4 - For each of the 8 bits in the payload, read wether or not the
++ 7.2.4 - For each of the 8 bits in the payload, read wether or not the
 line state is HIGH or LOW. We use a moving mask here, as was previously
-demonstrated in the writeByte() function. 
+demonstrated in the writeByte() function.
 
 The loop runs from i=0x1 (hexadecimal notation for 00000001) to i<0x80
 (hexadecimal notation for 10000000). So the loop effectively uses the
@@ -753,76 +891,92 @@ masks following masks: 00000001
 00001000
 00010000
 00100000
-01000000 and their inverses. 
+01000000 and their inverses.
 
 Here we use an if / else structure that helps to balance the time it
 takes to either a HIGH vs a LOW, and helps maintain a constant timing.
 
-+ 6.2.5 - Skip the parity bit. There is no error checking.
++ 7.2.5 - Skip the parity bit. There is no error checking.
 
-+ 6.2.6 - Skip the stop bit.
++ 7.2.6 - Skip the stop bit.
 
-+ 6.2.7 - Check for an overflow. We do this by checking if advancing the
++ 7.2.7 - Check for an overflow. We do this by checking if advancing the
 tail would make it have the same index as the head (in a circular
 fashion).
 
-+ 6.2.8 - Save the byte into the buffer if there has not been an
++ 7.2.8 - Save the byte into the buffer if there has not been an
 overflow, and then advance the tail index.
 
-6.3 - Check if the various interrupt vectors are defined. If they are
+7.3 - Check if the various interrupt vectors are defined. If they are
 the ISR is instructed to call _handleInterrupt() when they trigger. */
 
-// 6.1 - Passes off responsibility for the interrupt to the active object. 
-inline void SDI12::handleInterrupt(){
-  if (_activeObject) _activeObject->receiveChar();
+// 7.1 - Passes off responsibility for the interrupt to the active object.
+inline void SDI12::handleInterrupt()
+{
+    if (_activeObject)
+        _activeObject->receiveChar();
 }
 
-// 6.2 - Quickly reads a new character into the buffer. 
+// 7.2 - Quickly reads a new character into the buffer.
 void SDI12::receiveChar()
 {
-  if (digitalRead(_dataPin))				// 6.2.1 - Start bit?
+  if (digitalRead(_dataPin))                // 7.2.1 - Start bit?
   {
-  	uint8_t newChar = 0;					// 6.2.2 - Make room for char.
-  	
-    delayMicroseconds(SPACING/2);			// 6.2.3 - Wait 1/2 SPACING
+    uint8_t newChar = 0;                    // 7.2.2 - Make room for char.
 
-    for (uint8_t i=0x1; i<0x80; i <<= 1)	// 6.2.4 - read the 7 data bits
+    delayMicroseconds(SPACING/2);           // 7.2.3 - Wait 1/2 SPACING
+
+    for (uint8_t i=0x1; i<0x80; i <<= 1)    // 7.2.4 - read the 7 data bits
     {
       delayMicroseconds(SPACING);
       uint8_t noti = ~i;
       if (!digitalRead(_dataPin))
         newChar |= i;
-      else 
+      else
         newChar &= noti;
     }
-    
-    delayMicroseconds(SPACING);				// 6.2.5 - Skip the parity bit. 
-	delayMicroseconds(SPACING);				// 6.2.6 - Skip the stop bit. 
 
-										// 6.2.7 - Overflow? If not, proceed.
-    if ((_rxBufferTail + 1) % _BUFFER_SIZE == _rxBufferHead) 
-    { _bufferOverflow = true; 
-    } else {							// 6.2.8 - Save char, advance tail. 
-      _rxBuffer[_rxBufferTail] = newChar; 
+    delayMicroseconds(SPACING);             // 7.2.5 - Skip the parity bit.
+    delayMicroseconds(SPACING);             // 7.2.6 - Skip the stop bit.
+
+                                        // 7.2.7 - Overflow? If not, proceed.
+    if ((_rxBufferTail + 1) % _BUFFER_SIZE == _rxBufferHead)
+    { _bufferOverflow = true;
+    } else {                            // 7.2.8 - Save char, advance tail.
+      _rxBuffer[_rxBufferTail] = newChar;
       _rxBufferTail = (_rxBufferTail + 1) % _BUFFER_SIZE;
     }
   }
 }
 
-//6.3
-//#if defined(PCINT0_vect)
-//ISR(PCINT0_vect){ SDI12::handleInterrupt(); }
-//#endif
+//7.3
+#if defined(ARDUINO_ARCH_AVR)
+// #if defined(PCINT0_vect)
+// ISR(PCINT0_vect){ SDI12::handleInterrupt(); }
+// #endif
 
-//#if defined(PCINT1_vect)
-//ISR(PCINT1_vect){ SDI12::handleInterrupt(); }
-//#endif
+// #if defined(PCINT1_vect)
+// ISR(PCINT1_vect){ SDI12::handleInterrupt(); }
+// #endif
 
-//#if defined(PCINT2_vect)
-//ISR(PCINT2_vect){ SDI12::handleInterrupt(); }
-//#endif
+// #if defined(PCINT2_vect)
+// ISR(PCINT2_vect){ SDI12::handleInterrupt(); }
+// #endif
 
 #if defined(PCINT3_vect)
 ISR(PCINT3_vect){ SDI12::handleInterrupt(); }
 #endif
 
+#elif defined(ARDUINO_ARCH_SAMD)
+static void my_data_interrupt_handler()
+{
+    //myDiagPrint('+');
+    SDI12::handleInterrupt();
+}
+void SDI12::attachInterrupt(uint8_t pin)
+{
+    //myDiagPrintLn(String("attachInterrupt - pin ") + pin);
+    ::attachInterrupt(pin, my_data_interrupt_handler, RISING);
+}
+#else
+#endif
