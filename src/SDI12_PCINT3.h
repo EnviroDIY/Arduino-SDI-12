@@ -1,7 +1,7 @@
 /* ======================== Arduino SDI-12 =================================
 
-Arduino library for SDI-12 communications to a wide variety of environmental 
-sensors. This library provides a general software solution, without requiring 
+Arduino library for SDI-12 communications to a wide variety of environmental
+sensors. This library provides a general software solution, without requiring
 any additional hardware.
 
 ======================== Attribution & License =============================
@@ -36,8 +36,8 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#ifndef SDI12_Mod_h
-#define SDI12_Mod_h
+#ifndef SDI12_PCINT3_h
+#define SDI12_PCINT3_h
 
 								//  Import Required Libraries
 #include <avr/interrupt.h>      // interrupt handling
@@ -56,21 +56,21 @@ private:
   void wakeSensors();			// used to wake up the SDI12 bus
   void writeChar(uint8_t out); 	// used to send a char out on the data line
   void receiveChar();			// used by the ISR to grab a char from data line
-  
+
 public:
   int TIMEOUT;
   SDI12(uint8_t dataPin);		// constructor
   ~SDI12();						// destructor
   void begin();					// enable SDI-12 object
   void end();					// disable SDI-12 object
-  
+
   void forceHold(); 			// sets line state to HOLDING
   void sendCommand(String cmd);	// sends the String cmd out on the data line
-    
+
   int available();			// returns the number of bytes available in buffer
   int peek();				// reveals next byte in buffer without consuming
   int read();				// returns next byte in the buffer (consumes)
-  void flush();				// clears the buffer 
+  void flush();				// clears the buffer
   virtual size_t write(uint8_t byte){}; // dummy function required to inherit from Stream
 
   bool setActive(); 		// set this instance as the active SDI-12 instance
