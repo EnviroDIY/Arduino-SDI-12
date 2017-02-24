@@ -410,9 +410,9 @@ void SDI12::forceHold(){
 	setState(HOLDING);
 }
 
-// 2.3 - forces a LISTENING state. 
+// 2.3 - forces a LISTENING state.
 void SDI12::forceListen(){
-	setState(LISTENING); 
+	setState(LISTENING);
 }
 
 /* ======= 3. Constructor, Destructor, SDI12.begin(), and SDI12.end()  =======
@@ -514,7 +514,7 @@ if(out & mask){
 write the dataPin LOW for SPACING microseconds.
 
 4.3 - sendCommand(String cmd) is a publicly accessible function that
-wakes sensors and sends out a String byte by byte the command line. 
+wakes sensors and sends out a String byte by byte the command line.
 
 4.4 - sendResponse(String resp) is a publicly accessible function that
 sends out an 8.33 ms marking and a String byte by byte the command line.
@@ -568,9 +568,9 @@ void SDI12::sendResponse(String resp){
   setState(TRANSMITTING);					// 8.33 ms marking before response
   digitalWrite(_dataPin, LOW);
   delayMicroseconds(8330);
-  for (int i = 0; i < resp.length(); i++){
+  for (int unsigned i = 0; i < resp.length(); i++){
 	writeChar(resp[i]); 						// write each characters
-  }	
+  }
   setState(LISTENING); 						// return to listening state
 }
 
