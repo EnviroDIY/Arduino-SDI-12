@@ -1,5 +1,5 @@
 /**
- * @file SDI12.cpp
+ * @file SDI12_PCINT3.cpp
  * @copyright Stroud Water Research Center
  * @license This library is published under the BSD-3 license.
  * @date August 2013
@@ -9,7 +9,7 @@
  */
 
 
-#include "SDI12.h"  //  Header file for this library
+#include "SDI12_PCINT3.h"  //  Header file for this library
 #if defined __AVR__
 #include <avr/interrupt.h>  // interrupt handling
 #include <util/parity.h>    // optimized parity bit handling
@@ -859,23 +859,23 @@ void SDI12::charToBuffer(uint8_t c) {
 // Client code must call SDI12::handleInterrupt() in PCINT handler for the data pin
 #else
 
-#if defined(PCINT0_vect)
-ISR(PCINT0_vect) {
-  SDI12::handleInterrupt();
-}
-#endif
+// #if defined(PCINT0_vect)
+// ISR(PCINT0_vect) {
+//   SDI12::handleInterrupt();
+// }
+// #endif
 
-#if defined(PCINT1_vect)
-ISR(PCINT1_vect) {
-  SDI12::handleInterrupt();
-}
-#endif
+// #if defined(PCINT1_vect)
+// ISR(PCINT1_vect) {
+//   SDI12::handleInterrupt();
+// }
+// #endif
 
-#if defined(PCINT2_vect)
-ISR(PCINT2_vect) {
-  SDI12::handleInterrupt();
-}
-#endif
+// #if defined(PCINT2_vect)
+// ISR(PCINT2_vect) {
+//   SDI12::handleInterrupt();
+// }
+// #endif
 
 #if defined(PCINT3_vect)
 ISR(PCINT3_vect) {

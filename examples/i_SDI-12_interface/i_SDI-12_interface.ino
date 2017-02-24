@@ -43,7 +43,7 @@
   "for developers)\r\n"                                                             \
   "(else) : send command to SDI-12 bus"
 
-#include <SDI12.h>
+#include <SDI12_PCINT3.h>
 
 #ifndef SDI12_DATA_PIN
 #define SDI12_DATA_PIN 7
