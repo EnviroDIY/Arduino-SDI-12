@@ -7,6 +7,8 @@ Arduino library for SDI-12 communications to a wide variety of environmental sen
 
 This project is part of the [EnviroDIY](http://envirodiy.org/) vision to create an open source hardware and software stack to deliver near real time environmental data from wireless sensor networks, such as the Arduino-compatible [EnviroDIY™ Mayfly Data Logger](http://envirodiy.org/mayfly/).
 
+Note that this library will conflict with SoftwareSerial, the Sodaq PCInt library, and any other library that monopolize all pin change interrupt vectors.  To help in using this in combination with those libraries, there is a version (SDI12_PCINT3) which is identical, except in that it only uses PCINT3 and ignores 0-2.  Get that version from the "Mayfly" branch.
+
 ##Getting Started
 
 Read the [Arduino-SDI-12 wiki](https://github.com/StroudCenter/Arduino-SDI-12/wiki).
