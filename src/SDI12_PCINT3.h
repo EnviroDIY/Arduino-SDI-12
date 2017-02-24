@@ -41,7 +41,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 								//  Import Required Libraries
 #include <avr/interrupt.h>      // interrupt handling
-#include <avr/parity.h>         // optimized parity bit handling
+#include <util/parity.h>         // optimized parity bit handling
 #include <inttypes.h>			// integer types library
 #include <Arduino.h>            // Arduino core library
 #include <Stream.h>				// Arduino Stream library
@@ -65,13 +65,15 @@ public:
   void end();					// disable SDI-12 object
 
   void forceHold(); 			// sets line state to HOLDING
+  void forceListen(); 			// sets line state to LISTENING
   void sendCommand(String cmd);	// sends the String cmd out on the data line
+  void sendResponse(String resp);	// sends the String resp out on the data line
 
   int available();			// returns the number of bytes available in buffer
   int peek();				// reveals next byte in buffer without consuming
   int read();				// returns next byte in the buffer (consumes)
   void flush();				// clears the buffer
-  virtual size_t write(uint8_t byte){}; // dummy function required to inherit from Stream
+  virtual size_t write(uint8_t byte){return 1;}; // dummy function required to inherit from Stream
 
   bool setActive(); 		// set this instance as the active SDI-12 instance
   bool isActive();			// check if this instance is active

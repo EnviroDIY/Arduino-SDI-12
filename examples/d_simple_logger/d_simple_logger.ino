@@ -46,7 +46,8 @@
 
 #include "SDI12_PCINT3.h"
 
-#define DATAPIN 9         // change to the proper pin
+#define POWERPIN 22         // change to the proper pin
+#define DATAPIN 7         // change to the proper pin
 SDI12 mySDI12(DATAPIN);
 
 // keeps track of active addresses
@@ -215,6 +216,10 @@ boolean setVacant(byte i){
 
 void setup(){
   Serial.begin(9600);
+
+  pinMode(DATAPIN, INPUT);
+  pinMode(POWERPIN, OUTPUT);
+  digitalWrite(POWERPIN, HIGH);
 
   // Enable diag
   // mySDI12.setDiagStream(Serial);

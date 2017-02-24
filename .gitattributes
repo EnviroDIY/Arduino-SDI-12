@@ -5,8 +5,9 @@
 # to native line endings on checkout.
 *.c text
 *.h text
-*.ino text
-*.cpp text
+*.ino text diff=cpp
+*.cpp text diff=cpp
+*.py text diff=py
 
 # Declare files that will always have CRLF line endings on checkout.
 *.sln text eol=crlf

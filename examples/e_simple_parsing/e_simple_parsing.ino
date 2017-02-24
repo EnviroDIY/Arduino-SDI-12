@@ -131,7 +131,7 @@ void printBufferToScreen(){
   flip = !flip; // flip the switch
 
   if(flip){    // print out the buffer as a string, as in example D
-    boolean firstPass = true;
+    // boolean firstPass = true;
     String buffer = "";
     mySDI12.read(); // consume address
     while(mySDI12.available()){
@@ -143,7 +143,7 @@ void printBufferToScreen(){
       else {
         buffer += c;
       }
-      firstPass = false;
+    //   firstPass = false;
       delay(100);
     }
     Serial.print(buffer);
