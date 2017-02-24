@@ -65,7 +65,9 @@ public:
   void end();					// disable SDI-12 object
 
   void forceHold(); 			// sets line state to HOLDING
+  void forceListen(); 			// sets line state to LISTENING
   void sendCommand(String cmd);	// sends the String cmd out on the data line
+  void sendResponse(String resp);	// sends the String resp out on the data line
 
   int available();			// returns the number of bytes available in buffer
   int peek();				// reveals next byte in buffer without consuming
