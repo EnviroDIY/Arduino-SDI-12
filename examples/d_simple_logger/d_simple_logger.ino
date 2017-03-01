@@ -44,7 +44,7 @@
 */
 
 
-#include <SDI12.h>
+#include "SDI12.h"
 
 #define POWERPIN 22         // change to the proper pin
 #define DATAPIN 7         // change to the proper pin

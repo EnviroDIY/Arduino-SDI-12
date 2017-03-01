@@ -54,7 +54,7 @@
 */
 
 
-#include <SDI12.h>
+#include "SDI12.h"
 
 #define DATAPIN 9         // change to the proper pin
 SDI12 mySDI12(DATAPIN);

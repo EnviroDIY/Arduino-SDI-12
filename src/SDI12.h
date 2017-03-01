@@ -81,6 +81,9 @@ public:
   bool isActive();			// check if this instance is active
 
   static inline void handleInterrupt(); // intermediary used by the ISR
+
+  static void setDiagStream(Stream & stream);
+  static void setDiagStream(Stream * stream);
 };
 
 #endif

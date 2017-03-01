@@ -24,7 +24,7 @@
  */
 
 // Requires modified SDI-12 libary with addition of public forceListen() and public sendResponse()
-#include <SDI12.h>
+#include "SDI12.h"
 #define SDIPIN 7
 
 char sensorAddress = '5';
