@@ -123,7 +123,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 #include "SDI12_PCINT3.h"						// 0.1 header file for this library
 
 // Macros to create a secondardy streaming dialog for debugging
-// #define ENABLE_CONFIG_DIAG
+#define ENABLE_CONFIG_DIAG 1
 static Stream * _diagStream;
 #if ENABLE_CONFIG_DIAG
   #define myDiagPrint(...) do { if (_diagStream) _diagStream->print(__VA_ARGS__); } while (0)
@@ -479,11 +479,7 @@ SDI12::SDI12(uint8_t dataPin){ _bufferOverflow = false; _dataPin = dataPin; }
 SDI12::~SDI12(){ setState(DISABLED); }
 
 //  3.3 Begin
-void SDI12::begin()
-{
-    //setState(HOLDING);  // Already done in setActive()
-    setActive();
-}
+void SDI12::begin() { setActive(); }
 
 //  3.4 End
 void SDI12::end() { setState(DISABLED); }
@@ -605,9 +601,11 @@ void SDI12::sendCommand(String cmd)
   setState(LISTENING); 						// listen for reply
 }
 
-//  4.4 - this function sets up for a response, then sends ou the characters
+//  4.4 - this function sets up for a response, then sends out the characters
 //		  of String resp, one by one (for slave)
-void SDI12::sendResponse(String resp){
+void SDI12::sendResponse(String resp)
+{
+  myDiagPrintLn(String("sendResponse - resp ") + resp);
   setState(TRANSMITTING);					// 8.33 ms marking before response
   digitalWrite(_dataPin, LOW);
   delayMicroseconds(8330);
@@ -707,7 +705,6 @@ int SDI12::read()
   if (_rxBufferHead == _rxBufferTail) return -1;	 // Empty buffer? If yes, -1
   uint8_t nextChar = _rxBuffer[_rxBufferHead]; 	// Otherwise, grab char at head
   _rxBufferHead = (_rxBufferHead + 1) % _BUFFER_SIZE;  	// increment head
-  myDiagPrintLn(String("read - ") + nextChar);  //  Print character for debugging
   return nextChar;									 	// return the char
 }
 
