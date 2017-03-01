@@ -123,7 +123,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 #include "SDI12_PCINT3.h"						// 0.1 header file for this library
 
 // Macros to create a secondardy streaming dialog for debugging
-#define ENABLE_CONFIG_DIAG
+// #define ENABLE_CONFIG_DIAG
 static Stream * _diagStream;
 #if ENABLE_CONFIG_DIAG
   #define myDiagPrint(...) do { if (_diagStream) _diagStream->print(__VA_ARGS__); } while (0)
