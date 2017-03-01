@@ -99,6 +99,7 @@ byte charToDec(char i){
   if((i >= '0') && (i <= '9')) return i - '0';
   if((i >= 'a') && (i <= 'z')) return i - 'a' + 10;
   if((i >= 'A') && (i <= 'Z')) return i - 'A' + 37;
+  else return i;
 }
 
 // THIS METHOD IS UNUSED IN THIS EXAMPLE, BUT IT MAY BE HELPFUL.
@@ -108,6 +109,7 @@ char decToChar(byte i){
   if((i >= 0) && (i <= 9)) return i + '0';
   if((i >= 10) && (i <= 36)) return i + 'a' - 10;
   if((i >= 37) && (i <= 62)) return i + 'A' - 37;
+  else return i;
 }
 
 // gets identification information from a sensor, and prints it to the serial port
