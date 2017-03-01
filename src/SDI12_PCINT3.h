@@ -57,6 +57,8 @@ private:
   void writeChar(uint8_t out); 	// used to send a char out on the data line
   void receiveChar();			// used by the ISR to grab a char from data line
 
+  static const char * getStateName(uint8_t state);     // get state name (in ASCII)
+
 public:
   int TIMEOUT;
   SDI12(uint8_t dataPin);		// constructor
@@ -73,7 +75,7 @@ public:
   int peek();				// reveals next byte in buffer without consuming
   int read();				// returns next byte in the buffer (consumes)
   void flush();				// clears the buffer
-  virtual size_t write(uint8_t byte){return 1;}; // dummy function required to inherit from Stream
+  virtual size_t write(uint8_t byte){return 1;} // dummy function required to inherit from Stream
 
   bool setActive(); 		// set this instance as the active SDI-12 instance
   bool isActive();			// check if this instance is active

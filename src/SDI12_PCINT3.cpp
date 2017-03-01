@@ -122,6 +122,17 @@ SDI-12.org, official site of the SDI-12 Support Group.
 
 #include "SDI12_PCINT3.h"						// 0.1 header file for this library
 
+// Macros to create a secondardy streaming dialog for debugging
+#define ENABLE_CONFIG_DIAG
+static Stream * _diagStream;
+#if ENABLE_CONFIG_DIAG
+  #define myDiagPrint(...) do { if (_diagStream) _diagStream->print(__VA_ARGS__); } while (0)
+  #define myDiagPrintLn(...) do { if (_diagStream) _diagStream->println(__VA_ARGS__); } while (0)
+#else
+  #define myDiagPrint(...)
+  #define myDiagPrintLn(...)
+#endif
+
 #define _BUFFER_SIZE 64 				// 0.2 max RX buffer size
 #define DISABLED 0						// 0.3 value for DISABLED state
 #define ENABLED 1						// 0.4 value for ENABLED state
@@ -376,8 +387,29 @@ Therefore if we evaluate to TRUE, we should tidy up:
 
 */
 
+const char *SDI12::getStateName(uint8_t state)
+{
+    const char * retval = "UNKNOWN";
+    if (state == HOLDING) {
+        retval = "HOLDING";
+    }
+    else if (state == TRANSMITTING) {
+        retval = "TRANSMITTING";
+    }
+    else if (state == LISTENING) {
+        retval = "LISTENING";
+    }
+    else if (state == ENABLED) {
+        retval = "ENABLED";
+    }
+    else if (state == DISABLED) {
+        retval = "DISABLED";
+    }
+    return retval;
+}
 // 2.1 - sets the state of the SDI-12 object.
 void SDI12::setState(uint8_t state){
+  myDiagPrintLn(String("setState - ") + getStateName(state));
   if(state == HOLDING){
     pinMode(_dataPin,OUTPUT);
     digitalWrite(_dataPin,LOW);
@@ -436,20 +468,29 @@ SDI-12 instances are being used simultaneously).
 SDI-12 object. It is not as harsh as destroying the object with the
 destructor, as it will maintain the memory buffer.
 
+3.5 - This can be called to print debugging information to a secondary serial stream.
+
 */
 
 //	3.1	Constructor
 SDI12::SDI12(uint8_t dataPin){ _bufferOverflow = false; _dataPin = dataPin; }
 
-//	3.2	Destrutor
+//	3.2	Destructor
 SDI12::~SDI12(){ setState(DISABLED); }
 
 //  3.3 Begin
-void SDI12::begin() { setState(HOLDING); setActive(); }
+void SDI12::begin()
+{
+    //setState(HOLDING);  // Already done in setActive()
+    setActive();
+}
 
 //  3.4 End
 void SDI12::end() { setState(DISABLED); }
 
+//  3.5 setDiagStream
+void SDI12::setDiagStream(Stream & stream) { _diagStream = &stream; }
+void SDI12::setDiagStream(Stream * stream) { _diagStream = stream; }
 
 /* ============= 4. Waking up, and talking to, the sensors. ===================
 
@@ -554,7 +595,9 @@ void SDI12::writeChar(uint8_t out)
 }
 
 //	4.3	- this function sends out the characters of the String cmd, one by one
-void SDI12::sendCommand(String cmd){
+void SDI12::sendCommand(String cmd)
+{
+  myDiagPrintLn(String("sendCommand - cmd ") + cmd);
   wakeSensors();							// wake up sensors
   for (int unsigned i = 0; i < cmd.length(); i++){
 	writeChar(cmd[i]); 						// write each characters
@@ -664,6 +707,7 @@ int SDI12::read()
   if (_rxBufferHead == _rxBufferTail) return -1;	 // Empty buffer? If yes, -1
   uint8_t nextChar = _rxBuffer[_rxBufferHead]; 	// Otherwise, grab char at head
   _rxBufferHead = (_rxBufferHead + 1) % _BUFFER_SIZE;  	// increment head
+  myDiagPrintLn(String("read - ") + nextChar);  //  Print character for debugging
   return nextChar;									 	// return the char
 }
 
