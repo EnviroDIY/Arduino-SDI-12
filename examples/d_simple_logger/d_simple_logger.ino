@@ -154,15 +154,15 @@ void takeMeasurement(char i){
   while((millis() - timerStart) < (1000 * wait)){
     if(mySDI12.available())  // sensor can interrupt us to let us know it is done early
     {
-    //   Serial.print(" -Wait interrupted!- ");  // For debugging
       mySDI12.flush();
       break;
     }
   }
-
-  // in this example we will only take the 'DO' measurement
+  // Wait for anything else and clear it out
   delay(30);
   mySDI12.flush();
+
+  // in this example we will only take the 'DO' measurement
   command = "";
   command += i;
   command += "D0!"; // SDI-12 command to get data [address][D][dataOption][!]

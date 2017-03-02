@@ -201,6 +201,9 @@ void takeMeasurement(char i){
       break;
     }
   }
+  // Wait for anything else and clear it out
+  delay(30);
+  mySDI12.flush();
 
   // in this example we will only take the 'DO' measurement
   command = "";
