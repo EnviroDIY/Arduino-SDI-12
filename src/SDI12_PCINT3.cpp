@@ -591,7 +591,7 @@ void SDI12::writeChar(uint8_t out)
 }
 
 //	4.3	- this function sends out the characters of the String cmd, one by one
-void SDI12::sendCommand(String cmd)
+void SDI12::sendCommand(String &cmd)
 {
   myDiagPrintLn(String("sendCommand - cmd ") + cmd);
   wakeSensors();							// wake up sensors
@@ -601,9 +601,29 @@ void SDI12::sendCommand(String cmd)
   setState(LISTENING); 						// listen for reply
 }
 
+void SDI12::sendCommand(const char *cmd)
+{
+  myDiagPrintLn(String("sendCommand - cmd ") + cmd);
+  wakeSensors();							// wake up sensors
+  for (int unsigned i = 0; i < strlen(cmd); i++){
+	writeChar(cmd[i]); 						// write each characters
+  }
+  setState(LISTENING); 						// listen for reply
+}
+
+void SDI12::sendCommand(FlashString cmd)
+{
+  myDiagPrintLn(String("sendCommand - cmd ") + cmd);
+  wakeSensors();							// wake up sensors
+  for (int unsigned i = 0; i < strlen_P((PGM_P)cmd); i++){
+	writeChar((char)pgm_read_byte((const char *)cmd + i)); 						// write each characters
+  }
+  setState(LISTENING); 						// listen for reply
+}
+
 //  4.4 - this function sets up for a response, then sends out the characters
 //		  of String resp, one by one (for slave)
-void SDI12::sendResponse(String resp)
+void SDI12::sendResponse(String &resp)
 {
   myDiagPrintLn(String("sendResponse - resp ") + resp);
   setState(TRANSMITTING);					// 8.33 ms marking before response
@@ -611,6 +631,30 @@ void SDI12::sendResponse(String resp)
   delayMicroseconds(8330);
   for (int unsigned i = 0; i < resp.length(); i++){
 	writeChar(resp[i]); 						// write each characters
+  }
+  setState(LISTENING); 						// return to listening state
+}
+
+void SDI12::sendResponse(const char *resp)
+{
+  myDiagPrintLn(String("sendResponse - resp ") + resp);
+  setState(TRANSMITTING);					// 8.33 ms marking before response
+  digitalWrite(_dataPin, LOW);
+  delayMicroseconds(8330);
+  for (int unsigned i = 0; i < strlen(resp); i++){
+	writeChar(resp[i]); 						// write each characters
+  }
+  setState(LISTENING); 						// return to listening state
+}
+
+void SDI12::sendResponse(FlashString resp)
+{
+  myDiagPrintLn(String("sendResponse - resp ") + resp);
+  setState(TRANSMITTING);					// 8.33 ms marking before response
+  digitalWrite(_dataPin, LOW);
+  delayMicroseconds(8330);
+  for (int unsigned i = 0; i < strlen_P((PGM_P)resp); i++){
+	writeChar((char)pgm_read_byte((const char *)resp + i)); 						// write each characters
   }
   setState(LISTENING); 						// return to listening state
 }
