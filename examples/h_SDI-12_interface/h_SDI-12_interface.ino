@@ -1,4 +1,4 @@
-/* 
+/*
  *  SDI-12 Interface
  *
  *  Arduino-based USB dongle translates serial comm from PC to SDI-12 (electrical and timing)
