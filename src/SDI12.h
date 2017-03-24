@@ -46,6 +46,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <Arduino.h>            // Arduino core library
 #include <Stream.h>				// Arduino Stream library
 
+typedef const __FlashStringHelper *FlashString;
+
 class SDI12 : public Stream
 {
 protected:
@@ -68,8 +70,12 @@ public:
 
   void forceHold(); 			// sets line state to HOLDING
   void forceListen(); 			// sets line state to LISTENING
-  void sendCommand(String cmd);	// sends the String cmd out on the data line
-  void sendResponse(String resp);	// sends the String resp out on the data line
+  void sendCommand(String &cmd);	// sends the String cmd out on the data line
+  void sendCommand(const char *cmd);	// sends the String cmd out on the data line
+  void sendCommand(FlashString cmd);	// sends the String cmd out on the data line
+  void sendResponse(String &resp);	// sends the String resp out on the data line
+  void sendResponse(const char *resp);	// sends the String resp out on the data line
+  void sendResponse(FlashString resp);	// sends the String resp out on the data line
 
   int available();			// returns the number of bytes available in buffer
   int peek();				// reveals next byte in buffer without consuming
