@@ -44,10 +44,11 @@
 */
 
 
-#include <SDI12.h>
+#include "SDI12.h"
 
 #define POWERPIN 22         // change to the proper pin
 #define DATAPIN 7         // change to the proper pin
+
 SDI12 mySDI12(DATAPIN);
 
 // keeps track of active addresses
@@ -72,6 +73,7 @@ byte charToDec(char i){
   if((i >= '0') && (i <= '9')) return i - '0';
   if((i >= 'a') && (i <= 'z')) return i - 'a' + 10;
   if((i >= 'A') && (i <= 'Z')) return i - 'A' + 37;
+  else return i;
 }
 
 // THIS METHOD IS UNUSED IN THIS EXAMPLE, BUT IT MAY BE HELPFUL.
@@ -81,6 +83,7 @@ char decToChar(byte i){
   if((i >= 0) && (i <= 9)) return i + '0';
   if((i >= 10) && (i <= 36)) return i + 'a' - 10;
   if((i >= 37) && (i <= 62)) return i + 'A' - 37;
+  else return i;
 }
 
 // gets identification information from a sensor, and prints it to the serial port
@@ -113,10 +116,10 @@ void printBufferToScreen(){
       buffer += ',';
       if(c == '-') buffer += '-';
     }
-    else {
+    else if ((c != '\n') && (c != '\r')) {
       buffer += c;
     }
-    delay(100);
+    delay(50);
   }
  Serial.print(buffer);
 }
@@ -126,28 +129,40 @@ void takeMeasurement(char i){
   command += i;
   command += "M!"; // SDI-12 measurement command format  [address]['M'][!]
   mySDI12.sendCommand(command);
-  while(!mySDI12.available()>5); // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of measurments available, 0-9]
-  delay(100);
-
-  mySDI12.read(); //consume address
+  // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of measurments available, 0-9]
+  String sdiResponse = "";
+  delay(30);
+  while (mySDI12.available())  // build response string
+  {
+    char c = mySDI12.read();
+    if ((c != '\n') && (c != '\r'))
+    {
+      sdiResponse += c;
+      delay(5);
+    }
+  }
+  mySDI12.flush();
 
   // find out how long we have to wait (in seconds).
   unsigned int wait = 0;
-  wait += 100 * mySDI12.read()-'0';
-  wait += 10 * mySDI12.read()-'0';
-  wait += 1 * mySDI12.read()-'0';
+  wait = sdiResponse.substring(1,4).toInt();
 
-  mySDI12.read(); // ignore # measurements, for this simple examlpe
-  mySDI12.read(); // ignore carriage return
-  mySDI12.read(); // ignore line feed
+  // Set up the number of results to expect
+  // int numMeasurements =  sdiResponse.substring(4,5).toInt();
 
   unsigned long timerStart = millis();
-  while((millis() - timerStart) > (1000 * wait)){
-    if(mySDI12.available()) break;                //sensor can interrupt us to let us know it is done early
+  while((millis() - timerStart) < (1000 * wait)){
+    if(mySDI12.available())  // sensor can interrupt us to let us know it is done early
+    {
+      mySDI12.flush();
+      break;
+    }
   }
+  // Wait for anything else and clear it out
+  delay(30);
+  mySDI12.flush();
 
   // in this example we will only take the 'DO' measurement
-  mySDI12.flush();
   command = "";
   command += i;
   command += "D0!"; // SDI-12 command to get data [address][D][dataOption][!]
@@ -267,6 +282,7 @@ void loop(){
     Serial.print(",");
     printInfo(i);
     takeMeasurement(i);
+    Serial.println();
   }
 
   // scan address space a-z
@@ -275,6 +291,7 @@ void loop(){
     Serial.print(",");
     printInfo(i);
     takeMeasurement(i);
+    Serial.println();
   }
 
   // scan address space A-Z
@@ -283,6 +300,7 @@ void loop(){
     Serial.print(",");
     printInfo(i);
     takeMeasurement(i);
+    Serial.println();
   };
 
   delay(10000); // wait ten seconds between measurement attempts.

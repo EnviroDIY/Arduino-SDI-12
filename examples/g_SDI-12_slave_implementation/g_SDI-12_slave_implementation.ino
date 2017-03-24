@@ -1,30 +1,30 @@
 /*
  * SDI-12_slave_example
- * Example sketch demonstrating how to implement an arduino as a slave on an SDI-12 bus. This may 
+ * Example sketch demonstrating how to implement an arduino as a slave on an SDI-12 bus. This may
  * be used, for example, as a middleman between an I2C sensor and an SDI-12 datalogger.
- * 
+ *
  * Note that an SDI-12 slave must respond to M! or C! with the number of values it will report and
  * the max time until these values will be available.  This example uses 9 values available in
- * 21 s, but references to these numbers and the output array size and datatype should be changed 
+ * 21 s, but references to these numbers and the output array size and datatype should be changed
  * for your specific application.
- * 
+ *
  * Sketch requires the SDI-12 library from SWRC, modified to add public void forceListen() and
- * public void sendResponse().  
+ * public void sendResponse().
  * https://github.com/dwasielewski/Arduino-SDI-12
- * 
+ *
  * D. Wasielewski, 2016
  * Builds upon work started by:
  * https://github.com/jrzondagh/AgriApps-SDI-12-Arduino-Sensor
  * https://github.com/Jorge-Mendes/Agro-Shield/tree/master/SDI-12ArduinoSensor
- * 
+ *
  * Suggested improvements:
  *  - Get away from memory-hungry arduino String objects in favor of char buffers
- *  - Make an int variable for the "number of values to report" instead of the 
- *    hard-coded 9s interspersed throughout the code 
+ *  - Make an int variable for the "number of values to report" instead of the
+ *    hard-coded 9s interspersed throughout the code
  */
 
 // Requires modified SDI-12 libary with addition of public forceListen() and public sendResponse()
-#include <SDI12.h>
+#include "SDI12.h"
 #define SDIPIN 7
 
 char sensorAddress = '5';
@@ -37,78 +37,7 @@ int state = 0;
 // Create object by which to communicate with the SDI-12 bus on SDIPIN
 SDI12 slaveSDI12(SDIPIN);
 
-void setup() {
-  slaveSDI12.begin();
-  delay(500);
-  slaveSDI12.forceListen();  // sets SDIPIN as input to prepare for incoming message
-}
 
-void loop() {
-
-  static float measurementValues[9]; // 9 floats to hold simulated sensor data
-  static String dValues[10];  // 10 String objects to hold the responses to aD0!-aD9! commands 
-  static String commandReceived = "";  // String object to hold the incoming command
-
-  
-  // If a byte is available, an SDI message is queued up. Read in the entire message
-  // before proceding.  It may be more robust to add a single character per loop()
-  // iteration to a static char buffer; however, the SDI-12 spec requires a precise 
-  // response time, and this method is invariant to the remaining loop() contents.
-  int avail = slaveSDI12.available();
-  if (avail < 0) { slaveSDI12.flush(); } // Buffer full; flush
-  else if (avail > 0) {
-    for(int a = 0; a < avail; a++){
-      char charReceived = slaveSDI12.read();
-      // Character '!' indicates the end of an SDI-12 command; if the current 
-      // character is '!', stop listening and respond to the command 
-      if (charReceived == '!') {
-        // Command string is completed; do something with it
-        parseSdi12Cmd(commandReceived, dValues);        
-        // Clear command string to reset for next command
-        commandReceived = "";
-        // '!' should be the last available character anyway, but exit the "for" loop 
-        // just in case there are any stray characters
-        slaveSDI12.flush();
-        break;
-      }
-      // If the current character is anything but '!', it is part of the command 
-      // string.  Append the commandReceived String object.
-      else{
-        // Append command string with new character
-        commandReceived += String(charReceived);
-      }
-    }
-  }
-  
-  // For aM! and aC! commands, parseSdi12Cmd will modify "state" to indicate that
-  // a measurement should be taken 
-  switch (state) {
-    case WAIT:
-      break;
-    case INITIATE_CONCURRENT:
-      // Do whatever the sensor is supposed to do here 
-      // For this example, we will just create arbitrary "simulated" sensor data
-      // NOTE: Your application might have a different data type (e.g. int) and 
-      //       number of values to report!
-      pollSensor(measurementValues);
-      // Populate the "dValues" String array with the values in SDI-12 format
-      formatOutputSDI(measurementValues, dValues, 75);
-      state = WAIT;
-      break;
-    case INITIATE_MEASUREMENT:
-      // Do whatever the sensor is supposed to do here 
-      // For this example, we will just create arbitrary "simulated" sensor data
-      // NOTE: Your application might have a different data type (e.g. int) and 
-      //       number of values to report!
-      pollSensor(measurementValues);
-      // Populate the "dValues" String array with the values in SDI-12 format
-      formatOutputSDI(measurementValues, dValues, 35);
-      // For aM!, Send "service request" (<address><CR><LF>) when data is ready
-      slaveSDI12.sendResponse(String(sensorAddress) + "\r\n");
-      state = WAIT;
-      break;
-  }
-}
 
 void pollSensor(float* measurementValues) {
   measurementValues[0] =  1.111111;
@@ -150,7 +79,7 @@ void parseSdi12Cmd(String command, String* dValues) {
         break;
       case 'C':
         // Initiate concurrent measurement command
-        // Slave should immediately respond with: "tttnn": 
+        // Slave should immediately respond with: "tttnn":
         //    3-digit (seconds until measurement is available) +
         //    2-digit (number of values that will be available)
         // Slave should also start a measurment and relinquish control of the data line
@@ -161,10 +90,10 @@ void parseSdi12Cmd(String command, String* dValues) {
         state = INITIATE_CONCURRENT;
         break;
         // NOTE: "aC1...9!" commands may be added by duplicating this case and adding
-        //       additional states to the state flag 
+        //       additional states to the state flag
       case 'M':
         // Initiate measurement command
-        // Slave should immediately respond with: "tttnn": 
+        // Slave should immediately respond with: "tttnn":
         //    3-digit (seconds until measurement is available) +
         //    1-digit (number of values that will be available)
         // Slave should also start a measurment but may keep control of the data line until
@@ -178,14 +107,14 @@ void parseSdi12Cmd(String command, String* dValues) {
         state = INITIATE_MEASUREMENT;
         break;
         // NOTE: "aM1...9!" commands may be added by duplicating this case and adding
-        //       additional states to the state flag 
+        //       additional states to the state flag
 
       case 'D':
         // Send data command
         // Slave should respond with a String of values
         // Values to be returned must be split into Strings of 35 characters or fewer
-        // (75 or fewer for concurrent).  The number following "D" in the SDI-12 command 
-        // specifies which String to send 
+        // (75 or fewer for concurrent).  The number following "D" in the SDI-12 command
+        // specifies which String to send
         responseStr = dValues[(int)command.charAt(2)-48];
         break;
       case 'A':
@@ -199,23 +128,23 @@ void parseSdi12Cmd(String command, String* dValues) {
         break;
     }
   }
-  
+
   // Issue the response speficied in the switch-case structure above.
   slaveSDI12.sendResponse(String(sensorAddress) + responseStr + "\r\n");
 }
 
 
-void formatOutputSDI(float* measurementValues, String* dValues, int maxChar) {
+void formatOutputSDI(float* measurementValues, String* dValues, unsigned int maxChar) {
 /* Ingests an array of floats and produces Strings in SDI-12 output format */
-  
+
   dValues[0] = "";
   int j = 0;
 
   // upper limit on i should be number of elements in measurementValues
   for (int i=0; i<9; i++) {
     // Read float value "i" as a String with 6 deceimal digits
-    // (NOTE: SDI-12 specifies max of 7 digits per value; we can only use 6 
-    //  decimal place precision if integer part is one digit) 
+    // (NOTE: SDI-12 specifies max of 7 digits per value; we can only use 6
+    //  decimal place precision if integer part is one digit)
     String valStr = String(measurementValues[i],6);
     // Explictly add implied + sign if non-negative
     if (valStr.charAt(0) != '-') { valStr = '+' + valStr; }
@@ -227,4 +156,78 @@ void formatOutputSDI(float* measurementValues, String* dValues, int maxChar) {
 
   // Fill rest of dValues with blank strings
   while (j<9) { dValues[++j] = ""; }
+}
+
+
+void setup() {
+  slaveSDI12.begin();
+  delay(500);
+  slaveSDI12.forceListen();  // sets SDIPIN as input to prepare for incoming message
+}
+
+void loop() {
+
+  static float measurementValues[9]; // 9 floats to hold simulated sensor data
+  static String dValues[10];  // 10 String objects to hold the responses to aD0!-aD9! commands
+  static String commandReceived = "";  // String object to hold the incoming command
+
+
+  // If a byte is available, an SDI message is queued up. Read in the entire message
+  // before proceding.  It may be more robust to add a single character per loop()
+  // iteration to a static char buffer; however, the SDI-12 spec requires a precise
+  // response time, and this method is invariant to the remaining loop() contents.
+  int avail = slaveSDI12.available();
+  if (avail < 0) { slaveSDI12.flush(); } // Buffer full; flush
+  else if (avail > 0) {
+    for(int a = 0; a < avail; a++){
+      char charReceived = slaveSDI12.read();
+      // Character '!' indicates the end of an SDI-12 command; if the current
+      // character is '!', stop listening and respond to the command
+      if (charReceived == '!') {
+        // Command string is completed; do something with it
+        parseSdi12Cmd(commandReceived, dValues);
+        // Clear command string to reset for next command
+        commandReceived = "";
+        // '!' should be the last available character anyway, but exit the "for" loop
+        // just in case there are any stray characters
+        slaveSDI12.flush();
+        break;
+      }
+      // If the current character is anything but '!', it is part of the command
+      // string.  Append the commandReceived String object.
+      else{
+        // Append command string with new character
+        commandReceived += String(charReceived);
+      }
+    }
+  }
+
+  // For aM! and aC! commands, parseSdi12Cmd will modify "state" to indicate that
+  // a measurement should be taken
+  switch (state) {
+    case WAIT:
+      break;
+    case INITIATE_CONCURRENT:
+      // Do whatever the sensor is supposed to do here
+      // For this example, we will just create arbitrary "simulated" sensor data
+      // NOTE: Your application might have a different data type (e.g. int) and
+      //       number of values to report!
+      pollSensor(measurementValues);
+      // Populate the "dValues" String array with the values in SDI-12 format
+      formatOutputSDI(measurementValues, dValues, 75);
+      state = WAIT;
+      break;
+    case INITIATE_MEASUREMENT:
+      // Do whatever the sensor is supposed to do here
+      // For this example, we will just create arbitrary "simulated" sensor data
+      // NOTE: Your application might have a different data type (e.g. int) and
+      //       number of values to report!
+      pollSensor(measurementValues);
+      // Populate the "dValues" String array with the values in SDI-12 format
+      formatOutputSDI(measurementValues, dValues, 35);
+      // For aM!, Send "service request" (<address><CR><LF>) when data is ready
+      slaveSDI12.sendResponse(String(sensorAddress) + "\r\n");
+      state = WAIT;
+      break;
+  }
 }

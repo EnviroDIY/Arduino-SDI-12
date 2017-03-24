@@ -46,6 +46,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #include <Arduino.h>            // Arduino core library
 #include <Stream.h>				// Arduino Stream library
 
+typedef const __FlashStringHelper *FlashString;
+
 class SDI12 : public Stream
 {
 protected:
@@ -57,6 +59,8 @@ private:
   void writeChar(uint8_t out); 	// used to send a char out on the data line
   void receiveChar();			// used by the ISR to grab a char from data line
 
+  static const char * getStateName(uint8_t state);     // get state name (in ASCII)
+
 public:
   int TIMEOUT;
   SDI12(uint8_t dataPin);		// constructor
@@ -66,19 +70,26 @@ public:
 
   void forceHold(); 			// sets line state to HOLDING
   void forceListen(); 			// sets line state to LISTENING
-  void sendCommand(String cmd);	// sends the String cmd out on the data line
-  void sendResponse(String resp);	// sends the String resp out on the data line
+  void sendCommand(String &cmd);	// sends the String cmd out on the data line
+  void sendCommand(const char *cmd);	// sends the String cmd out on the data line
+  void sendCommand(FlashString cmd);	// sends the String cmd out on the data line
+  void sendResponse(String &resp);	// sends the String resp out on the data line
+  void sendResponse(const char *resp);	// sends the String resp out on the data line
+  void sendResponse(FlashString resp);	// sends the String resp out on the data line
 
   int available();			// returns the number of bytes available in buffer
   int peek();				// reveals next byte in buffer without consuming
   int read();				// returns next byte in the buffer (consumes)
   void flush();				// clears the buffer
-  virtual size_t write(uint8_t byte){return 1;}; // dummy function required to inherit from Stream
+  virtual size_t write(uint8_t byte){return 1;} // dummy function required to inherit from Stream
 
   bool setActive(); 		// set this instance as the active SDI-12 instance
   bool isActive();			// check if this instance is active
 
   static inline void handleInterrupt(); // intermediary used by the ISR
+
+  static void setDiagStream(Stream & stream);
+  static void setDiagStream(Stream * stream);
 };
 
 #endif

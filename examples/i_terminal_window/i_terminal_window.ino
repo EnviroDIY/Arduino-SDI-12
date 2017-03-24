@@ -1,5 +1,5 @@
 /*
-Example E: Using the Arduino as a command terminal for SDI-12 sensors.
+Example I: Using the Arduino as a command terminal for SDI-12 sensors.
 Edited by Ruben Kertesz for ISCO Nile 502 2/10/2016…//functions as terminal
 This is a simple demonstration of the SDI-12 library for Arduino.
 It's purpose is to allow a user to interact with an SDI-12 sensor directly,
@@ -19,7 +19,7 @@ Contact: github@emnet.net or @rinnamon on twitter
 */
 
 
-#include <SDI12.h>
+#include "SDI12.h"
 
 #define DATAPIN 12         // change to the proper pin
 SDI12 mySDI12(DATAPIN);
