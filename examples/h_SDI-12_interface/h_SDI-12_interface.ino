@@ -1,31 +1,31 @@
 /* 
  *  SDI-12 Interface
- *  
+ *
  *  Arduino-based USB dongle translates serial comm from PC to SDI-12 (electrical and timing)
- *  1. Allows user to communicate to SDI-12 devices from a serial terminal emulator (e.g. PuTTY).  
- *  2. Able to spy on an SDI-12 bus for troubleshooting comm between datalogger and sensors. 
+ *  1. Allows user to communicate to SDI-12 devices from a serial terminal emulator (e.g. PuTTY).
+ *  2. Able to spy on an SDI-12 bus for troubleshooting comm between datalogger and sensors.
  *  3. Can also be used as a hardware middleman for interfacing software to an SDI-12 sensor.
  *     For example, implementing an SDI-12 datalogger in Python on a PC.  Use verbatim mode with
  *     feedback off in this case.
- *  
+ *
  *  Note: "translation" means timing and electrical interface.  It does not ensure SDI-12
- *        compliance of commands sent via it. 
- *  
+ *        compliance of commands sent via it.
+ *
  * Sketch requires the SDI-12 library from SWRC, modified to add public void forceListen() and
- * public void sendResponse().  
+ * public void sendResponse().
  * https://github.com/dwasielewski/Arduino-SDI-12
- * 
+ *
  * D. Wasielewski, 2016
  * Builds upon work started by:
  * https://github.com/jrzondagh/AgriApps-SDI-12-Arduino-Sensor
  * https://github.com/Jorge-Mendes/Agro-Shield/tree/master/SDI-12ArduinoSensor
- * 
+ *
  * Known issues:
  *  - Backspace adds a "backspace character" into the serialMsgStr (which gets sent
- *    out on the SDI-12 interface) instead of removing the previous char from it 
- *  - Suceptible to noise on the SDI-12 data line; consider hardware filtering or  
+ *    out on the SDI-12 interface) instead of removing the previous char from it
+ *  - Suceptible to noise on the SDI-12 data line; consider hardware filtering or
  *    software error-checking
- *  
+ *
  */
 
 
@@ -60,7 +60,7 @@ void loop() {
 
   static boolean verbatim = false;
   static boolean feedback = true;
-  
+
 
   // -- READ SERIAL (PC COMMS) DATA --
   // If serial data is available, read in a single byte and add it to
@@ -78,8 +78,8 @@ void loop() {
 
   // -- READ SDI-12 DATA --
   // If SDI-12 data is available, keep reading until full message consumed
-  // (Normally I would prefer to allow the loop() to keep executing while the string 
-  //  is being read in--as the serial example above--but SDI-12 depends on very precise 
+  // (Normally I would prefer to allow the loop() to keep executing while the string
+  //  is being read in--as the serial example above--but SDI-12 depends on very precise
   //  timing, so it is probably best to let it hold up loop() until the string is complete)
   int avail = sdi.available();
   if (avail < 0) { sdi.flush(); } // Buffer is full; flush
@@ -96,10 +96,10 @@ void loop() {
       else {
         sdiMsgStr += String(inByte2);
       }
-    }    
+    }
   }
 
-  
+
 
   // Report completed SDI-12 messages back to serial interface
   if (sdiMsgReady) {
@@ -112,10 +112,10 @@ void loop() {
   // Send completed Serial message as SDI-12 command
   if (serialMsgReady) {
     Serial.println();
-    // Check if the serial message is a known command to the SDI-12 interface program 
+    // Check if the serial message is a known command to the SDI-12 interface program
     String lowerMsgStr = serialMsgStr;
-    lowerMsgStr.toLowerCase(); 
-    if (lowerMsgStr == "mode v") { 
+    lowerMsgStr.toLowerCase();
+    if (lowerMsgStr == "mode v") {
       verbatim = true;
       Serial.println("Verbatim mode; exact text will be sent.  Enter \"mode s\" for SDI-12 command mode.");
     }
@@ -137,7 +137,7 @@ void loop() {
     // If not a known command to the SDI-12 interface program, send out on SDI-12 data pin
     else {
       if (verbatim) { sdi.sendCommand(serialMsgStr); }
-      else { 
+      else {
         serialMsgStr.toUpperCase();
         sdi.sendCommand(serialMsgStr + "!"); }
     }
