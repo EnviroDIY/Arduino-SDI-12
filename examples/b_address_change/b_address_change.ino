@@ -50,7 +50,8 @@
 
 #include "SDI12_PCINT3.h"
 
-#define DATAPIN 9         // change to the proper pin
+#define DATAPIN 7         // change to the proper pin
+#define POWERPIN 22       // change to the proper pin
 SDI12 mySDI12(DATAPIN);
 
 String myCommand = "";   // empty to start
@@ -90,6 +91,10 @@ boolean checkActive(byte i){              // this checks for activity at a parti
 void setup(){
   Serial.begin(9600);
   mySDI12.begin();
+
+  // First write the output value, and only then set the output mode.
+  digitalWrite(POWERPIN, HIGH);
+  pinMode(POWERPIN, OUTPUT);
 }
 
 void loop(){
