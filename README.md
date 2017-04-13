@@ -9,11 +9,11 @@ This project is part of the [EnviroDIY](http://envirodiy.org/) vision to create 
 
 Note that this library will conflict with SoftwareSerial, the Sodaq PCInt library, and any other library that monopolize all pin change interrupt vectors.  To help in using this in combination with those libraries, there is a version (SDI12_PCINT3) which is identical, except in that it only uses PCINT3 and ignores 0-2.  Get that version from the "Mayfly" branch.
 
-##Getting Started
+## Getting Started
 
 Read the [Arduino-SDI-12 wiki](https://github.com/StroudCenter/Arduino-SDI-12/wiki).
 
-##Contribute
+## Contribute
 Open an [issue](https://github.com/EnviroDIY/Arduino-SDI-12/issues) to suggest and discuss potential changes/additions.
 
 For power contributors:
@@ -25,14 +25,14 @@ For power contributors:
 5. Submit a pull request :D
 
 
-##License
+## License
 The SDI12 library code is released under the GNU Lesser Public License (LGPL 2.1) -- See [LICENSE-examples.md](https://github.com/EnviroDIY/Arduino-SDI-12/blob/master/LICENSE) file for details.
 
 Example Arduino sketches are released under the BSD 3-Clause License -- See [LICENSE-examples.md](https://github.com/EnviroDIY/Arduino-SDI-12/blob/master/LICENSE.md) file for details.
 
 Documentation is licensed as [Creative Commons Attribution-ShareAlike 4.0](https://creativecommons.org/licenses/by-sa/4.0/) (CC-BY-SA) copyright.
 
-##Credits
+## Credits
 [EnviroDIY](http://envirodiy.org/)™ is presented by the Stroud Water Research Center, with contributions from a community of enthusiasts sharing do-it-yourself ideas for environmental science and monitoring.
 
 [Kevin M. Smith](https://github.com/Kevin-M-Smith) is the primary developer of the Arduino-SDI-12 library, with input from [S. Hicks](https://github.com/s-hicks2) and many [other contributors](https://github.com/EnviroDIY/Arduino-SDI-12/graphs/contributors).
