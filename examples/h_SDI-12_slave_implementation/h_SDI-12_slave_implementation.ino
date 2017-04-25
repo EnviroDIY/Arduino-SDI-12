@@ -1,5 +1,5 @@
 /*
- * SDI-12_slave_example
+ * Example H:  SDI-12 slave implementation
  * Example sketch demonstrating how to implement an arduino as a slave on an SDI-12 bus. This may
  * be used, for example, as a middleman between an I2C sensor and an SDI-12 datalogger.
  *

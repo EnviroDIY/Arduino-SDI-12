@@ -1,5 +1,5 @@
 /*
- *  SDI-12 Interface
+ *  Example I:  SDI-12 PC Interface
  *
  *  Arduino-based USB dongle translates serial comm from PC to SDI-12 (electrical and timing)
  *  1. Allows user to communicate to SDI-12 devices from a serial terminal emulator (e.g. PuTTY).

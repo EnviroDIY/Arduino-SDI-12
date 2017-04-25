@@ -56,3 +56,4 @@ Temporary Items
 .clang_complete
 .gcc-flags.json
 lib/readme.txt
+platformio.ini

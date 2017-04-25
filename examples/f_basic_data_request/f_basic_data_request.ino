@@ -23,6 +23,8 @@ Contact: github@emnet.net or @rinnamon on twitter
 #include "SDI12_PCINT3.h"
 
 #define DATAPIN 12         // change to the proper pin
+#define SENSOR_ADDRESS 1
+
 SDI12 mySDI12(DATAPIN);
 
 String sdiResponse = "";
@@ -42,7 +44,7 @@ void loop() {
                                  // the characters get discarded but now the rest of the loop continues
 
 //first command to take a measurement
-  myCommand = "0M!";             // change "0" to the correct address of the sensor
+  myCommand = String(SENSOR_ADDRESS) + "M!";
   Serial.println(myCommand);     // echo command to terminal
 
   mySDI12.sendCommand(myCommand);
@@ -64,7 +66,7 @@ void loop() {
 
 
 // next command to request data from last measurement
-  myCommand = "0D0!";         // CHANGE "0" to appropriate address
+  myCommand = String(SENSOR_ADDRESS) + "D0!";
   Serial.println(myCommand);  // echo command to terminal
 
   mySDI12.sendCommand(myCommand);
