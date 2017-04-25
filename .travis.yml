@@ -14,9 +14,9 @@ env:
     - PLATFORMIO_CI_SRC=examples/d_simple_logger/d_simple_logger.ino
     - PLATFORMIO_CI_SRC=examples/e_simple_parsing/e_simple_parsing.ino
     - PLATFORMIO_CI_SRC=examples/f_basic_data_request/f_basic_data_request.ino
-    - PLATFORMIO_CI_SRC=examples/g_SDI-12_slave_implementation/g_SDI-12_slave_implementation.ino
-    - PLATFORMIO_CI_SRC=examples/h_SDI-12_interface/h_SDI-12_interface.ino
-    - PLATFORMIO_CI_SRC=examples/i_terminal_window/i_terminal_window.ino
+    - PLATFORMIO_CI_SRC=examples/g_terminal_window/i_terminal_window.ino
+    - PLATFORMIO_CI_SRC=examples/h_SDI-12_slave_implementation/g_SDI-12_slave_implementation.ino
+    - PLATFORMIO_CI_SRC=examples/i_SDI-12_interface/h_SDI-12_interface.ino
 
 install:
     - pip install -U platformio
