@@ -46,7 +46,7 @@
 
 #include "SDI12.h"
 
-#define POWERPIN 22         // change to the proper pin
+#define POWERPIN 22       // change to the proper pin (or -1)
 #define DATAPIN 7         // change to the proper pin
 
 SDI12 mySDI12(DATAPIN);
@@ -230,7 +230,7 @@ boolean setVacant(byte i){
 
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(57600);
 
   pinMode(DATAPIN, INPUT);
   pinMode(POWERPIN, OUTPUT);
