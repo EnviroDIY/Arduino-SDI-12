@@ -40,14 +40,14 @@
  Written by Kevin M. Smith in 2013.
  Contact: SDI12@ethosengineering.org
  The SDI-12 specification is available at: http://www.sdi-12.org/
- The library is available at: https://github.com/StroudCenter/Arduino-SDI-12
+ The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
 */
 
 
 #include "SDI12.h"
 
-#define POWERPIN 22         // change to the proper pin
-#define DATAPIN 7         // change to the proper pin
+#define POWERPIN -1       // change to the proper pin (or -1)
+#define DATAPIN 9         // change to the proper pin
 
 SDI12 mySDI12(DATAPIN);
 
@@ -141,7 +141,7 @@ void takeMeasurement(char i){
       delay(5);
     }
   }
-  mySDI12.flush();
+  mySDI12.clearBuffer();
 
   // find out how long we have to wait (in seconds).
   unsigned int wait = 0;
@@ -154,13 +154,13 @@ void takeMeasurement(char i){
   while((millis() - timerStart) < (1000 * wait)){
     if(mySDI12.available())  // sensor can interrupt us to let us know it is done early
     {
-      mySDI12.flush();
+      mySDI12.clearBuffer();
       break;
     }
   }
   // Wait for anything else and clear it out
   delay(30);
-  mySDI12.flush();
+  mySDI12.clearBuffer();
 
   // in this example we will only take the 'DO' measurement
   command = "";
@@ -170,7 +170,7 @@ void takeMeasurement(char i){
   while(!mySDI12.available()>1); // wait for acknowlegement
   delay(300); // let the data transfer
   printBufferToScreen();
-  mySDI12.flush();
+  mySDI12.clearBuffer();
 }
 
 // this checks for activity at a particular address
@@ -188,11 +188,11 @@ boolean checkActive(char i){
     delay(30);
   }
   if(mySDI12.available()>2){       // if it hears anything it assumes the address is occupied
-    mySDI12.flush();
+    mySDI12.clearBuffer();
     return true;
   }
   else {   // otherwise it is vacant.
-    mySDI12.flush();
+    mySDI12.clearBuffer();
   }
   return false;
 }
@@ -230,14 +230,12 @@ boolean setVacant(byte i){
 
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(57600);
 
   pinMode(DATAPIN, INPUT);
   pinMode(POWERPIN, OUTPUT);
   digitalWrite(POWERPIN, HIGH);
 
-  // Enable diag
-  // mySDI12.setDiagStream(Serial);
   mySDI12.begin();
   delay(500); // allow things to settle
 
