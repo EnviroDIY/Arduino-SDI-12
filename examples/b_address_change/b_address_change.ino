@@ -76,12 +76,12 @@ boolean checkActive(byte i){              // this checks for activity at a parti
   }
   if(mySDI12.available()>2){             // if it hears anything it assumes the address is occupied
     Serial.println("Occupied");
-    mySDI12.flush();
+    mySDI12.clearBuffer();
     return true;
   }
   else {
     Serial.println("Vacant");           // otherwise it is vacant.
-    mySDI12.flush();
+    mySDI12.clearBuffer();
   }
   return false;
 }
@@ -152,9 +152,9 @@ void loop(){
     mySDI12.sendCommand(myCommand);
 
 /* wait for the response then throw it away by
-clearing the buffer with flush()  */
+clearing the buffer with clearBuffer()  */
     delay(300);
-    mySDI12.flush();
+    mySDI12.clearBuffer();
 
     Serial.println("Success. Rescanning for verification.");
   }

@@ -58,7 +58,7 @@ void loop() {
     }
   }
   if (sdiResponse.length() > 1) Serial.println(sdiResponse); //write the response to the screen
-  mySDI12.flush();
+  mySDI12.clearBuffer();
 
 
   delay(1000);                 // delay between taking reading and requesting data
@@ -80,7 +80,7 @@ void loop() {
     }
   }
   if (sdiResponse.length() > 1) Serial.println(sdiResponse); //write the response to the screen
-  mySDI12.flush();
+  mySDI12.clearBuffer();
 
 //now go back to top and wait until user hits enter on terminal window
 }

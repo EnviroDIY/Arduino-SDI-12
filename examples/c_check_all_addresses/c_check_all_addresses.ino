@@ -73,7 +73,7 @@ void printInfo(SDI12 sdi, char i){
   command += "I!";
   for(j = 0; j < 1; j++){
     sdi.sendCommand(command);
-    sdi.flush();
+    sdi.clearBuffer();
     delay(30);
     if(sdi.available()>1) break;
     if(sdi.available()) sdi.read();
@@ -100,7 +100,7 @@ boolean checkActive(SDI12 sdi, char i){
 
   for(int j = 0; j < 3; j++){            // goes through three rapid contact attempts
     sdi.sendCommand(myCommand);
-    sdi.flush();
+    sdi.clearBuffer();
     delay(30);
     if(sdi.available()>1) break;
   }

@@ -7,7 +7,7 @@ any additional hardware.
 ======================== Attribution & License =============================
 
 Copyright (C) 2013  Stroud Water Research Center
-Available at https://github.com/StroudCenter/Arduino-SDI-12
+Available at https://github.com/EnvirDIY/Arduino-SDI-12
 
 Authored initially in August 2013 by:
 
@@ -83,7 +83,8 @@ public:
   int available();            // returns the number of bytes available in buffer
   int peek();                 // reveals next byte in buffer without consuming
   int read();                 // returns next byte in the buffer (consumes)
-  void flush();               // clears the buffer
+  void clearBuffer();         // clears the buffer
+  void flush(){};             // Waits for sending to finish - because no TX buffering, does nothing
   virtual size_t write(uint8_t byte){return 1;}  // dummy function required to inherit from Stream
 
   bool setActive();         // set this instance as the active SDI-12 instance

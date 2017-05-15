@@ -59,7 +59,7 @@ void loop(){
     }
     if (sdiResponse.length()>1) Serial.println(sdiResponse); //write the response to the screen
 
-    mySDI12.flush(); //clear the line
+    mySDI12.clearBuffer(); //clear the line
     myCommand = "";
     sdiResponse = "";
   }
