@@ -6,7 +6,7 @@ This is a very basic (stripped down) example where the user initiates a measurem
 and receives the results to a terminal window without typing numerous commands into
 the terminal.
 The SDI-12 specification is available at: http://www.sdi-12.org/
-The library is available at: https://github.com/StroudCenter/Arduino-SDI-12
+The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
 The forked library with additional example files is available at: https://github.com/rkertesz/Arduino-SDI-12
 The circuit: You should not have more than one SDI-12 device attached for this example.
 See:

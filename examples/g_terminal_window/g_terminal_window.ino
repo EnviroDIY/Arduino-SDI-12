@@ -7,7 +7,7 @@ This is a simple demonstration of the SDI-12 library for Arduino.
 It's purpose is to allow a user to interact with an SDI-12 sensor directly,
 issuing commands through a serial terminal window.
 The SDI-12 specification is available at: http://www.sdi-12.org/
-The master library is available at: https://github.com/StroudCenter/Arduino-SDI-12
+The master library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
 The forked library with additional example files is available at: https://github.com/rkertesz/Arduino-SDI-12
 The circuit: It is recommended that you not have more than one SDI-12 device attached for this example.
 See:

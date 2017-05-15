@@ -2,48 +2,13 @@
 ########################
 #        OVERVIEW      #
 ########################
- Example E: This example demonstrates the ability to parse integers and floats from the buffer.
- It is based closely on example D, however, every other time it prints out data, it multiplies the data by a factor of 2.
- Time Elapsed (s), Sensor Address and ID, Measurement 1, Measurement 2, ... etc.
- -------------------------------------------------------------------------------
- 6,c13SENSOR ATM    311,0.62 x 2 = 1.24,19.80 x 2 = 39.60
- 17,c13SENSOR ATM   311,0.62,19.7
- 29,c13SENSOR ATM   311,0.62 x 2 = 1.2419.70 x 2 = 39.40
- 41,c13SENSOR ATM   311,0.62,19.8
- This is a trivial and nonsensical example, but it does demonstrate the ability to manipulate incoming data.
- At this point in the example series, the most relavent function to study is printBufferToScreen().
-Other notes:
- This is a simple demonstration of the SDI-12 library for Arduino.
- It discovers the address of all sensors active on a single bus and takes measurements from them.
- Every SDI-12 device is different in the time it takes to take a measurement, and the amount of data it returns.
- This sketch will not serve every sensor type, but it will likely be helpful in getting you started.
- Each sensor should have a unique address already - if not, multiple sensors may respond simultaenously
- to the same request and the output will not be readable by the Arduino.
- To address a sensor, please see Example B: b_address_change.ino
-#########################
-#      THE CIRCUIT      #
-#########################
- You  may use one or more pre-adressed sensors.
- See:
- https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/basic_setup_usb_multiple_sensors.png
- or
- https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/compat_setup_usb_multiple_sensors.png
- or
- https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/basic_setup_usb.png
- or
- https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/compat_setup_usb.png
-###########################
-#      COMPATIBILITY      #
-###########################
- This library requires the use of pin change interrupts (PCINT).
- Not all Arduino boards have the same pin capabilities.
- The known compatibile pins for common variants are shown below.
- Arduino Uno: 	All pins.
- Arduino Mega or Mega 2560:
- 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62),
- A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
- Arduino Leonardo:
- 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
+ Example J: Identical to example B, except that it uses the library "EnableInterrupt"
+ () to define the interrupt vector.  This allows it to play nicely with any other
+ libraries which define interrupt vectors.
+
+ For this to work, you must remove the comment braces around "#define SDI12_EXTERNAL_PCINT"
+ in the library and re-compile it.
+
 #########################
 #      RESOURCES        #
 #########################
@@ -53,29 +18,13 @@ Other notes:
  The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
 */
 
+#include <EnableInterrupt.h>
+#include <SDI12.h>
 
-#include "SDI12.h"
-
+#define POWERPIN 22       // change to the proper pin (or -1)
 #define DATAPIN 7         // change to the proper pin
+
 SDI12 mySDI12(DATAPIN);
-
-boolean flip = 1;             // variable that alternates output type back and forth.
-
-// The code below alternates printing in non-parsed, and parsed mode.
-//
-// The parseInt() and parseFloat() functions will timeout if they do not
-// find a candidate INT or FLOAT.
-//
-// The value returned when a TIMEOUT is encountered
-// is set in SDI12.cpp by default to -9999.
-//
-// You can change the default setting directly:
-//    mySDI12.TIMEOUT = (int) newValue
-// The value of TIMEOUT should not be a possible data value.
-//
-// You should always check for timeouts before interpreting data, as
-// shown in the example below.
-
 
 // keeps track of active addresses
 // each bit represents an address:
@@ -115,11 +64,16 @@ char decToChar(byte i){
 // gets identification information from a sensor, and prints it to the serial port
 // expects a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
 void printInfo(char i){
+  int j;
   String command = "";
   command += (char) i;
   command += "I!";
-  mySDI12.sendCommand(command);
-  delay(30);
+  for(j = 0; j < 1; j++){
+    mySDI12.sendCommand(command);
+    delay(30);
+    if(mySDI12.available()>1) break;
+    if(mySDI12.available()) mySDI12.read();
+  }
 
   while(mySDI12.available()){
     char c = mySDI12.read();
@@ -129,40 +83,20 @@ void printInfo(char i){
 }
 
 void printBufferToScreen(){
-
-  flip = !flip; // flip the switch
-
-  if(flip){    // print out the buffer as a string, as in example D
-    // boolean firstPass = true;
-    String buffer = "";
-    mySDI12.read(); // consume address
-    while(mySDI12.available()){
-      char c = mySDI12.read();
-      if(c == '+' || c == '-'){
-        buffer += ',';
-        if(c == '-') buffer += '-';
-      }
-      else {
-        buffer += c;
-      }
-    //   firstPass = false;
-      delay(100);
+  String buffer = "";
+  mySDI12.read(); // consume address
+  while(mySDI12.available()){
+    char c = mySDI12.read();
+    if(c == '+' || c == '-'){
+      buffer += ',';
+      if(c == '-') buffer += '-';
     }
-    Serial.print(buffer);
-  }
-  else {       // parse buffer for floats and multiply by 2 before printing
-    while(mySDI12.available()){
-        float that = mySDI12.parseFloat();
-        if(that != mySDI12.TIMEOUT){    //check for timeout
-          float doubleThat = that * 2;
-          Serial.print(",");
-          Serial.print(that);
-          Serial.print(" x 2 = ");
-          Serial.print(doubleThat);
-        }
+    else if ((c != '\n') && (c != '\r')) {
+      buffer += c;
     }
-    Serial.println();
+    delay(50);
   }
+ Serial.print(buffer);
 }
 
 void takeMeasurement(char i){
@@ -170,8 +104,6 @@ void takeMeasurement(char i){
   command += i;
   command += "M!"; // SDI-12 measurement command format  [address]['M'][!]
   mySDI12.sendCommand(command);
-  delay(30);
-
   // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of measurments available, 0-9]
   String sdiResponse = "";
   delay(30);
@@ -273,9 +205,18 @@ boolean setVacant(byte i){
 
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(57600);
+
+  pinMode(DATAPIN, INPUT);
+  pinMode(POWERPIN, OUTPUT);
+  digitalWrite(POWERPIN, HIGH);
+
   mySDI12.begin();
   delay(500); // allow things to settle
+
+  // Enable interrupts for the recieve pin
+  pinMode(DATAPIN, INPUT_PULLUP);
+  enableInterrupt(DATAPIN, SDI12::handleInterrupt, CHANGE);
 
   Serial.println("Scanning all addresses, please wait...");
   /*
@@ -305,7 +246,7 @@ void setup(){
     while(true);
   } // stop here
 
-    Serial.println();
+  Serial.println();
   Serial.println("Time Elapsed (s), Sensor Address and ID, Measurement 1, Measurement 2, ... etc.");
   Serial.println("-------------------------------------------------------------------------------");
 }
@@ -318,6 +259,7 @@ void loop(){
     Serial.print(",");
     printInfo(i);
     takeMeasurement(i);
+    Serial.println();
   }
 
   // scan address space a-z
@@ -326,6 +268,7 @@ void loop(){
     Serial.print(",");
     printInfo(i);
     takeMeasurement(i);
+    Serial.println();
   }
 
   // scan address space A-Z
@@ -334,6 +277,7 @@ void loop(){
     Serial.print(",");
     printInfo(i);
     takeMeasurement(i);
+    Serial.println();
   };
 
   delay(10000); // wait ten seconds between measurement attempts.

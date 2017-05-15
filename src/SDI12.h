@@ -90,7 +90,8 @@ public:
   bool setActive();         // set this instance as the active SDI-12 instance
   bool isActive();          // check if this instance is active
 
-  static inline void handleInterrupt();  // intermediary used by the ISR
+  static void handleInterrupt();  // intermediary used by the ISR
+  // #define SDI12_EXTERNAL_PCINT  // uncomment to use your own PCINT ISRs
 };
 
 #endif
