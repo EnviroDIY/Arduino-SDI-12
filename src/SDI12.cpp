@@ -884,7 +884,7 @@ overflow, and then advance the tail index.
 the ISR is instructed to call _handleInterrupt() when they trigger. */
 
 // 7.1 - Passes off responsibility for the interrupt to the active object.
-inline void SDI12::handleInterrupt(){
+void SDI12::handleInterrupt(){
   if (_activeObject) _activeObject->receiveChar();
 }
 
@@ -921,6 +921,13 @@ void SDI12::receiveChar()
 }
 
 //7.3
+
+#ifdef SDI12_EXTERNAL_PCINT
+
+  // Client code must call SDI12::handleInterrupt() in PCINT handler for the data pin
+
+#else
+
 #if defined(PCINT0_vect)
 ISR(PCINT0_vect){ SDI12::handleInterrupt(); }
 #endif
@@ -935,4 +942,6 @@ ISR(PCINT2_vect){ SDI12::handleInterrupt(); }
 
 #if defined(PCINT3_vect)
 ISR(PCINT3_vect){ SDI12::handleInterrupt(); }
+#endif
+
 #endif

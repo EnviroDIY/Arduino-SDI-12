@@ -9,3 +9,4 @@
 - Example G: Demonstrates using the Arduino as a command terminal for SDI-12 sensors.
 - Example H: Demonstrates using SDI-12 in slave mode
 - Example I: Shows code for an Arduino-based USB dongle to translate between SDI-12 and a PC
+- Example J: Shows how to use an external PCInt library to call the interrupts for this library.

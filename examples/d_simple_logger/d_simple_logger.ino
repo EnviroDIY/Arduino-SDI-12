@@ -40,14 +40,14 @@
  Written by Kevin M. Smith in 2013.
  Contact: SDI12@ethosengineering.org
  The SDI-12 specification is available at: http://www.sdi-12.org/
- The library is available at: https://github.com/StroudCenter/Arduino-SDI-12
+ The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
 */
 
 
 #include "SDI12.h"
 
-#define POWERPIN 22       // change to the proper pin (or -1)
-#define DATAPIN 7         // change to the proper pin
+#define POWERPIN -1       // change to the proper pin (or -1)
+#define DATAPIN 9         // change to the proper pin
 
 SDI12 mySDI12(DATAPIN);
 
@@ -236,8 +236,6 @@ void setup(){
   pinMode(POWERPIN, OUTPUT);
   digitalWrite(POWERPIN, HIGH);
 
-  // Enable diag
-  // mySDI12.setDiagStream(Serial);
   mySDI12.begin();
   delay(500); // allow things to settle
 
