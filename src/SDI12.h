@@ -7,12 +7,17 @@ any additional hardware.
 ======================== Attribution & License =============================
 
 Copyright (C) 2013  Stroud Water Research Center
-Available at https://github.com/EnvirDIY/Arduino-SDI-12
+Available at https://github.com/EnviroDIY/Arduino-SDI-12
 
 Authored initially in August 2013 by:
 
         Kevin M. Smith (http://ethosengineering.org)
         Inquiries: SDI12@ethosengineering.org
+
+Modified 2017 by Manuel Jimenez Buendia to work with ARM based processors
+Arduino Zero)
+
+Maintenance and merging 2017 by Sara Damiano
 
 based on the SoftwareSerial library (formerly NewSoftSerial), authored by:
         ladyada (http://ladyada.net)
@@ -34,13 +39,31 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+================== Notes on Various Arduino-Type Processors ====================
+
+This library requires the use of pin change interrupts (PCINT).
+
+Not all Arduino boards have the same pin capabilities.
+The known compatibile pins for common variants are shown below.
+
+Arduino Uno: 	All pins.
+Arduino Mega or Mega 2560:
+10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62),
+A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
+
+Arduino Leonardo:
+8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
+
+Arduino Zero:
+Any pin except 4
 */
 
 #ifndef SDI12_h
 #define SDI12_h
 
     //  Import Required Libraries
-#include <avr/interrupt.h>      // interrupt handling
 #include <inttypes.h>           // integer types library
 #include <Arduino.h>            // Arduino core library
 #include <Stream.h>             // Arduino Stream library
