@@ -61,8 +61,8 @@
 #include "SDI12.h"
 
 #define POWERPIN -1     // change to the proper pin (or -1 if not switching power)
-#define FirstPin 2      // change to lowest pin number on your board
-#define LastPin 23       // change to highest pin number on your board
+#define FirstPin 5      // change to lowest pin number on your board
+#define LastPin 24       // change to highest pin number on your board
 
 // gets identification information from a sensor, and prints it to the serial port
 // expects a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
@@ -130,9 +130,11 @@ void setup(){
   Serial.println("//\n// Start Search for SDI-12 Devices \n// -----------------------");
 
   // Power the sensors;
-  pinMode(POWERPIN, OUTPUT);
-  digitalWrite(POWERPIN, HIGH);
-  delay(1000);
+  #if POWERPIN > 0
+    pinMode(POWERPIN, OUTPUT);
+    digitalWrite(POWERPIN, HIGH);
+    delay(200);
+  #endif
 
   for (uint8_t pin = FirstPin; pin < LastPin; pin++)
   {

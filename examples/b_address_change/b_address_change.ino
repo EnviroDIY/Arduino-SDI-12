@@ -92,9 +92,12 @@ void setup(){
   Serial.begin(9600);
   mySDI12.begin();
 
-  // First write the output value, and only then set the output mode.
-  digitalWrite(POWERPIN, HIGH);
-  pinMode(POWERPIN, OUTPUT);
+  // Power the sensors;
+  #if POWERPIN > 0
+    pinMode(POWERPIN, OUTPUT);
+    digitalWrite(POWERPIN, HIGH);
+    delay(200);
+  #endif
 }
 
 void loop(){
