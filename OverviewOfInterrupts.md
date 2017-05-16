@@ -44,38 +44,57 @@ The leftward bit shift operator "<<" can then used to create a "mask". Masks are
 
 The syntax for the operator is (variable << number_of_bits).
 Some examples:
+
 byte a = 5;       // binary: a =  00000101
+
 byte b = a << 4;  // binary: b =  01010000
 
 So when we write: (1<<digitalPinToPCMSKbit(9)), we get: {00000010}.
+
 Or equivalently:  (1<<1), we get: {00000010}.
 
 To use the mask to set the bit of interest we use the bitwise or operator '|'. We will use the compact '|=' notation which does the operation and then stores the result back into the left hand side.
 
+
 So the operation:
+
 *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(9));
 
 Accomplishes:
+
     (1<<digitalPinToPCMSKbit(9))              {00000010}
+
     PCMSK0                               |    {00000000}
+
                                              -------------
+
                                               {00000010}
 
+
 We must also enable the global control for the interrupt. This is done in a similar fashion:
+
 *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));
+
 
 Now let's assume that part of your Arduino sketch outside of SDI-12 had set a pin change interrupt on pin 13. Pin 9 and pin 13 are on the same PCMSK in the case of the Arduino Uno.
 
 This time before we set the bit for pin nine,
+
 *digitalPinToPCMSK(9) returns: {00100000}.
 
 So now:
+
     (1<<digitalPinToPCMSKbit(9))              {00000010}
+
     PCMSK0                               |    {00100000}
+
                                             -------------
+
                                               {00100010}
 
+
 By using a bitmask and bitwise operation, we have successfully enabled pin 9 without effecting the state of pin 13.
+
 
 ## Disabling an interrupt.
 
@@ -90,13 +109,17 @@ Again 1<<digitalPinToPCMSKbit(9) returns {00000010}
 The inversion symbol ~ modifies the result to {11111101}
 
 So to finish our example:
+
     ~(1<<digitalPinToPCMSKbit(9))             {11111101}
+
     PCMSK0                               &    {00100010}
+
                                             -------------
+
                                               {00100000}
 
-So only the interrupt on pin 13 remains set. As a matter of book keeping, if we unset the last bit in the PCMSK, we ought to also unset the respective bit in the PCICR.
 
+So only the interrupt on pin 13 remains set. As a matter of book keeping, if we unset the last bit in the PCMSK, we ought to also unset the respective bit in the PCICR.
     !(*digitalPinToPCMSK(9)
     will evaluate TRUE if PCMSK {00000000}
     will evaluate FALSE if PCMSK != {00000000}
@@ -104,7 +127,8 @@ So only the interrupt on pin 13 remains set. As a matter of book keeping, if we 
 In this case, pin 13 is set, so the expression would be FALSE. If we go back to the original case without pin 13, the expression after disabling pin 9 would evaluate to TRUE.
 
 Therefore if we evaluate to TRUE, we should tidy up:
-
-    if(!*digitalPinToPCMSK(_dataPin)){
-          *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
-      }
+```cpp
+if(!*digitalPinToPCMSK(_dataPin)){
+      *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
+  }
+```

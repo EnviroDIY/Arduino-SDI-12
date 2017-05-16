@@ -15,7 +15,7 @@ Authored initially in August 2013 by:
         Inquiries: SDI12@ethosengineering.org
 
 Modified 2017 by Manuel Jimenez Buendia to work with ARM based processors
-Arduino Zero)
+(Arduino Zero)
 
 Maintenance and merging 2017 by Sara Damiano
 
