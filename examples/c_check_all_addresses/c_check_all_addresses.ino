@@ -130,9 +130,11 @@ void setup(){
   Serial.println("//\n// Start Search for SDI-12 Devices \n// -----------------------");
 
   // Power the sensors;
-  pinMode(POWERPIN, OUTPUT);
-  digitalWrite(POWERPIN, HIGH);
-  delay(1000);
+  #if POWERPIN > 0
+    pinMode(POWERPIN, OUTPUT);
+    digitalWrite(POWERPIN, HIGH);
+    delay(200);
+  #endif
 
   for (uint8_t pin = FirstPin; pin < LastPin; pin++)
   {
