@@ -156,8 +156,6 @@ SDI-12.org, official site of the SDI-12 Support Group.
 int TIMEOUT = -9999;                 // 0.9 value to return to indicate TIMEOUT
 
 SDI12 *SDI12::_activeObject = NULL;  // 0.10 pointer to active SDI12 object
-uint8_t _dataPin;                    // 0.11 reference to the data pin
-bool _bufferOverflow;                // 0.12 buffer overflow status
 
 
 /* =========== 1. Buffer Setup ============================================
@@ -290,10 +288,10 @@ const char *SDI12::getStateName(uint8_t state)
 // 2.3 - sets the state of the SDI-12 object.
 void SDI12::setState(uint8_t state){
   if(state == HOLDING){
-    // pinMode(_dataPin,INPUT);  // added to make output work after pinMode to OUTPUT (don't know why, but works)
+    pinMode(_dataPin,INPUT);  // added to make output work after pinMode to OUTPUT (don't know why, but works)
     pinMode(_dataPin,OUTPUT);
     digitalWrite(_dataPin,LOW);
-    #if defined(__AVR__)
+    #if defined __AVR__
       *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
     #else
       detachInterrupt(digitalPinToInterrupt(_dataPin));
@@ -301,7 +299,7 @@ void SDI12::setState(uint8_t state){
     return;
   }
   if(state == TRANSMITTING){
-    // pinMode(_dataPin,INPUT);  // added to make output work after pinMode to OUTPUT (don't know why, but works)
+    pinMode(_dataPin,INPUT);  // added to make output work after pinMode to OUTPUT (don't know why, but works)
     pinMode(_dataPin,OUTPUT);
     noInterrupts();             // supplied by Arduino.h, same as cli()
     return;
@@ -310,7 +308,7 @@ void SDI12::setState(uint8_t state){
     digitalWrite(_dataPin,LOW);
     pinMode(_dataPin,INPUT);
     interrupts();                // supplied by Arduino.h, same as sei()
-    #if defined(__AVR__)
+    #if defined __AVR__
       *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));
       *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));
     #else
@@ -320,7 +318,7 @@ void SDI12::setState(uint8_t state){
   else {                         // implies state==DISABLED
       digitalWrite(_dataPin,LOW);
       pinMode(_dataPin,INPUT);
-      #if defined(__AVR__)
+      #if defined __AVR__
         *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
         if(!*digitalPinToPCMSK(_dataPin)){
             *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
@@ -811,11 +809,10 @@ void SDI12::receiveChar()
 }
 
 //7.3
+#if defined __AVR__
 
 #ifdef SDI12_EXTERNAL_PCINT
-
   // Client code must call SDI12::handleInterrupt() in PCINT handler for the data pin
-
 #else
 
 #if defined(PCINT0_vect)
@@ -834,4 +831,5 @@ ISR(PCINT2_vect){ SDI12::handleInterrupt(); }
 ISR(PCINT3_vect){ SDI12::handleInterrupt(); }
 #endif
 
-#endif
+#endif  // SDI12_EXTERNAL_PCINT
+#endif  // __AVR__

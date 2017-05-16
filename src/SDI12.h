@@ -87,6 +87,9 @@ private:
     static uint8_t parity_even_bit(uint8_t v);
   #endif
 
+  uint8_t _dataPin;               // reference to the data pin
+  bool _bufferOverflow;           // buffer overflow status
+
 public:
   int TIMEOUT;
   SDI12(uint8_t dataPin);        // constructor
