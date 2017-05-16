@@ -47,7 +47,7 @@
 #include "SDI12.h"
 
 #define POWERPIN -1       // change to the proper pin (or -1)
-#define DATAPIN 9         // change to the proper pin
+#define DATAPIN 6         // change to the proper pin
 
 SDI12 mySDI12(DATAPIN);
 
@@ -109,6 +109,7 @@ void printInfo(char i){
 
 void printBufferToScreen(){
   String buffer = "";
+  mySDI12.read(); // consume address
   mySDI12.read(); // consume address
   while(mySDI12.available()){
     char c = mySDI12.read();
@@ -231,10 +232,14 @@ boolean setVacant(byte i){
 
 void setup(){
   Serial.begin(57600);
+  while(!Serial);
 
-  pinMode(DATAPIN, INPUT);
-  pinMode(POWERPIN, OUTPUT);
-  digitalWrite(POWERPIN, HIGH);
+  // Power the sensors;
+  #if POWERPIN > 0
+    pinMode(POWERPIN, OUTPUT);
+    digitalWrite(POWERPIN, HIGH);
+    delay(200);
+  #endif
 
   mySDI12.begin();
   delay(500); // allow things to settle
@@ -258,6 +263,8 @@ void setup(){
   for(byte i = 0; i < 62; i++){
     if(isTaken(i)){
       found = true;
+      Serial.print("Found address:  ");
+      Serial.println(i);
       break;
     }
   }
@@ -279,6 +286,7 @@ void loop(){
     Serial.print(millis()/1000);
     Serial.print(",");
     printInfo(i);
+    Serial.print("\t\t,");
     takeMeasurement(i);
     Serial.println();
   }
@@ -288,6 +296,7 @@ void loop(){
     Serial.print(millis()/1000);
     Serial.print(",");
     printInfo(i);
+    Serial.print("\t\t,");
     takeMeasurement(i);
     Serial.println();
   }
@@ -297,6 +306,7 @@ void loop(){
     Serial.print(millis()/1000);
     Serial.print(",");
     printInfo(i);
+    Serial.print("\t\t,");
     takeMeasurement(i);
     Serial.println();
   };

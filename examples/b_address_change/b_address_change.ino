@@ -50,7 +50,8 @@
 
 #include "SDI12.h"
 
-#define DATAPIN 9         // change to the proper pin
+#define DATAPIN 7         // change to the proper pin
+#define POWERPIN 22       // change to the proper pin
 SDI12 mySDI12(DATAPIN);
 
 String myCommand = "";   // empty to start
@@ -90,6 +91,13 @@ boolean checkActive(byte i){              // this checks for activity at a parti
 void setup(){
   Serial.begin(9600);
   mySDI12.begin();
+
+  // Power the sensors;
+  #if POWERPIN > 0
+    pinMode(POWERPIN, OUTPUT);
+    digitalWrite(POWERPIN, HIGH);
+    delay(200);
+  #endif
 }
 
 void loop(){
