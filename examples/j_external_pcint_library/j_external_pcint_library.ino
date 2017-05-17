@@ -19,7 +19,7 @@
 */
 
 #include <EnableInterrupt.h>
-#include <SDI12.h>
+#include <SDI12_ExtInts.h>
 
 #define POWERPIN -1       // change to the proper pin (or -1)
 #define DATAPIN 9         // change to the proper pin

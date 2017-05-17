@@ -117,7 +117,7 @@ public:
   bool isActive();          // check if this instance is active
 
   static void handleInterrupt();  // intermediary used by the ISR
-  // #define SDI12_EXTERNAL_PCINT  // uncomment to use your own PCINT ISRs
+  #define SDI12_EXTERNAL_PCINT  // uncomment to use your own PCINT ISRs
 };
 
 #endif
