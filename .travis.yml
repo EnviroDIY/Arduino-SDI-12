@@ -8,7 +8,7 @@ cache:
         - "~/.platformio"
 
 env:
-    - PLATFORMIO_CI_SRC=examples/i_SDI-j_external_pcint_library/i_SDI-j_external_pcint_library.ino
+    - PLATFORMIO_CI_SRC=examples/j_external_pcint_library/j_external_pcint_library.ino
 
 install:
     - pip install -U platformio
