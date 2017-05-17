@@ -1,5 +1,5 @@
 /**
- * @file SDI12.cpp
+ * @file SDI12_ExtInts.cpp
  * @copyright Stroud Water Research Center
  * @license This library is published under the BSD-3 license.
  * @date August 2013
@@ -9,7 +9,7 @@
  */
 
 
-#include "SDI12.h"  //  Header file for this library
+#include "SDI12_ExtInts.h"  //  Header file for this library
 #if defined __AVR__
 #include <avr/interrupt.h>  // interrupt handling
 #include <util/parity.h>    // optimized parity bit handling

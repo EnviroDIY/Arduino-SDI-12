@@ -1,5 +1,5 @@
 /**
- * @file SDI12.h
+ * @file SDI12_ExtInts.h
  * @copyright Stroud Water Research Center
  * @license This library is published under the BSD-3 license.
  * @date August 2013
