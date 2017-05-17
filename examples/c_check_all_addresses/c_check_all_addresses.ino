@@ -58,7 +58,7 @@
 #include "SDI12_PCINT3.h"
 
 
-#include "SDI12.h"
+#include "SDI12_PCINT3.h"
 
 #define POWERPIN -1     // change to the proper pin (or -1 if not switching power)
 #define FirstPin 5      // change to lowest pin number on your board
