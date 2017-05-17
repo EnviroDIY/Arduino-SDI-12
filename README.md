@@ -7,7 +7,17 @@ Arduino library for SDI-12 communications to a wide variety of environmental sen
 
 This project is part of the [EnviroDIY](http://envirodiy.org/) vision to create an open source hardware and software stack to deliver near real time environmental data from wireless sensor networks, such as the Arduino-compatible [EnviroDIY™ Mayfly Data Logger](http://envirodiy.org/mayfly/).
 
-Note that this library will conflict with SoftwareSerial, the Sodaq PCInt library, and any other library that monopolize all pin change interrupt vectors.  To help in using this in combination with those libraries, there is a version (SDI12_PCINT3) which is identical, except in that it only uses PCINT3 and ignores 0-2.  Get that version from the "Mayfly" branch.
+The library has been tested with an Arduino Uno (AtMega328p), EnviroDIY Mayfly (AtMega1284p), Adafruit Feather 32u4 (AtMega32u4, identical to Arduino Leonardo), and an Adafruit Feather M0 (SAMD21G18, identical to Arduino Zero).  Not all pins are usable on all boards.  These pins will work on those processors:
+
+**AtMega328p / Arduino Uno:** 	All pins
+**Arduino Mega or Mega 2560:** 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69)
+**AtMega32u4 / Arduino Leonardo:** 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
+**AtMega1284p / EnviroDIY Mayfly:**  All pins
+**SAMD21G18 / Arduino Zero:**  All pins (except 4 on the zero)
+
+Note that this library will, by nature, conflict with SoftwareSerial and any other library that monopolize all pin change interrupt vectors for all AVR boards.  If you would like to use a different pin change interrupt library, uncomment the line ```#define SDI12_EXTERNAL_PCINT``` in SDI12.h and recompile the library.  Then, in your own code call SDI12::handleInterrupt() as the interrupt for the SDI12 pin using the other interrupt library.  Example j shows doing this using GreyGnome's [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) library.
+
+This library also shares some of the other limitations of SoftwareSerial, that is, all interrupts are disabled during transmission and it might be sensitive to interrupt use by other libraries.  Because SDI-12 operates at a very slow baud rate (only 1200 baud), the disabling of interrupts during transmission could possibly be for more time than you might expect.  For that reason, please don't try to send and receive data through the SDI-12 library while transmitting other serial data or looking for other pin change interrupts.
 
 ## Getting Started
 

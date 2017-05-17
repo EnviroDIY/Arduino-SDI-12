@@ -1,0 +1,30 @@
+{
+  "name": "Arduino-SDI-12",
+  "version": "1.0.1",
+  "keywords": "SDI-12, sdi12, communication, bus, sensor, Decagon",
+  "description": "Arduino library for SDI-12 communications to a wide variety of environmental sensors.",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/EnviroDIY/Arduino-SDI-12.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Kevin M. Smith",
+      "email": "Kevin@elite-education.org"
+    },
+    {
+      "name": "Shannon Hicks",
+      "email": "shicks@stroudcenter.org"
+    },
+    {
+      "name": "Sara Damiano",
+      "email": "sdamiano@stroudcenter.org",
+      "maintainer": true
+    }
+  ],
+  "license": "BSD-3-Clause",
+  "frameworks": "arduino",
+  "platforms": "atmelavr, atmelsam"
+}

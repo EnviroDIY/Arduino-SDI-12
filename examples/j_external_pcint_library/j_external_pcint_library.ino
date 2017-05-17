@@ -2,38 +2,13 @@
 ########################
 #        OVERVIEW      #
 ########################
- Example D: Checks all addresses for active sensors, and logs data for each sensor every minute.
- This is a simple demonstration of the SDI-12 library for Arduino.
- It discovers the address of all sensors active on a single bus and takes measurements from them.
- Every SDI-12 device is different in the time it takes to take a measurement, and the amount of data it returns.
- This sketch will not serve every sensor type, but it will likely be helpful in getting you started.
- Each sensor should have a unique address already - if not, multiple sensors may respond simultaenously
- to the same request and the output will not be readable by the Arduino.
- To address a sensor, please see Example B: b_address_change.ino
-#########################
-#      THE CIRCUIT      #
-#########################
- You  may use one or more pre-adressed sensors.
- See:
- https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/basic_setup_usb_multiple_sensors.png
- or
- https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/compat_setup_usb_multiple_sensors.png
- or
- https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/basic_setup_usb.png
- or
- https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/compat_setup_usb.png
-###########################
-#      COMPATIBILITY      #
-###########################
- This library requires the use of pin change interrupts (PCINT).
- Not all Arduino boards have the same pin capabilities.
- The known compatibile pins for common variants are shown below.
- Arduino Uno: 	All pins.
- Arduino Mega or Mega 2560:
- 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62),
- A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
- Arduino Leonardo:
- 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
+ Example J: Identical to example B, except that it uses the library "EnableInterrupt"
+ () to define the interrupt vector.  This allows it to play nicely with any other
+ libraries which define interrupt vectors.
+
+ For this to work, you must remove the comment braces around "#define SDI12_EXTERNAL_PCINT"
+ in the library and re-compile it.
+
 #########################
 #      RESOURCES        #
 #########################
@@ -43,11 +18,11 @@
  The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
 */
 
-
-#include "SDI12_PCINT3.h"
+#include <EnableInterrupt.h>
+#include <SDI12.h>
 
 #define POWERPIN -1       // change to the proper pin (or -1)
-#define DATAPIN 6         // change to the proper pin
+#define DATAPIN 9         // change to the proper pin
 
 SDI12 mySDI12(DATAPIN);
 
@@ -109,7 +84,6 @@ void printInfo(char i){
 
 void printBufferToScreen(){
   String buffer = "";
-  mySDI12.read(); // consume address
   mySDI12.read(); // consume address
   while(mySDI12.available()){
     char c = mySDI12.read();
@@ -232,7 +206,6 @@ boolean setVacant(byte i){
 
 void setup(){
   Serial.begin(57600);
-  while(!Serial);
 
   // Power the sensors;
   #if POWERPIN > 0
@@ -243,6 +216,10 @@ void setup(){
 
   mySDI12.begin();
   delay(500); // allow things to settle
+
+  // Enable interrupts for the recieve pin
+  pinMode(DATAPIN, INPUT_PULLUP);
+  enableInterrupt(DATAPIN, SDI12::handleInterrupt, CHANGE);
 
   Serial.println("Scanning all addresses, please wait...");
   /*
@@ -263,8 +240,6 @@ void setup(){
   for(byte i = 0; i < 62; i++){
     if(isTaken(i)){
       found = true;
-      Serial.print("Found address:  ");
-      Serial.println(i);
       break;
     }
   }
@@ -286,7 +261,6 @@ void loop(){
     Serial.print(millis()/1000);
     Serial.print(",");
     printInfo(i);
-    Serial.print("\t\t,");
     takeMeasurement(i);
     Serial.println();
   }
@@ -296,7 +270,6 @@ void loop(){
     Serial.print(millis()/1000);
     Serial.print(",");
     printInfo(i);
-    Serial.print("\t\t,");
     takeMeasurement(i);
     Serial.println();
   }
@@ -306,7 +279,6 @@ void loop(){
     Serial.print(millis()/1000);
     Serial.print(",");
     printInfo(i);
-    Serial.print("\t\t,");
     takeMeasurement(i);
     Serial.println();
   };

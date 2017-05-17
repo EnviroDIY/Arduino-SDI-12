@@ -177,7 +177,7 @@ void loop() {
   // iteration to a static char buffer; however, the SDI-12 spec requires a precise
   // response time, and this method is invariant to the remaining loop() contents.
   int avail = slaveSDI12.available();
-  if (avail < 0) { slaveSDI12.flush(); } // Buffer full; flush
+  if (avail < 0) { slaveSDI12.clearBuffer(); } // Buffer is full; clear
   else if (avail > 0) {
     for(int a = 0; a < avail; a++){
       char charReceived = slaveSDI12.read();
@@ -190,7 +190,7 @@ void loop() {
         commandReceived = "";
         // '!' should be the last available character anyway, but exit the "for" loop
         // just in case there are any stray characters
-        slaveSDI12.flush();
+        slaveSDI12.clearBuffer();
         break;
       }
       // If the current character is anything but '!', it is part of the command

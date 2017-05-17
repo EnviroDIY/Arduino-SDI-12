@@ -44,7 +44,7 @@
  Contact: SDI12@ethosengineering.org
 
  The SDI-12 specification is available at: http://www.sdi-12.org/
- The library is available at: https://github.com/StroudCenter/Arduino-SDI-12
+ The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
 */
 
 #include "SDI12_PCINT3.h"

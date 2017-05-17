@@ -82,7 +82,7 @@ void loop() {
   //  is being read in--as the serial example above--but SDI-12 depends on very precise
   //  timing, so it is probably best to let it hold up loop() until the string is complete)
   int avail = sdi.available();
-  if (avail < 0) { sdi.flush(); } // Buffer is full; flush
+  if (avail < 0) { sdi.clearBuffer(); } // Buffer is full; clear
   else if (avail > 0) {
     for (int a=0; a<avail; a++) {
       char inByte2 = sdi.read();

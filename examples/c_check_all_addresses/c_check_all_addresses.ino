@@ -7,7 +7,8 @@
 
  This is a simple demonstration of the SDI-12 library for Arduino.
 
- It discovers the address of all sensors active on a single bus.
+ It discovers the address of all sensors active and attached to the board.
+ THIS CAN BE *REALLY* SLOW TO RUN!!!
 
  Each sensor should have a unique address already - if not, multiple sensors may respond simultaenously
  to the same request and the output will not be readable by the Arduino.
@@ -50,69 +51,40 @@
  Contact: SDI12@ethosengineering.org
 
  The SDI-12 specification is available at: http://www.sdi-12.org/
- The library is available at: https://github.com/StroudCenter/Arduino-SDI-12
+ The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
 */
 
 
 #include "SDI12_PCINT3.h"
 
-#define DATAPIN 9         // change to the proper pin
-SDI12 mySDI12(DATAPIN);
 
-// keeps track of active addresses
-// each bit represents an address:
-// 1 is active (taken), 0 is inactive (available)
-// setTaken('A') will set the proper bit for sensor 'A'
-// set
-byte addressRegister[8] = {
-  0B00000000,
-  0B00000000,
-  0B00000000,
-  0B00000000,
-  0B00000000,
-  0B00000000,
-  0B00000000,
-  0B00000000
-};
+#include "SDI12.h"
 
-
-// converts allowable address characters '0'-'9', 'a'-'z', 'A'-'Z',
-// to a decimal number between 0 and 61 (inclusive) to cover the 62 possible addresses
-byte charToDec(char i){
-  if((i >= '0') && (i <= '9')) return i - '0';
-  if((i >= 'a') && (i <= 'z')) return i - 'a' + 10;
-  if((i >= 'A') && (i <= 'Z')) return i - 'A' + 37;
-  else return i;
-}
-
-// THIS METHOD IS UNUSED IN THIS EXAMPLE, BUT IT MAY BE HELPFUL.
-// maps a decimal number between 0 and 61 (inclusive) to
-// allowable address characters '0'-'9', 'a'-'z', 'A'-'Z',
-char decToChar(byte i){
-  if((i >= 0) && (i <= 9)) return i + '0';
-  if((i >= 10) && (i <= 36)) return i + 'a' - 10;
-  if((i >= 37) && (i <= 62)) return i + 'A' - 37;
-  else return i;
-}
+#define POWERPIN -1     // change to the proper pin (or -1 if not switching power)
+#define FirstPin 5      // change to lowest pin number on your board
+#define LastPin 24       // change to highest pin number on your board
 
 // gets identification information from a sensor, and prints it to the serial port
 // expects a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
-void printInfo(char i){
+void printInfo(SDI12 sdi, char i){
   int j;
   String command = "";
   command += (char) i;
   command += "I!";
   for(j = 0; j < 1; j++){
-    mySDI12.sendCommand(command);
+    sdi.sendCommand(command);
+    sdi.clearBuffer();
     delay(30);
-    if(mySDI12.available()>1) break;
-    if(mySDI12.available()) mySDI12.read();
+    if(sdi.available()>1) break;
+    if(sdi.available()) sdi.read();
   }
 
-  mySDI12.read(); //consume sensor address (you can keep it if you'd like)
+  Serial.print("  --");
+  Serial.print(i);
+  Serial.print("--  ");
 
-  while(mySDI12.available()){
-    Serial.write(mySDI12.read());
+  while(sdi.available()){
+    Serial.write(sdi.read());
     delay(5);
   }
 }
@@ -120,108 +92,69 @@ void printInfo(char i){
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-boolean checkActive(char i){
-  Serial.print("Checking address ");
-  Serial.print(i);
-  Serial.print("...");
+boolean checkActive(SDI12 sdi, char i){
   String myCommand = "";
   myCommand = "";
   myCommand += (char) i;                 // sends basic 'acknowledge' command [address][!]
   myCommand += "!";
 
   for(int j = 0; j < 3; j++){            // goes through three rapid contact attempts
-    mySDI12.sendCommand(myCommand);
-    if(mySDI12.available()>1) break;
+    sdi.sendCommand(myCommand);
+    sdi.clearBuffer();
     delay(30);
+    if(sdi.available()>1) break;
   }
-  if(mySDI12.available()>2){       // if it hears anything it assumes the address is occupied
-    Serial.println("Occupied");
-    mySDI12.flush();
+  if(sdi.available()>2){       // if it hears anything it assumes the address is occupied
     return true;
-  }
-  else {
-    Serial.println("Vacant");           // otherwise it is vacant.
-    mySDI12.flush();
   }
   return false;
 }
 
-// this quickly checks if the address has already been taken by an active sensor
-boolean isTaken(byte i){
-  i = charToDec(i); // e.g. convert '0' to 0, 'a' to 10, 'Z' to 61.
-  byte j = i / 8;   // byte #
-  byte k = i % 8;   // bit #
-  return addressRegister[j] & (1<<k); // return bit status
-}
-
-// this sets the bit in the proper location within the addressRegister
-// to record that the sensor is active and the address is taken.
-boolean setTaken(byte i){
-  boolean initStatus = isTaken(i);
-  i = charToDec(i); // e.g. convert '0' to 0, 'a' to 10, 'Z' to 61.
-  byte j = i / 8;   // byte #
-  byte k = i % 8;   // bit #
-  addressRegister[j] |= (1 << k);
-  return !initStatus; // return false if already taken
-}
-
-// THIS METHOD IS UNUSED IN THIS EXAMPLE, BUT IT MAY BE HELPFUL.
-// this unsets the bit in the proper location within the addressRegister
-// to record that the sensor is active and the address is taken.
-boolean setVacant(byte i){
-  boolean initStatus = isTaken(i);
-  i = charToDec(i); // e.g. convert '0' to 0, 'a' to 10, 'Z' to 61.
-  byte j = i / 8;   // byte #
-  byte k = i % 8;   // bit #
-  addressRegister[j] &= ~(1 << k);
-  return initStatus; // return false if already vacant
-}
-
-void setup(){
-  Serial.begin(9600);
-  mySDI12.begin();
-  delay(500); // allow things to settle
-
-  /*
-      Quickly Scan the Address Space
-  */
-
-  for(byte i = '0'; i <= '9'; i++) if(checkActive(i)) setTaken(i);   // scan address space 0-9
-
-  for(byte i = 'a'; i <= 'z'; i++) if(checkActive(i)) setTaken(i);   // scan address space a-z
-
-  for(byte i = 'A'; i <= 'Z'; i++) if(checkActive(i)) setTaken(i);   // scan address space A-Z
-
-  /*
-      For each active sensor, have it print it's current information.
-  */
-
+void scanAddressSpace(SDI12 sdi){
   // scan address space 0-9
-  for(char i = '0'; i <= '9'; i++) if(isTaken(i)){
-    Serial.print("Sensor ");
-    Serial.print(i);
-    Serial.print(":");
-    printInfo(i);
-    Serial.println();
+  for(char i = '0'; i <= '9'; i++) if(checkActive(sdi, i)){
+    printInfo(sdi, i);
   }
-
   // scan address space a-z
-  for(char i = 'a'; i <= 'z'; i++) if(isTaken(i)){
-    Serial.print("Sensor ");
-    Serial.print(i);
-    Serial.print(": ");
-    printInfo(i);
-    Serial.println();
+  for(char i = 'a'; i <= 'z'; i++) if(checkActive(sdi, i)){
+    printInfo(sdi, i);
   }
-
   // scan address space A-Z
-  for(char i = 'A'; i <= 'Z'; i++) if(isTaken(i)){
-    Serial.print("Sensor ");
-    Serial.print(i);
-    Serial.print(":");
-    printInfo(i);
-    Serial.println();
+  for(char i = 'A'; i <= 'Z'; i++) if(checkActive(sdi, i)){
+    printInfo(sdi, i);
   };
 }
 
-void loop(){} // this sketch does not loop
+void setup(){
+  Serial.begin(57600);
+  Serial.println("//\n// Start Search for SDI-12 Devices \n// -----------------------");
+
+  // Power the sensors;
+  #if POWERPIN > 0
+    pinMode(POWERPIN, OUTPUT);
+    digitalWrite(POWERPIN, HIGH);
+    delay(200);
+  #endif
+
+  for (uint8_t pin = FirstPin; pin < LastPin; pin++)
+  {
+    if (pin != POWERPIN){
+      pinMode(pin, INPUT);
+      SDI12 mySDI12(pin);
+      mySDI12.begin();
+      Serial.print("Checking pin ");
+      Serial.print(pin);
+      Serial.println("...");
+      scanAddressSpace(mySDI12);
+      mySDI12.end();
+    }
+  }
+
+  Serial.println("\n//\n// End Search for SDI-12 Devices \n// ---------------------");
+
+  // Cut power
+  digitalWrite(POWERPIN, LOW);
+
+}
+
+void loop(){}
