@@ -1,4 +1,4 @@
-./* ======================== Arduino SDI-12 =================================
+/* ======================== Arduino SDI-12 =================================
 
 Arduino library for SDI-12 communications to a wide variety of environmental
 sensors. This library provides a general software solution, without requiring
@@ -138,7 +138,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 0.10 - a static pointer to the active object. See section 6.
 */
 
-#include "SDI12.h"                   // 0.1 header file for this library
+#include "SDI12_ExtInts.h"           // 0.1 header file for this library
 
 #define _BUFFER_SIZE 64              // 0.2 max RX buffer size
 #define DISABLED 0                   // 0.3 value for DISABLED state
