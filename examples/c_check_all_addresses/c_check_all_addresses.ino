@@ -136,7 +136,7 @@ void setup(){
     delay(200);
   #endif
 
-  for (uint8_t pin = FirstPin; pin < LastPin; pin++)
+  for (uint8_t pin = FirstPin; pin <= LastPin; pin++)
   {
     if (pin != POWERPIN){
       pinMode(pin, INPUT);

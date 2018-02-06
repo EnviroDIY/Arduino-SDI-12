@@ -808,11 +808,12 @@ void SDI12::receiveChar()
   }
 }
 
-//7.3
-#if defined __AVR__
+// 7.3 - Define AVR interrupts
+
+#if defined __AVR__  // Only AVR processors use interrupts like this
 
 #ifdef SDI12_EXTERNAL_PCINT
-  // Client code must call SDI12::handleInterrupt() in PCINT handler for the data pin
+// Client code must call SDI12::handleInterrupt() in PCINT handler for the data pin
 #else
 
 #if defined(PCINT0_vect)
@@ -832,4 +833,5 @@ ISR(PCINT3_vect){ SDI12::handleInterrupt(); }
 #endif
 
 #endif  // SDI12_EXTERNAL_PCINT
+
 #endif  // __AVR__
