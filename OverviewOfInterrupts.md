@@ -32,9 +32,9 @@ Initially, no interrupts are enabled, so PCMSK0 looks like: {00000000}. If we we
 
 To accomplish this, we can make use of some predefined macros.
 
-One macro "digitalPinToPCMSK" is defined in "pins_arduino.h" which allows us to quickly get the proper register (PCMSK0, PCMSK1, or PCMSK2) given the number of the Arduino pin. So when we write: digitalPinToPCMSK(9), the address of PCMSK0 is returned. We can use the dereferencing operator '*' to get the value of the address.
+One macro "digitalPinToPCMSK" is defined in "pins_arduino.h" which allows us to quickly get the proper register (PCMSK0, PCMSK1, or PCMSK2) given the number of the Arduino pin. So when we write: digitalPinToPCMSK(9), the address of PCMSK0 is returned. We can use the dereferencing operator '\*' to get the value of the address.
 
-That is, *digitalPinToPCMSK(9) returns: {00000000}.
+That is, \*digitalPinToPCMSK(9) returns: {00000000}.
 
 Another macro , "digitalPinToPCMSKbit" is also defined in "pins_arduino.h" and returns the position of the bit of interest within the PCMSK of interest.
 
@@ -58,7 +58,7 @@ To use the mask to set the bit of interest we use the bitwise or operator '|'. W
 
 So the operation:
 
-*digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(9));
+\*digitalPinToPCMSK(\_dataPin) |= (1<<digitalPinToPCMSKbit(9));
 
 Accomplishes:
 
@@ -73,14 +73,14 @@ Accomplishes:
 
 We must also enable the global control for the interrupt. This is done in a similar fashion:
 
-*digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));
+\*digitalPinToPCICR(\_dataPin) |= (1<<digitalPinToPCICRbit(\_dataPin));
 
 
 Now let's assume that part of your Arduino sketch outside of SDI-12 had set a pin change interrupt on pin 13. Pin 9 and pin 13 are on the same PCMSK in the case of the Arduino Uno.
 
 This time before we set the bit for pin nine,
 
-*digitalPinToPCMSK(9) returns: {00100000}.
+\*digitalPinToPCMSK(9) returns: {00100000}.
 
 So now:
 
@@ -102,7 +102,7 @@ When the we would like to put the SDI-12 object in the DISABLED state, (e.g. the
 
 Let us consider again the case of where an interrupt has been enabled on pin 13: {00100010}. We want to be sure not to disturb this interrupt when disabling the interrupt on pin 9.
 
-We will make use of similar macros, but this time we will use an inverted bit mask and the AND operation. The "&=" operator is equivalent to a bitwise AND operation between the PCMSK register of interest and the previous result, which is then stored back into the PCMSK of interest. The "*" is the dereferencing operator, which is equivalently translated to "value pointed by", and allows us to store the result back into the proper PCMSK.
+We will make use of similar macros, but this time we will use an inverted bit mask and the AND operation. The "&=" operator is equivalent to a bitwise AND operation between the PCMSK register of interest and the previous result, which is then stored back into the PCMSK of interest. The "\*" is the dereferencing operator, which is equivalently translated to "value pointed by", and allows us to store the result back into the proper PCMSK.
 
 Again 1<<digitalPinToPCMSKbit(9) returns {00000010}
 
@@ -120,7 +120,7 @@ So to finish our example:
 
 
 So only the interrupt on pin 13 remains set. As a matter of book keeping, if we unset the last bit in the PCMSK, we ought to also unset the respective bit in the PCICR.
-    !(*digitalPinToPCMSK(9)
+    !(\*digitalPinToPCMSK(9)
     will evaluate TRUE if PCMSK {00000000}
     will evaluate FALSE if PCMSK != {00000000}
 
@@ -128,7 +128,7 @@ In this case, pin 13 is set, so the expression would be FALSE. If we go back to 
 
 Therefore if we evaluate to TRUE, we should tidy up:
 ```cpp
-if(!*digitalPinToPCMSK(_dataPin)){
-      *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
+if(!\*digitalPinToPCMSK(\_dataPin)){
+      \*digitalPinToPCICR(\_dataPin) &= ~(1<<digitalPinToPCICRbit(\_dataPin));
   }
 ```

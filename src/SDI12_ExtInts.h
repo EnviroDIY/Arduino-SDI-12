@@ -73,7 +73,7 @@ typedef const __FlashStringHelper *FlashString;
 class SDI12 : public Stream
 {
 protected:
-  int peekNextDigit();            // override of Stream equivalent to allow custom TIMEOUT
+  int peekNextDigit();            // override of Stream equivalent to allow custom value to be returned on timeout
 private:
   static SDI12 *_activeObject;    // static pointer to active SDI12 instance
   void setState(uint8_t state);   // sets the state of the SDI12 objects
@@ -91,11 +91,12 @@ private:
   bool _bufferOverflow;           // buffer overflow status
 
 public:
-  int TIMEOUT;
-  SDI12(uint8_t dataPin);        // constructor
-  ~SDI12();                      // destructor
-  void begin();                  // enable SDI-12 object
-  void end();                    // disable SDI-12 object
+  SDI12(uint8_t dataPin);           // constructor
+  ~SDI12();                         // destructor
+  void begin();                     // enable SDI-12 object
+  void end();                       // disable SDI-12 object
+  void setTimeoutValue(int value);  // sets the value to return if a parse int or parse float times out
+  int timeoutValue;                 // value to return if a parse times out
 
   void forceHold();                     // sets line state to HOLDING
   void forceListen();                   // sets line state to LISTENING
@@ -120,4 +121,4 @@ public:
   #define SDI12_EXTERNAL_PCINT  // uncomment to use your own PCINT ISRs
 };
 
-#endif
+#endif  // SDI12_h

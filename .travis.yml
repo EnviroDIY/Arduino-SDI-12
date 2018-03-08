@@ -17,4 +17,4 @@ install:
     - pio update
 
 script:
-- platformio ci --lib="." --board=mayfly --board=feather32u4 --board=adafruit_feather_m0_usb
+- platformio ci --lib="." --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560  --board=sodaq_explorer
