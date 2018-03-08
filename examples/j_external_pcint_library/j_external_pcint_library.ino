@@ -2,6 +2,7 @@
 ########################
 #        OVERVIEW      #
 ########################
+
  Example J: Identical to example B, except that it uses the library "EnableInterrupt"
  () to define the interrupt vector.  This allows it to play nicely with any other
  libraries which define interrupt vectors.
@@ -21,10 +22,12 @@
 #include <EnableInterrupt.h>
 #include <SDI12.h>
 
-#define POWERPIN -1       // change to the proper pin (or -1)
-#define DATAPIN 9         // change to the proper pin
+#define SERIAL_BAUD 57600  // The baud rate for the output serial port
+#define DATA_PIN 7         // The pin of the SDI-12 data bus
+#define POWER_PIN 22       // The sensor power pin (or -1 if not switching power)
 
-SDI12 mySDI12(DATAPIN);
+// Define the SDI-12 bus
+SDI12 mySDI12(DATA_PIN);
 
 // keeps track of active addresses
 // each bit represents an address:
@@ -64,16 +67,11 @@ char decToChar(byte i){
 // gets identification information from a sensor, and prints it to the serial port
 // expects a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
 void printInfo(char i){
-  int j;
   String command = "";
   command += (char) i;
   command += "I!";
-  for(j = 0; j < 1; j++){
     mySDI12.sendCommand(command);
     delay(30);
-    if(mySDI12.available()>1) break;
-    if(mySDI12.available()) mySDI12.read();
-  }
 
   while(mySDI12.available()){
     char c = mySDI12.read();
@@ -104,6 +102,8 @@ void takeMeasurement(char i){
   command += i;
   command += "M!"; // SDI-12 measurement command format  [address]['M'][!]
   mySDI12.sendCommand(command);
+  delay(30);
+
   // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of measurments available, 0-9]
   String sdiResponse = "";
   delay(30);
@@ -163,6 +163,7 @@ boolean checkActive(char i){
     delay(30);
   }
   if(mySDI12.available()>2){       // if it hears anything it assumes the address is occupied
+    printBufferToScreen();
     mySDI12.clearBuffer();
     return true;
   }
@@ -205,21 +206,24 @@ boolean setVacant(byte i){
 
 
 void setup(){
-  Serial.begin(57600);
+  Serial.begin(SERIAL_BAUD);
+  while(!Serial);
 
-  // Power the sensors;
-  #if POWERPIN > 0
-    pinMode(POWERPIN, OUTPUT);
-    digitalWrite(POWERPIN, HIGH);
-    delay(200);
-  #endif
-
+  Serial.println("Opening SDI-12 bus...");
   mySDI12.begin();
   delay(500); // allow things to settle
 
+  // Power the sensors;
+  if(POWER_PIN > 0){
+    Serial.println("Powering up sensors...");
+    pinMode(POWER_PIN, OUTPUT);
+    digitalWrite(POWER_PIN, HIGH);
+    delay(200);
+  }
+
   // Enable interrupts for the recieve pin
-  pinMode(DATAPIN, INPUT_PULLUP);
-  enableInterrupt(DATAPIN, SDI12::handleInterrupt, CHANGE);
+  pinMode(DATA_PIN, INPUT_PULLUP);
+  enableInterrupt(DATA_PIN, SDI12::handleInterrupt, CHANGE);
 
   Serial.println("Scanning all addresses, please wait...");
   /*
@@ -240,6 +244,8 @@ void setup(){
   for(byte i = 0; i < 62; i++){
     if(isTaken(i)){
       found = true;
+      Serial.print("Found address:  ");
+      Serial.println(i);
       break;
     }
   }
@@ -259,8 +265,9 @@ void loop(){
   // scan address space 0-9
   for(char i = '0'; i <= '9'; i++) if(isTaken(i)){
     Serial.print(millis()/1000);
-    Serial.print(",");
+    Serial.print(",\t");
     printInfo(i);
+    Serial.print(",\t");
     takeMeasurement(i);
     Serial.println();
   }
@@ -268,8 +275,9 @@ void loop(){
   // scan address space a-z
   for(char i = 'a'; i <= 'z'; i++) if(isTaken(i)){
     Serial.print(millis()/1000);
-    Serial.print(",");
+    Serial.print(",\t");
     printInfo(i);
+    Serial.print(",\t");
     takeMeasurement(i);
     Serial.println();
   }
@@ -277,8 +285,9 @@ void loop(){
   // scan address space A-Z
   for(char i = 'A'; i <= 'Z'; i++) if(isTaken(i)){
     Serial.print(millis()/1000);
-    Serial.print(",");
+    Serial.print(",\t");
     printInfo(i);
+    Serial.print(",\t");
     takeMeasurement(i);
     Serial.println();
   };

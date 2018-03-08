@@ -32,19 +32,32 @@
 #define HELPTEXT "OPTIONS:\n\rhelp   : Print this message\n\rmode s : SDI-12 command mode (uppercase and ! automatically corrected) [default]\n\rmode v : verbatim mode (text will be sent verbatim)\n\rfb on  : Enable feedback (characters visible while typing) [default]\n\rfb off : Disable feedback (characters not visible while typing; may be desired for developers)\n\r(else) : send command to SDI-12 bus"
 
 // Requires modified SDI-12 libary with addition of public forceListen() and public sendResponse()
-#include "SDI12.h"
+#include <SDI12.h>
 
-// Init an SDI-12 data interface on pin 2 (change for other pin, obviously)
-SDI12 sdi(2);
+#define SERIAL_BAUD 57600  // The baud rate for the output serial port
+#define DATA_PIN 7         // The pin of the SDI-12 data bus
+#define POWER_PIN 22       // The sensor power pin (or -1 if not switching power)
+#define SENSOR_ADDRESS 1
 
-void setup() {
-  // Initiate serial connection to PC
-  Serial.begin(115200);
+// Define the SDI-12 bus
+SDI12 mySDI12(DATA_PIN);
+
+void setup(){
+  Serial.begin(SERIAL_BAUD);
+  while(!Serial);
+
+  // Power the sensors;
+  if(POWER_PIN > 0){
+    Serial.println("Powering up sensors...");
+    pinMode(POWER_PIN, OUTPUT);
+    digitalWrite(POWER_PIN, HIGH);
+    delay(200);
+  }
 
   // Initiate serial connection to SDI-12 bus
-  sdi.begin();
+  mySDI12.begin();
   delay(500);
-  sdi.forceListen();
+  mySDI12.forceListen();
 
   // Print help text (may wish to comment out if used for communicating to software)
   Serial.println(HELPTEXT);
@@ -81,11 +94,12 @@ void loop() {
   // (Normally I would prefer to allow the loop() to keep executing while the string
   //  is being read in--as the serial example above--but SDI-12 depends on very precise
   //  timing, so it is probably best to let it hold up loop() until the string is complete)
-  int avail = sdi.available();
-  if (avail < 0) { sdi.clearBuffer(); } // Buffer is full; clear
+  int avail = mySDI12.available();
+  if (avail < 0) { mySDI12.clearBuffer(); } // Buffer is full; clear
   else if (avail > 0) {
     for (int a=0; a<avail; a++) {
-      char inByte2 = sdi.read();
+      char inByte2 = mySDI12.read();
+      Serial.println(inByte2);
       if (inByte2 == '\n') {
         sdiMsgReady = true;
       }
@@ -136,10 +150,10 @@ void loop() {
     }
     // If not a known command to the SDI-12 interface program, send out on SDI-12 data pin
     else {
-      if (verbatim) { sdi.sendCommand(serialMsgStr); }
+      if (verbatim) { mySDI12.sendCommand(serialMsgStr); }
       else {
         serialMsgStr.toUpperCase();
-        sdi.sendCommand(serialMsgStr + "!"); }
+        mySDI12.sendCommand(serialMsgStr + "!"); }
     }
     // Reset String for next serial message
     serialMsgReady = false;
