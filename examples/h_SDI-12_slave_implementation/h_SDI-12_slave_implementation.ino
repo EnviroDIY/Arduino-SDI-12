@@ -26,8 +26,8 @@
 // Requires modified SDI-12 libary with addition of public forceListen() and public sendResponse()
 #include <SDI12.h>
 
+#define DATA_PIN 7         // The pin of the SDI-12 data bus
 #define POWER_PIN 22       // The sensor power pin (or -1 if not switching power)
-
 
 char sensorAddress = '5';
 int state = 0;
