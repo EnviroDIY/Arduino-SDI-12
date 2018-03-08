@@ -24,8 +24,10 @@
  */
 
 // Requires modified SDI-12 libary with addition of public forceListen() and public sendResponse()
-#include "SDI12.h"
-#define SDIPIN 7
+#include <SDI12.h>
+
+#define DATA_PIN 7         // The pin of the SDI-12 data bus
+#define POWER_PIN 22       // The sensor power pin (or -1 if not switching power)
 
 char sensorAddress = '5';
 int state = 0;
@@ -35,7 +37,7 @@ int state = 0;
 #define INITIATE_MEASUREMENT 2
 
 // Create object by which to communicate with the SDI-12 bus on SDIPIN
-SDI12 slaveSDI12(SDIPIN);
+SDI12 slaveSDI12(DATA_PIN);
 
 
 

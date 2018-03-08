@@ -48,11 +48,14 @@
 */
 
 
-#include "SDI12.h"
+#include <SDI12.h>
 
-#define DATAPIN 7         // change to the proper pin
-#define POWERPIN 22       // change to the proper pin
-SDI12 mySDI12(DATAPIN);
+#define SERIAL_BAUD 57600  // The baud rate for the output serial port
+#define DATA_PIN 7         // The pin of the SDI-12 data bus
+#define POWER_PIN 22       // The sensor power pin (or -1 if not switching power)
+
+// Define the SDI-12 bus
+SDI12 mySDI12(DATA_PIN);
 
 String myCommand = "";   // empty to start
 char oldAddress = '!';   // invalid address as placeholder
@@ -89,15 +92,20 @@ boolean checkActive(byte i){              // this checks for activity at a parti
 
 
 void setup(){
-  Serial.begin(9600);
+  Serial.begin(SERIAL_BAUD);
+  while(!Serial);
+
+  Serial.println("Opening SDI-12 bus...");
   mySDI12.begin();
+  delay(500); // allow things to settle
 
   // Power the sensors;
-  #if POWERPIN > 0
-    pinMode(POWERPIN, OUTPUT);
-    digitalWrite(POWERPIN, HIGH);
+  if(POWER_PIN > 0){
+    Serial.println("Powering up sensors...");
+    pinMode(POWER_PIN, OUTPUT);
+    digitalWrite(POWER_PIN, HIGH);
     delay(200);
-  #endif
+  }
 }
 
 void loop(){

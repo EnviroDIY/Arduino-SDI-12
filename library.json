@@ -1,6 +1,6 @@
 {
   "name": "Arduino-SDI-12",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "keywords": "SDI-12, sdi12, communication, bus, sensor, Decagon",
   "description": "Arduino library for SDI-12 communications to a wide variety of environmental sensors.",
   "repository":
@@ -26,5 +26,16 @@
   ],
   "license": "BSD-3-Clause",
   "frameworks": "arduino",
-  "platforms": "atmelavr, atmelsam"
+  "platforms": "atmelavr, atmelsam",
+  "export":
+  {
+      "exclude":
+      [
+          "doc/*"
+      ]
+  },
+  "examples":
+  [
+    "examples/*/*.ino"
+  ]
 }

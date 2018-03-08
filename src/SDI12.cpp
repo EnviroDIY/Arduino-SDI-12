@@ -134,9 +134,6 @@ SDI-12.org, official site of the SDI-12 Support Group.
 0.8 - defines value for the spacing of bits.
     1200 bits per second implies 833 microseconds per bit.
     830 seems to be a reliable value given the overhead of the call.
-0.9    - holds a custom value that indicates a
-    TIMEOUT has occurred from parseInt() or parseFloat(). This should not be set to
-    a possible data value.
 
 0.10 - a static pointer to the active object. See section 6.
 0.11 - a reference to the data pin, used throughout the library
@@ -153,7 +150,6 @@ SDI-12.org, official site of the SDI-12 Support Group.
 #define TRANSMITTING 3               // 0.6 value for TRANSMITTING state
 #define LISTENING 4                  // 0.7 value for LISTENING state
 #define SPACING 830                  // 0.8 bit timing in microseconds
-int TIMEOUT = -9999;                 // 0.9 value to return to indicate TIMEOUT
 
 SDI12 *SDI12::_activeObject = NULL;  // 0.10 pointer to active SDI12 object
 
@@ -360,6 +356,9 @@ SDI-12 instances are being used simultaneously).
 SDI-12 object. It is not as harsh as destroying the object with the
 destructor, as it will maintain the memory buffer.
 
+3.5 - This sets a custom value to return if a parse int or parse float function
+times out.  By default this value is -9999.
+
 */
 
 //  3.1 Constructor
@@ -375,10 +374,14 @@ SDI12::~SDI12(){ setState(DISABLED); }
 void SDI12::begin(){
   // setState(HOLDING);
   setActive();
+  timeoutValue = -9999;
 }
 
 //  3.4 End
 void SDI12::end() { setState(DISABLED); }
+
+//  3.4 Set the timeout return
+void SDI12::setTimeoutValue(int value) { timeoutValue = value; }
 
 
 /* ============= 4. Waking up, and talking to, the sensors. ===================
@@ -603,12 +606,12 @@ would rather see the character, but leave the index to head intact, you
 should use peek();
 
 5.5 - peekNextDigit() is called by the Stream class. It is overridden
-here to allow for a custom TIMEOUT value. The default value for the
+here to allow for a custom timeout return value. The default value for the
 Stream class is to return 0. This makes distinguishing timeouts from
 true zero readings impossible. Therefore the default value has been
 set to -9999 in section 0 of the code. It is a public variable and
 can be changed dynamically within a program by calling:
-    mySDI12.TIMEOUT = (int) newValue
+    mySDI12.timeoutValue = (int) newValue
 
 */
 
@@ -650,7 +653,7 @@ int SDI12::peekNextDigit()
   int c;
   while (1) {
     c = timedPeek();
-    if (c < 0) return TIMEOUT; // timeout
+    if (c < 0) return timeoutValue; // timeout
     if (c == '-') return c;
     if (c >= '0' && c <= '9') return c;
     read(); // discard non-numeric
@@ -808,11 +811,12 @@ void SDI12::receiveChar()
   }
 }
 
-//7.3
-#if defined __AVR__
+// 7.3 - Define AVR interrupts
+
+#if defined __AVR__  // Only AVR processors use interrupts like this
 
 #ifdef SDI12_EXTERNAL_PCINT
-  // Client code must call SDI12::handleInterrupt() in PCINT handler for the data pin
+// Client code must call SDI12::handleInterrupt() in PCINT handler for the data pin
 #else
 
 #if defined(PCINT0_vect)
@@ -832,4 +836,5 @@ ISR(PCINT3_vect){ SDI12::handleInterrupt(); }
 #endif
 
 #endif  // SDI12_EXTERNAL_PCINT
+
 #endif  // __AVR__
