@@ -90,8 +90,8 @@ boolean flip = 1;
 // is set in SDI12.cpp by default to -9999.
 //
 // You can change the default setting directly:
-//    mySDI12.TIMEOUT = (int) newValue
-// The value of TIMEOUT should not be a possible data value.
+//    mySDI12.setTimeoutValue(int)
+// The value should not be a possible data value.
 //
 // You should always check for timeouts before interpreting data, as
 // shown in the example below.
@@ -173,7 +173,7 @@ void printBufferToScreen(){
   else {       // parse buffer for floats and multiply by 2 before printing
     while(mySDI12.available()){
         float that = mySDI12.parseFloat();
-        if(that != mySDI12.TIMEOUT){    //check for timeout
+        if(that != mySDI12.timeoutValue){    //check for timeout
           float doubleThat = that * 2;
           Serial.print(",");
           Serial.print(that);
