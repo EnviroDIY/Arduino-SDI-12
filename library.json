@@ -1,6 +1,6 @@
 {
   "name": "Arduino-SDI-12",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "keywords": "SDI-12, sdi12, communication, bus, sensor, Decagon",
   "description": "Arduino library for SDI-12 communications to a wide variety of environmental sensors.",
   "repository":

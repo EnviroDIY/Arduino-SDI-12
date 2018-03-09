@@ -84,18 +84,14 @@ boolean flip = 1;
 // The code below alternates printing in non-parsed, and parsed mode.
 //
 // The parseInt() and parseFloat() functions will timeout if they do not
-// find a candidate INT or FLOAT.
-//
-// The value returned when a TIMEOUT is encountered
-// is set in SDI12.cpp by default to -9999.
-//
-// You can change the default setting directly:
-//    mySDI12.setTimeoutValue(int)
+// find a candidate INT or FLOAT.  The value returned when a such a timeout is
+// encountered is set in SDI12.cpp by default to -9999.  You can change the
+// default setting directly with the setTimeoutValue function:
+//       mySDI12.setTimeoutValue(int)
 // The value should not be a possible data value.
 //
 // You should always check for timeouts before interpreting data, as
 // shown in the example below.
-
 
 // keeps track of active addresses
 // each bit represents an address:
@@ -171,14 +167,19 @@ void printBufferToScreen(){
     Serial.print(buffer);
   }
   else {       // parse buffer for floats and multiply by 2 before printing
+    mySDI12.read();  // discard address
     while(mySDI12.available()){
         float that = mySDI12.parseFloat();
-        if(that != mySDI12.timeoutValue){    //check for timeout
+        if(that != mySDI12.TIMEOUT){    //check for timeout
           float doubleThat = that * 2;
-          Serial.print(",");
+          Serial.print(", ");
           Serial.print(that);
           Serial.print(" x 2 = ");
           Serial.print(doubleThat);
+        }
+        else {
+          Serial.print(", TIMEOUT:");
+          Serial.print(that);
         }
     }
     Serial.println();
@@ -300,6 +301,9 @@ void setup(){
   Serial.println("Opening SDI-12 bus...");
   mySDI12.begin();
   delay(500); // allow things to settle
+
+  Serial.println("Timeout value: ");
+  Serial.println(mySDI12.TIMEOUT);
 
   // Power the sensors;
   if(POWER_PIN > 0){
