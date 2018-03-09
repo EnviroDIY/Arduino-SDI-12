@@ -116,7 +116,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 2.  Data Line States, Overview of Interrupts
 3.  Constructor, Destructor, SDI12.begin(), and SDI12.end()
 4.  Waking up, and talking to, the sensors.
-5.  Reading from the SDI-12 object. available(), peek(), read(), flush()
+5.  Reading from the SDI-12 object. available(), peek(), read(), flush(), clearBuffer()
 6.  Using more than one SDI-12 object, isActive() and setActive().
 7.  Interrupt Service Routine (getting the data into the buffer)
 
@@ -132,10 +132,10 @@ SDI-12.org, official site of the SDI-12 Support Group.
 0.8 - defines value for the spacing of bits.
       1200 bits per second implies 833 microseconds per bit.
       830 seems to be a reliable value given the overhead of the call.
-0.9 - holds a custom value that indicates a TIMEOUT has occurred from
-      parseInt() or parseFloat(). This should not be set to a possible
-      data value.
 0.10 - a static pointer to the active object. See section 6.
+0.11 - a reference to the data pin, used throughout the library
+0.12 - holds the buffer overflow status
+
 */
 
 #include "SDI12_PCINT3.h"            // 0.1 header file for this library
@@ -370,14 +370,23 @@ SDI12::~SDI12(){ setState(DISABLED); }
 void SDI12::begin(){
   // setState(HOLDING);
   setActive();
-  timeoutValue = -9999;
+  // SDI-12 protocol says sensors must respond within 15 milliseconds
+  // We'll bump that up to 100, just for good measure, but we don't want to
+  // wait the whole stream default of 1s for a response.
+  setTimeout(100);
+  // Because SDI-12 is mostly used for environmental sensors, we want to be able
+  // to distinguish between the '0' that parseInt and parseFloat usually return
+  // on timeouts and a real measured 0 value.  So we force the timeout response
+  // to be -9999, which is not a common value for most variables measured by
+  // in-site environmental sensors.
+  setTimeoutValue(-9999);
 }
 
 //  3.4 End
 void SDI12::end() { setState(DISABLED); }
 
 //  3.4 Set the timeout return
-void SDI12::setTimeoutValue(int value) { timeoutValue = value; }
+void SDI12::setTimeoutValue(int value) { TIMEOUT = value; }
 
 
 /* ============= 4. Waking up, and talking to, the sensors. ===================
@@ -599,13 +608,16 @@ the character, meaning it can not be read from the buffer again. If you
 would rather see the character, but leave the index to head intact, you
 should use peek();
 
-5.5 - peekNextDigit() is called by the Stream class. It is overridden
-here to allow for a custom timeout return value. The default value for the
-Stream class is to return 0. This makes distinguishing timeouts from
-true zero readings impossible. Therefore the default value has been
-set to -9999 in section 0 of the code. It is a public variable and
-can be changed dynamically within a program by calling:
-    mySDI12.timeoutValue = (int) newValue
+5.5 - peekNextDigit(), parseInt(), and parseFloat() are functions in the Stream
+class.  Although they are not virtual and cannot be "overridden," recreting
+them here "hides" the stream default versions to allow for a custom timeout
+return value. The default value for the Stream class is to return 0. This makes
+distinguishing timeouts from true zero readings impossible. Therefore the
+default value has been set to -9999 in the being function. The value returned by
+a timeout (TIMEOUT) is a public variable and can be changed dynamically
+within a program by calling:
+    mySDI12.TIMEOUT = (int) newValue
+or using the setTimeoutValue(int) function.
 
 */
 
@@ -641,17 +653,102 @@ int SDI12::read()
   return nextChar;                                     // return the char
 }
 
-// 5.5 - this function is called by the Stream class when parsing digits
-int SDI12::peekNextDigit()
+// 5.5 - these functions hide the stream equivalents to return a custom timeout value
+int SDI12::peekNextDigit(LookaheadMode lookahead, bool detectDecimal)
 {
   int c;
   while (1) {
     c = timedPeek();
-    if (c < 0) return timeoutValue; // timeout
-    if (c == '-') return c;
-    if (c >= '0' && c <= '9') return c;
-    read(); // discard non-numeric
+
+    if( c < 0 ||
+        c == '-' ||
+        (c >= '0' && c <= '9') ||
+        (detectDecimal && c == '.')) return c;
+
+    switch( lookahead ){
+        case SKIP_NONE: return -1; // Fail code.
+        case SKIP_WHITESPACE:
+            switch( c ){
+                case ' ':
+                case '\t':
+                case '\r':
+                case '\n': break;
+                default: return -1; // Fail code.
+            }
+        case SKIP_ALL:
+            break;
+    }
+    read();  // discard non-numeric
   }
+}
+
+long SDI12::parseInt(LookaheadMode lookahead, char ignore)
+{
+  bool isNegative = false;
+  long value = 0;
+  int c;
+
+  c = peekNextDigit(lookahead, false);
+  // ignore non numeric leading characters
+  if(c < 0)
+    return TIMEOUT; // TIMEOUT returned if timeout
+    //  THIS IS THE ONLY DIFFERENCE BETWEEN THIS FUNCTION AND THE STREAM DEFAULT!
+
+  do{
+    if(c == ignore)
+      ; // ignore this character
+    else if(c == '-')
+      isNegative = true;
+    else if(c >= '0' && c <= '9')        // is c a digit?
+      value = value * 10 + c - '0';
+    read();  // consume the character we got with peek
+    c = timedPeek();
+  }
+  while( (c >= '0' && c <= '9') || c == ignore );
+
+  if(isNegative)
+    value = -value;
+  return value;
+}
+
+// as parseInt but returns a floating point value
+float SDI12::parseFloat(LookaheadMode lookahead, char ignore)
+{
+  bool isNegative = false;
+  bool isFraction = false;
+  long value = 0;
+  int c;
+  float fraction = 1.0;
+
+  c = peekNextDigit(lookahead, true);
+    // ignore non numeric leading characters
+  if(c < 0)
+    return TIMEOUT; // TIMEOUT returned if timeout
+    //  THIS IS THE ONLY DIFFERENCE BETWEEN THIS FUNCTION AND THE STREAM DEFAULT!
+
+  do{
+    if(c == ignore)
+      ; // ignore
+    else if(c == '-')
+      isNegative = true;
+    else if (c == '.')
+      isFraction = true;
+    else if(c >= '0' && c <= '9')  {      // is c a digit?
+      value = value * 10 + c - '0';
+      if(isFraction)
+         fraction *= 0.1;
+    }
+    read();  // consume the character we got with peek
+    c = timedPeek();
+  }
+  while( (c >= '0' && c <= '9')  || (c == '.' && !isFraction) || c == ignore );
+
+  if(isNegative)
+    value = -value;
+  if(isFraction)
+    return value * fraction;
+  else
+    return value;
 }
 
 /* ============= 6. Using more than one SDI-12 object.  ===================
