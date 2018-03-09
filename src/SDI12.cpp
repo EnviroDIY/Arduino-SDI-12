@@ -48,7 +48,7 @@ This library requires the use of pin change interrupts (PCINT).
 Not all Arduino boards have the same pin capabilities.
 The known compatibile pins for common variants are shown below.
 
-Arduino Uno: 	All pins.
+Arduino Uno:  All pins.
 Arduino Mega or Mega 2560:
 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62),
 A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
@@ -80,27 +80,25 @@ responsible for responding to the command. Sensors should ignore
 commands that were not issued to them, and should return to a sleep
 state until the datalogger again issues the wakeup sequence.
 
-Physical Connections:            1 data line (0v - 5.5v)
-    1 12v power line (9.6v - 16v)
-    1 ground line
+Physical Connections:  1 data line (0v - 5.5v)
+                       1 12v power line (9.6v - 16v)
+                       1 ground line
 
-Baud Rate:                         1200 bits per second
+Baud Rate:  1200 bits per second
 
-Data Frame Format:                10 bits per data frame
-    1 start bit
-    7 data bits (least significant bit first)
-    1 even parity bit
-    1 stop bit
+Data Frame Format:  10 bits per data frame
+                    1 start bit
+                    7 data bits (least significant bit first)
+                    1 stop bit
 
-Data Line:                         SDI-12 communication uses a single
-    bi-directional data line
-    with three-state, inverse logic.
+Data Line:  SDI-12 communication uses a single bi-directional data line with
+three-state, inverse logic.
 
-    LINE CONDITION    |  BINARY STATE | VOLTAGE RANGE
-    -----------------------------------------------
-    marking                1              -0.5 to 1.0 volts
-    spacing                0               3.5 to 5.5 volts
-    transition          undefined          1.0 to 3.5 volts
+LINE CONDITION  |  BINARY STATE  |  VOLTAGE RANGE
+---------------------------------------------------
+   marking              1        -0.5 to 1.0 volts
+   spacing              0         3.5 to 5.5 volts
+  transition        undefined     1.0 to 3.5 volts
 
       _____       _____       _____       _____       _____     spacing
 5v   |     |     |     |     |     |     |     |     |     |
@@ -113,14 +111,14 @@ SDI-12.org, official site of the SDI-12 Support Group.
 
 
 ==================== Code Organization ======================
-0.    Includes, Defines, & Variable Declarations
-1.    Buffer Setup
-2.    Data Line States, Overview of Interrupts
-3.    Constructor, Destructor, SDI12.begin(), and SDI12.end()
-4.    Waking up, and talking to, the sensors.
-5.    Reading from the SDI-12 object. available(), peek(), read(), clearBuffer()
-6.    Using more than one SDI-12 object, isActive() and setActive().
-7.    Interrupt Service Routine (getting the data into the buffer)
+0.  Includes, Defines, & Variable Declarations
+1.  Buffer Setup
+2.  Data Line States, Overview of Interrupts
+3.  Constructor, Destructor, SDI12.begin(), and SDI12.end()
+4.  Waking up, and talking to, the sensors.
+5.  Reading from the SDI-12 object. available(), peek(), read(), flush(), clearBuffer()
+6.  Using more than one SDI-12 object, isActive() and setActive().
+7.  Interrupt Service Routine (getting the data into the buffer)
 
 =========== 0. Includes, Defines, & Variable Declarations =============
 
@@ -236,7 +234,6 @@ from the sensor.
 This may be needed for implementing a slave-side device, which should
 relinquish control of the data line when not transmitting.
 */
-
 
 // 2.1 - Processor specific parity and interrupts
 #if defined __AVR__
@@ -469,10 +466,8 @@ void SDI12::wakeSensors(){
   setState(TRANSMITTING);
   digitalWrite(_dataPin, HIGH);
   delayMicroseconds(12100);  // Required break of 12 milliseconds
-  // delayMicroseconds(12500);  // Required break of 12 milliseconds
   digitalWrite(_dataPin, LOW);
   delayMicroseconds(8400);  // Required marking of 8.33 milliseconds
-  // delayMicroseconds(8800);  // Required marking of 8.33 milliseconds
 }
 
 // 4.2 - this function writes a character out on the data line
@@ -623,7 +618,6 @@ a timeout (TIMEOUT) is a public variable and can be changed dynamically
 within a program by calling:
     mySDI12.TIMEOUT = (int) newValue
 or using the setTimeoutValue(int) function.
-
 
 */
 
@@ -898,7 +892,7 @@ void SDI12::receiveChar()
     delayMicroseconds(SPACING);              // 7.2.5 - Skip the parity bit.
     delayMicroseconds(SPACING);              // 7.2.6 - Skip the stop bit.
 
-    // 7.2.7 - Overflow? If not, proceed.
+                                             // 7.2.7 - Overflow? If not, proceed.
     if ((_rxBufferTail + 1) % _BUFFER_SIZE == _rxBufferHead)
     { _bufferOverflow = true;
     } else {                                 // 7.2.8 - Save char, advance tail.
