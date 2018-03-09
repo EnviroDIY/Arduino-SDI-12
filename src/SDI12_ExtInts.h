@@ -70,10 +70,14 @@ Any pin except 4
 
 typedef const __FlashStringHelper *FlashString;
 
+#define NO_IGNORE_CHAR '\x01' // a char not found in a valid ASCII numeric field
+
 class SDI12 : public Stream
 {
 protected:
-  int peekNextDigit();            // override of Stream equivalent to allow custom value to be returned on timeout
+  // hides the version from the stream to allow custom timeout value
+  int peekNextDigit(LookaheadMode lookahead, bool detectDecimal);
+
 private:
   static SDI12 *_activeObject;    // static pointer to active SDI12 instance
   void setState(uint8_t state);   // sets the state of the SDI12 objects
@@ -96,7 +100,7 @@ public:
   void begin();                     // enable SDI-12 object
   void end();                       // disable SDI-12 object
   void setTimeoutValue(int value);  // sets the value to return if a parse int or parse float times out
-  int timeoutValue;                 // value to return if a parse times out
+  int TIMEOUT;                      // value to return if a parse times out
 
   void forceHold();                     // sets line state to HOLDING
   void forceListen();                   // sets line state to LISTENING
@@ -113,6 +117,11 @@ public:
   void clearBuffer();         // clears the buffer
   void flush(){};             // Waits for sending to finish - because no TX buffering, does nothing
   virtual size_t write(uint8_t byte){return 1;}  // dummy function required to inherit from Stream
+
+
+  // hide the Stream equivalents to allow custom value to be returned on timeout
+  long parseInt(LookaheadMode lookahead = SKIP_ALL, char ignore = NO_IGNORE_CHAR);
+  float parseFloat(LookaheadMode lookahead = SKIP_ALL, char ignore = NO_IGNORE_CHAR);
 
   bool setActive();         // set this instance as the active SDI-12 instance
   bool isActive();          // check if this instance is active
