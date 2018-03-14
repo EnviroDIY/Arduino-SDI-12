@@ -146,7 +146,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 #define HOLDING 2                    // 0.5 value for DISABLED state
 #define TRANSMITTING 3               // 0.6 value for TRANSMITTING state
 #define LISTENING 4                  // 0.7 value for LISTENING state
-#define SPACING 830                  // 0.8 bit timing in microseconds
+#define SPACING 830                  // 0.8 bit timing in microseconds (1200 baud = 1200 bits/second ~ 830 µs/bit)
 
 SDI12 *SDI12::_activeObject = NULL;  // 0.10 pointer to active SDI12 object
 
