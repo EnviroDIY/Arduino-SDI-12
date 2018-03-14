@@ -124,31 +124,57 @@ SDI-12.org, official site of the SDI-12 Support Group.
 
 0.1 - Include the header file for this library.
 0.2 - defines the size of the buffer
-0.3 - defines value for DISABLED state (see section 2)
-0.4 - defines value for ENABLED state (not used, reserved for future)
-0.5 - defines value for DISABLED state (see section 2)
-0.6 - defines value for TRANSMITTING state (see section 2)
-0.7 - defines value for LISTENING state
-0.8 - defines value for the spacing of bits.
+0.3 - defines value for the spacing of bits.
       1200 bits per second implies 833 microseconds per bit.
       830 seems to be a reliable value given the overhead of the call.
-0.10 - a static pointer to the active object. See section 6.
-0.11 - a reference to the data pin, used throughout the library
-0.12 - holds the buffer overflow status
+0.4 - a static pointer to the active object. See section 6.
 
 */
 
 #include "SDI12.h"                   // 0.1 header file for this library
 
 #define SDI12_BUFFER_SIZE 64         // 0.2 max RX buffer size
-#define DISABLED 0                   // 0.3 value for DISABLED state
-#define ENABLED 1                    // 0.4 value for ENABLED state
-#define HOLDING 2                    // 0.5 value for DISABLED state
-#define TRANSMITTING 3               // 0.6 value for TRANSMITTING state
-#define LISTENING 4                  // 0.7 value for LISTENING state
-#define SPACING 830                  // 0.8 bit timing in microseconds (1200 baud = 1200 bits/second ~ 830 µs/bit)
+#define SPACING 830                  // 0.3 bit timing in microseconds (1200 baud = 1200 bits/second ~ 830 µs/bit)
 
-SDI12 *SDI12::_activeObject = NULL;  // 0.10 pointer to active SDI12 object
+SDI12 *SDI12::_activeObject = NULL;  // 0.4 pointer to active SDI12 object
+
+#if F_CPU == 16000000L
+  #define TCNTX TCNT0
+  #define PCI_FLAG_REGISTER PCIFR
+#elif F_CPU == 8000000L
+  #if defined(__AVR_ATtiny25__) | \
+      defined(__AVR_ATtiny45__) | \
+      defined(__AVR_ATtiny85__)
+    #define TCNTX TCNT1
+    #define PCI_FLAG_REGISTER GIFR
+  #else
+    #define TCNTX TCNT2
+    #define PCI_FLAG_REGISTER PCIFR
+  #endif
+#endif
+
+static const uint8_t txBitWidth = (uint8_t) 208;  // The size of a bit in processor "ticks"
+    // 1200 baud bit width in units of 4µs (4µs = 1 processor tick at 16MHz)
+static const uint8_t bitsPerTick_Q10 = 5; // The number of bits per tick, times a multiplier
+    // 1200 bps * 0.000004 s * 2^10 "multiplier"
+static const uint8_t rxWindowWidth = 5;  // A fudge factor to make things work
+static const uint8_t waitingForStartBit = 0xFF;
+
+static uint8_t rxState;  // 0: got start bit; >0: bits rcvd
+static uint8_t prev_t0;  // previous RX transition: timer0 time stamp (4us)
+static uint8_t rxMask;   // bit mask for building received character
+static uint8_t rxValue;  // character being built
+
+// Multiply two 8-bit intergers to get a 16-bit interger
+static uint16_t mul8x8to16(uint8_t x, uint8_t y)
+{return x*y;}
+
+// Calculate how many bit times have passed
+static uint16_t bitTimes( uint8_t dt )
+{
+  return mul8x8to16( dt + rxWindowWidth, bitsPerTick_Q10 ) >> 10;
+
+}
 
 
 /* =========== 1. Buffer Setup ============================================
@@ -255,64 +281,49 @@ uint8_t SDI12::parity_even_bit(uint8_t v)
 }
 #endif
 
-// 2.2 - Returns the current state
-const char *SDI12::getStateName(uint8_t state)
-{
-    const char * retval = "UNKNOWN";
-    if (state == HOLDING) {
-        retval = "HOLDING";
-    }
-    else if (state == TRANSMITTING) {
-        retval = "TRANSMITTING";
-    }
-    else if (state == LISTENING) {
-        retval = "LISTENING";
-    }
-    else if (state == ENABLED) {
-        retval = "ENABLED";
-    }
-    else if (state == DISABLED) {
-        retval = "DISABLED";
-    }
-    return retval;
-}
-
 // 2.3 - sets the state of the SDI-12 object.
-void SDI12::setState(uint8_t state){
-  if(state == HOLDING){
-    pinMode(_dataPin,INPUT);       // added to make output work after pinMode to OUTPUT (don't know why, but works)
-    pinMode(_dataPin,OUTPUT);      // Pin mode = output
-    digitalWrite(_dataPin,LOW);    // Pin state = low
-    #if defined __AVR__
-      *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
-      if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
-        *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
-      }
-      // We don't detach the function from the interrupt for AVR processors
-    #else
-      detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
-    #endif
-    return;
-  }
-  if(state == TRANSMITTING){
-    pinMode(_dataPin,INPUT);   // added to make output work after pinMode to OUTPUT (don't know why, but works)
-    pinMode(_dataPin,OUTPUT);  // Pin mode = output
-    noInterrupts();            // _ALL_ interrupts disabled
-    return;
-  }
-  if(state == LISTENING) {
-    digitalWrite(_dataPin,LOW);   // Pin state = low
-    pinMode(_dataPin,INPUT);      // Pin mode = input
-    interrupts();                 // Enable interrupts
-    #if defined __AVR__
-      *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));  // Enable interrupts on the register with the pin of interest
-      *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));  // Enable interrupts on the specific pin of interest
-      // The interrupt function is actually attached to the interrupt way down in section 7.3
-    #else
-      attachInterrupt(digitalPinToInterrupt(_dataPin),handleInterrupt, CHANGE);  // Merely need to attach the interrupt function to the pin
-    #endif
-  }
-  else {   // implies state==DISABLED
+void SDI12::setState(SDI12_STATES state){
+  switch (state)
+  {
+    case HOLDING:
+    {
+      pinMode(_dataPin,INPUT);       // added to make output work after pinMode to OUTPUT (don't know why, but works)
+      pinMode(_dataPin,OUTPUT);      // Pin mode = output
+      digitalWrite(_dataPin,LOW);    // Pin state = low
+      #if defined __AVR__
+        *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
+        if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
+          *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
+        }
+        // We don't detach the function from the interrupt for AVR processors
+      #else
+        detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
+      #endif
+      break;
+    }
+    case TRANSMITTING:
+    {
+      pinMode(_dataPin,INPUT);   // added to make output work after pinMode to OUTPUT (don't know why, but works)
+      pinMode(_dataPin,OUTPUT);  // Pin mode = output
+      noInterrupts();            // _ALL_ interrupts disabled
+      break;
+    }
+    case LISTENING:
+    {
+      digitalWrite(_dataPin,LOW);   // Pin state = low
+      pinMode(_dataPin,INPUT);      // Pin mode = input
+      interrupts();                 // Enable interrupts
+      #if defined __AVR__
+        *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));  // Enable interrupts on the register with the pin of interest
+        *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));  // Enable interrupts on the specific pin of interest
+        // The interrupt function is actually attached to the interrupt way down in section 7.5
+      #else
+        attachInterrupt(digitalPinToInterrupt(_dataPin),handleInterrupt, CHANGE);  // Merely need to attach the interrupt function to the pin
+      #endif
+      break;
+    }
+    default:  // DISABLED or ENABLED
+    {
       digitalWrite(_dataPin,LOW);   // Pin state = low
       pinMode(_dataPin,INPUT);      // Pin mode = input
       #if defined __AVR__
@@ -324,6 +335,8 @@ void SDI12::setState(uint8_t state){
       #else
         detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
       #endif
+      break;
+    }
   }
 }
 
@@ -528,7 +541,7 @@ void SDI12::sendCommand(FlashString cmd)
 
 //  4.4 - this function sets up for a response to a separate data recorder by
 //        sending out a marking and then sending out the characters of resp
-//        one by one (for slave-side use, that is, whdn the Arduino itself is
+//        one by one (for slave-side use, that is, when the Arduino itself is
 //        acting as an SDI-12 device rather than a recorder).
 void SDI12::sendResponse(String &resp)
 {
@@ -828,21 +841,19 @@ We have received an interrupt signal, what should we do?
 
 7.1 - Passes off responsibility for the interrupt to the active object.
 
-7.2 - This function quickly reads a new character from the data line in
-to the buffer. It takes place over a series of key steps.
+7.2 - Creates a blank slate of bits for an incoming character
 
-+ 7.2.1 - Check for the start bit. If it is not there, interrupt may be
+7.3 - This function checks which direction the change of the interrupt was and
+then uses that to populate the bits of the character.
+
++ First check if we're expecting a start bit and if this change is in the
+right direction for the start bit. If it is not, interrupt may be
 from interference or an interrupt we are not interested in, so return.
+Because the SDI-12 protocol specifies inverse logic, the end of a start bit will
+be a change from LOW to HIGH.
 
-+ 7.2.2 - Make space in memory for the new character "newChar".
-
-+ 7.2.3 - Wait half of a SPACING to help center on the next bit. It will
-not actually be centered, or even approximately so until
-delayMicroseconds(SPACING) is called again.
-
-+ 7.2.4 - For each of the 8 bits in the payload, read wether or not the
-line state is HIGH or LOW. We use a moving mask here, as was previously
-demonstrated in the writeByte() function.
++ If this isn't a start bit, and a new character has been started, figure out
+where in the character we are at this change and fill out bits accordingly.
 
 The loop runs from i=0x1 (hexadecimal notation for 00000001) to i<0x80
 (hexadecimal notation for 10000000). So the loop effectively uses the
@@ -857,58 +868,108 @@ masks following masks: 00000001
 Here we use an if / else structure that helps to balance the time it
 takes to either a HIGH vs a LOW, and helps maintain a constant timing.
 
-+ 7.2.5 - Skip the parity bit. There is no error checking.
+7.4 - Puts a new character into the active SDI-12 buffer
 
-+ 7.2.6 - Skip the stop bit.
-
-+ 7.2.7 - Check for an overflow. We do this by checking if advancing the
-tail would make it have the same index as the head (in a circular
-fashion).
-
-+ 7.2.8 - Save the byte into the buffer if there has not been an
-overflow, and then advance the tail index.
-
-7.3 - Check if the various interrupt vectors are defined. If they are
+7.5 - Check if the various interrupt vectors are defined. If they are
 the ISR is instructed to call _handleInterrupt() when they trigger. */
 
 // 7.1 - Passes off responsibility for the interrupt to the active object.
 void SDI12::handleInterrupt(){
-  if (_activeObject) _activeObject->receiveChar();
+  if (_activeObject) _activeObject->receiveISR();
 }
 
-// 7.2 - Quickly reads a new character into the buffer.
-void SDI12::receiveChar()
+// 7.2 - Creates a blank slate of bits for an incoming character
+void SDI12::startChar()
 {
-  if (digitalRead(_dataPin))                // 7.2.1 - Start bit?
-  {
-    uint8_t newChar = 0;                    // 7.2.2 - Make room for char.
+  rxState = 0;     // got a start bit
+  rxMask  = 0x01;  // bit mask, lsb first
+  rxValue = 0x00;  // RX character to be, a blank slate
 
-    delayMicroseconds(SPACING/2);           // 7.2.3 - Wait 1/2 SPACING
+} // startChar
 
-    for (uint8_t i=0x1; i<0x80; i <<= 1)    // 7.2.4 - read the 7 data bits
-    {
-      delayMicroseconds(SPACING);
-      uint8_t noti = ~i;
-      if (!digitalRead(_dataPin))
-        newChar |= i;
-      else
-        newChar &= noti;
+// 7.3 - The actual interrupt service routine
+void SDI12::receiveISR()
+{
+  uint8_t t0 = TCNTX;                // time of this data transition (plus ISR latency)
+  uint8_t d = digitalRead(_dataPin); // current RX data level
+
+  // Check if we're ready for a start bit, and if this could possibly be it
+  // Otherwise, just ignore the interrupt and exit
+  if (rxState == waitingForStartBit) {
+    if (d == 0) return;   // it just became low so not a start bit, exit
+    startChar();
+  }
+
+  // if we aren't ready for a start bit, it means it has already come in and
+  // this new change is from a data, parity, or stop bit
+  else {
+
+    // check how many bit times have passed since the last change
+    uint16_t rxBits = bitTimes( t0-prev_t0 );
+    // calculate how many bit should be left, ignoring parity bit and stop bit
+    uint8_t bitsLeft = 8 - rxState;
+    // check again if this should be a new character
+    bool nextCharStarted = (rxBits > bitsLeft);
+
+    // check how many bits should have been sent since the last change
+    uint8_t bitsThisFrame   =  nextCharStarted ? bitsLeft : rxBits;
+    // Advance the receive state by that many bits
+    rxState += bitsThisFrame;
+
+    // Set all the bits received between the last change and this change
+    // If the current state is HIGH (and it just became so), then all bits between
+    // the last change and now must have been LOW.
+    if (d == 1) {
+      // back fill previous bits with 1's (inverse logic - LOW = 1)
+      while (bitsThisFrame-- > 0) {
+        rxValue |= rxMask;
+        rxMask   = rxMask << 1;
+      }
+      rxMask = rxMask << 1;
+    }
+    // If the current state is LOW (and it just became so), then this bit is LOW
+    // but all bits between the last change and now must have been HIGH
+    else { // d==0
+      // previous bits were 0's so only this bit is a 1 (inverse logic - LOW = 1)
+      rxMask   = rxMask << (bitsThisFrame-1);
+      rxValue |= rxMask;
     }
 
-    delayMicroseconds(SPACING);              // 7.2.5 - Skip the parity bit.
-    delayMicroseconds(SPACING);              // 7.2.6 - Skip the stop bit.
+    // After setting bits, if this is the 7th bit, parity bit, or stop bit
+    // then the character is complete.
+    if (rxState > 6) {
+      charToBuffer(rxValue);  // Put the finished character into the buffer
 
-                                             // 7.2.7 - Overflow? If not, proceed.
-    if ((_rxBufferTail + 1) % SDI12_BUFFER_SIZE == _rxBufferHead)
-    { _bufferOverflow = true;
-    } else {                                 // 7.2.8 - Save char, advance tail.
-      _rxBuffer[_rxBufferTail] = newChar;
-      _rxBufferTail = (_rxBufferTail + 1) % SDI12_BUFFER_SIZE;
+      if ((d == 1) || !nextCharStarted) {
+        rxState = waitingForStartBit;
+        // DISABLE STOP BIT TIMER
+
+      } else {
+        // The last char ended with 1's, so this 0 is actually
+        //   the start bit of the next character.
+
+        startChar();
+      }
     }
+  prev_t0 = t0;  // remember time stamp of this change!
   }
 }
 
-// 7.3 - Define AVR interrupts
+// 7.4 - Put a new character in the buffer
+void SDI12::charToBuffer( uint8_t c )
+{
+  // Check for a buffer overflow. If not, proceed.
+  if ((_rxBufferTail + 1) % SDI12_BUFFER_SIZE == _rxBufferHead)
+    { _bufferOverflow = true; }
+  // Save the character, advance buffer tail.
+  else
+  {
+     _rxBuffer[_rxBufferTail] = c;
+     _rxBufferTail = (_rxBufferTail + 1) % SDI12_BUFFER_SIZE;
+  }
+}
+
+// 7.5 - Define AVR interrupts
 
 #if defined __AVR__  // Only AVR processors use interrupts like this
 

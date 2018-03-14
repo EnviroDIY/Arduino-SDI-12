@@ -79,13 +79,24 @@ protected:
   int peekNextDigit(LookaheadMode lookahead, bool detectDecimal);
 
 private:
+
+  // For the various SDI12 states
+  typedef enum SDI12_STATES
+  {
+    DISABLED = 0,
+    ENABLED = 1,
+    HOLDING = 2,
+    TRANSMITTING = 3,
+    LISTENING = 4
+  } SDI12_STATES;
+
   static SDI12 *_activeObject;    // static pointer to active SDI12 instance
-  void setState(uint8_t state);   // sets the state of the SDI12 objects
+  void setState(SDI12_STATES state);   // sets the state of the SDI12 objects
   void wakeSensors();             // used to wake up the SDI12 bus
   void writeChar(uint8_t out);    // used to send a char out on the data line
-  void receiveChar();             // used by the ISR to grab a char from data line
-
-  static const char * getStateName(uint8_t state);     // get state name (in ASCII)
+  void startChar();               // creates a blank slate for a new character
+  void receiveISR();              // the actual function responding to changes in rx line state
+  void charToBuffer(uint8_t c);   // puts a finished character into the SDI12 instance buffer
 
   #ifndef __AVR__
     static uint8_t parity_even_bit(uint8_t v);
