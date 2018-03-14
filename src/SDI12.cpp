@@ -124,9 +124,6 @@ SDI-12.org, official site of the SDI-12 Support Group.
 
 0.1 - Include the header file for this library.
 0.2 - defines the size of the buffer
-0.3 - defines value for the spacing of bits.
-      1200 bits per second implies 833 microseconds per bit.
-      830 seems to be a reliable value given the overhead of the call.
 0.4 - a static pointer to the active object. See section 6.
 
 */
@@ -134,47 +131,19 @@ SDI-12.org, official site of the SDI-12 Support Group.
 #include "SDI12.h"                   // 0.1 header file for this library
 
 #define SDI12_BUFFER_SIZE 64         // 0.2 max RX buffer size
-#define SPACING 830                  // 0.3 bit timing in microseconds (1200 baud = 1200 bits/second ~ 830 µs/bit)
 
 SDI12 *SDI12::_activeObject = NULL;  // 0.4 pointer to active SDI12 object
 
-#if F_CPU == 16000000L
-  #define TCNTX TCNT0
-  #define PCI_FLAG_REGISTER PCIFR
-#elif F_CPU == 8000000L
-  #if defined(__AVR_ATtiny25__) | \
-      defined(__AVR_ATtiny45__) | \
-      defined(__AVR_ATtiny85__)
-    #define TCNTX TCNT1
-    #define PCI_FLAG_REGISTER GIFR
-  #else
-    #define TCNTX TCNT2
-    #define PCI_FLAG_REGISTER PCIFR
-  #endif
-#endif
-
-static const uint8_t txBitWidth = (uint8_t) 208;  // The size of a bit in processor "ticks"
-    // 1200 baud bit width in units of 4µs (4µs = 1 processor tick at 16MHz)
-static const uint8_t bitsPerTick_Q10 = 5; // The number of bits per tick, times a multiplier
-    // 1200 bps * 0.000004 s * 2^10 "multiplier"
-static const uint8_t rxWindowWidth = 5;  // A fudge factor to make things work
+static const uint16_t bitWidth_micros = (uint16_t) 833;  // The size of a bit in microseconds
+    // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
+    // 830 seems to be a reliable value given the overhead of the call.
+static const uint8_t rxWindowWidth = 9;  // A fudge factor to make things work
 static const uint8_t waitingForStartBit = 0xFF;
 
-static uint8_t rxState;  // 0: got start bit; >0: bits rcvd
-static uint8_t prev_t0;  // previous RX transition: timer0 time stamp (4us)
-static uint8_t rxMask;   // bit mask for building received character
-static uint8_t rxValue;  // character being built
-
-// Multiply two 8-bit intergers to get a 16-bit interger
-static uint16_t mul8x8to16(uint8_t x, uint8_t y)
-{return x*y;}
-
-// Calculate how many bit times have passed
-static uint16_t bitTimes( uint8_t dt )
-{
-  return mul8x8to16( dt + rxWindowWidth, bitsPerTick_Q10 ) >> 10;
-
-}
+static uint8_t rxState;   // 0: got start bit; >0: bits rcvd
+static uint16_t prev_t0;  // previous RX transition: timer0 time stamp (4us)
+static uint8_t rxMask;    // bit mask for building received character
+static uint8_t rxValue;   // character being built
 
 
 /* =========== 1. Buffer Setup ============================================
@@ -449,7 +418,7 @@ significant bit position, since the characters we are using are only
 Then we use the '|=' operator to set the bit if necessary.
 
 + 4.2.2 - Send the start bit. The start bit is always a '0', so we simply
-write the dataPin HIGH for SPACING microseconds.
+write the dataPin HIGH for bitWidth_micros microseconds.
 
 + 4.2.3 - Send the payload (the 7 character bits and the parity bit) least
 significant bit first. This is accomplished bitwise AND operations on a
@@ -468,7 +437,7 @@ if(out & mask){
     }
 
 + 4.2.4 - Send the stop bit. The stop bit is always a '1', so we simply
-write the dataPin LOW for SPACING microseconds.
+write the dataPin LOW for bitWidth_micros microseconds.
 
 4.3 - sendCommand(String cmd) is a publicly accessible function that
 wakes sensors and sends out a String byte by byte the command line.
@@ -495,7 +464,7 @@ void SDI12::writeChar(uint8_t out)
   out |= (parity_even_bit(out)<<7);          // 4.2.1 - parity bit
 
   digitalWrite(_dataPin, HIGH);              // 4.2.2 - start bit
-  delayMicroseconds(SPACING);
+  delayMicroseconds(bitWidth_micros);
 
   for (byte mask = 0x01; mask; mask<<=1){    // 4.2.3 - send payload
     if(out & mask){
@@ -504,11 +473,11 @@ void SDI12::writeChar(uint8_t out)
     else{
       digitalWrite(_dataPin, HIGH);
     }
-    delayMicroseconds(SPACING);
+    delayMicroseconds(bitWidth_micros);
   }
 
   digitalWrite(_dataPin, LOW);                // 4.2.4 - stop bit
-  delayMicroseconds(SPACING);
+  delayMicroseconds(bitWidth_micros);
 }
 
 //    4.3    - this function sends out the characters of the String cmd, one by one
@@ -890,7 +859,7 @@ void SDI12::startChar()
 // 7.3 - The actual interrupt service routine
 void SDI12::receiveISR()
 {
-  uint8_t t0 = TCNTX;                // time of this data transition (plus ISR latency)
+  uint16_t t0 = micros();             // time of this data transition (plus ISR latency)
   uint8_t d = digitalRead(_dataPin); // current RX data level
 
   // Check if we're ready for a start bit, and if this could possibly be it
@@ -905,10 +874,10 @@ void SDI12::receiveISR()
   else {
 
     // check how many bit times have passed since the last change
-    uint16_t rxBits = bitTimes( t0-prev_t0 );
+    uint16_t rxBits = (t0-prev_t0 + rxWindowWidth)/bitWidth_micros;
     // calculate how many bit should be left, ignoring parity bit and stop bit
     uint8_t bitsLeft = 8 - rxState;
-    // check again if this should be a new character
+    // mark a new character started if more bits have been received than should be left
     bool nextCharStarted = (rxBits > bitsLeft);
 
     // check how many bits should have been sent since the last change
