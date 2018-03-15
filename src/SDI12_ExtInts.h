@@ -95,12 +95,15 @@ private:
   bool _bufferOverflow;           // buffer overflow status
 
 public:
+  SDI12();                          // constructor - without argument, for better library integration
   SDI12(uint8_t dataPin);           // constructor
   ~SDI12();                         // destructor
   void begin();                     // enable SDI-12 object
+  void begin(uint8_t dataPin);      // enable SDI-12 object - if you use the empty constuctor, USE THIS
   void end();                       // disable SDI-12 object
-  void setTimeoutValue(int value);  // sets the value to return if a parse int or parse float times out
   int TIMEOUT;                      // value to return if a parse times out
+  void setTimeoutValue(int value);  // sets the value to return if a parse int or parse float times out
+  uint8_t getDataPin();             // returns the data pin for the current instace
 
   void forceHold();                     // sets line state to HOLDING
   void forceListen();                   // sets line state to LISTENING

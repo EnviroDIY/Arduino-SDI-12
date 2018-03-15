@@ -28,10 +28,8 @@
  *
  */
 
-
 #define HELPTEXT "OPTIONS:\n\rhelp   : Print this message\n\rmode s : SDI-12 command mode (uppercase and ! automatically corrected) [default]\n\rmode v : verbatim mode (text will be sent verbatim)\n\rfb on  : Enable feedback (characters visible while typing) [default]\n\rfb off : Disable feedback (characters not visible while typing; may be desired for developers)\n\r(else) : send command to SDI-12 bus"
 
-// Requires modified SDI-12 libary with addition of public forceListen() and public sendResponse()
 #include <SDI12.h>
 
 #define SERIAL_BAUD 57600  // The baud rate for the output serial port

@@ -140,13 +140,13 @@ SDI-12.org, official site of the SDI-12 Support Group.
 
 #include "SDI12_ExtInts.h"           // 0.1 header file for this library
 
-#define _BUFFER_SIZE 64              // 0.2 max RX buffer size
+#define SDI12_BUFFER_SIZE 64         // 0.2 max RX buffer size
 #define DISABLED 0                   // 0.3 value for DISABLED state
 #define ENABLED 1                    // 0.4 value for ENABLED state
 #define HOLDING 2                    // 0.5 value for DISABLED state
 #define TRANSMITTING 3               // 0.6 value for TRANSMITTING state
 #define LISTENING 4                  // 0.7 value for LISTENING state
-#define SPACING 830                  // 0.8 bit timing in microseconds
+#define SPACING 830                  // 0.8 bit timing in microseconds (1200 baud = 1200 bits/second ~ 830 µs/bit)
 
 SDI12 *SDI12::_activeObject = NULL;  // 0.10 pointer to active SDI12 object
 
@@ -174,10 +174,10 @@ buffer tail. (unsigned 8-bit integer, can map from 0-255)
 
 */
 
-// See section 0 above.           // 1.1 - max buffer size
-char _rxBuffer[_BUFFER_SIZE];     // 1.2 - buff for incoming
-uint8_t _rxBufferHead = 0;        // 1.3 - index of buff head
-uint8_t _rxBufferTail = 0;        // 1.4 - index of buff tail
+// See section 0 above.             // 1.1 - max buffer size
+char _rxBuffer[SDI12_BUFFER_SIZE];  // 1.2 - buff for incoming
+uint8_t _rxBufferHead = 0;          // 1.3 - index of buff head
+uint8_t _rxBufferTail = 0;          // 1.4 - index of buff tail
 
 
 /* =========== 2. Data Line States ===============================
@@ -280,43 +280,49 @@ const char *SDI12::getStateName(uint8_t state)
 // 2.3 - sets the state of the SDI-12 object.
 void SDI12::setState(uint8_t state){
   if(state == HOLDING){
-    pinMode(_dataPin,INPUT);  // added to make output work after pinMode to OUTPUT (don't know why, but works)
-    pinMode(_dataPin,OUTPUT);
-    digitalWrite(_dataPin,LOW);
+    pinMode(_dataPin,INPUT);       // added to make output work after pinMode to OUTPUT (don't know why, but works)
+    pinMode(_dataPin,OUTPUT);      // Pin mode = output
+    digitalWrite(_dataPin,LOW);    // Pin state = low
     #if defined __AVR__
-      *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
+      *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
+      if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
+        *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
+      }
+      // We don't detach the function from the interrupt for AVR processors
     #else
-      detachInterrupt(digitalPinToInterrupt(_dataPin));
+      detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
     #endif
     return;
   }
   if(state == TRANSMITTING){
-    pinMode(_dataPin,INPUT);  // added to make output work after pinMode to OUTPUT (don't know why, but works)
-    pinMode(_dataPin,OUTPUT);
-    noInterrupts();             // supplied by Arduino.h, same as cli()
+    pinMode(_dataPin,INPUT);   // added to make output work after pinMode to OUTPUT (don't know why, but works)
+    pinMode(_dataPin,OUTPUT);  // Pin mode = output
+    noInterrupts();            // _ALL_ interrupts disabled
     return;
   }
   if(state == LISTENING) {
-    digitalWrite(_dataPin,LOW);
-    pinMode(_dataPin,INPUT);
-    interrupts();                // supplied by Arduino.h, same as sei()
+    digitalWrite(_dataPin,LOW);   // Pin state = low
+    pinMode(_dataPin,INPUT);      // Pin mode = input
+    interrupts();                 // Enable interrupts
     #if defined __AVR__
-      *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));
-      *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));
+      *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));  // Enable interrupts on the register with the pin of interest
+      *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));  // Enable interrupts on the specific pin of interest
+      // The interrupt function is actually attached to the interrupt way down in section 7.3
     #else
-      attachInterrupt(digitalPinToInterrupt(_dataPin),handleInterrupt, CHANGE);
+      attachInterrupt(digitalPinToInterrupt(_dataPin),handleInterrupt, CHANGE);  // Merely need to attach the interrupt function to the pin
     #endif
   }
-  else {                         // implies state==DISABLED
-      digitalWrite(_dataPin,LOW);
-      pinMode(_dataPin,INPUT);
+  else {   // implies state==DISABLED
+      digitalWrite(_dataPin,LOW);   // Pin state = low
+      pinMode(_dataPin,INPUT);      // Pin mode = input
       #if defined __AVR__
-        *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));
-        if(!*digitalPinToPCMSK(_dataPin)){
+        *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
+        if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
             *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
         }
+        // We don't detach the function from the interrupt for AVR processors
       #else
-        detachInterrupt(digitalPinToInterrupt(_dataPin));
+        detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
       #endif
   }
 }
@@ -358,6 +364,9 @@ times out.  By default this value is -9999.
 */
 
 //  3.1 Constructor
+SDI12::SDI12(){
+  _bufferOverflow = false;
+}
 SDI12::SDI12(uint8_t dataPin){
   _bufferOverflow = false;
   _dataPin = dataPin;
@@ -381,12 +390,19 @@ void SDI12::begin(){
   // in-site environmental sensors.
   setTimeoutValue(-9999);
 }
+void SDI12::begin(uint8_t dataPin){
+  _dataPin = dataPin;
+  begin();
+}
 
 //  3.4 End
 void SDI12::end() { setState(DISABLED); }
 
-//  3.4 Set the timeout return
+//  3.5 Set the timeout return
 void SDI12::setTimeoutValue(int value) { TIMEOUT = value; }
+
+//  3.6 Return the data pin for the SDI-12 instance
+uint8_t SDI12::getDataPin() { return _dataPin; }
 
 
 /* ============= 4. Waking up, and talking to, the sensors. ===================
@@ -563,10 +579,10 @@ void SDI12::sendResponse(FlashString resp)
 characters available in the buffer.
 
 To understand how:
-_rxBufferTail + _BUFFER_SIZE - _rxBufferHead) % _BUFFER_SIZE;
+_rxBufferTail + SDI12_BUFFER_SIZE - _rxBufferHead) % SDI12_BUFFER_SIZE;
 accomplishes this task, we will use a few examples.
 
-To start take the buffer below that has _BUFFER_SIZE = 10. The
+To start take the buffer below that has SDI12_BUFFER_SIZE = 10. The
 message "abc" has been wrapped around (circular buffer).
 
 _rxBufferTail = 1 // points to the '-' after c
@@ -625,7 +641,7 @@ or using the setTimeoutValue(int) function.
 int SDI12::available()
 {
   if(_bufferOverflow) return -1;
-  return (_rxBufferTail + _BUFFER_SIZE - _rxBufferHead) % _BUFFER_SIZE;
+  return (_rxBufferTail + SDI12_BUFFER_SIZE - _rxBufferHead) % SDI12_BUFFER_SIZE;
 }
 
 // 5.2 - reveals the next character in the buffer without consuming
@@ -649,7 +665,7 @@ int SDI12::read()
   _bufferOverflow = false;                             // Reading makes room in the buffer
   if (_rxBufferHead == _rxBufferTail) return -1;       // Empty buffer? If yes, -1
   uint8_t nextChar = _rxBuffer[_rxBufferHead];         // Otherwise, grab char at head
-  _rxBufferHead = (_rxBufferHead + 1) % _BUFFER_SIZE;  // increment head
+  _rxBufferHead = (_rxBufferHead + 1) % SDI12_BUFFER_SIZE;  // increment head
   return nextChar;                                     // return the char
 }
 
@@ -893,11 +909,11 @@ void SDI12::receiveChar()
     delayMicroseconds(SPACING);              // 7.2.6 - Skip the stop bit.
 
                                              // 7.2.7 - Overflow? If not, proceed.
-    if ((_rxBufferTail + 1) % _BUFFER_SIZE == _rxBufferHead)
+    if ((_rxBufferTail + 1) % SDI12_BUFFER_SIZE == _rxBufferHead)
     { _bufferOverflow = true;
     } else {                                 // 7.2.8 - Save char, advance tail.
       _rxBuffer[_rxBufferTail] = newChar;
-      _rxBufferTail = (_rxBufferTail + 1) % _BUFFER_SIZE;
+      _rxBufferTail = (_rxBufferTail + 1) % SDI12_BUFFER_SIZE;
     }
   }
 }
