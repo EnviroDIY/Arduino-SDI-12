@@ -146,8 +146,6 @@ void printInfo(char i){
 
 void printBufferToScreen(){
 
-  flip = !flip; // flip the switch
-
   if(flip){    // print out the buffer as a string, as in example D
     // boolean firstPass = true;
     String buffer = "";
@@ -349,6 +347,8 @@ void setup(){
 }
 
 void loop(){
+
+  flip = !flip; // flip the switch between parsing and not parsing
 
   // scan address space 0-9
   for(char i = '0'; i <= '9'; i++) if(isTaken(i)){
