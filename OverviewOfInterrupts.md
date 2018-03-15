@@ -120,15 +120,18 @@ So to finish our example:
 
 
 So only the interrupt on pin 13 remains set. As a matter of book keeping, if we unset the last bit in the PCMSK, we ought to also unset the respective bit in the PCICR.
-    !(\*digitalPinToPCMSK(9)
-    will evaluate TRUE if PCMSK {00000000}
-    will evaluate FALSE if PCMSK != {00000000}
+
+    !(*digitalPinToPCMSK(9)
+
+        will evaluate TRUE if PCMSK {00000000}
+
+        will evaluate FALSE if PCMSK != {00000000}
 
 In this case, pin 13 is set, so the expression would be FALSE. If we go back to the original case without pin 13, the expression after disabling pin 9 would evaluate to TRUE.
 
 Therefore if we evaluate to TRUE, we should tidy up:
 ```cpp
-if(!\*digitalPinToPCMSK(\_dataPin)){
-      \*digitalPinToPCICR(\_dataPin) &= ~(1<<digitalPinToPCICRbit(\_dataPin));
+if(!*digitalPinToPCMSK(_dataPin)){
+      *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
   }
 ```

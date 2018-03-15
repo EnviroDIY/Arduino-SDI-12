@@ -23,7 +23,6 @@
  *    hard-coded 9s interspersed throughout the code
  */
 
-// Requires modified SDI-12 libary with addition of public forceListen() and public sendResponse()
 #include <SDI12_PCINT3.h>
 
 #define DATA_PIN 7         // The pin of the SDI-12 data bus
