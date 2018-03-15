@@ -364,6 +364,9 @@ times out.  By default this value is -9999.
 */
 
 //  3.1 Constructor
+SDI12::SDI12(){
+  _bufferOverflow = false;
+}
 SDI12::SDI12(uint8_t dataPin){
   _bufferOverflow = false;
   _dataPin = dataPin;
@@ -387,12 +390,19 @@ void SDI12::begin(){
   // in-site environmental sensors.
   setTimeoutValue(-9999);
 }
+void SDI12::begin(uint8_t dataPin){
+  _dataPin = dataPin;
+  begin();
+}
 
 //  3.4 End
 void SDI12::end() { setState(DISABLED); }
 
-//  3.4 Set the timeout return
+//  3.5 Set the timeout return
 void SDI12::setTimeoutValue(int value) { TIMEOUT = value; }
+
+//  3.6 Return the data pin for the SDI-12 instance
+uint8_t SDI12::getDataPin() { return _dataPin; }
 
 
 /* ============= 4. Waking up, and talking to, the sensors. ===================
