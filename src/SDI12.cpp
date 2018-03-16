@@ -283,14 +283,16 @@ void SDI12::setState(uint8_t state){
     pinMode(_dataPin,INPUT);       // added to make output work after pinMode to OUTPUT (don't know why, but works)
     pinMode(_dataPin,OUTPUT);      // Pin mode = output
     digitalWrite(_dataPin,LOW);    // Pin state = low
-    #if defined __AVR__
-      *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
-      if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
-        *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
-      }
-      // We don't detach the function from the interrupt for AVR processors
-    #else
-      detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
+    #ifndef SDI12_EXTERNAL_PCINT
+      #if defined __AVR__
+        *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
+        if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
+          *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
+        }
+        // We don't detach the function from the interrupt for AVR processors
+      #else
+        detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
+      #endif
     #endif
     return;
   }
@@ -304,25 +306,29 @@ void SDI12::setState(uint8_t state){
     digitalWrite(_dataPin,LOW);   // Pin state = low
     pinMode(_dataPin,INPUT);      // Pin mode = input
     interrupts();                 // Enable interrupts
-    #if defined __AVR__
-      *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));  // Enable interrupts on the register with the pin of interest
-      *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));  // Enable interrupts on the specific pin of interest
-      // The interrupt function is actually attached to the interrupt way down in section 7.3
-    #else
-      attachInterrupt(digitalPinToInterrupt(_dataPin),handleInterrupt, CHANGE);  // Merely need to attach the interrupt function to the pin
+    #ifndef SDI12_EXTERNAL_PCINT
+      #if defined __AVR__
+        *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));  // Enable interrupts on the register with the pin of interest
+        *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));  // Enable interrupts on the specific pin of interest
+        // The interrupt function is actually attached to the interrupt way down in section 7.3
+      #else
+        attachInterrupt(digitalPinToInterrupt(_dataPin),handleInterrupt, CHANGE);  // Merely need to attach the interrupt function to the pin
+      #endif
     #endif
   }
   else {   // implies state==DISABLED
       digitalWrite(_dataPin,LOW);   // Pin state = low
       pinMode(_dataPin,INPUT);      // Pin mode = input
+      #ifndef SDI12_EXTERNAL_PCINT
       #if defined __AVR__
-        *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
-        if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
-            *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
-        }
-        // We don't detach the function from the interrupt for AVR processors
-      #else
-        detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
+          *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
+          if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
+              *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
+          }
+          // We don't detach the function from the interrupt for AVR processors
+        #else
+          detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
+        #endif
       #endif
   }
 }
