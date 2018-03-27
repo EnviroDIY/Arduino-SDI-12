@@ -137,13 +137,13 @@ SDI12 *SDI12::_activeObject = NULL;  // 0.4 pointer to active SDI12 object
 static const uint16_t bitWidth_micros = (uint16_t) 833;  // The size of a bit in microseconds
     // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
     // 830 seems to be a reliable value given the overhead of the call.
-static const uint8_t rxWindowWidth = 9;  // A fudge factor to make things work
-static const uint8_t waitingForStartBit = 0xFF;
+static const uint8_t rxWindowWidth = 0;  // A fudge factor to make things work
+static const uint8_t allBitsComplete = 0b11111111;
 
-static uint8_t rxState;   // 0: got start bit; >0: bits rcvd
-static uint16_t prev_t0;  // previous RX transition: timer0 time stamp (4us)
-static uint8_t rxMask;    // bit mask for building received character
-static uint8_t rxValue;   // character being built
+static uint16_t prevBitMicros;   // previous RX transition in micros
+static uint8_t rxBitsCompleted;  // 0: got start bit; >0: bits rcvd
+static uint8_t rxMask;           // bit mask for building received character
+static uint8_t rxValue;          // character being built
 
 
 /* =========== 1. Buffer Setup ============================================
@@ -466,7 +466,7 @@ void SDI12::writeChar(uint8_t out)
   digitalWrite(_dataPin, HIGH);              // 4.2.2 - start bit
   delayMicroseconds(bitWidth_micros);
 
-  for (byte mask = 0x01; mask; mask<<=1){    // 4.2.3 - send payload
+  for (byte mask = 0b00000001; mask; mask<<=1){    // 4.2.3 - send payload
     if(out & mask){
       digitalWrite(_dataPin, LOW);
     }
@@ -850,22 +850,22 @@ void SDI12::handleInterrupt(){
 // 7.2 - Creates a blank slate of bits for an incoming character
 void SDI12::startChar()
 {
-  rxState = 0;     // got a start bit
-  rxMask  = 0x01;  // bit mask, lsb first
-  rxValue = 0x00;  // RX character to be, a blank slate
+  rxBitsCompleted = 0;     // got a start bit
+  rxMask  = 0b00000001;  // bit mask, lsb first
+  rxValue = 0b00000000;  // RX character to be, a blank slate
 
 } // startChar
 
 // 7.3 - The actual interrupt service routine
 void SDI12::receiveISR()
 {
-  uint16_t t0 = micros();             // time of this data transition (plus ISR latency)
-  uint8_t d = digitalRead(_dataPin); // current RX data level
+  uint16_t thisBitMicros = micros();             // time of this data transition in micros (plus ISR latency)
+  uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
 
   // Check if we're ready for a start bit, and if this could possibly be it
   // Otherwise, just ignore the interrupt and exit
-  if (rxState == waitingForStartBit) {
-    if (d == 0) return;   // it just became low so not a start bit, exit
+  if (rxBitsCompleted == allBitsComplete) {
+    if (pinLevel == LOW) return;   // it just became low so not a start bit, exit
     startChar();
   }
 
@@ -874,21 +874,22 @@ void SDI12::receiveISR()
   else {
 
     // check how many bit times have passed since the last change
-    uint16_t rxBits = (t0-prev_t0 + rxWindowWidth)/bitWidth_micros;
-    // calculate how many bit should be left, ignoring parity bit and stop bit
-    uint8_t bitsLeft = 8 - rxState;
+    uint16_t rxBits = (thisBitMicros - prevBitMicros + rxWindowWidth)/bitWidth_micros;
+    // calculate how many bits should be left, ignoring parity bit and stop bit
+    uint8_t bitsLeft = 8 - rxBitsCompleted;
     // mark a new character started if more bits have been received than should be left
     bool nextCharStarted = (rxBits > bitsLeft);
 
     // check how many bits should have been sent since the last change
+    // translation:  if nextCharStarted bitsThisFrame = bitsLeft, else bitsThisFrame = rxBits
     uint8_t bitsThisFrame   =  nextCharStarted ? bitsLeft : rxBits;
     // Advance the receive state by that many bits
-    rxState += bitsThisFrame;
+    rxBitsCompleted += bitsThisFrame;
 
     // Set all the bits received between the last change and this change
     // If the current state is HIGH (and it just became so), then all bits between
     // the last change and now must have been LOW.
-    if (d == 1) {
+    if (pinLevel == HIGH) {
       // back fill previous bits with 1's (inverse logic - LOW = 1)
       while (bitsThisFrame-- > 0) {
         rxValue |= rxMask;
@@ -898,7 +899,7 @@ void SDI12::receiveISR()
     }
     // If the current state is LOW (and it just became so), then this bit is LOW
     // but all bits between the last change and now must have been HIGH
-    else { // d==0
+    else { // pinLevel==LOW
       // previous bits were 0's so only this bit is a 1 (inverse logic - LOW = 1)
       rxMask   = rxMask << (bitsThisFrame-1);
       rxValue |= rxMask;
@@ -906,11 +907,11 @@ void SDI12::receiveISR()
 
     // After setting bits, if this is the 7th bit, parity bit, or stop bit
     // then the character is complete.
-    if (rxState > 6) {
+    if (rxBitsCompleted > 6) {
       charToBuffer(rxValue);  // Put the finished character into the buffer
 
-      if ((d == 1) || !nextCharStarted) {
-        rxState = waitingForStartBit;
+      if ((pinLevel == HIGH) || !nextCharStarted) {
+        rxBitsCompleted = allBitsComplete;
         // DISABLE STOP BIT TIMER
 
       } else {
@@ -920,7 +921,7 @@ void SDI12::receiveISR()
         startChar();
       }
     }
-  prev_t0 = t0;  // remember time stamp of this change!
+  prevBitMicros = thisBitMicros;  // remember time stamp of this change!
   }
 }
 
