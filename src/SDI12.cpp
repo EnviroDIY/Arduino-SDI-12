@@ -136,7 +136,6 @@ SDI12 *SDI12::_activeObject = NULL;  // 0.3 pointer to active SDI12 object
 
 static const uint16_t bitWidth_micros = (uint16_t) 833;  // The size of a bit in microseconds
     // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
-    // 830 seems to be a reliable value given the overhead of the call.
 static const uint8_t rxWindowWidth = 0;  // A fudge factor to make things work
 static const uint8_t WAITING_FOR_START_BIT = 0b11111111;
 
@@ -302,6 +301,7 @@ void SDI12::setState(SDI12_STATES state){
       pinMode(_dataPin,INPUT);      // Pin mode = input
       interrupts();                 // Enable general interrupts
       setPinInterrupts(true);      // Enable rx inerrupts on data pin
+      rxState = WAITING_FOR_START_BIT;
       break;
     }
     default:  // DISABLED or ENABLED
@@ -839,16 +839,6 @@ be a change from LOW to HIGH.
 + If this isn't a start bit, and a new character has been started, figure out
 where in the character we are at this change and fill out bits accordingly.
 
-The loop runs from i=0x1 (hexadecimal notation for 00000001) to i<0x80
-(hexadecimal notation for 10000000). So the loop effectively uses the
-masks following masks: 00000001
-00000010
-00000100
-00001000
-00010000
-00100000
-01000000 and their inverses.
-
 Here we use an if / else structure that helps to balance the time it
 takes to either a HIGH vs a LOW, and helps maintain a constant timing.
 
@@ -880,8 +870,12 @@ void SDI12::receiveISR()
   // Check if we're ready for a start bit, and if this could possibly be it
   // Otherwise, just ignore the interrupt and exit
   if (rxState == WAITING_FOR_START_BIT) {
-    if (pinLevel == LOW) return;   // it just changed from high to low so not the end of a start bit, exit
-    startChar();  // create an empty character and a new mask with a 1 in the lowest place
+     // If it is low it's not a start bit, exit
+     // Inverse logic start bit = HIGH
+    if (pinLevel == LOW) return;
+    // If it is HIGH, this should be a start bit
+    // Thus set the rxStat to 0, create an empty character, and a new mask with a 1 in the lowest place
+    startChar();
   }
 
   // if the character is incomplete, and this is not a start bit,
@@ -924,7 +918,7 @@ void SDI12::receiveISR()
         rxValue |= rxMask;  // Add a 1 to the LSB/right-most place
         rxMask   = rxMask << 1;  // Shift the 1 in the mask up by one position
       }
-      rxMask = rxMask << 1;  // Set the last bit received as 1
+      rxMask = rxMask << 1;  // Shift the 1 in the mask up by one more position
     }
     // If the current state is LOW (and it just became so), then this bit is LOW
     // but all bits between the last change and now must have been HIGH
@@ -934,27 +928,28 @@ void SDI12::receiveISR()
       rxValue |= rxMask;  //  Add that shifted one to the character being created
     }
 
-    // If this was the 8th or more bit then the character is complete.
+    // If this was the 8th or more bit then the character and parity are complete.
     if (rxState > 7) {
-      rxValue = rxValue >> 1;  // Shift the received value down to throw away the parity bit
+      rxValue &= 0b01111111;  // Throw away the parity bit
       charToBuffer(rxValue);  // Put the finished character into the buffer
 
-      // if we just switched to low, or we haven't exceeded the number of bits forcing
-      // a new character, then this can't be the stop bit, but we do know the character
-      // itself is finished, so we can start looking for a new start bit.
+
+      // if this is LOW, or we haven't exceeded the number of bits in a
+      // character (but have gotten all the data bits, then this should be a
+      // stop bit and we can start looking for a new start bit.
       if ((pinLevel == LOW) || !nextCharStarted) {
         rxState = WAITING_FOR_START_BIT;
         // DISABLE STOP BIT TIMER
 
       } else {
-        // If we just switched to high, or we've past the number of bits to be
-        // into the next character, the last character must have ended with 1's
-        // and this new 0 is actually the start bit of the next character.
+        // If we just switched to HIGH, or we've exceeded the total number of
+        // bits in a character, then the character must have ended with 1's/LOW,
+        // and this new 0/HIGH is actually the start bit of the next character.
         startChar();
       }
     }
-  prevBitMicros = thisBitMicros;  // remember time stamp of this change!
   }
+  prevBitMicros = thisBitMicros;  // remember time stamp of this change!
 }
 
 // 7.4 - Put a new character in the buffer
