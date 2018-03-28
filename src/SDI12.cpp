@@ -138,10 +138,10 @@ static const uint16_t bitWidth_micros = (uint16_t) 833;  // The size of a bit in
     // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
     // 830 seems to be a reliable value given the overhead of the call.
 static const uint8_t rxWindowWidth = 0;  // A fudge factor to make things work
-static const uint8_t allBitsComplete = 0b11111111;
+static const uint8_t WAITING_FOR_START_BIT = 0b11111111;
 
 static uint16_t prevBitMicros;   // previous RX transition in micros
-static uint8_t rxBitsCompleted;  // 0: got start bit; >0: bits rcvd
+static uint8_t rxState;          // 0: got start bit; >0: bits rcvd
 static uint8_t rxMask;           // bit mask for building received character
 static uint8_t rxValue;          // character being built
 
@@ -865,7 +865,7 @@ void SDI12::handleInterrupt(){
 // 7.2 - Creates a blank slate of bits for an incoming character
 void SDI12::startChar()
 {
-  rxBitsCompleted = 0;     // got a start bit
+  rxState = 0;           // got a start bit
   rxMask  = 0b00000001;  // bit mask, lsb first
   rxValue = 0b00000000;  // RX character to be, a blank slate
 
@@ -874,32 +874,46 @@ void SDI12::startChar()
 // 7.3 - The actual interrupt service routine
 void SDI12::receiveISR()
 {
-  uint16_t thisBitMicros = micros();             // time of this data transition in micros (plus ISR latency)
+  uint16_t thisBitMicros = micros();         // time of this data transition in micros (plus ISR latency)
   uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
 
   // Check if we're ready for a start bit, and if this could possibly be it
   // Otherwise, just ignore the interrupt and exit
-  if (rxBitsCompleted == allBitsComplete) {
-    if (pinLevel == LOW) return;   // it just became low so not a start bit, exit
-    startChar();
+  if (rxState == WAITING_FOR_START_BIT) {
+    if (pinLevel == LOW) return;   // it just changed from high to low so not the end of a start bit, exit
+    startChar();  // create an empty character and a new mask with a 1 in the lowest place
   }
 
-  // if we aren't ready for a start bit, it means it has already come in and
-  // this new change is from a data, parity, or stop bit
+  // if the character is incomplete, and this is not a start bit,
+  // then this change is from a data, parity, or stop bit
   else {
 
     // check how many bit times have passed since the last change
+    // the rxWindowWidth is just a fudge factor
     uint16_t rxBits = (thisBitMicros - prevBitMicros + rxWindowWidth)/bitWidth_micros;
-    // calculate how many bits should be left, ignoring parity bit and stop bit
-    uint8_t bitsLeft = 8 - rxBitsCompleted;
-    // mark a new character started if more bits have been received than should be left
+    // calculate how many *data+parity* bits should be left
+    // We know the start bit is past and are ignoring the stop bit (which will be low)
+    // We have to treat the parity bit as a data bit because we don't know its state
+    uint8_t bitsLeft = 9 - rxState;
+    // note that a new character *may* have started if more bits have been
+    // received than should be left.
+    // This will also happen if the parity bit is 1 or the last bit(s) of the
+    // character and the parity bit are all 1's.
     bool nextCharStarted = (rxBits > bitsLeft);
 
-    // check how many bits should have been sent since the last change
-    // translation:  if nextCharStarted bitsThisFrame = bitsLeft, else bitsThisFrame = rxBits
-    uint8_t bitsThisFrame   =  nextCharStarted ? bitsLeft : rxBits;
-    // Advance the receive state by that many bits
-    rxBitsCompleted += bitsThisFrame;
+    // check how many data+parity bits have been sent in this frame
+    // If the total number of bits in this frame is more than the number of data+parity
+    // bits remaining in the character, then the number of data+parity bits is equal
+    // to the number of bits remaining for the character and partiy.  If the total
+    // number of bits in this frame is less than the number of data bits left
+    // for the character and parity, then the number of data+parity bits received
+    // in this frame is equal to the total number of bits received in this frame.
+    // translation:
+    //    if nextCharStarted then bitsThisFrame = bitsLeft
+    //                       else bitsThisFrame = rxBits
+    uint8_t bitsThisFrame = nextCharStarted ? bitsLeft : rxBits;
+    // Tick up the rxState by that many bits
+    rxState += bitsThisFrame;
 
     // Set all the bits received between the last change and this change
     // If the current state is HIGH (and it just became so), then all bits between
@@ -907,32 +921,35 @@ void SDI12::receiveISR()
     if (pinLevel == HIGH) {
       // back fill previous bits with 1's (inverse logic - LOW = 1)
       while (bitsThisFrame-- > 0) {
-        rxValue |= rxMask;
-        rxMask   = rxMask << 1;
+        rxValue |= rxMask;  // Add a 1 to the LSB/right-most place
+        rxMask   = rxMask << 1;  // Shift the 1 in the mask up by one position
       }
-      rxMask = rxMask << 1;
+      rxMask = rxMask << 1;  // Set the last bit received as 1
     }
     // If the current state is LOW (and it just became so), then this bit is LOW
     // but all bits between the last change and now must have been HIGH
     else { // pinLevel==LOW
       // previous bits were 0's so only this bit is a 1 (inverse logic - LOW = 1)
-      rxMask   = rxMask << (bitsThisFrame-1);
-      rxValue |= rxMask;
+      rxMask   = rxMask << (bitsThisFrame-1);  // Shift the 1 in the mask up by the number of bits past
+      rxValue |= rxMask;  //  Add that shifted one to the character being created
     }
 
-    // After setting bits, if this is the 7th bit, parity bit, or stop bit
-    // then the character is complete.
-    if (rxBitsCompleted > 6) {
+    // If this was the 8th or more bit then the character is complete.
+    if (rxState > 7) {
+      rxValue = rxValue >> 1;  // Shift the received value down to throw away the parity bit
       charToBuffer(rxValue);  // Put the finished character into the buffer
 
-      if ((pinLevel == HIGH) || !nextCharStarted) {
-        rxBitsCompleted = allBitsComplete;
+      // if we just switched to low, or we haven't exceeded the number of bits forcing
+      // a new character, then this can't be the stop bit, but we do know the character
+      // itself is finished, so we can start looking for a new start bit.
+      if ((pinLevel == LOW) || !nextCharStarted) {
+        rxState = WAITING_FOR_START_BIT;
         // DISABLE STOP BIT TIMER
 
       } else {
-        // The last char ended with 1's, so this 0 is actually
-        //   the start bit of the next character.
-
+        // If we just switched to high, or we've past the number of bits to be
+        // into the next character, the last character must have ended with 1's
+        // and this new 0 is actually the start bit of the next character.
         startChar();
       }
     }
