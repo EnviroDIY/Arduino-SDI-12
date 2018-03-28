@@ -873,6 +873,7 @@ void SDI12::receiveChar()
     uint8_t newChar = 0;                    // 7.2.2 - Make room for char.
 
     delayMicroseconds(bitWidth_micros/2);   // 7.2.3 - Wait 1/2 of a bit to get settled
+    // It would be better if we had a measure of the real latency and could properly center on the bit
 
     for (uint8_t i=0x1; i<0x80; i <<= 1)    // 7.2.4 - read the 7 data bits
     {
