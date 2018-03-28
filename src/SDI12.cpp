@@ -293,7 +293,7 @@ void SDI12::setState(SDI12_STATES state){
       digitalWrite(_dataPin,LOW);   // Pin state = low
       pinMode(_dataPin,INPUT);      // Pin mode = input
       interrupts();                 // Enable general interrupts
-      setPinInterrupts(false);      // Enable rx inerrupts on data pin
+      setPinInterrupts(true);      // Enable rx inerrupts on data pin
       break;
     }
     default:  // DISABLED or ENABLED
