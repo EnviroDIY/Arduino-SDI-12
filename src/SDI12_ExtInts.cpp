@@ -124,32 +124,19 @@ SDI-12.org, official site of the SDI-12 Support Group.
 
 0.1 - Include the header file for this library.
 0.2 - defines the size of the buffer
-0.3 - defines value for DISABLED state (see section 2)
-0.4 - defines value for ENABLED state (not used, reserved for future)
-0.5 - defines value for DISABLED state (see section 2)
-0.6 - defines value for TRANSMITTING state (see section 2)
-0.7 - defines value for LISTENING state
-0.8 - defines value for the spacing of bits.
-      1200 bits per second implies 833 microseconds per bit.
-      830 seems to be a reliable value given the overhead of the call.
-0.10 - a static pointer to the active object. See section 6.
-0.11 - a reference to the data pin, used throughout the library
-0.12 - holds the buffer overflow status
+0.3 - a static pointer to the active object. See section 6.
 
 */
 
 #include "SDI12_ExtInts.h"           // 0.1 header file for this library
 
 #define SDI12_BUFFER_SIZE 64         // 0.2 max RX buffer size
-#define DISABLED 0                   // 0.3 value for DISABLED state
-#define ENABLED 1                    // 0.4 value for ENABLED state
-#define HOLDING 2                    // 0.5 value for DISABLED state
-#define TRANSMITTING 3               // 0.6 value for TRANSMITTING state
-#define LISTENING 4                  // 0.7 value for LISTENING state
-#define SPACING 830                  // 0.8 bit timing in microseconds (1200 baud = 1200 bits/second ~ 830 µs/bit)
 
-SDI12 *SDI12::_activeObject = NULL;  // 0.10 pointer to active SDI12 object
+SDI12 *SDI12::_activeObject = NULL;  // 0.3 pointer to active SDI12 object
 
+static const uint16_t bitWidth_micros = (uint16_t) 833;  // The size of a bit in microseconds
+    // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
+    // 830 seems to be a reliable value given the overhead of the call.
 
 /* =========== 1. Buffer Setup ============================================
 
@@ -218,12 +205,10 @@ HOLDING --> TRANSMITTING --> LISTENING --> done reading, forceHold(); HOLDING
 2.1 - Sets up parity and interrupts for different processor types - that is,
 imports the interrupts and parity for the AVR processors where they exist.
 
-2.2 - A function to return a string with the current line state.
+2.2 - A private helper function to turn pin interupts on or off
 
 2.3 - Sets the proper state. This is a private function, and only used
-internally. It uses #define values of HOLDING, TRANSMITTING, LISTENING,
-and DISABLED to determine which state should be set. The grid above
-defines the settings applied in changing to each state.
+internally. The grid above defines the settings applied in changing to each state.
 
 2.4 - A public function which forces the line into a "holding" state.
 This is generally unneeded, but for deployments where interference is an
@@ -255,35 +240,22 @@ uint8_t SDI12::parity_even_bit(uint8_t v)
 }
 #endif
 
-// 2.2 - Returns the current state
-const char *SDI12::getStateName(uint8_t state)
+// 2.2 - a helper function to switch pin interrupts on or off
+void SDI12::setPinInterrupts(bool enable)
 {
-    const char * retval = "UNKNOWN";
-    if (state == HOLDING) {
-        retval = "HOLDING";
+  // #ifndef SDI12_EXTERNAL_PCINT
+    if (enable)
+    {
+      #if defined __AVR__
+        *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));  // Enable interrupts on the register with the pin of interest
+        *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));  // Enable interrupts on the specific pin of interest
+        // The interrupt function is actually attached to the interrupt way down in section 7.5
+      #else
+        attachInterrupt(digitalPinToInterrupt(_dataPin),handleInterrupt, CHANGE);  // Merely need to attach the interrupt function to the pin
+      #endif
     }
-    else if (state == TRANSMITTING) {
-        retval = "TRANSMITTING";
-    }
-    else if (state == LISTENING) {
-        retval = "LISTENING";
-    }
-    else if (state == ENABLED) {
-        retval = "ENABLED";
-    }
-    else if (state == DISABLED) {
-        retval = "DISABLED";
-    }
-    return retval;
-}
-
-// 2.3 - sets the state of the SDI-12 object.
-void SDI12::setState(uint8_t state){
-  if(state == HOLDING){
-    pinMode(_dataPin,INPUT);       // added to make output work after pinMode to OUTPUT (don't know why, but works)
-    pinMode(_dataPin,OUTPUT);      // Pin mode = output
-    digitalWrite(_dataPin,LOW);    // Pin state = low
-    #ifndef SDI12_EXTERNAL_PCINT
+    else
+    {
       #if defined __AVR__
         *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
         if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
@@ -293,43 +265,44 @@ void SDI12::setState(uint8_t state){
       #else
         detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
       #endif
-    #endif
-    return;
-  }
-  if(state == TRANSMITTING){
-    pinMode(_dataPin,INPUT);   // added to make output work after pinMode to OUTPUT (don't know why, but works)
-    pinMode(_dataPin,OUTPUT);  // Pin mode = output
-    noInterrupts();            // _ALL_ interrupts disabled
-    return;
-  }
-  if(state == LISTENING) {
-    digitalWrite(_dataPin,LOW);   // Pin state = low
-    pinMode(_dataPin,INPUT);      // Pin mode = input
-    interrupts();                 // Enable interrupts
-    #ifndef SDI12_EXTERNAL_PCINT
-      #if defined __AVR__
-        *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));  // Enable interrupts on the register with the pin of interest
-        *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));  // Enable interrupts on the specific pin of interest
-        // The interrupt function is actually attached to the interrupt way down in section 7.3
-      #else
-        attachInterrupt(digitalPinToInterrupt(_dataPin),handleInterrupt, CHANGE);  // Merely need to attach the interrupt function to the pin
-      #endif
-    #endif
-  }
-  else {   // implies state==DISABLED
+    }
+  // #endif
+}
+
+// 2.3 - sets the state of the SDI-12 object.
+void SDI12::setState(SDI12_STATES state){
+  switch (state)
+  {
+    case HOLDING:
+    {
+      pinMode(_dataPin,INPUT);      // added to make output work after pinMode to OUTPUT (don't know why, but works)
+      pinMode(_dataPin,OUTPUT);     // Pin mode = output
+      digitalWrite(_dataPin,LOW);   // Pin state = low
+      setPinInterrupts(false);      // Interrupts disabled on data pin
+      break;
+    }
+    case TRANSMITTING:
+    {
+      pinMode(_dataPin,INPUT);   // added to make output work after pinMode to OUTPUT (don't know why, but works)
+      pinMode(_dataPin,OUTPUT);  // Pin mode = output
+      noInterrupts();            // _ALL_ interrupts disabled
+      break;
+    }
+    case LISTENING:
+    {
       digitalWrite(_dataPin,LOW);   // Pin state = low
       pinMode(_dataPin,INPUT);      // Pin mode = input
-      #ifndef SDI12_EXTERNAL_PCINT
-      #if defined __AVR__
-          *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
-          if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
-              *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
-          }
-          // We don't detach the function from the interrupt for AVR processors
-        #else
-          detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
-        #endif
-      #endif
+      interrupts();                 // Enable general interrupts
+      setPinInterrupts(true);      // Enable rx inerrupts on data pin
+      break;
+    }
+    default:  // DISABLED or ENABLED
+    {
+      digitalWrite(_dataPin,LOW);   // Pin state = low
+      pinMode(_dataPin,INPUT);      // Pin mode = input
+      setPinInterrupts(false);      // Interrupts disabled on data pin
+      break;
+    }
   }
 }
 
@@ -452,7 +425,7 @@ significant bit position, since the characters we are using are only
 Then we use the '|=' operator to set the bit if necessary.
 
 + 4.2.2 - Send the start bit. The start bit is always a '0', so we simply
-write the dataPin HIGH for SPACING microseconds.
+write the dataPin HIGH for bitWidth_micros microseconds.
 
 + 4.2.3 - Send the payload (the 7 character bits and the parity bit) least
 significant bit first. This is accomplished bitwise AND operations on a
@@ -471,7 +444,7 @@ if(out & mask){
     }
 
 + 4.2.4 - Send the stop bit. The stop bit is always a '1', so we simply
-write the dataPin LOW for SPACING microseconds.
+write the dataPin LOW for bitWidth_micros microseconds.
 
 4.3 - sendCommand(String cmd) is a publicly accessible function that
 wakes sensors and sends out a String byte by byte the command line.
@@ -498,7 +471,7 @@ void SDI12::writeChar(uint8_t out)
   out |= (parity_even_bit(out)<<7);          // 4.2.1 - parity bit
 
   digitalWrite(_dataPin, HIGH);              // 4.2.2 - start bit
-  delayMicroseconds(SPACING);
+  delayMicroseconds(bitWidth_micros);
 
   for (byte mask = 0x01; mask; mask<<=1){    // 4.2.3 - send payload
     if(out & mask){
@@ -507,11 +480,11 @@ void SDI12::writeChar(uint8_t out)
     else{
       digitalWrite(_dataPin, HIGH);
     }
-    delayMicroseconds(SPACING);
+    delayMicroseconds(bitWidth_micros);
   }
 
   digitalWrite(_dataPin, LOW);                // 4.2.4 - stop bit
-  delayMicroseconds(SPACING);
+  delayMicroseconds(bitWidth_micros);
 }
 
 //    4.3    - this function sends out the characters of the String cmd, one by one
@@ -544,7 +517,7 @@ void SDI12::sendCommand(FlashString cmd)
 
 //  4.4 - this function sets up for a response to a separate data recorder by
 //        sending out a marking and then sending out the characters of resp
-//        one by one (for slave-side use, that is, whdn the Arduino itself is
+//        one by one (for slave-side use, that is, when the Arduino itself is
 //        acting as an SDI-12 device rather than a recorder).
 void SDI12::sendResponse(String &resp)
 {
@@ -852,11 +825,9 @@ from interference or an interrupt we are not interested in, so return.
 
 + 7.2.2 - Make space in memory for the new character "newChar".
 
-+ 7.2.3 - Wait half of a SPACING to help center on the next bit. It will
-not actually be centered, or even approximately so until
-delayMicroseconds(SPACING) is called again.
++ 7.2.3 - Wait half of a bit width to help center on the next bit.
 
-+ 7.2.4 - For each of the 8 bits in the payload, read wether or not the
++ 7.2.4 - For each of the 8 bits in the payload, read whether or not the
 line state is HIGH or LOW. We use a moving mask here, as was previously
 demonstrated in the writeByte() function.
 
@@ -897,13 +868,16 @@ void SDI12::receiveChar()
 {
   if (digitalRead(_dataPin))                // 7.2.1 - Start bit?
   {
+    setPinInterrupts(false);                // Disable further interrupts during reception
+
     uint8_t newChar = 0;                    // 7.2.2 - Make room for char.
 
-    delayMicroseconds(SPACING/2);           // 7.2.3 - Wait 1/2 SPACING
+    delayMicroseconds(bitWidth_micros/2);   // 7.2.3 - Wait 1/2 of a bit to get settled
+    // It would be better if we had a measure of the real latency and could properly center on the bit
 
     for (uint8_t i=0x1; i<0x80; i <<= 1)    // 7.2.4 - read the 7 data bits
     {
-      delayMicroseconds(SPACING);
+      delayMicroseconds(bitWidth_micros);
       uint8_t noti = ~i;
       if (!digitalRead(_dataPin))
         newChar |= i;
@@ -911,8 +885,9 @@ void SDI12::receiveChar()
         newChar &= noti;
     }
 
-    delayMicroseconds(SPACING);              // 7.2.5 - Skip the parity bit.
-    delayMicroseconds(SPACING);              // 7.2.6 - Skip the stop bit.
+    delayMicroseconds(bitWidth_micros);      // 7.2.5 - Skip the parity bit.
+    delayMicroseconds(bitWidth_micros);      // 7.2.6 - Skip the stop bit.
+    setPinInterrupts(true);                  // Re-enable interrupts
 
                                              // 7.2.7 - Overflow? If not, proceed.
     if ((_rxBufferTail + 1) % SDI12_BUFFER_SIZE == _rxBufferHead)
