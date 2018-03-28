@@ -243,7 +243,7 @@ uint8_t SDI12::parity_even_bit(uint8_t v)
 // 2.2 - a helper function to switch pin interrupts on or off
 void SDI12::setPinInterrupts(bool enable)
 {
-  // #ifndef SDI12_EXTERNAL_PCINT
+  #ifndef SDI12_EXTERNAL_PCINT
     if (enable)
     {
       #if defined __AVR__
@@ -266,7 +266,7 @@ void SDI12::setPinInterrupts(bool enable)
         detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
       #endif
     }
-  // #endif
+  #endif
 }
 
 // 2.3 - sets the state of the SDI-12 object.
