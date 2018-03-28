@@ -47,8 +47,9 @@ As we've described, the default "master" branch of this library will conflict wi
 EnviroDIY_SDI12 is the default master branch of this repository. It controls and monopolizes all pin change interrupt vectors, and can therefore have conflicts with any variant of SoftwareSerial and other libraries that use interrupts.
 
 #### EnviroDIY_SDI12_PCINT3
-EnviroDIY_SDI12_PCINT3 is in the Mayfly branch of this repository, and was historically was called "SDI12_mod".  It's been cropped to only control interrupt vector 3,, or PCINT3 (D), which on the AtMega1284p/Mayfly, corresponds to Pins D0-D7.  
-It is designed to be compatible with EnviroDIY_SoftwareSerial_PCINT12 library, which which has been modified to only control interupt vectors 1 & 2, which on the AtMega1284p/Mayfly corresponds to pins PCINT1 (B) = Pins D08-D15; PCINT2 (C) = Pins D16-D23.
+EnviroDIY_SDI12_PCINT3 is in the Mayfly branch of this repository, and was historically was called "SDI12_mod".  It's been cropped to only control interrupt vector 3, or PCINT3 (D), which on the Mayfly (or Sodaq Mbili) corresponds to Pins D0-D7. 
+It is designed to be compatible with EnviroDIY_SoftwareSerial_PCINT12 library, which which has been modified to only control interupt vectors 1 & 2, which on the Mayfly corresponds to pins PCINT1 (B) = Pins D08-D15; PCINT2 (C) = Pins D16-D23. 
+Note that different AtMega1284p boards have a different mapping from the physical PIN numbers to the listed digital PIN numbers that are printed on the board. For more infomation, see the [Pin/Port Bestiary wiki page for the Enable Interrupt library](https://github.com/GreyGnome/EnableInterrupt/wiki/Usage#PIN__PORT_BESTIARY).
 
 #### EnviroDIY_SDI12_ExtInts
 EnviroDIY_SDI12_ExtInts is the ExtInt branch of this repository. It doesn't control any of the interrupts, but instead relies on an external interrupt management library (like [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt)) to assign the SDI-12 receive data function to the right pin.  This is the least stable because there's some extra delay because the external library is involved.  It's also the easiest to get working in combination with any other pin change interrupt based library. It can be paired with the  EnviroDIY_SoftwareSerial_PCINT12 or the EnviroDIY_SoftwareSerial_ExtInts libraries.
