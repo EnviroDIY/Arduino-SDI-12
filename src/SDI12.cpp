@@ -243,7 +243,7 @@ uint8_t SDI12::parity_even_bit(uint8_t v)
 // 2.2 - a helper function to switch pin interrupts on or off
 void SDI12::setPinInterrupts(bool enable)
 {
-  #ifndef SDI12_EXTERNAL_PCINT
+  // #ifndef SDI12_EXTERNAL_PCINT
     if (enable)
     {
       #if defined __AVR__
@@ -266,7 +266,7 @@ void SDI12::setPinInterrupts(bool enable)
         detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
       #endif
     }
-  #endif
+  // #endif
 }
 
 // 2.3 - sets the state of the SDI-12 object.
@@ -868,6 +868,8 @@ void SDI12::receiveChar()
 {
   if (digitalRead(_dataPin))                // 7.2.1 - Start bit?
   {
+    setPinInterrupts(false);                // Disable further interrupts during reception
+
     uint8_t newChar = 0;                    // 7.2.2 - Make room for char.
 
     delayMicroseconds(bitWidth_micros/2);   // 7.2.3 - Wait 1/2 of a bit to get settled
@@ -884,6 +886,7 @@ void SDI12::receiveChar()
 
     delayMicroseconds(bitWidth_micros);      // 7.2.5 - Skip the parity bit.
     delayMicroseconds(bitWidth_micros);      // 7.2.6 - Skip the stop bit.
+    setPinInterrupts(true);                  // Re-enable interrupts
 
                                              // 7.2.7 - Overflow? If not, proceed.
     if ((_rxBufferTail + 1) % SDI12_BUFFER_SIZE == _rxBufferHead)
