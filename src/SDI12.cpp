@@ -124,7 +124,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 
 0.1 - Include the header file for this library.
 0.2 - defines the size of the buffer
-0.4 - a static pointer to the active object. See section 6.
+0.3 - a static pointer to the active object. See section 6.
 
 */
 
@@ -132,7 +132,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 
 #define SDI12_BUFFER_SIZE 64         // 0.2 max RX buffer size
 
-SDI12 *SDI12::_activeObject = NULL;  // 0.4 pointer to active SDI12 object
+SDI12 *SDI12::_activeObject = NULL;  // 0.3 pointer to active SDI12 object
 
 static const uint16_t bitWidth_micros = (uint16_t) 833;  // The size of a bit in microseconds
     // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
@@ -213,12 +213,10 @@ HOLDING --> TRANSMITTING --> LISTENING --> done reading, forceHold(); HOLDING
 2.1 - Sets up parity and interrupts for different processor types - that is,
 imports the interrupts and parity for the AVR processors where they exist.
 
-2.2 - A function to return a string with the current line state.
+2.2 - A private helper function to turn pin interupts on or off
 
 2.3 - Sets the proper state. This is a private function, and only used
-internally. It uses #define values of HOLDING, TRANSMITTING, LISTENING,
-and DISABLED to determine which state should be set. The grid above
-defines the settings applied in changing to each state.
+internally. The grid above defines the settings applied in changing to each state.
 
 2.4 - A public function which forces the line into a "holding" state.
 This is generally unneeded, but for deployments where interference is an
@@ -250,15 +248,22 @@ uint8_t SDI12::parity_even_bit(uint8_t v)
 }
 #endif
 
-// 2.3 - sets the state of the SDI-12 object.
-void SDI12::setState(SDI12_STATES state){
-  switch (state)
-  {
-    case HOLDING:
+// 2.2 - a helper function to switch pin interrupts on or off
+void SDI12::setPinInterrupts(bool enable)
+{
+  // #ifndef SDI12_EXTERNAL_PCINT
+    if (enable)
     {
-      pinMode(_dataPin,INPUT);       // added to make output work after pinMode to OUTPUT (don't know why, but works)
-      pinMode(_dataPin,OUTPUT);      // Pin mode = output
-      digitalWrite(_dataPin,LOW);    // Pin state = low
+      #if defined __AVR__
+        *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));  // Enable interrupts on the register with the pin of interest
+        *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));  // Enable interrupts on the specific pin of interest
+        // The interrupt function is actually attached to the interrupt way down in section 7.5
+      #else
+        attachInterrupt(digitalPinToInterrupt(_dataPin),handleInterrupt, CHANGE);  // Merely need to attach the interrupt function to the pin
+      #endif
+    }
+    else
+    {
       #if defined __AVR__
         *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
         if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
@@ -268,6 +273,20 @@ void SDI12::setState(SDI12_STATES state){
       #else
         detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
       #endif
+    }
+  // #endif
+}
+
+// 2.3 - sets the state of the SDI-12 object.
+void SDI12::setState(SDI12_STATES state){
+  switch (state)
+  {
+    case HOLDING:
+    {
+      pinMode(_dataPin,INPUT);      // added to make output work after pinMode to OUTPUT (don't know why, but works)
+      pinMode(_dataPin,OUTPUT);     // Pin mode = output
+      digitalWrite(_dataPin,LOW);   // Pin state = low
+      setPinInterrupts(false);      // Interrupts disabled on data pin
       break;
     }
     case TRANSMITTING:
@@ -281,29 +300,15 @@ void SDI12::setState(SDI12_STATES state){
     {
       digitalWrite(_dataPin,LOW);   // Pin state = low
       pinMode(_dataPin,INPUT);      // Pin mode = input
-      interrupts();                 // Enable interrupts
-      #if defined __AVR__
-        *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));  // Enable interrupts on the register with the pin of interest
-        *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));  // Enable interrupts on the specific pin of interest
-        // The interrupt function is actually attached to the interrupt way down in section 7.5
-      #else
-        attachInterrupt(digitalPinToInterrupt(_dataPin),handleInterrupt, CHANGE);  // Merely need to attach the interrupt function to the pin
-      #endif
+      interrupts();                 // Enable general interrupts
+      setPinInterrupts(true);      // Enable rx inerrupts on data pin
       break;
     }
     default:  // DISABLED or ENABLED
     {
       digitalWrite(_dataPin,LOW);   // Pin state = low
       pinMode(_dataPin,INPUT);      // Pin mode = input
-      #if defined __AVR__
-        *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
-        if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
-            *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
-        }
-        // We don't detach the function from the interrupt for AVR processors
-      #else
-        detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
-      #endif
+      setPinInterrupts(false);      // Interrupts disabled on data pin
       break;
     }
   }
@@ -346,6 +351,9 @@ times out.  By default this value is -9999.
 */
 
 //  3.1 Constructor
+SDI12::SDI12(){
+  _bufferOverflow = false;
+}
 SDI12::SDI12(uint8_t dataPin){
   _bufferOverflow = false;
   _dataPin = dataPin;
@@ -369,12 +377,19 @@ void SDI12::begin(){
   // in-site environmental sensors.
   setTimeoutValue(-9999);
 }
+void SDI12::begin(uint8_t dataPin){
+  _dataPin = dataPin;
+  begin();
+}
 
 //  3.4 End
 void SDI12::end() { setState(DISABLED); }
 
-//  3.4 Set the timeout return
+//  3.5 Set the timeout return
 void SDI12::setTimeoutValue(int value) { TIMEOUT = value; }
+
+//  3.6 Return the data pin for the SDI-12 instance
+uint8_t SDI12::getDataPin() { return _dataPin; }
 
 
 /* ============= 4. Waking up, and talking to, the sensors. ===================
@@ -466,7 +481,7 @@ void SDI12::writeChar(uint8_t out)
   digitalWrite(_dataPin, HIGH);              // 4.2.2 - start bit
   delayMicroseconds(bitWidth_micros);
 
-  for (byte mask = 0b00000001; mask; mask<<=1){    // 4.2.3 - send payload
+  for (byte mask = 0x01; mask; mask<<=1){    // 4.2.3 - send payload
     if(out & mask){
       digitalWrite(_dataPin, LOW);
     }
