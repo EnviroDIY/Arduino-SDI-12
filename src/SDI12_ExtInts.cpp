@@ -129,6 +129,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 */
 
 #include "SDI12_ExtInts.h"           // 0.1 header file for this library
+#include "SDI12_boards.h"
 
 #define SDI12_BUFFER_SIZE 64         // 0.2 max RX buffer size
 
@@ -136,7 +137,31 @@ SDI12 *SDI12::_activeObject = NULL;  // 0.3 pointer to active SDI12 object
 
 static const uint16_t bitWidth_micros = (uint16_t) 833;  // The size of a bit in microseconds
     // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
-    // 830 seems to be a reliable value given the overhead of the call.
+static const uint16_t lineBreak_micros = (uint16_t) 12100;  // The required "break" before sending commands
+    // break >= 12ms
+static const uint16_t marking_micros = (uint16_t) 8330;  // The required mark before a command or response
+    // marking >= 8.33ms
+
+static const uint8_t txBitWidth = TICKS_PER_BIT;
+static const uint8_t rxWindowWidth = RX_WINDOW_FUDGE;  // A fudge factor to make things work
+static const uint8_t bitsPerTick_Q10 = BITS_PER_TICK_Q10;
+static const uint8_t WAITING_FOR_START_BIT = 0b11111111;
+
+static uint16_t prevBitTCNT;     // previous RX transition in micros
+static uint8_t rxState;          // 0: got start bit; >0: bits rcvd
+static uint8_t rxMask;           // bit mask for building received character
+static uint8_t rxValue;          // character being built
+
+static uint16_t mul8x8to16(uint8_t x, uint8_t y)
+{return x*y;}
+
+//..........................................
+
+static uint16_t bitTimes( uint8_t dt )
+{
+  return mul8x8to16( dt + rxWindowWidth, bitsPerTick_Q10 ) >> 10;
+
+} // bitTimes
 
 /* =========== 1. Buffer Setup ============================================
 
@@ -293,7 +318,8 @@ void SDI12::setState(SDI12_STATES state){
       digitalWrite(_dataPin,LOW);   // Pin state = low
       pinMode(_dataPin,INPUT);      // Pin mode = input
       interrupts();                 // Enable general interrupts
-      setPinInterrupts(true);      // Enable rx inerrupts on data pin
+      setPinInterrupts(true);       // Enable Rx interrupts on data pin
+      rxState = WAITING_FOR_START_BIT;
       break;
     }
     default:  // DISABLED or ENABLED
@@ -359,15 +385,47 @@ void SDI12::begin(){
   // setState(HOLDING);
   setActive();
   // SDI-12 protocol says sensors must respond within 15 milliseconds
-  // We'll bump that up to 100, just for good measure, but we don't want to
+  // We'll bump that up to 150, just for good measure, but we don't want to
   // wait the whole stream default of 1s for a response.
-  setTimeout(100);
+  setTimeout(150);
   // Because SDI-12 is mostly used for environmental sensors, we want to be able
   // to distinguish between the '0' that parseInt and parseFloat usually return
   // on timeouts and a real measured 0 value.  So we force the timeout response
   // to be -9999, which is not a common value for most variables measured by
   // in-site environmental sensors.
   setTimeoutValue(-9999);
+  // Set up the prescaler as needed for timers
+
+  #if defined(ARDUINO_ARCH_SAMD)
+      // I would prefer to define this all as a macro, but for some reason it isn't working
+      // Select generic clock generator 4 (Arduino core uses 0-3)
+      // Most examples use this clock generator.. consider yourself warned!
+      // I would use a higher clock number, but some of the cores don't include them for some reason
+      REG_GCLK_GENDIV = GCLK_GENDIV_ID(4) |           // Select Generic Clock Generator 4
+                        GCLK_GENDIV_DIV(3) ;          // Divide the 48MHz clock source by divisor 3: 48MHz/3=16MHz
+      while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
+
+      // Write the generic clock generator 5 configuration
+      REG_GCLK_GENCTRL = GCLK_GENCTRL_ID(4) |         // Select GCLK4
+                         GCLK_GENCTRL_SRC_DFLL48M |   // Set the 48MHz clock source
+                         GCLK_GENCTRL_IDC |           // Set the duty cycle to 50/50 HIGH/LOW
+                         GCLK_GENCTRL_GENEN;          // Enable the generic clock clontrol
+      while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
+
+      // Feed GCLK4 to TC4 (also feeds to TC5, the two must have the same source)
+      REG_GCLK_CLKCTRL = GCLK_CLKCTRL_GEN_GCLK4 |     // Select Generic Clock Generator 4
+                         GCLK_CLKCTRL_CLKEN |         // Enable the generic clock generator
+                         GCLK_CLKCTRL_ID_TC4_TC5;     // Feed the Generic Clock Generator 4 to TC4 and TC5
+      while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
+
+      REG_TC4_CTRLA |= TC_CTRLA_PRESCALER_DIV1024 |   // Set prescaler to 1024, 16MHz/1024 = 15.625kHz
+                       TC_CTRLA_WAVEGEN_NFRQ |        // Put the timer TC4 into normal frequency (NFRQ) mode
+                       TC_CTRLA_MODE_COUNT8 |         // Put the timer TC4 into 8-bit mode
+                       TC_CTRLA_ENABLE;               // Enable TC4
+      while (TC4->COUNT16.STATUS.bit.SYNCBUSY);       // Wait for synchronization
+  #else
+    CONFIG_TIMER_PRESCALE();// Set up the generic clock (GCLK4) used to clock timers
+  #endif
 }
 void SDI12::begin(uint8_t dataPin){
   _dataPin = dataPin;
@@ -460,9 +518,9 @@ recorder for another SDI-12 device
 void SDI12::wakeSensors(){
   setState(TRANSMITTING);
   digitalWrite(_dataPin, HIGH);
-  delayMicroseconds(12100);  // Required break of 12 milliseconds
+  delayMicroseconds(lineBreak_micros);  // Required break of 12 milliseconds
   digitalWrite(_dataPin, LOW);
-  delayMicroseconds(8400);  // Required marking of 8.33 milliseconds
+  delayMicroseconds(marking_micros);  // Required marking of 8.33 milliseconds
 }
 
 // 4.2 - this function writes a character out on the data line
@@ -490,7 +548,7 @@ void SDI12::writeChar(uint8_t out)
 //    4.3    - this function sends out the characters of the String cmd, one by one
 void SDI12::sendCommand(String &cmd)
 {
-  wakeSensors();             // wake up sensors
+  wakeSensors();             // set state to transmitting and send break/marking
   for (int unsigned i = 0; i < cmd.length(); i++){
     writeChar(cmd[i]);       // write each character
   }
@@ -523,7 +581,7 @@ void SDI12::sendResponse(String &resp)
 {
   setState(TRANSMITTING);   // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);
-  delayMicroseconds(8330);  // 8.33 ms marking before response
+  delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < resp.length(); i++){
     writeChar(resp[i]);     // write each character
   }
@@ -534,7 +592,7 @@ void SDI12::sendResponse(const char *resp)
 {
   setState(TRANSMITTING);   // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);
-  delayMicroseconds(8330);  // 8.33 ms marking before response
+  delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen(resp); i++){
     writeChar(resp[i]);     // write each character
   }
@@ -545,7 +603,7 @@ void SDI12::sendResponse(FlashString resp)
 {
   setState(TRANSMITTING);   // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);
-  delayMicroseconds(8330);  // 8.33 ms marking before response
+  delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen_P((PGM_P)resp); i++){
     writeChar((char)pgm_read_byte((const char *)resp + i));  // write each character
   }
@@ -817,89 +875,158 @@ We have received an interrupt signal, what should we do?
 
 7.1 - Passes off responsibility for the interrupt to the active object.
 
-7.2 - This function quickly reads a new character from the data line in
-to the buffer. It takes place over a series of key steps.
+7.2 - Creates a blank slate of bits for an incoming character
 
-+ 7.2.1 - Check for the start bit. If it is not there, interrupt may be
+7.3 - This function checks which direction the change of the interrupt was and
+then uses that to populate the bits of the character.
+
++ First check if we're expecting a start bit and if this change is in the
+right direction for the start bit. If it is not, interrupt may be
 from interference or an interrupt we are not interested in, so return.
+Because the SDI-12 protocol specifies inverse logic, the end of a start bit will
+be a change from LOW to HIGH.
 
-+ 7.2.2 - Make space in memory for the new character "newChar".
-
-+ 7.2.3 - Wait half of a bit width to help center on the next bit.
-
-+ 7.2.4 - For each of the 8 bits in the payload, read whether or not the
-line state is HIGH or LOW. We use a moving mask here, as was previously
-demonstrated in the writeByte() function.
-
-The loop runs from i=0x1 (hexadecimal notation for 00000001) to i<0x80
-(hexadecimal notation for 10000000). So the loop effectively uses the
-masks following masks: 00000001
-00000010
-00000100
-00001000
-00010000
-00100000
-01000000 and their inverses.
++ If this isn't a start bit, and a new character has been started, figure out
+where in the character we are at this change and fill out bits accordingly.
 
 Here we use an if / else structure that helps to balance the time it
 takes to either a HIGH vs a LOW, and helps maintain a constant timing.
 
-+ 7.2.5 - Skip the parity bit. There is no error checking.
+7.4 - Puts a new character into the active SDI-12 buffer
 
-+ 7.2.6 - Skip the stop bit.
-
-+ 7.2.7 - Check for an overflow. We do this by checking if advancing the
-tail would make it have the same index as the head (in a circular
-fashion).
-
-+ 7.2.8 - Save the byte into the buffer if there has not been an
-overflow, and then advance the tail index.
-
-7.3 - Check if the various interrupt vectors are defined. If they are
+7.5 - Check if the various interrupt vectors are defined. If they are
 the ISR is instructed to call _handleInterrupt() when they trigger. */
 
 // 7.1 - Passes off responsibility for the interrupt to the active object.
 void SDI12::handleInterrupt(){
-  if (_activeObject) _activeObject->receiveChar();
+  if (_activeObject) _activeObject->receiveISR();
 }
 
-// 7.2 - Quickly reads a new character into the buffer.
-void SDI12::receiveChar()
+// 7.2 - Creates a blank slate of bits for an incoming character
+void SDI12::startChar()
 {
-  if (digitalRead(_dataPin))                // 7.2.1 - Start bit?
+  rxState = 0;           // got a start bit
+  rxMask  = 0b00000001;  // bit mask, lsb first
+  rxValue = 0b00000000;  // RX character to be, a blank slate
+} // startChar
+
+// 7.3 - The actual interrupt service routine
+void SDI12::receiveISR()
   {
-    setPinInterrupts(false);                // Disable further interrupts during reception
+  uint8_t thisBitTCNT = TCNTX;               // time of this data transition (plus ISR latency)
+  uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
+  // Serial.print(pinLevel);
+  // Serial.print('@');
+  // Serial.print(TCNTX);
+  // Serial.print('=');
 
-    uint8_t newChar = 0;                    // 7.2.2 - Make room for char.
-
-    delayMicroseconds(bitWidth_micros/2);   // 7.2.3 - Wait 1/2 of a bit to get settled
-    // It would be better if we had a measure of the real latency and could properly center on the bit
-
-    for (uint8_t i=0x1; i<0x80; i <<= 1)    // 7.2.4 - read the 7 data bits
+  // Check if we're ready for a start bit, and if this could possibly be it
+  // Otherwise, just ignore the interrupt and exit
+  if (rxState == WAITING_FOR_START_BIT) {
+     // If it is low it's not a start bit, exit
+     // Inverse logic start bit = HIGH
+    if (pinLevel == LOW)
     {
-      delayMicroseconds(bitWidth_micros);
-      uint8_t noti = ~i;
-      if (!digitalRead(_dataPin))
-        newChar |= i;
-      else
-        newChar &= noti;
+      // Serial.println('X');
+      return;
+    }
+    // If it is HIGH, this should be a start bit
+    // Thus set the rxStat to 0, create an empty character, and a new mask with a 1 in the lowest place
+    startChar();
+    // Serial.println('*');
+  }
+
+  // if the character is incomplete, and this is not a start bit,
+  // then this change is from a data, parity, or stop bit
+  else {
+
+    // check how many bit times have passed since the last change
+    // the rxWindowWidth is just a fudge factor
+    uint16_t rxBits = bitTimes(thisBitTCNT - prevBitTCNT);
+    // Serial.println(rxBits);
+    // calculate how many *data+parity* bits should be left
+    // We know the start bit is past and are ignoring the stop bit (which will be LOW/1)
+    // We have to treat the parity bit as a data bit because we don't know its state
+    uint8_t bitsLeft = 9 - rxState;
+    // note that a new character *may* have started if more bits have been
+    // received than should be left.
+    // This will also happen if the parity bit is 1 or the last bit(s) of the
+    // character and the parity bit are all 1's.
+    bool nextCharStarted = (rxBits > bitsLeft);
+
+    // check how many data+parity bits have been sent in this frame
+    // If the total number of bits in this frame is more than the number of data+parity
+    // bits remaining in the character, then the number of data+parity bits is equal
+    // to the number of bits remaining for the character and partiy.  If the total
+    // number of bits in this frame is less than the number of data bits left
+    // for the character and parity, then the number of data+parity bits received
+    // in this frame is equal to the total number of bits received in this frame.
+    // translation:
+    //    if nextCharStarted then bitsThisFrame = bitsLeft
+    //                       else bitsThisFrame = rxBits
+    uint8_t bitsThisFrame = nextCharStarted ? bitsLeft : rxBits;
+    // Tick up the rxState by that many bits
+    rxState += bitsThisFrame;
+
+    // Set all the bits received between the last change and this change
+    // If the current state is HIGH (and it just became so), then all bits between
+    // the last change and now must have been LOW.
+    if (pinLevel == HIGH) {
+      // back fill previous bits with 1's (inverse logic - LOW = 1)
+      while (bitsThisFrame-- > 0) {
+        rxValue |= rxMask;  // Add a 1 to the LSB/right-most place
+        rxMask   = rxMask << 1;  // Shift the 1 in the mask up by one position
+    }
+      rxMask = rxMask << 1;  // Shift the 1 in the mask up by one more position
+    }
+    // If the current state is LOW (and it just became so), then this bit is LOW
+    // but all bits between the last change and now must have been HIGH
+    else { // pinLevel==LOW
+      // previous bits were 0's so only this bit is a 1 (inverse logic - LOW = 1)
+      rxMask   = rxMask << (bitsThisFrame-1);  // Shift the 1 in the mask up by the number of bits past
+      rxValue |= rxMask;  //  Add that shifted one to the character being created
     }
 
-    delayMicroseconds(bitWidth_micros);      // 7.2.5 - Skip the parity bit.
-    delayMicroseconds(bitWidth_micros);      // 7.2.6 - Skip the stop bit.
-    setPinInterrupts(true);                  // Re-enable interrupts
+    // If this was the 8th or more bit then the character and parity are complete.
+    if (rxState > 7) {
+      // Serial.println(rxValue, BIN);
+      rxValue &= 0b01111111;  // Throw away the parity bit
+      charToBuffer(rxValue);  // Put the finished character into the buffer
 
-                                             // 7.2.7 - Overflow? If not, proceed.
+
+      // if this is LOW, or we haven't exceeded the number of bits in a
+      // character (but have gotten all the data bits, then this should be a
+      // stop bit and we can start looking for a new start bit.
+      if ((pinLevel == LOW) || !nextCharStarted) {
+        rxState = WAITING_FOR_START_BIT;
+        // DISABLE STOP BIT TIMER
+
+      } else {
+        // If we just switched to HIGH, or we've exceeded the total number of
+        // bits in a character, then the character must have ended with 1's/LOW,
+        // and this new 0/HIGH is actually the start bit of the next character.
+        startChar();
+      }
+    }
+  }
+  prevBitTCNT = thisBitTCNT;  // remember time stamp of this change!
+}
+
+// 7.4 - Put a new character in the buffer
+void SDI12::charToBuffer( uint8_t c )
+{
+  // Check for a buffer overflow. If not, proceed.
     if ((_rxBufferTail + 1) % SDI12_BUFFER_SIZE == _rxBufferHead)
-    { _bufferOverflow = true;
-    } else {                                 // 7.2.8 - Save char, advance tail.
-      _rxBuffer[_rxBufferTail] = newChar;
+    { _bufferOverflow = true; }
+  // Save the character, advance buffer tail.
+  else
+  {
+     _rxBuffer[_rxBufferTail] = c;
       _rxBufferTail = (_rxBufferTail + 1) % SDI12_BUFFER_SIZE;
     }
   }
-}
 
-// 7.3 - Define AVR interrupts
+// 7.5 - Define AVR interrupts
 
 #if defined __AVR__  // Only AVR processors use interrupts like this
 

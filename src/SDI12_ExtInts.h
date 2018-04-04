@@ -95,7 +95,9 @@ private:
   void setState(SDI12_STATES state);   // sets the state of the SDI12 objects
   void wakeSensors();             // used to wake up the SDI12 bus
   void writeChar(uint8_t out);    // used to send a char out on the data line
-  void receiveChar();             // used by the ISR to grab a char from data line
+  void startChar();               // creates a blank slate for a new character
+  void receiveISR();              // the actual function responding to changes in rx line state
+  void charToBuffer(uint8_t c);   // puts a finished character into the SDI12 instance buffer
 
   #ifndef __AVR__
     static uint8_t parity_even_bit(uint8_t v);
@@ -140,7 +142,9 @@ public:
   bool isActive();          // check if this instance is active
 
   static void handleInterrupt();  // intermediary used by the ISR
+
   #define SDI12_EXTERNAL_PCINT  // uncomment to use your own PCINT ISRs
+
 };
 
 #endif  // SDI12_h

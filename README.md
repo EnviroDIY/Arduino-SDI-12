@@ -21,9 +21,15 @@ Dive into the details of how this library works by reading the documentation in 
 
 ## Origins and Inherited Limitations
 
-This library was developed from the [SoftwareSerial](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/SoftwareSerial) library that is a built-in [standard Arduino library](https://www.arduino.cc/en/Reference/Libraries). As such, it also shares many of the [limitations of SoftwareSerial](https://www.arduino.cc/en/Reference/SoftwareSerial).
+This library was developed from the [SoftwareSerial](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/SoftwareSerial) library that is a built-in [standard Arduino library](https://www.arduino.cc/en/Reference/Libraries). It was further modified to use a timer to improve read stability using the same interrupt logic as [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
 
-A primary limitation is that all [pin-change interrupts](https://thewanderingengineer.com/2014/08/11/arduino-pin-change-interrupts/) are disabled during transmission, which can interfere with other processes and libraries that also use interrupts. This is particularly problematic for Arduino-SDI-12, because SDI-12 operates at a very slow baud rate (only 1200 baud). This translates to ~8.3 mS of "radio silence" from the processor for each character that goes in or out via SDI-12, which adds up to ~380-810ms per command! For that reason, avoid using the default "master" branch of this library to send and receive data via SDI-12 while also transmitting other serial data or while looking for other pin change interrupts. We have created [Variants and Branches](https://github.com/EnviroDIY/Arduino-SDI-12#variants-and-branches) of this library (read below) to overcome such limitations when used in combination with alternate variants of SoftwareSerial.
+The most obvious "limitation" is that this library will conflict with all other libraries that make use of pin change interrupts.  You will be unable to compile them together.  Some other libraries using pin change interrupts include [SoftwareSerial](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/SoftwareSerial), [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial), [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt/), [PinChangeInt](https://playground.arduino.cc/Main/PinChangeInt), [Servo](https://www.arduino.cc/en/Reference/Servo), and quite a number of other libraries.  See the notes under [Variants and Branches](https://github.com/EnviroDIY/Arduino-SDI-12#variants-and-branches) below for advice in using this library in combination with such libraries.
+
+Another non-trivial, but hidden limitation is that _all_ interrupts are disabled during transmission, which can interfere with other processes. That includes other pin-change interrupts, clock/timer interrupts, external interrupts, and every other type of processor interrupt.  This is particularly problematic for Arduino-SDI-12, because SDI-12 operates at a very slow baud rate (only 1200 baud). This translates to ~8.3 mS of "radio silence" from the processor for each character that goes out via SDI-12, which adds up to ~380-810ms per command!  Interrupts are enabled for the majority of the time while the processor is listening for responses.
+
+For most AVR boards, this library will also conflict with the [tone](https://www.arduino.cc/reference/en/language/functions/advanced-io/tone/) function because of its utilization of timer 2.  There will be no obvious compile error, but because SDI-12 and the tone library may use different clock-prescaler functions, the results for both might be rather unexpected.   
+
+The Arduino Due, Teensy, and ESP8266/ESP32 boards are not supported at this time.  If you are interested in adding support for those boards, feel free to send pull requests.
 
 ## Compatibility Considerations
 
@@ -47,8 +53,8 @@ As we've described, the default "master" branch of this library will conflict wi
 EnviroDIY_SDI12 is the default master branch of this repository. It controls and monopolizes all pin change interrupt vectors, and can therefore have conflicts with any variant of SoftwareSerial and other libraries that use interrupts.
 
 #### EnviroDIY_SDI12_PCINT3
-EnviroDIY_SDI12_PCINT3 is in the Mayfly branch of this repository, and was historically was called "SDI12_mod".  It's been cropped to only control interrupt vector 3, or PCINT3 (D), which on the Mayfly (or Sodaq Mbili) corresponds to Pins D0-D7. 
-It is designed to be compatible with EnviroDIY_SoftwareSerial_PCINT12 library, which which has been modified to only control interupt vectors 1 & 2, which on the Mayfly corresponds to pins PCINT1 (B) = Pins D08-D15; PCINT2 (C) = Pins D16-D23. 
+EnviroDIY_SDI12_PCINT3 is in the Mayfly branch of this repository, and was historically was called "SDI12_mod".  It's been cropped to only control interrupt vector 3, or PCINT3 (D), which on the Mayfly (or Sodaq Mbili) corresponds to Pins D0-D7.
+It is designed to be compatible with EnviroDIY_SoftwareSerial_PCINT12 library, which which has been modified to only control interupt vectors 1 & 2, which on the Mayfly corresponds to pins PCINT1 (B) = Pins D08-D15; PCINT2 (C) = Pins D16-D23.
 Note that different AtMega1284p boards have a different mapping from the physical PIN numbers to the listed digital PIN numbers that are printed on the board. For more infomation, see the [Pin/Port Bestiary wiki page for the Enable Interrupt library](https://github.com/GreyGnome/EnableInterrupt/wiki/Usage#PIN__PORT_BESTIARY).
 
 #### EnviroDIY_SDI12_ExtInts
