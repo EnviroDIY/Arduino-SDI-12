@@ -397,7 +397,7 @@ void SDI12::begin(){
   setTimeoutValue(-9999);
   // Set up the prescaler as needed for timers
 
-  #if defined(ARDUINO_SAMD_ZERO) || defined(__SAMD21G18A__)
+  #if defined(ARDUINO_ARCH_SAMD)
       // I would prefer to define this all as a macro, but for some reason it isn't working
       // Select generic clock generator 4 (Arduino core uses 0-3)
       // Most examples use this clock generator.. consider yourself warned!

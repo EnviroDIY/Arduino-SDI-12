@@ -118,6 +118,7 @@
     #define TCNTX REG_TC4_COUNT8_COUNT  // Using Timer 4
 
     #define PRESCALE_IN_USE_STR "3x1024"
+    #define CONFIG_TIMER_PRESCALE()  // This is done elsewhere
     #define TICKS_PER_BIT 13
         // 48MHz / 3 pre-prescaler = 16MHz
         // 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
