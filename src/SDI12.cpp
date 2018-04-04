@@ -431,10 +431,6 @@ void SDI12::begin(uint8_t dataPin){
   _dataPin = dataPin;
   begin();
 }
-void SDI12::begin(uint8_t dataPin){
-  _dataPin = dataPin;
-  begin();
-}
 
 //  3.4 End
 void SDI12::end() { setState(DISABLED); }
