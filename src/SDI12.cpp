@@ -912,7 +912,7 @@ void SDI12::receiveISR()
     uint16_t rxBits = bitTimes(thisBitTCNT - prevBitTCNT);
     // Serial.println(rxBits);
     // calculate how many *data+parity* bits should be left
-    // We know the start bit is past and are ignoring the stop bit (which will be low)
+    // We know the start bit is past and are ignoring the stop bit (which will be LOW/1)
     // We have to treat the parity bit as a data bit because we don't know its state
     uint8_t bitsLeft = 9 - rxState;
     // note that a new character *may* have started if more bits have been
