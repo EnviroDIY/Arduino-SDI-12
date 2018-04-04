@@ -137,6 +137,10 @@ SDI12 *SDI12::_activeObject = NULL;  // 0.3 pointer to active SDI12 object
 
 static const uint16_t bitWidth_micros = (uint16_t) 833;  // The size of a bit in microseconds
     // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
+static const uint16_t lineBreak_micros = (uint16_t) 12100;  // The required "break" before sending commands
+    // break >= 12ms
+static const uint16_t marking_micros = (uint16_t) 8330;  // The required mark before a command or response
+    // marking >= 8.33ms
 
 static const uint8_t txBitWidth = TICKS_PER_BIT;
 static const uint8_t rxWindowWidth = 5;  // A fudge factor to make things work
@@ -485,9 +489,9 @@ recorder for another SDI-12 device
 void SDI12::wakeSensors(){
   setState(TRANSMITTING);
   digitalWrite(_dataPin, HIGH);
-  delayMicroseconds(12100);  // Required break of 12 milliseconds
+  delayMicroseconds(lineBreak_micros);  // Required break of 12 milliseconds
   digitalWrite(_dataPin, LOW);
-  delayMicroseconds(8400);  // Required marking of 8.33 milliseconds
+  delayMicroseconds(marking_micros);  // Required marking of 8.33 milliseconds
 }
 
 // 4.2 - this function writes a character out on the data line
@@ -548,7 +552,7 @@ void SDI12::sendResponse(String &resp)
 {
   setState(TRANSMITTING);   // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);
-  delayMicroseconds(8330);  // 8.33 ms marking before response
+  delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < resp.length(); i++){
     writeChar(resp[i]);     // write each character
   }
@@ -559,7 +563,7 @@ void SDI12::sendResponse(const char *resp)
 {
   setState(TRANSMITTING);   // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);
-  delayMicroseconds(8330);  // 8.33 ms marking before response
+  delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen(resp); i++){
     writeChar(resp[i]);     // write each character
   }
@@ -570,7 +574,7 @@ void SDI12::sendResponse(FlashString resp)
 {
   setState(TRANSMITTING);   // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);
-  delayMicroseconds(8330);  // 8.33 ms marking before response
+  delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen_P((PGM_P)resp); i++){
     writeChar((char)pgm_read_byte((const char *)resp + i));  // write each character
   }
