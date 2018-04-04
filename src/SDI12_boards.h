@@ -17,22 +17,22 @@
         #define BITS_PER_TICK_Q10 79
             // 1/(13.0208 ticks/bit) * 2^10 = 78.6432
     #elif F_CPU == 8000000L
-        #define CONFIG_TIMER_PRESCALE() (TCCR2A = 0x00, TCCR2B = 0x06)
-            // TCCR2A = 0x00 = "normal" operation - Normal port operation, OC4A & OC4B disconnected
-            // TCCR2B = 0x06 = 0b00000110 - Clock Select bits 22 & 20 on - prescaler set to CK/256
-        #define TICKS_PER_BIT 26
-            // 8MHz / 256 prescaler = 31250 'ticks'/sec = 32 µs / 'tick'
-            // (1 sec/1200 bits) * (1 tick/32 µs) = 26.04166667 ticks/bit
-        #define BITS_PER_TICK_Q10 39
-            // 1/(26.04166667 ticks/bit) * 2^10 = 39.3216
-        // #define CONFIG_TIMER_PRESCALE() (TCCR2A = 0, TCCR2B = 0x07)  // Set the prescaler to 1024
+        // #define CONFIG_TIMER_PRESCALE() (TCCR2A = 0x00, TCCR2B = 0x06)
         //     // TCCR2A = 0x00 = "normal" operation - Normal port operation, OC4A & OC4B disconnected
-        //     // TCCR2B = 0x07 = 0b00000111 - Clock Select bits 22, 21, & 20 on - prescaler set to CK/1024
-        // #define TICKS_PER_BIT 6
-        //     // 8MHz / 1024 prescaler = 31250 'ticks'/sec = 128 µs / 'tick'
-        //     // (1 sec/1200 bits) * (1 tick/128 µs) = 6.5104166667 ticks/bit
-        // #define BITS_PER_TICK_Q10 157
-        //     // 1/(6.5104166667 ticks/bit) * 2^10 = 157.2864
+        //     // TCCR2B = 0x06 = 0b00000110 - Clock Select bits 22 & 20 on - prescaler set to CK/256
+        // #define TICKS_PER_BIT 26
+        //     // 8MHz / 256 prescaler = 31250 'ticks'/sec = 32 µs / 'tick'
+        //     // (1 sec/1200 bits) * (1 tick/32 µs) = 26.04166667 ticks/bit
+        // #define BITS_PER_TICK_Q10 39
+        //     // 1/(26.04166667 ticks/bit) * 2^10 = 39.3216
+        #define CONFIG_TIMER_PRESCALE() (TCCR2A = 0, TCCR2B = 0x07)  // Set the prescaler to 1024
+            // TCCR2A = 0x00 = "normal" operation - Normal port operation, OC4A & OC4B disconnected
+            // TCCR2B = 0x07 = 0b00000111 - Clock Select bits 22, 21, & 20 on - prescaler set to CK/1024
+        #define TICKS_PER_BIT 6
+            // 8MHz / 1024 prescaler = 31250 'ticks'/sec = 128 µs / 'tick'
+            // (1 sec/1200 bits) * (1 tick/128 µs) = 6.5104166667 ticks/bit
+        #define BITS_PER_TICK_Q10 157
+            // 1/(6.5104166667 ticks/bit) * 2^10 = 157.2864
      #endif
 
 
