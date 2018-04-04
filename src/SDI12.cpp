@@ -129,6 +129,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 */
 
 #include "SDI12.h"                   // 0.1 header file for this library
+#include "SDI12_boards.h"
 
 #define SDI12_BUFFER_SIZE 64         // 0.2 max RX buffer size
 
@@ -136,13 +137,27 @@ SDI12 *SDI12::_activeObject = NULL;  // 0.3 pointer to active SDI12 object
 
 static const uint16_t bitWidth_micros = (uint16_t) 833;  // The size of a bit in microseconds
     // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
-static const uint8_t rxWindowWidth = 0;  // A fudge factor to make things work
+
+static const uint8_t txBitWidth = TICKS_PER_BIT;
+static const uint8_t rxWindowWidth = 5;  // A fudge factor to make things work
+static const uint8_t bitsPerTick_Q10 = BITS_PER_TICK_Q10;
 static const uint8_t WAITING_FOR_START_BIT = 0b11111111;
 
-static uint16_t prevBitMicros;   // previous RX transition in micros
+static uint16_t prevBitTCNT;     // previous RX transition in micros
 static uint8_t rxState;          // 0: got start bit; >0: bits rcvd
 static uint8_t rxMask;           // bit mask for building received character
 static uint8_t rxValue;          // character being built
+
+static uint16_t mul8x8to16(uint8_t x, uint8_t y)
+{return x*y;}
+
+//..........................................
+
+static uint16_t bitTimes( uint8_t dt )
+{
+  return mul8x8to16( dt + rxWindowWidth, bitsPerTick_Q10 ) >> 10;
+
+} // bitTimes
 
 
 /* =========== 1. Buffer Setup ============================================
@@ -300,7 +315,7 @@ void SDI12::setState(SDI12_STATES state){
       digitalWrite(_dataPin,LOW);   // Pin state = low
       pinMode(_dataPin,INPUT);      // Pin mode = input
       interrupts();                 // Enable general interrupts
-      setPinInterrupts(true);      // Enable rx inerrupts on data pin
+      setPinInterrupts(true);       // Enable Rx interrupts on data pin
       rxState = WAITING_FOR_START_BIT;
       break;
     }
@@ -367,15 +382,17 @@ void SDI12::begin(){
   // setState(HOLDING);
   setActive();
   // SDI-12 protocol says sensors must respond within 15 milliseconds
-  // We'll bump that up to 100, just for good measure, but we don't want to
+  // We'll bump that up to 150, just for good measure, but we don't want to
   // wait the whole stream default of 1s for a response.
-  setTimeout(100);
+  setTimeout(150);
   // Because SDI-12 is mostly used for environmental sensors, we want to be able
   // to distinguish between the '0' that parseInt and parseFloat usually return
   // on timeouts and a real measured 0 value.  So we force the timeout response
   // to be -9999, which is not a common value for most variables measured by
   // in-site environmental sensors.
   setTimeoutValue(-9999);
+  // Set up the prescaler as needed for timers
+  CONFIG_TIMER_PRESCALE();
 }
 void SDI12::begin(uint8_t dataPin){
   _dataPin = dataPin;
@@ -498,7 +515,7 @@ void SDI12::writeChar(uint8_t out)
 //    4.3    - this function sends out the characters of the String cmd, one by one
 void SDI12::sendCommand(String &cmd)
 {
-  wakeSensors();             // wake up sensors
+  wakeSensors();             // set state to transmitting and send break/marking
   for (int unsigned i = 0; i < cmd.length(); i++){
     writeChar(cmd[i]);       // write each character
   }
@@ -858,13 +875,12 @@ void SDI12::startChar()
   rxState = 0;           // got a start bit
   rxMask  = 0b00000001;  // bit mask, lsb first
   rxValue = 0b00000000;  // RX character to be, a blank slate
-
 } // startChar
 
 // 7.3 - The actual interrupt service routine
 void SDI12::receiveISR()
 {
-  uint16_t thisBitMicros = micros();         // time of this data transition in micros (plus ISR latency)
+  uint8_t thisBitTCNT = TCNTX;               // time of this data transition (plus ISR latency)
   uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
 
   // Check if we're ready for a start bit, and if this could possibly be it
@@ -884,7 +900,7 @@ void SDI12::receiveISR()
 
     // check how many bit times have passed since the last change
     // the rxWindowWidth is just a fudge factor
-    uint16_t rxBits = (thisBitMicros - prevBitMicros + rxWindowWidth)/bitWidth_micros;
+    uint16_t rxBits = bitTimes(thisBitTCNT - prevBitTCNT);
     // calculate how many *data+parity* bits should be left
     // We know the start bit is past and are ignoring the stop bit (which will be low)
     // We have to treat the parity bit as a data bit because we don't know its state
@@ -949,7 +965,7 @@ void SDI12::receiveISR()
       }
     }
   }
-  prevBitMicros = thisBitMicros;  // remember time stamp of this change!
+  prevBitTCNT = thisBitTCNT;  // remember time stamp of this change!
 }
 
 // 7.4 - Put a new character in the buffer
