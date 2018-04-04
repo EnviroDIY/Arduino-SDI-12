@@ -111,7 +111,7 @@
 
 // Arduino Zero other SAMD21 boards
 //
-#elif defined(ARDUINO_SAMD_ZERO) || defined(__SAMD21G18A__)
+#elif defined(ARDUINO_SAMD_ZERO) || defined(ARDUINO_ARCH_SAMD) || defined(__SAMD21G18A__) || defined(__SAMD21J18A__)
 
     #define TIMER_IN_USE_STR "GCLK4-TC4"
     #define TCNTX REG_TC4_COUNT8_COUNT  // Using Timer 4
