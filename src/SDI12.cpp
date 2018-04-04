@@ -163,7 +163,6 @@ static uint16_t bitTimes( uint8_t dt )
 
 } // bitTimes
 
-
 /* =========== 1. Buffer Setup ============================================
 
 The buffer is used to store characters from the SDI-12 data line.
@@ -269,7 +268,7 @@ uint8_t SDI12::parity_even_bit(uint8_t v)
 // 2.2 - a helper function to switch pin interrupts on or off
 void SDI12::setPinInterrupts(bool enable)
 {
-  // #ifndef SDI12_EXTERNAL_PCINT
+  #ifndef SDI12_EXTERNAL_PCINT
     if (enable)
     {
       #if defined __AVR__
@@ -292,7 +291,7 @@ void SDI12::setPinInterrupts(bool enable)
         detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
       #endif
     }
-  // #endif
+  #endif
 }
 
 // 2.3 - sets the state of the SDI-12 object.
@@ -427,6 +426,10 @@ void SDI12::begin(){
   #else
     CONFIG_TIMER_PRESCALE();// Set up the generic clock (GCLK4) used to clock timers
   #endif
+}
+void SDI12::begin(uint8_t dataPin){
+  _dataPin = dataPin;
+  begin();
 }
 void SDI12::begin(uint8_t dataPin){
   _dataPin = dataPin;
