@@ -882,16 +882,25 @@ void SDI12::receiveISR()
 {
   uint8_t thisBitTCNT = TCNTX;               // time of this data transition (plus ISR latency)
   uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
+  // Serial.print(pinLevel);
+  // Serial.print('@');
+  // Serial.print(TCNTX);
+  // Serial.print('=');
 
   // Check if we're ready for a start bit, and if this could possibly be it
   // Otherwise, just ignore the interrupt and exit
   if (rxState == WAITING_FOR_START_BIT) {
      // If it is low it's not a start bit, exit
      // Inverse logic start bit = HIGH
-    if (pinLevel == LOW) return;
+    if (pinLevel == LOW)
+    {
+      // Serial.println('X');
+      return;
+    }
     // If it is HIGH, this should be a start bit
     // Thus set the rxStat to 0, create an empty character, and a new mask with a 1 in the lowest place
     startChar();
+    // Serial.println('*');
   }
 
   // if the character is incomplete, and this is not a start bit,
@@ -901,6 +910,7 @@ void SDI12::receiveISR()
     // check how many bit times have passed since the last change
     // the rxWindowWidth is just a fudge factor
     uint16_t rxBits = bitTimes(thisBitTCNT - prevBitTCNT);
+    // Serial.println(rxBits);
     // calculate how many *data+parity* bits should be left
     // We know the start bit is past and are ignoring the stop bit (which will be low)
     // We have to treat the parity bit as a data bit because we don't know its state
@@ -946,6 +956,7 @@ void SDI12::receiveISR()
 
     // If this was the 8th or more bit then the character and parity are complete.
     if (rxState > 7) {
+      // Serial.println(rxValue, BIN);
       rxValue &= 0b01111111;  // Throw away the parity bit
       charToBuffer(rxValue);  // Put the finished character into the buffer
 
