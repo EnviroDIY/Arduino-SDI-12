@@ -526,62 +526,94 @@ void SDI12::wakeSensors(){
 }
 
 // 4.2 - this function writes a character out on the data line
-void SDI12::writeChar(uint8_t out)
+void SDI12::writeChar(uint8_t outChar)
 {
   uint8_t currentTxBitNum = 0; // first bit is start bit
-  uint8_t bitValue = 0; // start bit is low
-  uint8_t parityBit = parity_even_bit(out);  // Calculate the parity bit
-  // Serial.write(out);
-  out |= (parityBit<<7);  // Add parity bit to the outgoing character
-  // Serial.print('=');
-  // Serial.print(out, BIN);
+  uint8_t bitValue = 1; // start bit is HIGH (inverse parity...)
 
-  uint8_t lastHighBit = 1;  // The last bit that could possibly be HIGH/1 (+1 for start bit)
-  uint8_t outToCnt = out;  // The last bit that could possibly be HIGH/1 + 1 for start bit
-  while (outToCnt >>= 1) {  // Calculate the MSB position.
-    lastHighBit++;
-  }
-  // Serial.print('(');
-  // Serial.print(lastHighBit);
-  // Serial.println(')');
-
-  uint8_t prevSREG = SREG;  // Save the old interrupt register
   noInterrupts();  // _ALL_ interrupts disabled so timing can't be shifted
 
-  while (currentTxBitNum++ < lastHighBit+1) { // repeat for start bit until last possible HIGH/1 bit (+1 for start bit)
-    if (bitValue){
-      digitalWrite(_dataPin, LOW);
-      // Serial.print(currentTxBitNum);
-      // Serial.print("-");
-      // Serial.print(bitValue);
-      // Serial.print("(L)");
-      // Serial.print("@");
-      // Serial.println(micros());
-    }
-    else{
-      digitalWrite(_dataPin, HIGH);
-      // Serial.print(currentTxBitNum);
-      // Serial.print("-");
-      // Serial.print(bitValue);
-      // Serial.print("(H)");
-      // Serial.print("@");
-      // Serial.println(micros());
-    }
-    delayMicroseconds(bitWidth_micros);
-    bitValue = out & 0x01;  // get next bit in the character to send
-    out = out >> 1;  // shift character to expose the following bit
+  uint8_t t0 = TCNTX; // start time
+  digitalWrite(_dataPin, HIGH);  // immediately get going on the start bit
+  // this gives us 833µs to calculate parity and position of last high bit
+  currentTxBitNum++;
+
+  uint8_t parityBit = parity_even_bit(outChar);  // Calculate the parity bit
+  // Serial.write(outChar);
+  outChar |= (parityBit<<7);  // Add parity bit to the outgoing character
+  // Serial.print("=1.");  // stop
+  // Serial.print(bitRead(outChar, 7));
+  // Serial.print(bitRead(outChar, 6));
+  // Serial.print(bitRead(outChar, 5));
+  // Serial.print(bitRead(outChar, 4));
+  // Serial.print(bitRead(outChar, 3));
+  // Serial.print(bitRead(outChar, 2));
+  // Serial.print(bitRead(outChar, 1));
+  // Serial.print(bitRead(outChar, 0));
+  // Serial.print(".0");  //start
+
+  // Calculate the position of the last bit that is a 0/HIGH (ie, HIGH, not marking)
+  // That bit will be the last time-critical bit.  All bits after that can be
+  // sent with interrupts enabled.
+
+  uint8_t lastHighBit = 9;  // The position of the last bit that is a 0 (ie, HIGH, not marking)
+  uint8_t msbMask = 0x80;  // A mask with all bits at 1
+  while (msbMask & outChar) {
+    lastHighBit--;
+    msbMask >>= 1;
   }
 
-  SREG = prevSREG; // Re-enable universal interrupts as soon as critical timing is past
-
-  digitalWrite(_dataPin, LOW);  // Stop bit and all remaining LOW/0 bits
   // Serial.print(currentTxBitNum);
-  // Serial.print("-1(L)@");
-  // Serial.println(micros());
-  delayMicroseconds(bitWidth_micros * (11-lastHighBit));
-  // Serial.print("X");
+  // Serial.print("-");
+  // Serial.print(bitValue);
   // Serial.print("@");
-  // Serial.println(micros());
+  // Serial.println(t0);
+
+  // Hold the line for the rest of the start bit duration
+  while ((uint8_t)(TCNTX - t0) < txBitWidth) {}
+  t0 = TCNTX; // advance start time
+
+  // repeat for all data bits until the last bit different from marking
+  while (currentTxBitNum++ < lastHighBit) {
+    bitValue = outChar & 0x01;  // get next bit in the character to send
+    if (bitValue){
+      digitalWrite(_dataPin, LOW);  // set the pin state to LOW for 1's
+      // Serial.print(currentTxBitNum);
+      // Serial.print("-");
+      // Serial.print(bitValue);
+      // Serial.print("@");
+      // Serial.println(t0);
+    }
+    else{
+      digitalWrite(_dataPin, HIGH);  // set the pin state to HIGH for 0's
+      // Serial.print(currentTxBitNum);
+      // Serial.print("-");
+      // Serial.print(bitValue);
+      // Serial.print("@");
+      // Serial.println(t0);
+    }
+    // Hold the line for this bit duration
+    while ((uint8_t)(TCNTX - t0) < txBitWidth) {}
+    t0 = TCNTX; // advance start time
+    outChar = outChar >> 1;  // shift character to expose the following bit
+  }
+
+  // Set the line low for the all remaining 1's and the stop bit
+  digitalWrite(_dataPin, LOW);
+
+  interrupts(); // Re-enable universal interrupts as soon as critical timing is past
+
+  // Serial.print(currentTxBitNum);
+  // Serial.print("-1@");
+  // Serial.println(t0);
+
+  // Hold the line low until the end of the 10th bit
+  uint8_t bitTimeRemaining = txBitWidth*(10-lastHighBit);
+  while ((uint8_t)(TCNTX - t0) < bitTimeRemaining) {}
+  t0 = TCNTX;  // advance just for debugging
+  // Serial.print("X@");
+  // Serial.println(t0);
+
 }
 
 //    4.3    - this function sends out the characters of the String cmd, one by one
