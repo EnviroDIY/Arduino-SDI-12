@@ -145,7 +145,7 @@ static const uint16_t marking_micros = (uint16_t) 8330;  // The required mark be
 static const uint8_t txBitWidth = TICKS_PER_BIT;
 static const uint8_t rxWindowWidth = RX_WINDOW_FUDGE;  // A fudge factor to make things work
 static const uint8_t bitsPerTick_Q10 = BITS_PER_TICK_Q10;
-static const uint8_t WAITING_FOR_START_BIT = 0b11111111;
+static const uint8_t WAITING_FOR_START_BIT = 0xFF;  // 0b11111111
 
 static uint16_t prevBitTCNT;     // previous RX transition in micros
 static uint8_t rxState;          // 0: got start bit; >0: bits rcvd
@@ -251,8 +251,7 @@ relinquish control of the data line when not transmitting.
   #include <util/parity.h>        // optimized parity bit handling
 #else
 // Added MJB: parity fuction to replace the one specific for AVR from util/parity.h
-// look for a better optimized code in
-// http://www.avrfreaks.net/forum/easy-method-calculate-even-parity-16-bit
+// http://graphics.stanford.edu/~seander/bithacks.html#ParityNaive
 uint8_t SDI12::parity_even_bit(uint8_t v)
 {
   uint8_t parity = 0;
@@ -310,7 +309,7 @@ void SDI12::setState(SDI12_STATES state){
     {
       pinMode(_dataPin,INPUT);   // added to make output work after pinMode to OUTPUT (don't know why, but works)
       pinMode(_dataPin,OUTPUT);  // Pin mode = output
-      noInterrupts();            // _ALL_ interrupts disabled
+      setPinInterrupts(false);   // Interrupts disabled on data pin
       break;
     }
     case LISTENING:
@@ -517,6 +516,9 @@ recorder for another SDI-12 device
 // 4.1 - this function wakes up the entire sensor bus
 void SDI12::wakeSensors(){
   setState(TRANSMITTING);
+  // Universal interrupts can be on while the break and marking happen because
+  // timings for break and from the recorder are not critical.
+  // Interrupts on the pin are disabled for the entire transmitting state
   digitalWrite(_dataPin, HIGH);
   delayMicroseconds(lineBreak_micros);  // Required break of 12 milliseconds
   digitalWrite(_dataPin, LOW);
@@ -524,25 +526,94 @@ void SDI12::wakeSensors(){
 }
 
 // 4.2 - this function writes a character out on the data line
-void SDI12::writeChar(uint8_t out)
+void SDI12::writeChar(uint8_t outChar)
 {
-  out |= (parity_even_bit(out)<<7);          // 4.2.1 - parity bit
+  uint8_t currentTxBitNum = 0; // first bit is start bit
+  uint8_t bitValue = 1; // start bit is HIGH (inverse parity...)
 
-  digitalWrite(_dataPin, HIGH);              // 4.2.2 - start bit
-  delayMicroseconds(bitWidth_micros);
+  noInterrupts();  // _ALL_ interrupts disabled so timing can't be shifted
 
-  for (byte mask = 0x01; mask; mask<<=1){    // 4.2.3 - send payload
-    if(out & mask){
-      digitalWrite(_dataPin, LOW);
-    }
-    else{
-      digitalWrite(_dataPin, HIGH);
-    }
-    delayMicroseconds(bitWidth_micros);
+  uint8_t t0 = TCNTX; // start time
+  digitalWrite(_dataPin, HIGH);  // immediately get going on the start bit
+  // this gives us 833µs to calculate parity and position of last high bit
+  currentTxBitNum++;
+
+  uint8_t parityBit = parity_even_bit(outChar);  // Calculate the parity bit
+  // Serial.write(outChar);
+  outChar |= (parityBit<<7);  // Add parity bit to the outgoing character
+  // Serial.print("=1.");  // stop
+  // Serial.print(bitRead(outChar, 7));
+  // Serial.print(bitRead(outChar, 6));
+  // Serial.print(bitRead(outChar, 5));
+  // Serial.print(bitRead(outChar, 4));
+  // Serial.print(bitRead(outChar, 3));
+  // Serial.print(bitRead(outChar, 2));
+  // Serial.print(bitRead(outChar, 1));
+  // Serial.print(bitRead(outChar, 0));
+  // Serial.print(".0");  //start
+
+  // Calculate the position of the last bit that is a 0/HIGH (ie, HIGH, not marking)
+  // That bit will be the last time-critical bit.  All bits after that can be
+  // sent with interrupts enabled.
+
+  uint8_t lastHighBit = 9;  // The position of the last bit that is a 0 (ie, HIGH, not marking)
+  uint8_t msbMask = 0x80;  // A mask with all bits at 1
+  while (msbMask & outChar) {
+    lastHighBit--;
+    msbMask >>= 1;
   }
 
-  digitalWrite(_dataPin, LOW);                // 4.2.4 - stop bit
-  delayMicroseconds(bitWidth_micros);
+  // Serial.print(currentTxBitNum);
+  // Serial.print("-");
+  // Serial.print(bitValue);
+  // Serial.print("@");
+  // Serial.println(t0);
+
+  // Hold the line for the rest of the start bit duration
+  while ((uint8_t)(TCNTX - t0) < txBitWidth) {}
+  t0 = TCNTX; // advance start time
+
+  // repeat for all data bits until the last bit different from marking
+  while (currentTxBitNum++ < lastHighBit) {
+    bitValue = outChar & 0x01;  // get next bit in the character to send
+    if (bitValue){
+      digitalWrite(_dataPin, LOW);  // set the pin state to LOW for 1's
+      // Serial.print(currentTxBitNum);
+      // Serial.print("-");
+      // Serial.print(bitValue);
+      // Serial.print("@");
+      // Serial.println(t0);
+    }
+    else{
+      digitalWrite(_dataPin, HIGH);  // set the pin state to HIGH for 0's
+      // Serial.print(currentTxBitNum);
+      // Serial.print("-");
+      // Serial.print(bitValue);
+      // Serial.print("@");
+      // Serial.println(t0);
+    }
+    // Hold the line for this bit duration
+    while ((uint8_t)(TCNTX - t0) < txBitWidth) {}
+    t0 = TCNTX; // advance start time
+    outChar = outChar >> 1;  // shift character to expose the following bit
+  }
+
+  // Set the line low for the all remaining 1's and the stop bit
+  digitalWrite(_dataPin, LOW);
+
+  interrupts(); // Re-enable universal interrupts as soon as critical timing is past
+
+  // Serial.print(currentTxBitNum);
+  // Serial.print("-1@");
+  // Serial.println(t0);
+
+  // Hold the line low until the end of the 10th bit
+  uint8_t bitTimeRemaining = txBitWidth*(10-lastHighBit);
+  while ((uint8_t)(TCNTX - t0) < bitTimeRemaining) {}
+  t0 = TCNTX;  // advance just for debugging
+  // Serial.print("X@");
+  // Serial.println(t0);
+
 }
 
 //    4.3    - this function sends out the characters of the String cmd, one by one
@@ -906,8 +977,8 @@ void SDI12::handleInterrupt(){
 void SDI12::startChar()
 {
   rxState = 0;           // got a start bit
-  rxMask  = 0b00000001;  // bit mask, lsb first
-  rxValue = 0b00000000;  // RX character to be, a blank slate
+  rxMask  = 0x01;  // 0b00000001, bit mask, lsb first
+  rxValue = 0x00;  // 0b00000000, RX character to be, a blank slate
 } // startChar
 
 // 7.3 - The actual interrupt service routine
@@ -990,7 +1061,7 @@ void SDI12::receiveISR()
     // If this was the 8th or more bit then the character and parity are complete.
     if (rxState > 7) {
       // Serial.println(rxValue, BIN);
-      rxValue &= 0b01111111;  // Throw away the parity bit
+      rxValue &= 0x7F;  // 0b01111111, Throw away the parity bit
       charToBuffer(rxValue);  // Put the finished character into the buffer
 
 
