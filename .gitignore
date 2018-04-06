@@ -57,3 +57,5 @@ Temporary Items
 .gcc-flags.json
 lib/readme.txt
 platformio.ini
+
+examples/debug_print/
