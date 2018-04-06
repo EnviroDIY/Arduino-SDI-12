@@ -279,8 +279,8 @@ void setup(){
   for(byte i = 0; i < 62; i++){
     if(isTaken(i)){
       found = true;
-      Serial.print("Found address:  ");
-      Serial.println(i);
+      Serial.print("First address found:  ");
+      Serial.println(decToChar(i));
       break;
     }
   }
