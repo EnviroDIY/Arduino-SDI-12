@@ -39,25 +39,6 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-
-
-================== Notes on Various Arduino-Type Processors ====================
-
-This library requires the use of pin change interrupts (PCINT).
-
-Not all Arduino boards have the same pin capabilities.
-The known compatibile pins for common variants are shown below.
-
-Arduino Uno: 	All pins.
-Arduino Mega or Mega 2560:
-10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62),
-A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
-
-Arduino Leonardo:
-8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
-
-Arduino Zero:
-Any pin except 4
 */
 
 #ifndef SDI12_PCINT3_h
@@ -71,6 +52,7 @@ Any pin except 4
 typedef const __FlashStringHelper *FlashString;
 
 #define NO_IGNORE_CHAR '\x01' // a char not found in a valid ASCII numeric field
+#define SDI12_BUFFER_SIZE 64   // max Rx buffer size
 
 class SDI12 : public Stream
 {
@@ -91,17 +73,24 @@ private:
   } SDI12_STATES;
 
   static SDI12 *_activeObject;    // static pointer to active SDI12 instance
+
   void setPinInterrupts(bool enable);  // Turns pin interrupts on or off
   void setState(SDI12_STATES state);   // sets the state of the SDI12 objects
   void wakeSensors();             // used to wake up the SDI12 bus
   void writeChar(uint8_t out);    // used to send a char out on the data line
-  void receiveChar();             // used by the ISR to grab a char from data line
+  void startChar();               // creates a blank slate for a new incoming character
+  void receiveISR();              // the actual function responding to changes in rx line state
+  void charToBuffer(uint8_t c);   // puts a finished character into the SDI12 buffer
 
   #ifndef __AVR__
     static uint8_t parity_even_bit(uint8_t v);
   #endif
 
   uint8_t _dataPin;               // reference to the data pin
+
+  static uint8_t _rxBuffer[SDI12_BUFFER_SIZE];  // A single buffer for ALL SDI-12 objects
+  static volatile uint8_t _rxBufferTail;
+  static volatile uint8_t _rxBufferHead;
   bool _bufferOverflow;           // buffer overflow status
 
 public:
@@ -129,8 +118,7 @@ public:
   int read();                 // returns next byte in the buffer (consumes)
   void clearBuffer();         // clears the buffer
   void flush(){};             // Waits for sending to finish - because no TX buffering, does nothing
-  virtual size_t write(uint8_t byte){return 1;}  // dummy function required to inherit from Stream
-
+  virtual size_t write(uint8_t byte);  // standard stream function
 
   // hide the Stream equivalents to allow custom value to be returned on timeout
   long parseInt(LookaheadMode lookahead = SKIP_ALL, char ignore = NO_IGNORE_CHAR);
