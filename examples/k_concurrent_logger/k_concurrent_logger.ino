@@ -3,7 +3,7 @@
 #        OVERVIEW      #
 ########################
 
- Example D: Checks all addresses for active sensors, and logs data for each sensor every minute.
+ Example K: Checks all addresses for active sensors, and logs data for each sensor every minute.
 
  This is a simple demonstration of the SDI-12 library for Arduino.
 
@@ -83,6 +83,15 @@ byte addressRegister[8] = {
   0B00000000
 };
 
+// keeps track of the wait time for each active addresses
+uint8_t waitTime[64] = { 0, };
+
+// keeps track of the time each sensor was started
+uint32_t millisStarted[64] = { 0, };
+
+// keeps track of the time each sensor will be ready
+uint32_t millisReady[64] = { 0, };
+
 uint8_t numSensors = 0;
 
 
@@ -135,11 +144,13 @@ void printInfo(char i){
   printBufferToScreen();
 }
 
-void takeMeasurement(char i){
+void startConcurrentMeasurement(char i){
   String command = "";
   command += i;
-  command += "M!"; // SDI-12 measurement command format  [address]['M'][!]
+  command += "C!"; // SDI-12 concurrent measurement command format  [address]['C'][!]
   mySDI12.sendCommand(command);
+  // Serial.print(">>>");
+  // Serial.println(command);
   delay(30);
 
   // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of measurments available, 0-9]
@@ -154,32 +165,30 @@ void takeMeasurement(char i){
       delay(5);
     }
   }
+  // Serial.print("<<<");
+  // Serial.println(sdiResponse);
   mySDI12.clearBuffer();
 
   // find out how long we have to wait (in seconds).
   uint8_t wait = 0;
   wait = sdiResponse.substring(1,4).toInt();
 
-  // Set up the number of results to expect
-  // int numMeasurements =  sdiResponse.substring(4,5).toInt();
+  uint8_t sensorNum = charToDec(i); // e.g. convert '0' to 0, 'a' to 10, 'Z' to 61.
+  waitTime[sensorNum]  = wait;
+  millisStarted[sensorNum]  = millis();
+  millisReady[sensorNum]  = millis() + wait*1000;
+}
 
-  unsigned long timerStart = millis();
-  while((millis() - timerStart) < (1000 * wait)){
-    if(mySDI12.available())  // sensor can interrupt us to let us know it is done early
-    {
-      mySDI12.clearBuffer();
-      break;
-    }
-  }
-  // Wait for anything else and clear it out
-  delay(30);
-  mySDI12.clearBuffer();
-
+void getResults(char i){
+   String command = "";
   // in this example we will only take the 'DO' measurement
   command = "";
   command += i;
   command += "D0!"; // SDI-12 command to get data [address][D][dataOption][!]
   mySDI12.sendCommand(command);
+  // Serial.print(">>>");
+  // Serial.println(command);
+
   while(!mySDI12.available()>1); // wait for acknowlegement
   delay(300); // let the data transfer
   printBufferToScreen();
@@ -295,35 +304,63 @@ void setup(){
 
 void loop(){
 
-  // scan address space 0-9
+  // start all sensors
   for(char i = '0'; i <= '9'; i++) if(isTaken(i)){
-    Serial.print(millis()/1000);
-    Serial.print(",\t");
-    printInfo(i);
-    Serial.print(",\t");
-    takeMeasurement(i);
-    Serial.println();
+    startConcurrentMeasurement(i);
   }
-
-  // scan address space a-z
   for(char i = 'a'; i <= 'z'; i++) if(isTaken(i)){
-    Serial.print(millis()/1000);
-    Serial.print(",\t");
-    printInfo(i);
-    Serial.print(",\t");
-    takeMeasurement(i);
-    Serial.println();
+    startConcurrentMeasurement(i);
+  }
+  for(char i = 'A'; i <= 'Z'; i++) if(isTaken(i)){
+    startConcurrentMeasurement(i);
   }
 
-  // scan address space A-Z
-  for(char i = 'A'; i <= 'Z'; i++) if(isTaken(i)){
-    Serial.print(millis()/1000);
-    Serial.print(",\t");
-    printInfo(i);
-    Serial.print(",\t");
-    takeMeasurement(i);
-    Serial.println();
-  };
+  // get all readings
+  uint8_t numReadingsRecorded = 0;
+  while(numReadingsRecorded < numSensors){
+    for(char i = '0'; i <= '9'; i++) {
+      if(isTaken(i)){
+        if(millis() > millisReady[charToDec(i)]){
+          Serial.print(millis()/1000);
+          Serial.print(",\t");
+          getResults(i);
+          Serial.print(",\t(");
+          printInfo(i);
+          Serial.print(")");
+          Serial.println();
+          numReadingsRecorded++;
+        }
+      }
+    }
+    for(char i = 'a'; i <= 'z'; i++) {
+      if(isTaken(i)){
+        if(millis() > millisReady[charToDec(i)]){
+          Serial.print(millis()/1000);
+          Serial.print(",\t");
+          getResults(i);
+          Serial.print(",\t(");
+          printInfo(i);
+          Serial.print(")");
+          Serial.println();
+          numReadingsRecorded++;
+        }
+      }
+    }
+    for(char i = 'A'; i <= 'Z'; i++) {
+      if(isTaken(i)){
+        if(millis() > millisReady[charToDec(i)]){
+          Serial.print(millis()/1000);
+          Serial.print(",\t");
+          getResults(i);
+          Serial.print(",\t(");
+          printInfo(i);
+          Serial.print(")");
+          Serial.println();
+          numReadingsRecorded++;
+        }
+      }
+    }
+  }
 
   delay(10000); // wait ten seconds between measurement attempts.
 

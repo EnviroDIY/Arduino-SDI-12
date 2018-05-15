@@ -108,6 +108,8 @@ byte addressRegister[8] = {
   0B00000000
 };
 
+uint8_t numSensors = 0;
+
 
 // converts allowable address characters '0'-'9', 'a'-'z', 'A'-'Z',
 // to a decimal number between 0 and 61 (inclusive) to cover the 62 possible addresses
@@ -206,7 +208,7 @@ void takeMeasurement(char i){
   mySDI12.clearBuffer();
 
   // find out how long we have to wait (in seconds).
-  unsigned int wait = 0;
+  uint8_t wait = 0;
   wait = sdiResponse.substring(1,4).toInt();
 
   // Set up the number of results to expect
@@ -246,17 +248,14 @@ boolean checkActive(char i){
 
   for(int j = 0; j < 3; j++){            // goes through three rapid contact attempts
     mySDI12.sendCommand(myCommand);
-    if(mySDI12.available()>1) break;
     delay(30);
+    if(mySDI12.available()) {  // If we here anything, assume we have an active sensor
+      printBufferToScreen();
+      mySDI12.clearBuffer();
+      return true;
+    }
   }
-  if(mySDI12.available()>2){       // if it hears anything it assumes the address is occupied
-    printBufferToScreen();
-    mySDI12.clearBuffer();
-    return true;
-  }
-  else {   // otherwise it is vacant.
-    mySDI12.clearBuffer();
-  }
+  mySDI12.clearBuffer();
   return false;
 }
 
@@ -316,11 +315,11 @@ void setup(){
       Quickly Scan the Address Space
    */
 
-  for(byte i = '0'; i <= '9'; i++) if(checkActive(i)) setTaken(i);   // scan address space 0-9
+  for(byte i = '0'; i <= '9'; i++) if(checkActive(i)) {numSensors++; setTaken(i);}   // scan address space 0-9
 
-  for(byte i = 'a'; i <= 'z'; i++) if(checkActive(i)) setTaken(i);   // scan address space a-z
+  for(byte i = 'a'; i <= 'z'; i++) if(checkActive(i)) {numSensors++; setTaken(i);}   // scan address space a-z
 
-  for(byte i = 'A'; i <= 'Z'; i++) if(checkActive(i)) setTaken(i);   // scan address space A-Z
+  for(byte i = 'A'; i <= 'Z'; i++) if(checkActive(i)) {numSensors++; setTaken(i);}   // scan address space A-Z
 
   /*
       See if there are any active sensors.
@@ -332,6 +331,8 @@ void setup(){
       found = true;
       Serial.print("First address found:  ");
       Serial.println(decToChar(i));
+      Serial.print("Total number of sensors found:  ");
+      Serial.println(numSensors);
       break;
     }
   }
@@ -341,7 +342,7 @@ void setup(){
     while(true);
   } // stop here
 
-    Serial.println();
+  Serial.println();
   Serial.println("Time Elapsed (s), Sensor Address and ID, Measurement 1, Measurement 2, ... etc.");
   Serial.println("-------------------------------------------------------------------------------");
 }

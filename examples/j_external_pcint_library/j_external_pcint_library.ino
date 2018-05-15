@@ -13,8 +13,10 @@
 #########################
 #      RESOURCES        #
 #########################
+
  Written by Kevin M. Smith in 2013.
  Contact: SDI12@ethosengineering.org
+
  The SDI-12 specification is available at: http://www.sdi-12.org/
  The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
 */
@@ -44,6 +46,8 @@ byte addressRegister[8] = {
   0B00000000
 };
 
+uint8_t numSensors = 0;
+
 
 // converts allowable address characters '0'-'9', 'a'-'z', 'A'-'Z',
 // to a decimal number between 0 and 61 (inclusive) to cover the 62 possible addresses
@@ -64,30 +68,13 @@ char decToChar(byte i){
   else return i;
 }
 
-// gets identification information from a sensor, and prints it to the serial port
-// expects a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
-void printInfo(char i){
-  String command = "";
-  command += (char) i;
-  command += "I!";
-    mySDI12.sendCommand(command);
-    delay(30);
-
-  while(mySDI12.available()){
-    char c = mySDI12.read();
-    if((c!='\n') && (c!='\r')) Serial.write(c);
-    delay(5);
-  }
-}
-
 void printBufferToScreen(){
   String buffer = "";
   mySDI12.read(); // consume address
   while(mySDI12.available()){
     char c = mySDI12.read();
-    if(c == '+' || c == '-'){
+    if(c == '+'){
       buffer += ',';
-      if(c == '-') buffer += '-';
     }
     else if ((c != '\n') && (c != '\r')) {
       buffer += c;
@@ -95,6 +82,20 @@ void printBufferToScreen(){
     delay(50);
   }
  Serial.print(buffer);
+}
+
+// gets identification information from a sensor, and prints it to the serial port
+// expects a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
+void printInfo(char i){
+  String command = "";
+  command += (char) i;
+  command += "I!";
+  mySDI12.sendCommand(command);
+  // Serial.print(">>>");
+  // Serial.println(command);
+  delay(30);
+
+  printBufferToScreen();
 }
 
 void takeMeasurement(char i){
@@ -119,7 +120,7 @@ void takeMeasurement(char i){
   mySDI12.clearBuffer();
 
   // find out how long we have to wait (in seconds).
-  unsigned int wait = 0;
+  uint8_t wait = 0;
   wait = sdiResponse.substring(1,4).toInt();
 
   // Set up the number of results to expect
@@ -159,17 +160,14 @@ boolean checkActive(char i){
 
   for(int j = 0; j < 3; j++){            // goes through three rapid contact attempts
     mySDI12.sendCommand(myCommand);
-    if(mySDI12.available()>1) break;
     delay(30);
-  }
-  if(mySDI12.available()>2){       // if it hears anything it assumes the address is occupied
+    if(mySDI12.available()) {  // If we here anything, assume we have an active sensor
     printBufferToScreen();
     mySDI12.clearBuffer();
     return true;
   }
-  else {   // otherwise it is vacant.
-    mySDI12.clearBuffer();
   }
+  mySDI12.clearBuffer();
   return false;
 }
 
@@ -230,11 +228,11 @@ void setup(){
       Quickly Scan the Address Space
    */
 
-  for(byte i = '0'; i <= '9'; i++) if(checkActive(i)) setTaken(i);   // scan address space 0-9
+  for(byte i = '0'; i <= '9'; i++) if(checkActive(i)) {numSensors++; setTaken(i);}   // scan address space 0-9
 
-  for(byte i = 'a'; i <= 'z'; i++) if(checkActive(i)) setTaken(i);   // scan address space a-z
+  for(byte i = 'a'; i <= 'z'; i++) if(checkActive(i)) {numSensors++; setTaken(i);}   // scan address space a-z
 
-  for(byte i = 'A'; i <= 'Z'; i++) if(checkActive(i)) setTaken(i);   // scan address space A-Z
+  for(byte i = 'A'; i <= 'Z'; i++) if(checkActive(i)) {numSensors++; setTaken(i);}   // scan address space A-Z
 
   /*
       See if there are any active sensors.
@@ -246,6 +244,8 @@ void setup(){
       found = true;
       Serial.print("First address found:  ");
       Serial.println(decToChar(i));
+      Serial.print("Total number of sensors found:  ");
+      Serial.println(numSensors);
       break;
     }
   }
