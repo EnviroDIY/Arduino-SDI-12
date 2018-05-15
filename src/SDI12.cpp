@@ -458,7 +458,7 @@ void SDI12::begin(){
                        TC_CTRLA_ENABLE;               // Enable TC4
       while (TC4->COUNT16.STATUS.bit.SYNCBUSY);       // Wait for synchronization
   #else
-    CONFIG_TIMER_PRESCALE();// Set up the generic clock (GCLK4) used to clock timers
+    CONFIG_TIMER_PRESCALE();  // Set up the generic clock (GCLK4) used to clock timers
   #endif
 }
 void SDI12::begin(uint8_t dataPin){
