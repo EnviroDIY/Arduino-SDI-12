@@ -75,17 +75,16 @@ boolean checkActive(byte i){              // this checks for activity at a parti
 
   for(int j = 0; j < 3; j++){            // goes through three rapid contact attempts
     mySDI12.sendCommand(myCommand);
-    if(mySDI12.available()>1) break;
     delay(30);
-  }
-  if(mySDI12.available()>2){             // if it hears anything it assumes the address is occupied
-    Serial.println("Occupied");
-    mySDI12.clearBuffer();
-    return true;
-  }
-  else {
-    Serial.println("Vacant");           // otherwise it is vacant.
-    mySDI12.clearBuffer();
+    if(mySDI12.available()) {  // If we here anything, assume we have an active sensor
+      Serial.println("Occupied");
+      mySDI12.clearBuffer();
+      return true;
+    }
+    else {
+      Serial.println("Vacant");           // otherwise it is vacant.
+      mySDI12.clearBuffer();
+    }
   }
   return false;
 }

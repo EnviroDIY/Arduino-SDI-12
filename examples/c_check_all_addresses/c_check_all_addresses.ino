@@ -94,11 +94,11 @@ boolean checkActive(SDI12 sdi, char i){
     sdi.sendCommand(myCommand);
     sdi.clearBuffer();
     delay(30);
-    if(sdi.available()>1) break;
+    if(sdi.available()){  // If we here anything, assume we have an active sensor
+      return true;
+    }
   }
-  if(sdi.available()>2){       // if it hears anything it assumes the address is occupied
-    return true;
-  }
+  sdi.clearBuffer();
   return false;
 }
 

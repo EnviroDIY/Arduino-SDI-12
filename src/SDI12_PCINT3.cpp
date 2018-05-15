@@ -115,7 +115,7 @@ SDI-12.org, official site of the SDI-12 Support Group.
 1.  Buffer Setup
 2.  Reading from the SDI-12 buffer
 3.  Constructor, Destructor, SDI12.begin(), and SDI12.end()
-4.  Using more than one SDI-12 object, isActive() and setActive().
+4.  Using more than one SDI-12 object, isActive() and setActive()
 5.  Setting proper data Line States
 6.  Waking up, and talking to, the sensors
 7.  Interrupt Service Routine (getting the data into the buffer)
@@ -458,7 +458,7 @@ void SDI12::begin(){
                        TC_CTRLA_ENABLE;               // Enable TC4
       while (TC4->COUNT16.STATUS.bit.SYNCBUSY);       // Wait for synchronization
   #else
-    CONFIG_TIMER_PRESCALE();// Set up the generic clock (GCLK4) used to clock timers
+    CONFIG_TIMER_PRESCALE();  // Set up the generic clock (GCLK4) used to clock timers
   #endif
 }
 void SDI12::begin(uint8_t dataPin){
