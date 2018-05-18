@@ -429,37 +429,8 @@ void SDI12::begin(){
   // in-site environmental sensors.
   setTimeoutValue(-9999);
   // Set up the prescaler as needed for timers
-
-  #if defined(ARDUINO_ARCH_SAMD)
-      // I would prefer to define this all as a macro, but for some reason it isn't working
-      // Select generic clock generator 4 (Arduino core uses 0-3)
-      // Most examples use this clock generator.. consider yourself warned!
-      // I would use a higher clock number, but some of the cores don't include them for some reason
-      REG_GCLK_GENDIV = GCLK_GENDIV_ID(4) |           // Select Generic Clock Generator 4
-                        GCLK_GENDIV_DIV(3) ;          // Divide the 48MHz clock source by divisor 3: 48MHz/3=16MHz
-      while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
-
-      // Write the generic clock generator 5 configuration
-      REG_GCLK_GENCTRL = GCLK_GENCTRL_ID(4) |         // Select GCLK4
-                         GCLK_GENCTRL_SRC_DFLL48M |   // Set the 48MHz clock source
-                         GCLK_GENCTRL_IDC |           // Set the duty cycle to 50/50 HIGH/LOW
-                         GCLK_GENCTRL_GENEN;          // Enable the generic clock clontrol
-      while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
-
-      // Feed GCLK4 to TC4 (also feeds to TC5, the two must have the same source)
-      REG_GCLK_CLKCTRL = GCLK_CLKCTRL_GEN_GCLK4 |     // Select Generic Clock Generator 4
-                         GCLK_CLKCTRL_CLKEN |         // Enable the generic clock generator
-                         GCLK_CLKCTRL_ID_TC4_TC5;     // Feed the Generic Clock Generator 4 to TC4 and TC5
-      while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
-
-      REG_TC4_CTRLA |= TC_CTRLA_PRESCALER_DIV1024 |   // Set prescaler to 1024, 16MHz/1024 = 15.625kHz
-                       TC_CTRLA_WAVEGEN_NFRQ |        // Put the timer TC4 into normal frequency (NFRQ) mode
-                       TC_CTRLA_MODE_COUNT8 |         // Put the timer TC4 into 8-bit mode
-                       TC_CTRLA_ENABLE;               // Enable TC4
-      while (TC4->COUNT16.STATUS.bit.SYNCBUSY);       // Wait for synchronization
-  #else
-    CONFIG_TIMER_PRESCALE();  // Set up the generic clock (GCLK4) used to clock timers
-  #endif
+  // This function is defined in SDI12_boards.h
+  configSDI12TimerPrescale();
 }
 void SDI12::begin(uint8_t dataPin){
   _dataPin = dataPin;
@@ -467,7 +438,13 @@ void SDI12::begin(uint8_t dataPin){
 }
 
 //  3.4 End
-void SDI12::end() { setState(DISABLED); }
+void SDI12::end()
+{
+  setState(DISABLED);
+  // Set the timer prescalers back to original values
+  // NOTE:  This does NOT reset SAMD board pre-scalers!
+  resetSDI12TimerPrescale();
+}
 
 //  3.5 Set the timeout return
 void SDI12::setTimeoutValue(int value) { TIMEOUT = value; }
@@ -978,7 +955,7 @@ void SDI12::receiveISR()
 
 
       // if this is LOW, or we haven't exceeded the number of bits in a
-      // character (but have gotten all the data bits, then this should be a
+      // character (but have gotten all the data bits) then this should be a
       // stop bit and we can start looking for a new start bit.
       if ((pinLevel == LOW) || !nextCharStarted) {
         rxState = WAITING_FOR_START_BIT;  // DISABLE STOP BIT TIMER
