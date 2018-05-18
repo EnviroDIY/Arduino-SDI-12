@@ -955,7 +955,7 @@ void SDI12::receiveISR()
 
 
       // if this is LOW, or we haven't exceeded the number of bits in a
-      // character (but have gotten all the data bits, then this should be a
+      // character (but have gotten all the data bits) then this should be a
       // stop bit and we can start looking for a new start bit.
       if ((pinLevel == LOW) || !nextCharStarted) {
         rxState = WAITING_FOR_START_BIT;  // DISABLE STOP BIT TIMER
