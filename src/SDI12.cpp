@@ -412,7 +412,13 @@ SDI12::SDI12(uint8_t dataPin){
 }
 
 //  3.2 Destructor
-SDI12::~SDI12(){ setState(DISABLED); }
+SDI12::~SDI12(){
+  setState(DISABLED);
+  _activeObject = NULL;
+  // Set the timer prescalers back to original values
+  // NOTE:  This does NOT reset SAMD board pre-scalers!
+  resetSDI12TimerPrescale();
+}
 
 //  3.3 Begin
 void SDI12::begin(){
@@ -441,6 +447,7 @@ void SDI12::begin(uint8_t dataPin){
 void SDI12::end()
 {
   setState(DISABLED);
+  _activeObject = NULL;
   // Set the timer prescalers back to original values
   // NOTE:  This does NOT reset SAMD board pre-scalers!
   resetSDI12TimerPrescale();

@@ -19,8 +19,8 @@
             // 1/(13.0208 ticks/bit) * 2^10 = 78.6432
         #define RX_WINDOW_FUDGE 2
 
-        uint8_t preSDI12_TCCR2A;
-        uint8_t preSDI12_TCCR2B;
+        static uint8_t preSDI12_TCCR2A;
+        static uint8_t preSDI12_TCCR2B;
         void configSDI12TimerPrescale(void)
         {
             preSDI12_TCCR2A = TCCR2A;
@@ -44,8 +44,8 @@
             // 1/(26.04166667 ticks/bit) * 2^10 = 39.3216
         #define RX_WINDOW_FUDGE 10
 
-        uint8_t preSDI12_TCCR2A;
-        uint8_t preSDI12_TCCR2B;
+        static uint8_t preSDI12_TCCR2A;
+        static uint8_t preSDI12_TCCR2B;
         void configSDI12TimerPrescale(void)
         {
             preSDI12_TCCR2A = TCCR2A;
@@ -100,7 +100,7 @@
          // 1/(13.0208 ticks/bit) * 2^10 = 78.6432
          #define RX_WINDOW_FUDGE 2
 
-         uint8_t preSDI12_TCCR1A;
+         static uint8_t preSDI12_TCCR1A;
          void configSDI12TimerPrescale(void)
          {
               preSDI12_TCCR1A = TCCR1A
@@ -121,7 +121,7 @@
          // 1/(13.0208 ticks/bit) * 2^10 = 78.6432
          #define RX_WINDOW_FUDGE 5
 
-         uint8_t preSDI12_TCCR1A;
+         static uint8_t preSDI12_TCCR1A;
          void configSDI12TimerPrescale(void)
          {
               preSDI12_TCCR1A = TCCR1A
@@ -150,11 +150,11 @@
              // 1/(13.0208 ticks/bit) * 2^10 = 78.6432
          #define RX_WINDOW_FUDGE 2
 
-         uint8_t preSDI12_TCCR4A;
-         uint8_t preSDI12_TCCR4B;
-         uint8_t preSDI12_TCCR4C;
-         uint8_t preSDI12_TCCR4D;
-         uint8_t preSDI12_TCCR4E;
+         static uint8_t preSDI12_TCCR4A;
+         static uint8_t preSDI12_TCCR4B;
+         static uint8_t preSDI12_TCCR4C;
+         static uint8_t preSDI12_TCCR4D;
+         static uint8_t preSDI12_TCCR4E;
          void configSDI12TimerPrescale(void)
          {
              preSDI12_TCCR4A = TCCR4A;
@@ -187,11 +187,11 @@
              // 1/(13.0208 ticks/bit) * 2^10 = 78.6432
          #define RX_WINDOW_FUDGE 5
 
-         uint8_t preSDI12_TCCR4A;
-         uint8_t preSDI12_TCCR4B;
-         uint8_t preSDI12_TCCR4C;
-         uint8_t preSDI12_TCCR4D;
-         uint8_t preSDI12_TCCR4E;
+         static uint8_t preSDI12_TCCR4A;
+         static uint8_t preSDI12_TCCR4B;
+         static uint8_t preSDI12_TCCR4C;
+         static uint8_t preSDI12_TCCR4D;
+         static uint8_t preSDI12_TCCR4E;
          void configSDI12TimerPrescale(void)
          {
              preSDI12_TCCR4A = TCCR4A;
