@@ -597,28 +597,24 @@ uint8_t SDI12::parity_even_bit(uint8_t v)
 // 5.2 - a helper function to switch pin interrupts on or off
 void SDI12::setPinInterrupts(bool enable)
 {
-  #ifndef SDI12_EXTERNAL_PCINT
+  #if defined (ARDUINO_ARCH_SAMD)
+    if (enable) attachInterrupt(digitalPinToInterrupt(_dataPin), handleInterrupt, CHANGE);  // Merely need to attach the interrupt function to the pin
+    else detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
+
+  #elif  defined (__AVR__) && not defined (SDI12_EXTERNAL_PCINT)
     if (enable)
     {
-      #if defined __AVR__
         *digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));  // Enable interrupts on the register with the pin of interest
         *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(_dataPin));  // Enable interrupts on the specific pin of interest
         // The interrupt function is actually attached to the interrupt way down in section 7.5
-      #else
-        attachInterrupt(digitalPinToInterrupt(_dataPin),handleInterrupt, CHANGE);  // Merely need to attach the interrupt function to the pin
-      #endif
     }
     else
     {
-      #if defined __AVR__
         *digitalPinToPCMSK(_dataPin) &= ~(1<<digitalPinToPCMSKbit(_dataPin));  // Disable interrupts on the specific pin of interest
         if(!*digitalPinToPCMSK(_dataPin)){  // If there are no other pins on the register left with enabled interrupts, disable the whole register
           *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
         }
         // We don't detach the function from the interrupt for AVR processors
-      #else
-        detachInterrupt(digitalPinToInterrupt(_dataPin));  // Merely need to detach the interrupt function from the pin
-      #endif
     }
   #endif
 }
@@ -629,23 +625,23 @@ void SDI12::setState(SDI12_STATES state){
   {
     case HOLDING:
     {
-      pinMode(_dataPin,INPUT);      // added to make output work after pinMode to OUTPUT (don't know why, but works)
-      pinMode(_dataPin,OUTPUT);     // Pin mode = output
-      digitalWrite(_dataPin,LOW);   // Pin state = low
+      pinMode(_dataPin, INPUT);     // Turn off the pull-up resistor
+      pinMode(_dataPin, OUTPUT);    // Pin mode = output
+      digitalWrite(_dataPin, LOW);  // Pin state = low - hold the line low
       setPinInterrupts(false);      // Interrupts disabled on data pin
       break;
     }
     case TRANSMITTING:
     {
-      pinMode(_dataPin,INPUT);   // added to make output work after pinMode to OUTPUT (don't know why, but works)
-      pinMode(_dataPin,OUTPUT);  // Pin mode = output
-      setPinInterrupts(false);   // Interrupts disabled on data pin
+      pinMode(_dataPin, INPUT);     // Turn off the pull-up resistor
+      pinMode(_dataPin, OUTPUT);    // Pin mode = output
+      setPinInterrupts(false);      // Interrupts disabled on data pin
       break;
     }
     case LISTENING:
     {
-      digitalWrite(_dataPin,LOW);   // Pin state = low
-      pinMode(_dataPin,INPUT);      // Pin mode = input
+      digitalWrite(_dataPin, LOW);  // Pin state = low
+      pinMode(_dataPin, INPUT);     // Pin mode = input, pull-up resistor off
       interrupts();                 // Enable general interrupts
       setPinInterrupts(true);       // Enable Rx interrupts on data pin
       rxState = WAITING_FOR_START_BIT;
@@ -653,8 +649,8 @@ void SDI12::setState(SDI12_STATES state){
     }
     default:  // DISABLED or ENABLED
     {
-      digitalWrite(_dataPin,LOW);   // Pin state = low
-      pinMode(_dataPin,INPUT);      // Pin mode = input
+      digitalWrite(_dataPin, LOW);  // Pin state = low
+      pinMode(_dataPin, INPUT);     // Pin mode = input, pull-up resistor off
       setPinInterrupts(false);      // Interrupts disabled on data pin
       break;
     }
@@ -871,7 +867,7 @@ takes to either a HIGH vs a LOW, and helps maintain a constant timing.
 7.4 - Puts a new character into the active SDI-12 buffer
 
 7.5 - Check if the various interrupt vectors are defined. If they are
-the ISR is instructed to call _handleInterrupt() when they trigger. */
+the ISR is instructed to call handleInterrupt() when they trigger. */
 
 // 7.1 - Passes off responsibility for the interrupt to the active object.
 void SDI12::handleInterrupt(){
