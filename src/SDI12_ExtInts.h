@@ -130,7 +130,7 @@ public:
 
   static void handleInterrupt();  // intermediary used by the ISR
 
-  #define SDI12_EXTERNAL_PCINT  // uncomment to use your own PCINT ISRs
+  #define SDI12_EXTERNAL_PCINT  // on AVR boards, uncomment to use your own PCINT ISRs
 
 };
 
