@@ -125,9 +125,10 @@ SDI-12.org, official site of the SDI-12 Support Group.
 */
 
 #include "SDI12.h"                   // Header file for this library
-#include "SDI12_boards.h"
-
 SDI12 *SDI12::_activeObject = NULL;  // Pointer to active SDI12 object
+
+#include "SDI12_boards.h"            //  Include timer information
+SDI12Timer sdi12timer;               // Timer functions
 
 static const uint16_t bitWidth_micros = (uint16_t) 833;  // The size of a bit in microseconds
     // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
@@ -417,7 +418,7 @@ SDI12::~SDI12(){
   _activeObject = NULL;
   // Set the timer prescalers back to original values
   // NOTE:  This does NOT reset SAMD board pre-scalers!
-  resetSDI12TimerPrescale();
+  sdi12timer.resetSDI12TimerPrescale();
 }
 
 //  3.3 Begin
@@ -436,7 +437,7 @@ void SDI12::begin(){
   setTimeoutValue(-9999);
   // Set up the prescaler as needed for timers
   // This function is defined in SDI12_boards.h
-  configSDI12TimerPrescale();
+  sdi12timer.configSDI12TimerPrescale();
 }
 void SDI12::begin(uint8_t dataPin){
   _dataPin = dataPin;
@@ -450,7 +451,7 @@ void SDI12::end()
   _activeObject = NULL;
   // Set the timer prescalers back to original values
   // NOTE:  This does NOT reset SAMD board pre-scalers!
-  resetSDI12TimerPrescale();
+  sdi12timer.resetSDI12TimerPrescale();
 }
 
 //  3.5 Set the timeout return

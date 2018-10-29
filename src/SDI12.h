@@ -44,7 +44,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef SDI12_h
 #define SDI12_h
 
-    //  Import Required Libraries
+//  Import Required Libraries
 #include <inttypes.h>           // integer types library
 #include <Arduino.h>            // Arduino core library
 #include <Stream.h>             // Arduino Stream library
@@ -92,6 +92,7 @@ private:
   static volatile uint8_t _rxBufferTail;
   static volatile uint8_t _rxBufferHead;
   bool _bufferOverflow;           // buffer overflow status
+
 
 public:
   SDI12();                          // constructor - without argument, for better library integration
