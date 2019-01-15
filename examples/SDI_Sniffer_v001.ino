@@ -4,18 +4,7 @@
   VERSION: 0.0.1
   PURPOSE: SDI-12 Line Sniffer
   Features:
-      Monitor SDI Line and get commands to other side
-
-  Notes:
-
-
-  TODOs:
-
-
-  Wiring:
-
-
-
+      Monitor SDI Line and get commands to Serial Monitor
 
 
   Notes:
@@ -26,7 +15,7 @@
 const String prog_versiyon = "v0.0.1";
 
 /*Include Libraries*/
-#include <SDI12Master.h>
+#include <SDI12.h>
 
 /*Definitions*/
 #define SERIAL_BAUD 9600  // The baud rate for the output serial port
