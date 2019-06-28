@@ -191,24 +191,8 @@ SDI12Timer::SDI12Timer(){}
                          TC_CTRLA_ENABLE;               // Enable TC4
         while (TC4->COUNT16.STATUS.bit.SYNCBUSY);       // Wait for synchronization
     }
-    // NOT resetting the SAMD timer settings, just disabling them
-    void SDI12Timer::resetSDI12TimerPrescale(void)
-    {
-
-        // Write the generic clock generator 4 configuration
-        REG_GCLK_GENCTRL = GCLK_GENCTRL_ID(4) |         // Select GCLK4
-                           ~GCLK_GENCTRL_GENEN;          // Disable the generic clock clontrol
-        while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
-
-        // Feed GCLK4 to TC4 (also feeds to TC5, the two must have the same source)
-        REG_GCLK_CLKCTRL = GCLK_CLKCTRL_GEN_GCLK4 |     // Select Generic Clock Generator 4
-                           ~GCLK_CLKCTRL_CLKEN;          // Disable the generic clock generator
-        while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
-
-        REG_TC4_CTRLA |= TC_CTRLA_ENABLE;               // Disable TC4
-        while (TC4->COUNT16.STATUS.bit.SYNCBUSY);       // Wait for synchronization
-
-    }
+    // NOT resetting the SAMD timer settings
+    void SDI12Timer::resetSDI12TimerPrescale(void){}
 
 // Unknown board
 #else
