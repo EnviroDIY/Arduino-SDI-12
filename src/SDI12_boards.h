@@ -112,8 +112,8 @@ public:
 #elif defined(ARDUINO_SAMD_ZERO) || defined(ARDUINO_ARCH_SAMD) || \
       defined(__SAMD21G18A__) || defined(__SAMD21J18A__) || defined(__SAMD21E18A__)
 
-    #define TIMER_IN_USE_STR "GCLK4-TC4"
-    #define TCNTX REG_TC4_COUNT8_COUNT  // Using Timer 4
+    #define TIMER_IN_USE_STR "GCLK4-TC3"
+    #define TCNTX REG_TC3_COUNT8_COUNT  // Using Timer 3 with generic clock 4
 
     #define PRESCALE_IN_USE_STR "3x1024"
     #define TICKS_PER_BIT 13
