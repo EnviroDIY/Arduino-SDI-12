@@ -165,33 +165,54 @@ SDI12Timer::SDI12Timer(){}
 
     void SDI12Timer::configSDI12TimerPrescale(void)
     {
-        // Select generic clock generator 4 (Arduino core uses 0-3)
-        // Most examples use this clock generator.. consider yourself warned!
+        // Select generic clock generator 4 (Arduino core uses 0, 1, and 3.  RTCZero uses 2)
+        // Many examples use clock generator 4.. consider yourself warned!
         // I would use a higher clock number, but some of the cores don't include them for some reason
         REG_GCLK_GENDIV = GCLK_GENDIV_ID(4) |           // Select Generic Clock Generator 4
-                          GCLK_GENDIV_DIV(3) ;          // Divide the 48MHz clock source by divisor 3: 48MHz/3=16MHz
+                          GCLK_GENDIV_DIV(3) ;          // Divide the clock source by divisor 3
         while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
 
-        // Write the generic clock generator 5 configuration
+        // Write the generic clock generator 4 configuration
         REG_GCLK_GENCTRL = GCLK_GENCTRL_ID(4) |         // Select GCLK4
-                           GCLK_GENCTRL_SRC_DFLL48M |   // Set the 48MHz clock source
-                           GCLK_GENCTRL_IDC |           // Set the duty cycle to 50/50 HIGH/LOW
+                           GCLK_GENCTRL_SRC_DFLL48M |   // Select the 48MHz clock source
+                           GCLK_GENCTRL_IDC &           // Set the duty cycle to 50/50 HIGH/LOW
+                           ~GCLK_GENCTRL_RUNSTDBY &     // Do NOT run in stand by
+                           ~GCLK_GENCTRL_DIVSEL |       // Divide clock source by GENDIV.DIV: 48MHz/3=16MHz
                            GCLK_GENCTRL_GENEN;          // Enable the generic clock clontrol
         while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
 
-        // Feed GCLK4 to TC4 (also feeds to TC5, the two must have the same source)
+        // Feed GCLK4 to TC3 (also feeds to TCC2, the two must have the same source)
+        // TC3 (and TCC2) seem to be free, so I'm using them
+        // TC4 is used by Tone, TC5 is tied to the same clock as TC4
+        // TC6 and TC7 are not available on all boards
         REG_GCLK_CLKCTRL = GCLK_CLKCTRL_GEN_GCLK4 |     // Select Generic Clock Generator 4
                            GCLK_CLKCTRL_CLKEN |         // Enable the generic clock generator
-                           GCLK_CLKCTRL_ID_TC4_TC5;     // Feed the Generic Clock Generator 4 to TC4 and TC5
+                           GCLK_CLKCTRL_ID_TCC2_TC3;    // Feed the Generic Clock Generator 4 to TCC2 and TC3
         while (GCLK->STATUS.bit.SYNCBUSY);              // Wait for synchronization
 
-        REG_TC4_CTRLA |= TC_CTRLA_PRESCALER_DIV1024 |   // Set prescaler to 1024, 16MHz/1024 = 15.625kHz
-                         TC_CTRLA_WAVEGEN_NFRQ |        // Put the timer TC4 into normal frequency (NFRQ) mode
-                         TC_CTRLA_MODE_COUNT8 |         // Put the timer TC4 into 8-bit mode
-                         TC_CTRLA_ENABLE;               // Enable TC4
-        while (TC4->COUNT16.STATUS.bit.SYNCBUSY);       // Wait for synchronization
+        REG_TC3_CTRLA |= TC_CTRLA_PRESCALER_DIV1024 |   // Set prescaler to 1024, 16MHz/1024 = 15.625kHz
+                         TC_CTRLA_WAVEGEN_NFRQ |        // Put the timer TC3 into normal frequency (NFRQ) mode
+                         TC_CTRLA_MODE_COUNT8 |         // Put the timer TC3 into 8-bit mode
+                         TC_CTRLA_ENABLE;               // Enable TC3
+        while (TC3->COUNT16.STATUS.bit.SYNCBUSY);       // Wait for synchronization
     }
-    void SDI12Timer::resetSDI12TimerPrescale(void){}  // NOT resetting the SAMD timers
+    // NOT resetting the SAMD timer settings
+    void SDI12Timer::resetSDI12TimerPrescale(void)
+    {
+        // Disable TCx
+        TC3->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
+        while(TC3->COUNT16.STATUS.bit.SYNCBUSY);
+
+        // Reset TCx
+        TC3->COUNT16.CTRLA.reg = TC_CTRLA_SWRST;
+        while(TC3->COUNT16.STATUS.bit.SYNCBUSY);
+        while (TC3->COUNT16.CTRLA.bit.SWRST);
+
+        // Disable generic clock generator
+        REG_GCLK_GENCTRL = GCLK_GENCTRL_ID(4) &  // Select GCLK4
+                           ~GCLK_GENCTRL_GENEN;  // Disable the generic clock clontrol
+        while (GCLK->STATUS.bit.SYNCBUSY);       // Wait for synchronization
+    }
 
 // Unknown board
 #else
