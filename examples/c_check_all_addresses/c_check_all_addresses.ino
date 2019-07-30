@@ -69,7 +69,9 @@ void printInfo(SDI12 sdi, char i){
   String command = "";
   command += (char) i;
   command += "I!";
-    delay(30);
+  sdi.sendCommand(command);
+  sdi.clearBuffer();
+  delay(30);
 
   Serial.print("  --");
   Serial.print(i);
