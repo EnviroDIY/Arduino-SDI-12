@@ -124,7 +124,7 @@ byte charToDec(char i){
 // maps a decimal number between 0 and 61 (inclusive) to
 // allowable address characters '0'-'9', 'a'-'z', 'A'-'Z',
 char decToChar(byte i){
-  if((i >= 0) && (i <= 9)) return i + '0';
+  if(i <= 9) return i + '0';
   if((i >= 10) && (i <= 36)) return i + 'a' - 10;
   if((i >= 37) && (i <= 62)) return i + 'A' - 37;
   else return i;
@@ -231,7 +231,7 @@ void takeMeasurement(char i){
   command += i;
   command += "D0!"; // SDI-12 command to get data [address][D][dataOption][!]
   mySDI12.sendCommand(command);
-  while(!mySDI12.available()>1); // wait for acknowlegement
+  while(!(mySDI12.available()>1)){}  // wait for acknowlegement
   delay(300); // let the data transfer
   printBufferToScreen();
   mySDI12.clearBuffer();
