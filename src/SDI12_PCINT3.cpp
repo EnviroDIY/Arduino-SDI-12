@@ -616,6 +616,13 @@ void SDI12::setPinInterrupts(bool enable)
         }
         // We don't detach the function from the interrupt for AVR processors
     }
+  #else
+  if (enable) {
+    return;
+  }
+  else {
+    return;
+  }
   #endif
 }
 

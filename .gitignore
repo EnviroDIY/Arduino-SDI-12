@@ -51,6 +51,7 @@ Temporary Items
 
 
 # Atom / PlatformIO
+.pio
 .pioenvs
 .piolibdeps
 .clang_complete
@@ -59,5 +60,4 @@ lib/readme.txt
 include/readme.txt
 platformio.ini
 .vscode
-
 examples/debug_print/
