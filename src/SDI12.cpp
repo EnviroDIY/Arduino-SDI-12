@@ -132,9 +132,9 @@ SDI12Timer sdi12timer;               // Timer functions
 
 static const uint16_t bitWidth_micros = (uint16_t) 833;  // The size of a bit in microseconds
     // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
-static const uint16_t lineBreak_micros = (uint16_t) 12100;  // The required "break" before sending commands
+static const uint16_t lineBreak_micros = (uint16_t) 12300;  // The required "break" before sending commands
     // break >= 12ms
-static const uint16_t marking_micros = (uint16_t) 8330;  // The required mark before a command or response
+static const uint16_t marking_micros = (uint16_t) 8500;  // The required mark before a command or response
     // marking >= 8.33ms
 
 static const uint8_t txBitWidth = TICKS_PER_BIT;
