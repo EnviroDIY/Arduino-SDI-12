@@ -52,8 +52,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 typedef const __FlashStringHelper *FlashString;
 
 #define NO_IGNORE_CHAR '\x01' // a char not found in a valid ASCII numeric field
-#define SDI12_BUFFER_SIZE 64   // max Rx buffer size
-
+#define SDI12_BUFFER_SIZE  81 // <address> is a single character
+                              // +<values> has a maximum value of 75 characters.
+                              // +<CRC> is 3 characters
+                              // +<CR> is a single character
+                              // +<LF> is a single character
 class SDI12 : public Stream
 {
 protected:
