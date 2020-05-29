@@ -8,6 +8,12 @@ sensors. This library provides a general software solution, without requiring
 
 #include <Arduino.h>
 
+#if defined(ESP32) || defined(ESP8266)
+  typedef uint32_t sdi12timer_t;
+#else
+  typedef uint8_t sdi12timer_t;
+#endif
+
 class SDI12Timer
 {
 public:
@@ -119,6 +125,18 @@ public:
     #define TICKS_PER_BIT 13
         // 48MHz / 3 pre-prescaler = 16MHz
         // 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
+        // (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
+    #define BITS_PER_TICK_Q10 79
+        // 1/(13.0208 ticks/bit) * 2^10 = 78.6432
+    #define RX_WINDOW_FUDGE 2
+
+// Espressif ESP32/ESP8266 boards
+//
+#elif defined(ESP32) || defined(ESP8266)
+    // returns  64uS tick
+    sdi12timer_t SDI12TimerRead(void);
+
+    #define TICKS_PER_BIT 13
         // (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
     #define BITS_PER_TICK_Q10 79
         // 1/(13.0208 ticks/bit) * 2^10 = 78.6432
