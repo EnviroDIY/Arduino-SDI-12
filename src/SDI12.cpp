@@ -848,6 +848,82 @@ void SDI12::sendResponse(FlashString resp) {
   }
   setState(SDI12_LISTENING);      // return to listening state
 }
+ifdef USE_CRC
+#define POLY 0xa001
+String SDI12::addCRCResponse(String &resp) {
+  char  crcStr[3] = {0};
+  uint16_t crc    = 0;
+
+  for(int i = 0; i < resp.length(); i++) {
+    crc ^= (uint16_t)resp[i];     //Set the CRC equal to the exclusive OR of the character and itself
+    for (int j = 0; j <  8; j++){ //count = 1 to 8
+      if (crc & 0x0001){         //if the least significant bit of the CRC is one
+         crc >>= 1;              //right shift the CRC one bit
+         crc ^= POLY;            //set CRC equal to the exclusive OR of POLY and itself
+      }
+      else {
+         crc >>=  1;             //right shift the CRC one bit
+      }
+    }
+  }
+  crcStr[0] = (char)( 0x0040 |  (crc >> 12));
+  crcStr[1] = (char)( 0x0040 | ((crc >> 6) & 0x003F));
+  crcStr[2] = (char)( 0x0040 |  (crc & 0x003F));
+  return (resp  + String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
+}
+
+char * SDI12::addCRCResponse(char *resp) {
+  char *crcStr  = "\0";
+  uint16_t crc   = 0;
+
+  for(int i = 0; i < strlen(resp); i++) {
+    crc ^= (uint16_t)resp[i];     //Set the CRC equal to the exclusive OR of the character and itself
+    for (int j = 0; j <  8; j++){ //count = 1 to 8
+      if (crc & 0x0001){         //if the least significant bit of the CRC is one
+         crc >>= 1;              //right shift the CRC one bit
+         crc ^= POLY;            //set CRC equal to the exclusive OR of POLY and itself
+      }
+      else {
+        crc >>=  1;             //right shift the CRC one bit
+      }
+    }
+  }
+  crcStr[0] = (char)( 0x0040 |  (crc >> 12));
+  crcStr[1] = (char)( 0x0040 | ((crc >> 6) & 0x003F));
+  crcStr[2] = (char)( 0x0040 |  (crc & 0x003F));
+  return (strncat(resp, crcStr,3));
+}
+
+String SDI12::addCRCResponse(FlashString resp) {
+  char  crcStr[3] = {0};
+  char  respBuffer[SDI12_BUFFER_SIZE - 5]; // don't need space for the CRC or CR/LF
+  uint16_t crc    = 0;
+  int i = 0;
+  char responsechar ;
+
+
+  for(i = 0; i < strlen_P((PGM_P)resp); i++) {
+    responsechar = (char)pgm_read_byte((const char *)resp + i);
+    crc ^= (uint16_t)responsechar;     //Set the CRC equal to the exclusive OR of the character and itself
+    for (int j = 0; j <  8; j++){      //count = 1 to 8
+       if (crc & 0x0001){              //if the least significant bit of the CRC is one
+          crc >>= 1;                   //right shift the CRC one bit
+          crc ^= POLY;                 //set CRC equal to the exclusive OR of POLY and itself
+       }
+       else {
+          crc >>=  1;                  //right shift the CRC one bit
+       }
+    }
+    respBuffer[i] = responsechar;
+  }
+  respBuffer[++i] = '\0';
+  String outResp = respBuffer;
+  crcStr[0] = (char)( 0x0040 |  (crc >> 12));
+  crcStr[1] = (char)( 0x0040 | ((crc >> 6) & 0x003F));
+  crcStr[2] = (char)( 0x0040 |  (crc & 0x003F));
+  return (outResp  + String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
+}
+#endif //USE_CRC
 
 
 /* ============== 7. Interrupt Service Routine  ===================
