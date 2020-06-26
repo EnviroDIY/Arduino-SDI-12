@@ -32,6 +32,20 @@ SDI12Timer::SDI12Timer(){}
             TCCR2B = preSDI12_TCCR2B;
         }
 
+    #elif F_CPU == 12000000L
+
+        void SDI12Timer::configSDI12TimerPrescale(void)
+        {
+            preSDI12_TCCR2A = TCCR2A;
+            preSDI12_TCCR2B = TCCR2B;
+            TCCR2A = 0x00;  // TCCR2A = 0x00 = "normal" operation - Normal port operation, OC2A & OC2B disconnected
+            TCCR2B = 0x07;  // TCCR2B = 0x07 = 0b00000111 - Clock Select bits 22, 21, & 20 on - prescaler set to CK/1024
+        }
+        void SDI12Timer::resetSDI12TimerPrescale(void)
+        {
+            TCCR2A = preSDI12_TCCR2A;
+            TCCR2B = preSDI12_TCCR2B;
+        }
 
     #elif F_CPU == 8000000L
 
