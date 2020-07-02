@@ -1,0 +1,5 @@
+# when travis clones the directory, only want to include examples and compiler tests
+/examples
+/travis
+# Also need to include the library.json for the json linter
+library.json
