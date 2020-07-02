@@ -57,6 +57,20 @@ typedef const __FlashStringHelper *FlashString;
                               // +<CRC> is 3 characters
                               // +<CR> is a single character
                               // +<LF> is a single character
+
+#if defined(ESP32) || defined(ESP8266)
+enum LookaheadMode
+{
+  SKIP_ALL,       // All invalid characters are ignored.
+  SKIP_NONE,      // Nothing is skipped, and the stream is not touched unless the first waiting character is valid.
+  SKIP_WHITESPACE // Only tabs, spaces, line feeds & carriage returns are skipped.
+};
+#define READTIME sdi12timer.SDI12TimerRead()
+#else
+#define READTIME TCNTX
+#endif //defined(ESP32) || defined(ESP8266)
+
+
 class SDI12 : public Stream
 {
 protected:
@@ -68,11 +82,11 @@ private:
   // For the various SDI12 states
   typedef enum SDI12_STATES
   {
-    DISABLED = 0,
-    ENABLED = 1,
-    HOLDING = 2,
-    TRANSMITTING = 3,
-    LISTENING = 4
+    SDI12_DISABLED,
+    SDI12_ENABLED,
+    SDI12_HOLDING,
+    SDI12_TRANSMITTING,
+    SDI12_LISTENING
   } SDI12_STATES;
 
   static SDI12 *_activeObject;    // static pointer to active SDI12 instance
@@ -108,8 +122,8 @@ public:
   void setTimeoutValue(int value);  // sets the value to return if a parse int or parse float times out
   uint8_t getDataPin();             // returns the data pin for the current instace
 
-  void forceHold();                     // sets line state to HOLDING
-  void forceListen();                   // sets line state to LISTENING
+  void forceHold();                     // sets line state to SDI12_HOLDING
+  void forceListen();                   // sets line state to SDI12_LISTENING
   void sendCommand(String &cmd);        // sends the String cmd out on the data line
   void sendCommand(const char *cmd);    // sends the String cmd out on the data line
   void sendCommand(FlashString cmd);    // sends the String cmd out on the data line
