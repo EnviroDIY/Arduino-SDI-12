@@ -1,34 +1,42 @@
-/*
-Example G: Using the Arduino as a command terminal for SDI-12 sensors.
-
-Edited by Ruben Kertesz for ISCO Nile 502 2/10/2016…//functions as terminal
-
-This is a simple demonstration of the SDI-12 library for Arduino.
-
-It's purpose is to allow a user to interact with an SDI-12 sensor directly,
-issuing commands through a serial terminal window.
-The SDI-12 specification is available at: http://www.sdi-12.org/
-The master library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
-The forked library with additional example files is available at: https://github.com/rkertesz/Arduino-SDI-12
-The circuit: It is recommended that you not have more than one SDI-12 device attached for this example.
-See:
-https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/basic_setup_no_usb.png
-or
-https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/compat_setup_usb.png
-Written by Kevin M. Smith in 2013.
-Contact: SDI12@ethosengineering.org
-Extended by Ruben Kertesz in 2016
-Contact: github@emnet.net or @rinnamon on twitter
+/* clang-format off */
+/**
+ * @file g_terminal_window.ino
+ * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
+ *                          and the EnviroDIY Development Team
+ *            This example is published under the BSD-3 license.
+ * @author Kevin M.Smith(SDI12@ethosengineering.org)
+ * @date 2013
+ * @author Ruben Kertesz(github@emnet.net or @rinnamon on twitter)
+ * @date 2016
+ *
+ * @brief Example G: Using the Arduino as a command terminal for SDI-12 sensors.
+ *
+ * Example G: Using the Arduino as a command terminal for SDI-12 sensors.
+ *
+ * Edited by Ruben Kertesz for ISCO Nile 502 2/10/2016…//functions as terminal
+ *
+ * This is a simple demonstration of the SDI-12 library for Arduino.
+ *
+ * It's purpose is to allow a user to interact with an SDI-12 sensor directly,
+ * issuing commands through a serial terminal window.
+ * The SDI-12 specification is available at: http://www.sdi-12.org/
+ * The master library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
+ * The forked library with additional example files is available at:
+ * https://github.com/rkertesz/Arduino-SDI-12 The circuit: It is recommended that you not
+ * have more than one SDI-12 device attached for this example. See:
+ * https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/basic_setup_no_usb.png
+ * or
+ * https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/compat_setup_usb.png
 */
-
+/* clang-format on */
 
 #include <SDI12.h>
 
-#define SERIAL_BAUD 115200 // The baud rate for the output serial port
-#define DATA_PIN 7         // The pin of the SDI-12 data bus
-#define POWER_PIN 22       // The sensor power pin (or -1 if not switching power)
+#define SERIAL_BAUD 115200  /*!< The baud rate for the output serial port */
+#define DATA_PIN 7          /*!< The pin of the SDI-12 data bus */
+#define POWER_PIN 22        /*!< The sensor power pin (or -1 if not switching power) */
 
-// Define the SDI-12 bus
+/** Define the SDI-12 bus */
 SDI12 mySDI12(DATA_PIN);
 
 char inByte = 0;

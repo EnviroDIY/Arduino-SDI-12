@@ -1,40 +1,45 @@
-/*
-########################
-#        OVERVIEW      #
-########################
-
- Example J: Identical to example B, except that it uses the library "EnableInterrupt"
- () to define the interrupt vector.  This allows it to play nicely with any other
- libraries which define interrupt vectors.
-
- For this to work, you must remove the comment braces around "#define SDI12_EXTERNAL_PCINT"
- in the library and re-compile it.
-
-#########################
-#      RESOURCES        #
-#########################
-
- Written by Kevin M. Smith in 2013.
- Contact: SDI12@ethosengineering.org
-
- The SDI-12 specification is available at: http://www.sdi-12.org/
- The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
-*/
+/* clang-format off */
+/**
+ * @file j_external_pcint_library.ino
+ * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
+ *                          and the EnviroDIY Development Team
+ *            This example is published under the BSD-3 license.
+ * @author Kevin M.Smith(SDI12@ethosengineering.org)
+ *
+ * @brief Example J: Using an external library to call interrypts.
+ *
+ * ## Overview
+ *
+ *  This is dentical to example B, except that it uses the library
+ *  [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) to define the interrupt vector.
+ *  This allows it to play nicely with any other libraries which define interrupt vectors.
+ *
+ *  For this to work, you must remove the comment braces around ```#define SDI12_EXTERNAL_PCINT```
+ *  in the library and re-compile it.
+ *
+ * ## Resources
+ *
+ *  The SDI-12 specification is available at: http://www.sdi-12.org/
+ *  The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
+ */
+/* clang-format on */
 
 #include <EnableInterrupt.h>
 #include <SDI12.h>
 
-#define SERIAL_BAUD 115200  // The baud rate for the output serial port
-#define DATA_PIN 7         // The pin of the SDI-12 data bus
-#define POWER_PIN 22       // The sensor power pin (or -1 if not switching power)
+#define SERIAL_BAUD 115200  /*!< The baud rate for the output serial port */
+#define DATA_PIN 7          /*!< The pin of the SDI-12 data bus */
+#define POWER_PIN 22        /*!< The sensor power pin (or -1 if not switching power) */
 
-// Define the SDI-12 bus
+/** Define the SDI-12 bus */
 SDI12 mySDI12(DATA_PIN);
 
-// keeps track of active addresses
-// each bit represents an address:
-// 1 is active (taken), 0 is inactive (available)
-// setTaken('A') will set the proper bit for sensor 'A'
+/**
+ * @brief keeps track of active addresses
+ * each bit represents an address:
+ * 1 is active (taken), 0 is inactive (available)
+ * setTaken('A') will set the proper bit for sensor 'A'
+ */
 byte addressRegister[8] = {
   0B00000000,
   0B00000000,
@@ -58,9 +63,12 @@ byte charToDec(char i){
   else return i;
 }
 
-// THIS METHOD IS UNUSED IN THIS EXAMPLE, BUT IT MAY BE HELPFUL.
-// maps a decimal number between 0 and 61 (inclusive) to
-// allowable address characters '0'-'9', 'a'-'z', 'A'-'Z',
+/**
+ * @brief maps a decimal number between 0 and 61 (inclusive) to allowable
+ * address characters '0'-'9', 'a'-'z', 'A'-'Z',
+ *
+ * THIS METHOD IS UNUSED IN THIS EXAMPLE, BUT IT MAY BE HELPFUL.
+ */
 char decToChar(byte i){
   if(i <= 9) return i + '0';
   if((i >= 10) && (i <= 36)) return i + 'a' - 10;
