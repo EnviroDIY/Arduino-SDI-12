@@ -33,6 +33,15 @@ public:
         #define BITS_PER_TICK_Q10 79
             // 1/(13.0208 ticks/bit) * 2^10 = 78.6432
         #define RX_WINDOW_FUDGE 2
+   
+    #elif F_CPU == 12000000L
+        #define PRESCALE_IN_USE_STR "1024"
+        #define TICKS_PER_BIT 10
+            // 12MHz / 1024 prescaler = 11719 'ticks'/sec = 85 µs / 'tick'
+            // (1 sec/1200 bits) * (1 tick/85 µs) = 9.765625 ticks/bit
+        #define BITS_PER_TICK_Q10 105
+            // 1/(9.765625 ticks/bit) * 2^10 = 104.8576
+        #define RX_WINDOW_FUDGE 2
 
     #elif F_CPU == 8000000L
         #define PRESCALE_IN_USE_STR "256"
