@@ -32,6 +32,20 @@ SDI12Timer::SDI12Timer(){}
             TCCR2B = preSDI12_TCCR2B;
         }
 
+    #elif F_CPU == 12000000L
+
+        void SDI12Timer::configSDI12TimerPrescale(void)
+        {
+            preSDI12_TCCR2A = TCCR2A;
+            preSDI12_TCCR2B = TCCR2B;
+            TCCR2A = 0x00;  // TCCR2A = 0x00 = "normal" operation - Normal port operation, OC2A & OC2B disconnected
+            TCCR2B = 0x07;  // TCCR2B = 0x07 = 0b00000111 - Clock Select bits 22, 21, & 20 on - prescaler set to CK/1024
+        }
+        void SDI12Timer::resetSDI12TimerPrescale(void)
+        {
+            TCCR2A = preSDI12_TCCR2A;
+            TCCR2B = preSDI12_TCCR2B;
+        }
 
     #elif F_CPU == 8000000L
 
@@ -218,10 +232,21 @@ SDI12Timer::SDI12Timer(){}
 
         // Disable generic clock generator
         REG_GCLK_GENCTRL = GCLK_GENCTRL_ID(4) &  // Select GCLK4
-                           ~GCLK_GENCTRL_GENEN;  // Disable the generic clock clontrol
+                           ~GCLK_GENCTRL_GENEN;  // Disable the generic clock control
         while (GCLK->STATUS.bit.SYNCBUSY);       // Wait for synchronization
     }
 
+    // Espressif ESP32/ESP8266 boards
+    //
+#elif   defined(ESP32) || defined(ESP8266)
+
+    void SDI12Timer::configSDI12TimerPrescale(void)  {  }
+    void SDI12Timer::resetSDI12TimerPrescale(void)   {  }
+    sdi12timer_t SDI12Timer::SDI12TimerRead(void)
+    {
+        // Its a one microsecond clock but we want 64uS ticks so divide by 64 i.e. right shift 6
+        return((sdi12timer_t) (micros() >> 6));
+    }
 // Unknown board
 #else
 #error "Please define your board timer and pins"
