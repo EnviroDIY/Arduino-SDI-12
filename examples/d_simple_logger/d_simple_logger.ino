@@ -138,7 +138,7 @@ void printInfo(char i){
 void takeMeasurement(char i){
   String command = "";
   command += i;
-  command += "M!"; // SDI-12 measurement command format  [address]['M'][!]
+  command += "M1!"; // SDI-12 measurement command format  [address]['M'][!]
   mySDI12.sendCommand(command);
   delay(30);
 
@@ -159,9 +159,15 @@ void takeMeasurement(char i){
   // find out how long we have to wait (in seconds).
   uint8_t wait = 0;
   wait = sdiResponse.substring(1,4).toInt();
+  Serial.print(sdiResponse);
+  Serial.print(", ");
+  Serial.print(wait);
+  Serial.print(", ");
 
   // Set up the number of results to expect
-  // int numMeasurements =  sdiResponse.substring(4,5).toInt();
+  int numMeasurements =  sdiResponse.substring(4,5).toInt();
+  Serial.print(numMeasurements);
+  Serial.print(", ");
 
   unsigned long timerStart = millis();
   while((millis() - timerStart) < (1000 * wait)){
@@ -178,7 +184,7 @@ void takeMeasurement(char i){
   // in this example we will only take the 'DO' measurement
   command = "";
   command += i;
-  command += "D0!"; // SDI-12 command to get data [address][D][dataOption][!]
+  command += "D1!"; // SDI-12 command to get data [address][D][dataOption][!]
   mySDI12.sendCommand(command);
   while(!(mySDI12.available()>1)){}  // wait for acknowlegement
   delay(300); // let the data transfer

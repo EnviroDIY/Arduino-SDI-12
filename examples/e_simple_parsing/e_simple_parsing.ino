@@ -189,7 +189,7 @@ void printBufferToScreen(){
 void takeMeasurement(char i){
   String command = "";
   command += i;
-  command += "M!"; // SDI-12 measurement command format  [address]['M'][!]
+  command += "M1!"; // SDI-12 measurement command format  [address]['M'][!]
   mySDI12.sendCommand(command);
   delay(30);
 
