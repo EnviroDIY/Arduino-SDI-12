@@ -1,4 +1,5 @@
-# Example G: Using the Arduino as a command terminal for SDI-12 sensors.
+[//]: # ( @page example_g_page Example G: Using the Arduino as a Command Terminal for SDI-12 Sensors )
+# Example G: Using the Arduino as a Command Terminal for SDI-12 Sensors
 
 This is a simple demonstration of the SDI-12 library for Arduino.
 

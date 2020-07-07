@@ -1,4 +1,5 @@
-# Example C: Checks all addresses for active sensors, and prints their status to the serial port.
+[//]: # ( @page example_c_page Example C: Check all Addresses for Active Sensors and Print Status )
+# Example C: Check all Addresses for Active Sensors and Print Status
 
 This is a simple demonstration of the SDI-12 library for Arduino.
 

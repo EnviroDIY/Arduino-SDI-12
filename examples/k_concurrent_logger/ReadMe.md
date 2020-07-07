@@ -1,4 +1,5 @@
-# Example K: Checks all addresses for active sensors, and logs data for each sensor every minute.
+[//]: # ( @page example_k_page Example K: Concurrent Measurements )
+# Example K: Concurrent Measurements
 
 This is a simple demonstration of the SDI-12 library for Arduino.
 

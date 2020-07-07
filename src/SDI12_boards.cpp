@@ -1,3 +1,13 @@
+/**
+ * @file SDI12_boards.cpp
+ * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
+ *                          and the EnviroDIY Development Team
+ * @author Sara Geleskie Damiano (sdamiano@stroudcenter.org)
+ *
+ * @brief This file implements the setting and unsetting of the proper prescalers for the timers for SDI-12.
+ *
+ */
+
 /* ======================== Arduino SDI-12 =================================
 Arduino library for SDI-12 communications to a wide variety of environmental
 sensors. This library provides a general software solution, without requiring

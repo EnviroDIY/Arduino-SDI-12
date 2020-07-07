@@ -1,3 +1,4 @@
+[//]: # ( @page example_i_page Example I: SDI-12 PC Interface )
 # Example I:  SDI-12 PC Interface
 
 Code for an Arduino-based USB dongle translates serial comm from PC to SDI-12 (electrical and timing)

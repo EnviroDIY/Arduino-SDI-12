@@ -4,8 +4,8 @@
  * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
  *                          and the EnviroDIY Development Team
  *            This example is published under the BSD-3 license.
- * @author Kevin M.Smith(SDI12@ethosengineering.org)
- * @date 2013
+ * @author Kevin M.Smith <SDI12@ethosengineering.org>
+ * @date August 2013
  *
  * @brief Example C: Check all addresses for active sensors, and print their status to the serial port.
  *

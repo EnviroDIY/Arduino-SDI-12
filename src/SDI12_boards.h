@@ -1,3 +1,13 @@
+/**
+ * @file SDI12_boards.h
+ * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
+ *                          and the EnviroDIY Development Team
+ * @author Sara Geleskie Damiano (sdamiano@stroudcenter.org)
+ *
+ * @brief This file defines the timing units needed for various Arduino boards.
+ *
+ */
+
 /* ======================== Arduino SDI-12 =================================
 Arduino library for SDI-12 communications to a wide variety of environmental
 sensors. This library provides a general software solution, without requiring
@@ -39,7 +49,7 @@ public:
         #define BITS_PER_TICK_Q10 79
             // 1/(13.0208 ticks/bit) * 2^10 = 78.6432
         #define RX_WINDOW_FUDGE 2
-   
+
     #elif F_CPU == 12000000L
         #define PRESCALE_IN_USE_STR "1024"
         #define TICKS_PER_BIT 10

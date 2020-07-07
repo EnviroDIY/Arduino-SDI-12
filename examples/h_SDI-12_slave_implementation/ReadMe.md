@@ -1,4 +1,5 @@
-# Example H: Using SDI-12 in slave mode
+[//]: # ( @page example_h_page Example H: Using SDI-12 in Slave Mode )
+# Example H: Using SDI-12 in Slave Mode
 
 Example sketch demonstrating how to implement an arduino as a slave on an SDI-12 bus. This may be used, for example, as a middleman between an I2C sensor and an SDI-12 datalogger.
 

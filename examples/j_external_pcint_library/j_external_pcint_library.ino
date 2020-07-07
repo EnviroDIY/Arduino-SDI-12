@@ -4,7 +4,7 @@
  * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
  *                          and the EnviroDIY Development Team
  *            This example is published under the BSD-3 license.
- * @author Kevin M.Smith(SDI12@ethosengineering.org)
+ * @author Kevin M.Smith <SDI12@ethosengineering.org>
  *
  * @brief Example J: Using an external library to call interrypts.
  *
