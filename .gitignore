@@ -61,3 +61,5 @@ include/readme.txt
 platformio.ini
 .vscode
 examples/debug_print/
+doxygen/doxygenOutput.log
+Doxyfile-mcss

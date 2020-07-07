@@ -1,4 +1,3 @@
-/* clang-format off */
 /**
  * @file b_address_change.ino
  * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
@@ -12,7 +11,6 @@
  * This is a simple demonstration of the SDI-12 library for arduino.
  * It discovers the address of the attached sensor and allows you to change it.
  */
-/* clang-format on */
 
 #include <SDI12.h>
 
