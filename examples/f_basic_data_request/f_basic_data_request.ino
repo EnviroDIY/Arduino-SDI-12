@@ -1,39 +1,25 @@
-/* clang-format off */
 /**
  * @file f_basic_data_request.ino
  * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
  *                          and the EnviroDIY Development Team
  *            This example is published under the BSD-3 license.
- * @author Kevin M.Smith <SDI12@ethosengineering.org>
- * @date August 2013
- * @author Ruben Kertesz(github@emnet.net or @rinnamon on twitter)
- * @date 2016
+ * @author Ruben Kertesz <github@emnet.net> or @rinnamon on twitter
+ * @date 2/10/2016
  *
- * @brief Example F: Basic data request.
- *
- * Example F: Basic data request.
- * Edited by Ruben Kertesz for ISCO Nile 502 2/10/2016
- * This is a simple demonstration of the SDI-12 library for Arduino.
+ * @brief Example F: Basic Data Request to a Single Sensor
  *
  * This is a very basic (stripped down) example where the user initiates a measurement
  * and receives the results to a terminal window without typing numerous commands into
  * the terminal.
- * The SDI-12 specification is available at: http://www.sdi-12.org/
- * The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
- * The forked library with additional example files is available at: https://github.com/rkertesz/Arduino-SDI-12
- * The circuit: You should not have more than one SDI-12 device attached for this example.
- * See:
- * https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/basic_setup_no_usb.png
- * or
- * https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/compat_setup_usb.png
-*/
-/* clang-format on */
+ *
+ * Edited by Ruben Kertesz for ISCO Nile 502 2/10/2016
+ */
 
 #include <SDI12.h>
 
 #define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
-#define DATA_PIN 7          /*!< The pin of the SDI-12 data bus */
-#define POWER_PIN 22        /*!< The sensor power pin (or -1 if not switching power) */
+#define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
+#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
 #define SENSOR_ADDRESS 1
 
 /** Define the SDI-12 bus */

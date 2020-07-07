@@ -1,4 +1,3 @@
-/* clang-format off */
 /**
  * @file e_simple_parsing.ino
  * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
@@ -7,68 +6,28 @@
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
  *
- * @brief Example E: This example demonstrates the ability to parse integers and floats from the buffer.
+ * @brief Example E: Parsing Integers and Floats from the Buffer
  *
- *## Overview
+ *  This example demonstrates the ability to parse integers and floats from the buffer.
+ * It is based closely on example D, however, every other time it prints out data, it
+ * multiplies the data by a factor of 2.
  *
- * Example E: This example demonstrates the ability to parse integers and floats from the buffer.
- * It is based closely on example D, however, every other time it prints out data, it multiplies the data by a factor of 2.
  * Time Elapsed (s), Sensor Address and ID, Measurement 1, Measurement 2, ... etc.
  * -------------------------------------------------------------------------------
  * 6,c13SENSOR ATM    311,0.62 x 2 = 1.24,19.80 x 2 = 39.60
  * 17,c13SENSOR ATM   311,0.62,19.7
  * 29,c13SENSOR ATM   311,0.62 x 2 = 1.2419.70 x 2 = 39.40
  * 41,c13SENSOR ATM   311,0.62,19.8
- * This is a trivial and nonsensical example, but it does demonstrate the ability to manipulate incoming data.
- * At this point in the example series, the most relavent function to study is printBufferToScreen().
- *Other notes:
  *
- * This is a simple demonstration of the SDI-12 library for Arduino.
- *
- * It discovers the address of all sensors active on a single bus and takes measurements from them.
- * Every SDI-12 device is different in the time it takes to take a measurement, and the amount of data it returns.
- * This sketch will not serve every sensor type, but it will likely be helpful in getting you started.
- * Each sensor should have a unique address already - if not, multiple sensors may respond simultaenously
- * to the same request and the output will not be readable by the Arduino.
- *
- * To address a sensor, please see Example B: b_address_change.ino
- *
- * ## The circuit
- *
- * You  may use one or more pre-adressed sensors.
- *
- * See:
- * https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/basic_setup_usb_multiple_sensors.png
- * or
- * https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/compat_setup_usb_multiple_sensors.png
- *
- * ## Compatibility
- *
- * This library requires the use of pin change interrupts (PCINT).
- * Not all Arduino boards have the same pin capabilities.
- * The known compatibile pins for common variants are shown below.
- *
- * Arduino Uno: 	All pins.
- *
- * Arduino Mega or Mega 2560:
- * 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62),
- * A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
- *
- * Arduino Leonardo:
- * 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
- *
- * ## Resources
- *
- * The SDI-12 specification is available at: http://www.sdi-12.org/
- * The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
-*/
-/* clang-format on */
+ * This is a trivial and nonsensical example, but it does demonstrate the ability to
+ * manipulate incoming data.
+ */
 
 #include <SDI12.h>
 
 #define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
-#define DATA_PIN 7          /*!< The pin of the SDI-12 data bus */
-#define POWER_PIN 22        /*!< The sensor power pin (or -1 if not switching power) */
+#define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
+#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(DATA_PIN);

@@ -1,4 +1,3 @@
-/* clang-format off */
 /**
  * @file h_SDI-12_slave_implementation.ino
  * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
@@ -7,7 +6,7 @@
  * @date 2016
  * @author D. Wasielewski
  *
- * @brief Example H:  SDI-12 slave implementation
+ * @brief Example H:  Using SDI-12 in Slave Mode
  *
  * Example sketch demonstrating how to implement an arduino as a slave on an SDI-12 bus.
  * This may be used, for example, as a middleman between an I2C sensor and an SDI-12
@@ -17,10 +16,6 @@
  * report and the max time until these values will be available.  This example uses 9
  * values available in 21 s, but references to these numbers and the output array size
  * and datatype should be changed for your specific application.
- *
- * Sketch requires the SDI-12 library from SWRC, modified to add public void
- * forceListen() and public void sendResponse().
- * https://github.com/dwasielewski/Arduino-SDI-12
  *
  * D. Wasielewski, 2016
  * Builds upon work started by:
@@ -32,7 +27,6 @@
  *  - Make an int variable for the "number of values to report" instead of the
  *    hard-coded 9s interspersed throughout the code
  */
-/* clang-format on */
 
 #include <SDI12.h>
 

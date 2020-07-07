@@ -7,52 +7,18 @@
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
  *
- * @brief Example B: Changing the address of a sensor.
- *
- * ## Overview
- *
- * Example B: Changing the address of a sensor.
+ * @brief Example B: Changing the Address of your SDI-12 Sensor
  *
  * This is a simple demonstration of the SDI-12 library for arduino.
  * It discovers the address of the attached sensor and allows you to change it.
- *
- * ## The circuit
- *
- * The circuit: You should not have more than one SDI-12 device attached for
- * this example.
- *
- * See:
- * https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/basic_setup_no_usb.png
- * or
- * https://raw.github.com/Kevin-M-Smith/SDI-12-Circuit-Diagrams/master/compat_setup_usb.png
- *
- * ## Compatibility
- *
- * This library requires the use of pin change interrupts (PCINT).
- * Not all Arduino boards have the same pin capabilities.
- * The known compatibile pins for common variants are shown below.
- *
- * Arduino Uno: 	All pins.
- *
- * Arduino Mega or Mega 2560:
- * 10, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62),
- * A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69).
- *
- * Arduino Leonardo:
- * 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
- *
- * ## Resources
- *
- * The SDI-12 specification is available at: http://www.sdi-12.org/
- * The library is available at: https://github.com/EnviroDIY/Arduino-SDI-12
  */
 /* clang-format on */
 
 #include <SDI12.h>
 
 #define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
-#define DATA_PIN 7          /*!< The pin of the SDI-12 data bus */
-#define POWER_PIN 22        /*!< The sensor power pin (or -1 if not switching power) */
+#define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
+#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(DATA_PIN);
