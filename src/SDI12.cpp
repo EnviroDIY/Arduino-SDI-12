@@ -50,7 +50,7 @@
 
 #include "SDI12.h"  //  Header file for this library
 
-// Set static constants
+/* ================  Set static constants ===========================================*/
 
 // Pointer to active SDI12 object
 SDI12* SDI12::_activeObject = NULL;
@@ -539,9 +539,16 @@ void SDI12::sendResponse(FlashString resp) {
 /* ================ Interrupt Service Routine =======================================*/
 
 // Passes off responsibility for the interrupt to the active object.
+// On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
+#if defined(ESP32) || defined(ESP8266)
+void ICACHE_RAM_ATTR SDI12::handleInterrupt() {
+  if (_activeObject) _activeObject->receiveISR();
+}
+#else
 void SDI12::handleInterrupt() {
   if (_activeObject) _activeObject->receiveISR();
 }
+#endif
 
 // Creates a blank slate of bits for an incoming character
 void SDI12::startChar() {

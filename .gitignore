@@ -63,3 +63,4 @@ platformio.ini
 examples/debug_print/
 doxygen/doxygenOutput.log
 Doxyfile-mcss
+examples/debugging_prints/*

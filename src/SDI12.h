@@ -884,6 +884,8 @@ class SDI12 : public Stream {
   /**
    * @brief Intermediary used by the ISR - passes off responsibility for the interrupt
    * to the active object.
+   *
+   * On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
    */
   static void handleInterrupt();
 

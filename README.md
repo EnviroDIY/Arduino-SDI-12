@@ -99,10 +99,10 @@ The known compatibile pins for common variants are shown below:
 - Any pin (except 4 on the zero)
 
 **ESP8266:**
-- Any pin
+- Any GPIO, except GPIO16
 
 **ESP32:**
-- Any pin
+- Any GPIO
 
 Note that not all of these pins are available with our [Variants and Branches](https://github.com/EnviroDIY/Arduino-SDI-12#variants-and-branches), below.
 
