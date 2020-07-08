@@ -41,7 +41,7 @@ Learn more, below, about this library's:
 
 Try running our [Example sketches](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples) with your Arduino board and SDI-12 sensor.
 
-Full details on the library functionality can be found on github pages:
+Full details on the library functionality can be found on github pages: https://envirodiy.github.io/Arduino-SDI-12/
 
 
 [//]: # ( @section mainpage_origins Origins and Inherited Limitations )

@@ -807,64 +807,39 @@ class SDI12 : public Stream {
    * SDI12::sendCommand() or SDI12::sendResponse() functions.
    */
   virtual size_t write(uint8_t byte);
+  /**@}*/
+
+  ///@{
   /**
-   * @brief Send the String command out on the data line
+   * @brief Send a command out on the data line, acting as a datalogger (master)
    *
    * @param cmd the command to send
    *
-   * A publicly accessible function that wakes sensors and sends out a String byte by
+   * A publicly accessible function that wakes sensors and sends out a command byte by
    * byte on the data line.
+   *
+   * @ingroup communication
    */
   void sendCommand(String& cmd);
-  /**
-   * @brief Send the const char* command out on the data line
-   *
-   * @param cmd **const char*** the command to send
-   *
-   * A publicly accessible function that wakes sensors and sends out a String byte by
-   * byte on the data line.
-   */
   void sendCommand(const char* cmd);
-  /**
-   * @brief Send the flash-stored string command out on the data line
-   *
-   * @param cmd the command to send
-   *
-   * A publicly accessible function that wakes sensors and sends out a String byte by
-   * byte on the data line.
-   */
   void sendCommand(FlashString cmd);
+  ///@}
+  ///@{
   /**
-   * @brief Send the String response out on the data line (for slave use)
+   * @brief Send a response out on the data line (for slave use)
    *
    * @param resp the response to send
    *
-   * A publicly accessible function that sends out an 8.33 ms marking and a String
+   * A publicly accessible function that sends out an 8.33 ms marking and a response
    * byte by byte on the data line.  This is needed if the Arduino is acting as an
    * SDI-12 device itself, not as a recorder for another SDI-12 device.
+   *
+   * @ingroup communication
    */
   void sendResponse(String& resp);
-  /**
-   * @brief Send the const char * response out on the data line (for slave use)
-   *
-   * @param resp the response to send
-   *
-   * A publicly accessible function that sends out an 8.33 ms marking and a String
-   * byte by byte on the data line.  This is needed if the Arduino is acting as an
-   * SDI-12 device itself, not as a recorder for another SDI-12 device.
-   */
   void sendResponse(const char* resp);
-  /**
-   * @brief Send the flash-stored string response out on the data line (for slave use)
-   *
-   * @param resp the response to send
-   *
-   * A publicly accessible function that sends out an 8.33 ms marking and a String
-   * byte by byte on the data line.  This is needed if the Arduino is acting as an
-   * SDI-12 device itself, not as a recorder for another SDI-12 device.
-   */
   void sendResponse(FlashString resp);
-  /**@}*/
+  ///@}
 
 
   /**
