@@ -69,16 +69,20 @@
  *
  * @section connection_details Connection Details
  *
- * Physical Connections:  1 data line (0v - 5.5v)
- *                        1 12v power line (9.6v - 16v)
- *                        1 ground line
+ * **Physical Connections:**
+ *   - 1 data line (0v - 5.5v)
+ *   - 1 12v power line (9.6v - 16v)
+ *   - 1 ground line
  *
- * Baud Rate:  1200 bits per second
+ * **Baud Rate:**
+ *   - 1200 bits per second
  *
- * Data Frame Format:  10 bits per data frame
- *                     1 start bit
- *                     7 data bits (least significant bit first)
- *                     1 stop bit
+ * **Data Frame Format:**
+ *   - 10 bits per data frame
+ *   - 1 start bit
+ *   - 7 data bits (least significant bit first)
+ *   - 1 even parity bit
+ *   - 1 stop bit
  *
  * Data Line:  SDI-12 communication uses a single bi-directional data line with
  * three-state, inverse logic.
@@ -232,14 +236,32 @@ class SDI12 : public Stream {
    */
   static const uint8_t bitsPerTick_Q10;
   /**
-   * @brief A mask waiting for a start bit; 0b11111111
+   * @brief A mask for the #rxState while waiting for a start bit; 0b11111111
    */
   static const uint8_t WAITING_FOR_START_BIT;
 
-  static uint16_t prevBitTCNT; /**< previous RX transition in micros */
-  static uint8_t  rxState;     /**< 0: got start bit; >0: bits rcvd */
-  static uint8_t  rxMask;      /**< bit mask for building received character */
-  static uint8_t  rxValue;     /**< character being built */
+  /**
+   * @brief Stores the time of the previous RX transition in micros
+   */
+  static uint16_t prevBitTCNT;
+  /**
+   * @brief Tracks how many bits are accounted for on an incoming character.
+   *
+   * - if 0: indicates that we got a start bit
+   * - if >0: indicates the number of bits received
+   */
+  static uint8_t rxState;
+  /**
+   * @brief a bit mask for building a received character
+   *
+   * The mask has a single bit set, in the place of the active bit based on the
+   * #rxState.
+   */
+  static uint8_t rxMask;
+  /**
+   * @brief the value of the character being built
+   */
+  static uint8_t rxValue;
 
   /**
    * @brief static method for getting a 16-bit value from the multiplication of 2 8-bit
@@ -257,6 +279,14 @@ class SDI12 : public Stream {
    *
    * @param dt The current value of the 8-bit timer
    * @return **uint16_t** The number of bit times that have passed at 1200 baud.
+   *
+   * Adds a rxWindowWidth fudge factor to the time difference to get the number of
+   * ticks, and then multiplies the fudged ticks by the number of bits per tick.  Uses
+   * the number of bits per tick shifted up by 2^10 and then shifts the result down by
+   * the same amount to compensate for the fact that the number of bits per tick is a
+   * decimal the timestamp is only an 8-bit integer.
+   *
+   * @see https://github.com/SlashDevin/NeoSWSerial/pull/13#issuecomment-315463522
    */
   static uint16_t bitTimes(uint8_t dt);
   /**@}*/
@@ -861,16 +891,14 @@ class SDI12 : public Stream {
    * rx line state.
    *
    * This function checks which direction the change of the interrupt was and then uses
-   * that to populate the bits of the character.
-   * - First check if we're expecting a start bit and if this change is in the right
-   * direction for the start bit.  If it is not, interrupt may be from interference or
-   * an interrupt we are not interested in, so return.  Because the SDI-12 protocol
-   * specifies inverse logic, the end of a start bit will be a change from LOW to HIGH.
-   * - If this isn't a start bit, and a new character has been started, figure out where
-   * in the character we are at this change and fill out bits accordingly.
-   *
-   * Here we use an if / else structure that helps to balance the time it takes to
-   * either a HIGH vs a LOW, and helps maintain a constant timing.
+   * that to populate the bits of the character. Unlike SoftwareSerial which listens for
+   * a start bit and then halts all program and other ISR execution until the end of the
+   * character, this library grabs the time of the interrupt, does some quick math, and
+   * lets the processor move on.  The logic of creating a character this way is harder
+   * for a person to follow, but it pays off because we're not tieing up the processor
+   * in an ISR that lasts for 8.33ms for each character. [10 bits @ 1200 bits/s] For a
+   * person, that 8.33ms is trivial, but for even a "slow" 8MHz processor, that's over
+   * 60,000 ticks sitting idle per character.
    */
   void receiveISR();
   /**

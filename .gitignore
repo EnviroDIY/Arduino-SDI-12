@@ -64,3 +64,7 @@ examples/debug_print/
 doxygen/doxygenOutput.log
 Doxyfile-mcss
 examples/debugging_prints/*
+doxygen/mcss-theme.css
+doxygen/mcss-theme-compiled.css
+doxygen/__pycache__/conf.cpython-37.pyc
+doxygen/conf.py

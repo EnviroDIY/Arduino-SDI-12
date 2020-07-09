@@ -10,3 +10,5 @@ Every SDI-12 device is different in the time it takes to take a measurement, and
 Each sensor should have a unique address already - if not, multiple sensors may respond simultaneously to the same request and the output will not be readable by the Arduino.
 
 To address a sensor, please see Example B: b_address_change.ino
+
+[//]: # ( @include{lineno} d_simple_logger.ino )

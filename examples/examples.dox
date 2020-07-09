@@ -52,29 +52,3 @@
 @example{lineno} k_concurrent_logger.ino
 @copydoc example_k_page
 */
-
-/**
-@page examples_page Examples using the SDI-12 Library
-
-@subpage example_a_page
-
-@subpage example_b_page
-
-@subpage example_c_page
-
-@subpage example_d_page
-
-@subpage example_e_page
-
-@subpage example_f_page
-
-@subpage example_g_page
-
-@subpage example_h_page
-
-@subpage example_i_page
-
-@subpage example_j_page
-
-@subpage example_k_page
-*/

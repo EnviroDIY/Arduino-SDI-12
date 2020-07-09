@@ -1,42 +1,61 @@
 [//]: # ( @page interrupts_page Overview of Interrupts )
 # Overview of Interrupts
 
-[//]: # ( @section interrupts_vocab Some Vocabulary )
-## Some Vocabulary:
-**Registers**: PCMSK0, PCMSK1, PCMSK2, PCMSK3: processor registers that enable or disable pin-change interrupts on individual pins
+[//]: # ( @tableofcontents )
 
-**PCICR** : a register where the three least significant bits enable or disable pin change interrupts on a range of pins, i.e. {0,0,0,0,0,PCIE2,PCIE1,PCIE0}, where PCIE2 maps to PCMSK2, PCIE1 maps to PCMSK1, and PCIE0 maps to PCMSK0.
+[//]: # ( Start GitHub Only )
+- [Overview of Interrupts](#overview-of-interrupts)
+  - [What is an Interrupt?](#what-is-an-interrupt)
+  - [Directly Controlling Interrupts on an AVR Board](#directly-controlling-interrupts-on-an-avr-board)
+    - [Some Vocabulary:](#some-vocabulary)
+    - [Enabling an Interrupt](#enabling-an-interrupt)
+    - [Disabling an Interrupt](#disabling-an-interrupt)
 
-**noInterrupts()** globally disables interrupts (of all types)
-
-**interrupts()** globally enables interrupts (of all types), but they will only occur if the requisite registers are set (e.g. PCMSK and PCICR).
+[//]: # ( End GitHub Only )
 
 [//]: # ( @section interrupts_what What is an Interrupt? )
 ## What is an Interrupt?
 An interrupt is a signal that causes the microcontroller to halt execution of the program, and perform a subroutine known as an interrupt handler or Interrupt Service Routine (ISR).
-After the ISR, program execution continues.
+After the ISR, program execution continues where it left off.
 This allows the microcontroller to efficiently handle a time-sensitive function such as receiving a burst of data on one of its pins, by not forcing the microcontroller to wait for the data.
 It can perform other tasks until the interrupt is called.
 
-Physically, interrupts take the form of signals on the pins of the microcontroller.
-To make the library generic, the dataPin responds to pin change interrupts which are available on all pins of the Arduino Uno, and a majority of pins on other variants.
-Pin change interrupts trigger an ISR on any change of state detected for a specified pin.
+All processors running some sort of Arduino core can support multiple type of interrupts.
+This library specifically makes us of pin change interrupts - interrupts that trigger an ISR on any change of state detected for a specified pin.
 
-Obviously, interrupts are not always desirable, so they can be controlled by manipulating registers.
-Registers are small 1-byte (8-bit) stores of memory directly accessible by processor.
-There is one register PCICR, which can enable and disable pin change interrupts for a range of pins at a single time.
+Obviously, we don't want the processor to be halting operation every time any pin changes voltage, so we can disable or enable interrupts on a pin-by-pin basis.
+For Atmel SAMD or Espressif processors the processor has dedicated control registers for each pin and the Arduino core provides us with a handy "attachInterrupt" function to use to tie our ISR to that pin.
+For AVR processors, like the Arduino Uno or the EnviroDIY Mayfly, we have to use a get a bit fancier to control the interrupts.
 
-There are also three registers that store the state (enabled/disabled) of the pin change interrupts: PCMSK0, PCMSK1, and PCMSK2.
-Each bit stores a 1 (enabled) or 0 (disabled).
+[//]: # ( @section interrupts_avr Directly Controlling Interrupts on an AVR Board )
+## Directly Controlling Interrupts on an AVR Board
 
-For example, PCMSK0 holds an 8 bits which represent:
-- PCMSK0 {PCINT7, PCINT6, PCINT5, PCINT4, PCINT3, PCINT2, PCINT1, PCINT0}
+[//]: # ( @subsection interrupts_vocab Some Vocabulary )
+### Some Vocabulary:
 
-On an Arduino Uno, these map to:
-- PCMSK0 {XTAL2,  XTAL1,  Pin 13, Pin 12, Pin 11, Pin 10, Pin 9,  Pin 8}
+**Registers**: small 1-byte (8-bit) stores of memory directly accessible by processor
+PCMSK0, PCMSK1, PCMSK2, PCMSK3
 
-[//]: # ( @section interrupts_enable Enabling an Interrupt )
-## Enabling an Interrupt
+**PCICRx**: a register where the three least significant bits enable or disable pin change interrupts on a range of pins
+- i.e. {0,0,0,0,0,PCIE2,PCIE1,PCIE0}, where PCIE2 maps to PCMSK2, PCIE1 maps to PCMSK1, and PCIE0 maps to PCMSK0.
+
+**PCMSKx**: a register that stores the state (enabled/disabled) of pin change interrupts on a single pin
+- Each bit stores a 1 (enabled) or 0 (disabled).
+
+On an Arduino Uno:
+- There is on PCICR register controlling three ranges of pins
+- There are three mask registers (PCMSK0, PCMSK1, and PCMSK2) controlling individual pins.
+- Looking at one mask register, PCMSK0:
+    - the 8 bits represent: PCMSK0 {PCINT7, PCINT6, PCINT5, PCINT4, PCINT3, PCINT2, PCINT1, PCINT0}
+    - these map to:         PCMSK0 {XTAL2,  XTAL1,  Pin 13, Pin 12, Pin 11, Pin 10, Pin 9,  Pin 8}
+
+**noInterrupts()**: a function to globally disable interrupts (of all types)
+
+**interrupts()**: a function to globally enable interrupts (of all types)
+- interrupts will only occur if the requisite registers are set (e.g. PCMSK and PCICR).
+
+[//]: # ( @subsection interrupts_enable Enabling an Interrupt )
+### Enabling an Interrupt
 
 Initially, no interrupts are enabled, so PCMSK0 looks like: `{00000000}`.
 If we were to use pin 9 as the data pin, we would set the bit in the pin 9 position to 1, like so: `{00000010}`.
@@ -119,8 +138,8 @@ So now:
 By using a bitmask and bitwise operation, we have successfully enabled pin 9 without effecting the state of pin 13.
 
 
-[//]: # ( @section interrupts_disable Disabling an Interrupt )
-## Disabling an Interrupt
+[//]: # ( @subsection interrupts_disable Disabling an Interrupt )
+### Disabling an Interrupt
 
 When the we would like to put the SDI-12 object in the DISABLED state, (e.g. the destructor is called), we need to make sure the bit corresponding to the data pin is unset.
 

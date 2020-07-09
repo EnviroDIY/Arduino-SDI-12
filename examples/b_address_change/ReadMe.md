@@ -16,3 +16,5 @@ Upload the sketch to your board.  After the upload finishes, open up the serial 
 In the serial monitor you will see it begin scanning through all possible SDI-12 addresses.  Once it has found an occupied address, it will stop and ask you to enter a new address.  Send your desired address to the serial port.  On the screen you should see "Readdressing Sensor." followed by "Success.  Rescanning for verification."  The scan will begin again, stopping at your new address.  If you are now happy with the address you've selected, smile and close the serial port monitor.
 
 If you are using a Meter Group Hydros 21 CTD sensor, change the channel to 1 in the serial monitor where prompted.
+
+[//]: # ( @include{lineno} b_address_change.ino )

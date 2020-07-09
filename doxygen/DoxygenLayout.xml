@@ -4,7 +4,6 @@
   <navindex>
     <tab type="mainpage" visible="yes" title="About">
         <tab type="user" url="@ref specifications" title="The SDI-12 Specification"/>
-        <tab type="user" url="@ref interrupts_page" title="Overview of Pin Change Interrupts"/>
     </tab>
 
     <tab type="pages" visible="no" title="" intro=""/>
@@ -23,17 +22,17 @@
     <tab type="examples" visible="no" title="Examples" intro="Examples using the SDI-12 Library"/>
 
     <tab type="usergroup" visible="yes" title="Examples" url="@ref examples_page">
-        <tab type="user" url="@ref a_wild_card.ino" title="Example A: Getting Sensor Information"/>
-        <tab type="user" url="@ref b_address_change.ino" title="Example B: Address Change"/>
-        <tab type="user" url="@ref c_check_all_addresses.ino" title="Example C: Checking all Addresses"/>
-        <tab type="user" url="@ref d_simple_logger.ino" title="Example D: Logging Data"/>
-        <tab type="user" url="@ref e_simple_parsing.ino" title="Example E: Parsing Data"/>
-        <tab type="user" url="@ref f_basic_data_request.ino" title="Example F: Simple Data Request"/>
-        <tab type="user" url="@ref g_terminal_window.ino" title="Example G: Terminal Emulator 1"/>
-        <tab type="user" url="@ref h_SDI-12_slave_implementation.ino" title="Example H: Slave Implementation"/>
-        <tab type="user" url="@ref i_SDI-12_interface.ino" title="Example I: Terminal Emulator 2"/>
-        <tab type="user" url="@ref j_external_pcint_library.ino" title="Example J: External Interrupts"/>
-        <tab type="user" url="@ref k_concurrent_logger.ino" title="Example K: Concurrent Measurements"/>
+        <tab type="user" url="@ref example_a_page" title="Example A: Getting Sensor Information"/>
+        <tab type="user" url="@ref example_b_page" title="Example B: Address Change"/>
+        <tab type="user" url="@ref example_c_page" title="Example C: Checking all Addresses"/>
+        <tab type="user" url="@ref example_d_page" title="Example D: Logging Data"/>
+        <tab type="user" url="@ref example_e_page" title="Example E: Parsing Data"/>
+        <tab type="user" url="@ref example_f_page" title="Example F: Simple Data Request"/>
+        <tab type="user" url="@ref example_g_page" title="Example G: Terminal Emulator 1"/>
+        <tab type="user" url="@ref example_h_page" title="Example H: Slave Implementation"/>
+        <tab type="user" url="@ref example_i_page" title="Example I: Terminal Emulator 2"/>
+        <tab type="user" url="@ref example_j_page" title="Example J: External Interrupts"/>
+        <tab type="user" url="@ref example_k_page" title="Example K: Concurrent Measurements"/>
     </tab>
 
     <tab type="namespaces" visible="yes" title="">
@@ -69,6 +68,12 @@
       <tab type="filelist" visible="yes" title="" intro=""/>
       <tab type="globals" visible="yes" title="" intro=""/>
     </tab>
+
+    <tab type="usergroup" visible="yes" title="Other Reading">
+        <tab type="user" url="@ref interrupts_page" title="Overview of Pin Change Interrupts"/>
+        <tab type="user" url="@ref rx_page" title="Stepping through the Rx ISR"/>
+    </tab>
+
   </navindex>
 
   <!-- Layout definition for a class page -->

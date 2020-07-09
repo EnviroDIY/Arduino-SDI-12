@@ -15,9 +15,6 @@ cd $TRAVIS_BUILD_DIR/code_docs
 # Re-clone the main repo, not sparsely
 git clone -b master --depth 1 https://github.com/EnviroDIY/Arduino-SDI-12 Arduino-SDI-12
 
-# Clone the wiki, because we'll be using it in the docs
-git clone --depth 1 https://github.com/EnviroDIY/Arduino-SDI-12.wiki
-
 # Get the current gh-pages branch
 # git clone -b gh-pages https://git@$GH_REPO_REF
 # cd $GH_REPO_NAME
