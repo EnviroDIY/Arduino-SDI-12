@@ -6,6 +6,7 @@ sudo: false
 cache:
   directories:
     - "~/.platformio"
+    - $TRAVIS_BUILD_DIR/doxygen-src
 
 install:
   # Remove the cloned repo to emulate a user library installation
