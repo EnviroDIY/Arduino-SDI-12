@@ -126,6 +126,7 @@ jobs:
         - PLATFORMIO_CI_SRC=examples/j_external_pcint_library/j_external_pcint_library.ino
         - PLATFORMIO_BUILD_FLAGS=-DSDI12_EXTERNAL_PCINT
       script:
+        - pio lib install -g EnableInterrupt
         - platformio ci --lib="." --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560
 
     - name: "k_concurrent_logger"
