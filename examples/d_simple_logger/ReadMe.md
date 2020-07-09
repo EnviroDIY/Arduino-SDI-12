@@ -1,4 +1,5 @@
-# Example D: Checks all addresses for active sensors, and logs data for each sensor every minute.
+[//]: # ( @page example_d_page Example D: Check all Addresses for Active Sensors and Log Data )
+## Example D: Check all Addresses for Active Sensors and Log Data
 
 This is a simple demonstration of the SDI-12 library for Arduino.
 
@@ -9,3 +10,5 @@ Every SDI-12 device is different in the time it takes to take a measurement, and
 Each sensor should have a unique address already - if not, multiple sensors may respond simultaneously to the same request and the output will not be readable by the Arduino.
 
 To address a sensor, please see Example B: b_address_change.ino
+
+[//]: # ( @include{lineno} d_simple_logger.ino )

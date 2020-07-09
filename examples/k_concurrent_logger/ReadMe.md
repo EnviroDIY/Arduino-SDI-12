@@ -1,11 +1,8 @@
-# Example K: Checks all addresses for active sensors, and logs data for each sensor every minute.
+[//]: # ( @page example_k_page Example K: Concurrent Measurements )
+# Example K: Concurrent Measurements
 
-This is a simple demonstration of the SDI-12 library for Arduino.
+This is very similar to example B - finding all attached sensors and logging data from them.
+Unlike example B, however, which waits for each sensor to complete a measurement, this asks all sensors to take measurements concurrently and then waits until each is finished to query for results.
+This can be much faster than waiting for each sensor when you have multiple sensor attached.
 
-It discovers the address of all sensors active on a single bus and takes concurrent measurements from them.
-
-Every SDI-12 device is different in the time it takes to take a measurement, and the amount of data it returns.  This sketch will not serve every sensor type, but it will likely be helpful in getting you started.
-
-Each sensor should have a unique address already - if not, multiple sensors may respond simultaneously to the same request and the output will not be readable by the Arduino.
-
-To address a sensor, please see Example B: b_address_change.ino
+[//]: # ( @include{lineno} k_concurrent_logger.ino )
