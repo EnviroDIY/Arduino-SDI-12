@@ -278,7 +278,7 @@ void setup() {
   if (!found) {
     Serial.println(
       "No sensors found, please check connections and restart the Arduino.");
-    while (true) { delay(10) }  // do nothing forever
+    while (true) { delay(10); }  // do nothing forever
   }
 
   Serial.println();

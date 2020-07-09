@@ -50,16 +50,19 @@ Temporary Items
 .idea/
 
 
+# VSCode
+.history
+.vscode
+
 # Atom / PlatformIO
 .pio
-.pioenvs
-.piolibdeps
 .clang_complete
 .gcc-flags.json
 lib/readme.txt
 include/readme.txt
 platformio.ini
-.vscode
+
+
 examples/debug_print/
 doxygen/doxygenOutput.log
 Doxyfile-mcss
