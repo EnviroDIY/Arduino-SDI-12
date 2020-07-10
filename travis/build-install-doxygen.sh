@@ -22,13 +22,14 @@ if [ ! -f $TRAVIS_BUILD_DIR/doxygen-src/build/bin/doxygen ]; then
     make
     echo "Done building doxygen."
     echo "doxygen path: " $(pwd)
+
+    echo "Current Doxygen version..."
+    $TRAVIS_BUILD_DIR/doxygen-src/build/bin/doxygen -v
+
+    echo "Move Doxygen to working directory"
+    rm $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12
+    cp $TRAVIS_BUILD_DIR/doxygen-src/build/bin/* $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12
+    #make install
 fi
-
-echo "Current Doxygen version..."
-$TRAVIS_BUILD_DIR/doxygen-src/build/bin/doxygen -v
-
-echo "Move Doxygen to working directory"
-cp $TRAVIS_BUILD_DIR/doxygen-src/build/bin/* $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12
-#make install
 
 cd $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12
