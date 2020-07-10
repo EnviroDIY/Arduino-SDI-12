@@ -8,6 +8,14 @@
   - [How a Character Looks in SDI-12](#how-a-character-looks-in-sdi-12)
   - [Static Variables we Need](#static-variables-we-need)
   - [Following the Mask](#following-the-mask)
+    - [Waiting for a Start Bit](#waiting-for-a-start-bit)
+    - [The Start of a Character](#the-start-of-a-character)
+    - [The Interrupt Fires!](#the-interrupt-fires)
+    - [Bit by Bit](#bit-by-bit)
+      - [A LOW/1 Bit](#a-low1-bit)
+      - [A HIGH/0 Bit](#a-high0-bit)
+      - [Shifting Up](#shifting-up)
+    - [A Finished Character](#a-finished-character)
   - [The Full Interrupt Function](#the-full-interrupt-function)
 
 [//]: # ( End GitHub Only )
@@ -47,6 +55,9 @@ And lets remind ourselves of the static variables we're using to store states:
 [//]: # ( @section rx_mask Following the Mask )
 ## Following the Mask
 
+[//]: # ( @subsection rx_mask_wait Waiting for a Start Bit )
+### Waiting for a Start Bit
+
 The `rxState`, `rxMask`, and `rxValue` all work together to form a character.
 When we're waiting for a start bit `rxValue` is empty, `rxMask` has only the bottom bit set, and `rxState` is set to WAITING-FOR-START-BIT:
 
@@ -57,6 +68,10 @@ When we're waiting for a start bit `rxValue` is empty, `rxMask` has only the bot
     rxState: |     1   1   1   1   1   1   1   1
 ```
 
+
+[//]: # ( @subsection rx_mask_start The Start of a Character )
+### The Start of a Character
+
 After we get a start bit, the `startChar()` function creates a blank slate for the new character, so our values are:
 
 ```
@@ -66,15 +81,27 @@ After we get a start bit, the `startChar()` function creates a blank slate for t
     rxState: |     0   0   0   0   0   0   0   0
 ```
 
+
+[//]: # ( @subsection rx_mask_fire The Interrupt Fires! )
+### The Interrupt Fires!
+
 When an interrupts is received, we use capture the time if the interrupt in `thisBitTCNT`.
-Then we subtract `prevBitTCNT` from `thisBitTCNT` and use the `bitTimes()` function to calculate how many bit-times have passed.
+Then we subtract `prevBitTCNT` from `thisBitTCNT` and use the `bitTimes()` function to calculate how many bit-times have passed between this interrupt and the previous one.
 (There's also a fudge factor in this calculation we call the [rxWindowWidth](https://github.com/SlashDevin/NeoSWSerial/pull/13#issuecomment-315463522).)
+
+
+[//]: # ( @subsection rx_mask_bit Bit by Bit )
+### Bit by Bit
 
 For **each bit time that passed**, we apply the `rxMask` to the `rxValue`.
 - Keep in mind multiple bit times can pass between interrupts - this happens any time there are two (or more) high or low bits in a row.
 - We also leave time for the (high) start and (low) stop bit, but do anything with the `rxState`, `rxMask`, or `rxValue` for those bits.
 
-- if the data bit received is LOW (1) we do an `|=` (bitwise or) between the `rxMask` and the `rxValue`
+
+[//]: # ( @subsubsection rx_mask_low A LOW/1 Bit )
+#### A LOW/1 Bit
+
+- if the data bit received is LOW (1) we do an `|=` (bitwise OR) between the `rxMask` and the `rxValue`
 
 ```
     rxValue: |     0   0   0   0   0   0   0   1
@@ -82,6 +109,10 @@ For **each bit time that passed**, we apply the `rxMask` to the `rxValue`.
      rxMask: |     0   0   0   0   0   0   0   1      from the rxMask into
     rxState: |     0   0   0   0   0   0   0   0      the rxValue
 ```
+
+
+[//]: # ( @subsubsection rx_mask_high A HIGH/0 Bit )
+#### A HIGH/0 Bit
 
 - if the data bit received is HIGH (0) we do nothing
 
@@ -91,6 +122,10 @@ For **each bit time that passed**, we apply the `rxMask` to the `rxValue`.
      rxMask: |     0   0   0   0   0   0   0   1
     rxState: |     0   0   0   0   0   0   0   0
 ```
+
+
+[//]: # ( @subsubsection rx_mask_shift Shifting Up )
+#### Shifting Up
 
 - *After* applying the mask, we push everything over one bit to the left.
 The top bit falls off.
@@ -106,6 +141,10 @@ The top bit falls off.
 -------------|-------------------|---------------------------|---
              | falls off the top |                           | added to the bottom
 ```
+
+
+[//]: # ( @subsection rx_mask_fin A Finished Character )
+### A Finished Character
 
 After 8 bit times have passed, we should have a fully formed character with 8 bits of data (7 of the character + 1 parity).
 The `rxMask`  will have the one in the top bit.

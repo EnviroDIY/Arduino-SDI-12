@@ -18,10 +18,10 @@ install:
   - pip install -U platformio
   - pio upgrade
   # Uninstall any old version of the current library from the Travis cache
-  - if pio lib -g uninstall EnviroDIY_Arduino-SDI-12; then
+  - if pio lib --global uninstall EnviroDIY_Arduino-SDI-12; then
     echo "Uninstalled cached version of Arduino-SDI-12";
     fi
-  - if pio lib -g uninstall EnviroDIY_SDI-12; then
+  - if pio lib --global uninstall EnviroDIY_SDI-12; then
     echo "Uninstalled cached version of SDI-12";
     fi
   # Install this library from the branch we're working on
@@ -32,12 +32,12 @@ install:
     else
     echo "Installing SDI-12 from https://github.com/$TRAVIS_PULL_REQUEST_SLUG.git#$TRAVIS_PULL_REQUEST_SHA";
     fi
-  # pio lib -g install https://github.com/$TRAVIS_REPO_SLUG.git#$BRANCH;
-  # pio lib -g install https://github.com/$TRAVIS_PULL_REQUEST_SLUG.git#$TRAVIS_PULL_REQUEST_BRANCH;
+  # pio lib --global install https://github.com/$TRAVIS_REPO_SLUG.git#$BRANCH;
+  # pio lib --global install https://github.com/$TRAVIS_PULL_REQUEST_SLUG.git#$TRAVIS_PULL_REQUEST_BRANCH;
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    pio lib -g install https://github.com/$TRAVIS_REPO_SLUG.git#$TRAVIS_COMMIT;
+    pio lib --global install https://github.com/$TRAVIS_REPO_SLUG.git#$TRAVIS_COMMIT;
     else
-    pio lib -g install https://github.com/$TRAVIS_PULL_REQUEST_SLUG.git#$TRAVIS_PULL_REQUEST_SHA;
+    pio lib --global install https://github.com/$TRAVIS_PULL_REQUEST_SLUG.git#$TRAVIS_PULL_REQUEST_SHA;
     fi
   - pio update
 
@@ -128,7 +128,7 @@ jobs:
         - PLATFORMIO_CI_SRC=examples/j_external_pcint_library/j_external_pcint_library.ino
         - PLATFORMIO_BUILD_FLAGS=-DSDI12_EXTERNAL_PCINT
       script:
-        - pio lib install -g EnableInterrupt
+        - pio lib --global install EnableInterrupt
         - platformio ci --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560
 
     - name: "k_concurrent_logger"
