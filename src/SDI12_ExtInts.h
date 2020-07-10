@@ -795,17 +795,41 @@ class SDI12 : public Stream {
   /**
    * @brief Used to wake up the SDI12 bus.
    *
-   * Set the SDI-12 state to transmitting, hold the data line high for the required
-   * break of 12 milliseconds, and hold the line low for the required marking of 8.33
-   * milliseconds
+   * @param extraWakeTime The amount of additional time in milliseconds that the sensor
+   * takes to wake before being ready to receive a command.  Default is 0ms - meaning
+   * the sensor is ready for a command by the end of the 12ms break.  Should be lower
+   * than 100.
    *
-   * Literally wakes up all the sensors on the bus.  The SDI-12 protocol requires a
-   * pulse of HIGH voltage for at least 12 milliseconds followed immediately by a pulse
-   * of LOW voltage for at least 8.3 milliseconds. Setting the SDI-12 object into the
+   * Wakes up all the sensors on the bus.  Set the SDI-12 state to transmitting, hold
+   * the data line high for the required break of 12 milliseconds plus any needed
+   * additional delay to allow the sensor to wake, then hold the line low for the
+   * required marking of 8.33 milliseconds.
+   *
+   * The SDI-12 protocol requires a pulse of HIGH voltage for at least 12 milliseconds
+   * (the break) followed immediately by a pulse of LOW voltage for at least 8.33, but
+   * not more than 100, milliseconds. Setting the SDI-12 object into the
    * SDI12_TRANSMITTING allows us to assert control of the line without triggering any
    * interrupts.
+   *
+   * Per specifications:
+   * > • A data recorder transmits a break by setting the data line to spacing for at
+   * > least 12 milliseconds.
+   * >
+   * > • The sensor will not recognize a break condition for a continuous spacing time
+   * > of less than 6.5 milliseconds and will always recognize a break when the line is
+   * > continuously spacing for more than 12 milliseconds.
+   *
+   * > • Upon receiving a break, a sensor must detect 8.33 milliseconds of marking on
+   * > the data line before it looks for an address.
+   * >
+   * > • A sensor must wake up from a low-power standby mode and be capable of detecting
+   * > a start bit from a valid command within 100 milliseconds after detecting a break
+   * >
+   * > • Sensors must return to a low-power standby mode after receiving an invalid
+   * > address or after detecting a marking state on the data line for 100 milliseconds.
+   * > (Tolerance:    +0.40 milliseconds.)
    */
-  void wakeSensors();
+  void wakeSensors(int8_t extraWakeTime = 0);
   /**
    * @brief Used to send a character out on the data line
    *
@@ -845,14 +869,19 @@ class SDI12 : public Stream {
    *
    * @param cmd the command to send
    *
-   * A publicly accessible function that wakes sensors and sends out a command byte by
-   * byte on the data line.
+   * A publicly accessible function that sends a break to wake sensors and sends out a
+   * command byte by byte on the data line.
+   *
+   * @param extraWakeTime The amount of additional time in milliseconds that the sensor
+   * takes to wake before being ready to receive a command.  Default is 0ms - meaning
+   * the sensor is ready for a command by the end of the 12ms break.  Should be lower
+   * than 100.
    *
    * @ingroup communication
    */
-  void sendCommand(String& cmd);
-  void sendCommand(const char* cmd);
-  void sendCommand(FlashString cmd);
+  void sendCommand(String& cmd, int8_t extraWakeTime = 0);
+  void sendCommand(const char* cmd, int8_t extraWakeTime = 0);
+  void sendCommand(FlashString cmd, int8_t extraWakeTime = 0);
   ///@}
   ///@{
   /**
