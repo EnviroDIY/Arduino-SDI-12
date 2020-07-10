@@ -12,9 +12,9 @@ cd $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12
 
 echo 'Current Doxygen version...'
 $TRAVIS_BUILD_DIR/doxygen-src/build/bin/doxygen -v 2>&1
-echo 'Generating Doxygen code documentation...'
 
 # Redirect both stderr and stdout to the log file AND the console.
 # Print out doxygen warnings in red
+echo 'Generating Doxygen code documentation...'
 $TRAVIS_BUILD_DIR/doxygen-src/build/bin/doxygen $DOXYFILE 2>&1 | tee doxygen.log
 # ./doxygen Doxyfile 2>&1 | tee doxygen.log > >(while read line; do echo -e "\e[01;31m$line\e[0m" >&2; done)
