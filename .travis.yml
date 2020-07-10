@@ -21,13 +21,16 @@ install:
   - if pio lib -g uninstall EnviroDIY_Arduino-SDI-12; then
     echo "Uninstalled cached version of Arduino-SDI-12";
     fi
+  - if pio lib -g uninstall EnviroDIY_SDI-12; then
+    echo "Uninstalled cached version of SDI-12";
+    fi
   # Install this library from the branch we're working on
-  # echo "Installing Arduino-SDI-12 from https://github.com/$TRAVIS_REPO_SLUG.git#$TRAVIS_BRANCH";
-  # echo "Installing Arduino-SDI-12 from https://github.com/$TRAVIS_PULL_REQUEST_SLUG.git#$TRAVIS_PULL_REQUEST_BRANCH";
+  # echo "Installing SDI-12 from https://github.com/$TRAVIS_REPO_SLUG.git#$TRAVIS_BRANCH";
+  # echo "Installing SDI-12 from https://github.com/$TRAVIS_PULL_REQUEST_SLUG.git#$TRAVIS_PULL_REQUEST_BRANCH";
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    echo "Installing Arduino-SDI-12 from https://github.com/$TRAVIS_REPO_SLUG.git#$TRAVIS_COMMIT";
+    echo "Installing SDI-12 from https://github.com/$TRAVIS_REPO_SLUG.git#$TRAVIS_COMMIT";
     else
-    echo "Installing Arduino-SDI-12 from https://github.com/$TRAVIS_PULL_REQUEST_SLUG.git#$TRAVIS_PULL_REQUEST_SHA";
+    echo "Installing SDI-12 from https://github.com/$TRAVIS_PULL_REQUEST_SLUG.git#$TRAVIS_PULL_REQUEST_SHA";
     fi
   # pio lib -g install https://github.com/$TRAVIS_REPO_SLUG.git#$BRANCH;
   # pio lib -g install https://github.com/$TRAVIS_PULL_REQUEST_SLUG.git#$TRAVIS_PULL_REQUEST_BRANCH;
@@ -39,7 +42,7 @@ install:
   - pio update
 
 script:
-  - platformio ci --lib="." --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560 --board=huzzah --board=featheresp32
+  - platformio ci --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560 --board=huzzah --board=featheresp32
 
 jobs:
   include:
@@ -84,40 +87,50 @@ jobs:
         keep_history: false
         local_dir: $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12Doxygen/html
         project_name: Arduino-SDI-12
-    # - name: "a_wild_card"
-    #   env:
-    #     - PLATFORMIO_CI_SRC=examples/a_wild_card/a_wild_card.ino
-    # - name: "b_address_change"
-    #   env:
-    #     - PLATFORMIO_CI_SRC=examples/b_address_change/b_address_change.ino
-    # - name: "c_check_all_addresses"
-    #   env:
-    #     - PLATFORMIO_CI_SRC=examples/c_check_all_addresses/c_check_all_addresses.ino
-    # - name: "d_simple_logger"
-    #   env:
-    #     - PLATFORMIO_CI_SRC=examples/d_simple_logger/d_simple_logger.ino
-    # - name: "e_simple_parsing"
-    #   env:
-    #     - PLATFORMIO_CI_SRC=examples/e_simple_parsing/e_simple_parsing.ino
-    # - name: "f_basic_data_request"
-    #   env:
-    #     - PLATFORMIO_CI_SRC=examples/f_basic_data_request/f_basic_data_request.ino
-    # - name: "g_terminal_window"
-    #   env:
-    #     - PLATFORMIO_CI_SRC=examples/g_terminal_window/g_terminal_window.ino
-    # - name: "h_SDI-12_slave_implementation"
-    #   env:
-    #     - PLATFORMIO_CI_SRC=examples/h_SDI-12_slave_implementation/h_SDI-12_slave_implementation.ino
-    # - name: "i_SDI-12_interface"
-    #   env:
-    #     - PLATFORMIO_CI_SRC=examples/i_SDI-12_interface/i_SDI-12_interface.ino
-    # - name: "j_external_pcint_library"
-    #   env:
-    #     - PLATFORMIO_CI_SRC=examples/j_external_pcint_library/j_external_pcint_library.ino
-    #     - PLATFORMIO_BUILD_FLAGS=-DSDI12_EXTERNAL_PCINT
-    #   script:
-    #     - pio lib install -g EnableInterrupt
-    #     - platformio ci --lib="." --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560
-    # - name: "k_concurrent_logger"
-    #   env:
-    #     - PLATFORMIO_CI_SRC=examples/k_concurrent_logger/k_concurrent_logger.ino
+
+    - name: "a_wild_card"
+      env:
+        - PLATFORMIO_CI_SRC=examples/a_wild_card/a_wild_card.ino
+
+    - name: "b_address_change"
+      env:
+        - PLATFORMIO_CI_SRC=examples/b_address_change/b_address_change.ino
+
+    - name: "c_check_all_addresses"
+      env:
+        - PLATFORMIO_CI_SRC=examples/c_check_all_addresses/c_check_all_addresses.ino
+
+    - name: "d_simple_logger"
+      env:
+        - PLATFORMIO_CI_SRC=examples/d_simple_logger/d_simple_logger.ino
+
+    - name: "e_simple_parsing"
+      env:
+        - PLATFORMIO_CI_SRC=examples/e_simple_parsing/e_simple_parsing.ino
+
+    - name: "f_basic_data_request"
+      env:
+        - PLATFORMIO_CI_SRC=examples/f_basic_data_request/f_basic_data_request.ino
+
+    - name: "g_terminal_window"
+      env:
+        - PLATFORMIO_CI_SRC=examples/g_terminal_window/g_terminal_window.ino
+
+    - name: "h_SDI-12_slave_implementation"
+      env:
+        - PLATFORMIO_CI_SRC=examples/h_SDI-12_slave_implementation/h_SDI-12_slave_implementation.ino
+
+    - name: "i_SDI-12_interface"
+      env:
+        - PLATFORMIO_CI_SRC=examples/i_SDI-12_interface/i_SDI-12_interface.ino
+    - name: "j_external_pcint_library"
+      env:
+        - PLATFORMIO_CI_SRC=examples/j_external_pcint_library/j_external_pcint_library.ino
+        - PLATFORMIO_BUILD_FLAGS=-DSDI12_EXTERNAL_PCINT
+      script:
+        - pio lib install -g EnableInterrupt
+        - platformio ci --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560
+
+    - name: "k_concurrent_logger"
+      env:
+        - PLATFORMIO_CI_SRC=examples/k_concurrent_logger/k_concurrent_logger.ino

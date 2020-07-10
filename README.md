@@ -1,6 +1,6 @@
 
-[//]: # ( @mainpage Arduino SDI-12 )
-# Arduino SDI-12
+[//]: # ( @mainpage SDI-12 for Arduino)
+# SDI-12 for Arduino
 
 [//]: # ( @section mainpage_intro An Introduction )
 ## Introduction
@@ -13,11 +13,15 @@ It provides a general software solution, without requiring any additional hardwa
 
 This work is motivated by the [EnviroDIY community](http://envirodiy.org/) vision to create an open source hardware and software stack to deliver near real time environmental data from wireless sensor networks, such as the Arduino-compatible [EnviroDIY™ Mayfly Data Logger](http://envirodiy.org/mayfly/).
 
+#### Renaming Notice
+**As of version 2.0.0 this library was renamed from "Arduino-SDI-12" to simply "SDI-12" to comply with requirements for inclusion in the Arduino.cc's IDE and Library Manager.**
+
 [//]: # ( @tableofcontents )
 
 [//]: # ( Start GitHub Only )
-- [Arduino SDI-12](#arduino-sdi-12)
+- [SDI-12 for Arduino](#sdi-12-for-arduino)
   - [Introduction](#introduction)
+      - [Renaming Notice](#renaming-notice)
   - [Getting Started](#getting-started)
   - [Origins and Inherited Limitations](#origins-and-inherited-limitations)
   - [Compatibility Considerations](#compatibility-considerations)
@@ -57,7 +61,7 @@ See the notes under [Variants and Branches](https://github.com/EnviroDIY/Arduino
 
 Another non-trivial, but hidden limitation is that _all_ interrupts are disabled during most of the transmission of each character, which can interfere with other processes.
 That includes other pin-change interrupts, clock/timer interrupts, external interrupts, and every other type of processor interrupt.
-This is particularly problematic for Arduino-SDI-12, because SDI-12 operates at a very slow baud rate (only 1200 baud).
+This is particularly problematic for SDI-12, because SDI-12 operates at a very slow baud rate (only 1200 baud).
 This translates to ~8.3 mS of "radio silence" from the processor for each character that goes out via SDI-12, which adds up to ~380-810ms per command!  Interrupts are enabled for the majority of the time while the processor is listening for responses.
 
 For most AVR boards, this library will also conflict with the [tone](https://www.arduino.cc/reference/en/language/functions/advanced-io/tone/) function because of its utilization of timer 2.
@@ -74,7 +78,7 @@ It should also work on an Arduino Mega (AtMega2560), Gemma/AtTiny board, and mos
 The Arduino Due, Arduino 101, and Teensy boards are not supported at this time.
 If you are interested in adding support for those boards, please send pull requests.
 
-Due to the use of pin change interrupts, not all data pins are available for use with this Arduino-SDI-12 library.
+Due to the use of pin change interrupts, not all data pins are available for use with this SDI-12 library.
 Pin availability depends on the micro-controller.
 These pins will work on those processors:
 
@@ -110,7 +114,7 @@ Note that not all of these pins are available with our [Variants and Branches](h
 [//]: # ( @section mainpage_variants Variants and Branches )
 ## Variants and Branches
 As we've described, the default "master" branch of this library will conflict with SoftwareSerial and any other library that monopolizes all pin change interrupt vectors for all AVR boards.
-To allow simultaneous use of Arduino-SDI-12 and SoftwareSerial, we have created additional variants of these libraries that we maintain as separate branches of this repository.
+To allow simultaneous use of SDI-12 and SoftwareSerial, we have created additional variants of these libraries that we maintain as separate branches of this repository.
 For background information, my be helpful to read our [Overview of Interrupts](https://github.com/EnviroDIY/Arduino-SDI-12/wiki/2b.-Overview-of-Interrupts) wiki page or this [Arduino Pin Change Interrupts article](https://thewanderingengineer.com/2014/08/11/arduino-pin-change-interrupts/).
 
 [//]: # ( @subsection mainpage_master EnviroDIY_SDI12 )
@@ -164,7 +168,7 @@ Documentation is licensed as [Creative Commons Attribution-ShareAlike 4.0](https
 ## Credits
 [EnviroDIY](http://envirodiy.org/)™ is presented by the Stroud Water Research Center, with contributions from a community of enthusiasts sharing do-it-yourself ideas for environmental science and monitoring.
 
-[Kevin M. Smith](https://github.com/Kevin-M-Smith) was the primary developer of the Arduino-SDI-12 library, with input from [S. Hicks](https://github.com/s-hicks2) and [Anthony Aufdenkampe](https://github.com/aufdenkampe).
+[Kevin M. Smith](https://github.com/Kevin-M-Smith) was the primary developer of the SDI-12 library, with input from [S. Hicks](https://github.com/s-hicks2) and [Anthony Aufdenkampe](https://github.com/aufdenkampe).
 
 [Sara Damiano](https://github.com/SRGDamia1) is now the primary maintainer, with input from many [other contributors](https://github.com/EnviroDIY/Arduino-SDI-12/graphs/contributors).
 
