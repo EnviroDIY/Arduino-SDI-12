@@ -50,14 +50,25 @@ Temporary Items
 .idea/
 
 
+# VSCode
+.history
+.vscode
+
 # Atom / PlatformIO
 .pio
-.pioenvs
-.piolibdeps
 .clang_complete
 .gcc-flags.json
 lib/readme.txt
 include/readme.txt
 platformio.ini
-.vscode
+
+
 examples/debug_print/
+doxygen/doxygenOutput.log
+Doxyfile-mcss
+examples/debugging_prints/*
+doxygen/mcss-theme.css
+doxygen/mcss-theme-compiled.css
+doxygen/__pycache__/conf.cpython-37.pyc
+doxygen/conf.py
+SDI12 Repo Token.txt

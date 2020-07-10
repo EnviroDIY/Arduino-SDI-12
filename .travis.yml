@@ -1,22 +1,23 @@
 language: python
 python:
-    - "2.7"
+  - "2.7"
 
 sudo: false
 cache:
-    directories:
-        - "~/.platformio"
+  directories:
+    - "~/.platformio"
+    - $TRAVIS_BUILD_DIR/doxygen-src
 
 env:
-    - PLATFORMIO_CI_SRC=examples/j_external_pcint_library/j_external_pcint_library.ino
+  - PLATFORMIO_CI_SRC=examples/j_external_pcint_library/j_external_pcint_library.ino
 
 install:
-    - pip install -U platformio
-    - pio upgrade
-    - pio lib -g install EnableInterrupt
-    - pio update
-    - pio lib -g update
-    - pio lib update
+  - pip install -U platformio
+  - pio upgrade
+  - pio lib --global install EnableInterrupt
+  - pio update
+  - pio lib --global update
+  - pio lib update
 
 script:
-- platformio ci --lib="." --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560
+  - platformio ci --lib="." --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560
