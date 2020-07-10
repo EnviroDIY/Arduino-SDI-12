@@ -211,11 +211,32 @@ float SDI12::parseFloat(LookaheadMode lookahead, char ignore) {
 /* ================ Constructor, Destructor, begin(), end(), and timeout ============*/
 // Constructor
 SDI12::SDI12() {
+  _dataPin        = NULL;
   _bufferOverflow = false;
+  // SDI-12 protocol says sensors must respond within 15 milliseconds
+  // We'll bump that up to 150, just for good measure, but we don't want to
+  // wait the whole stream default of 1s for a response.
+  setTimeout(150);
+  // Because SDI-12 is mostly used for environmental sensors, we want to be able
+  // to distinguish between the '0' that parseInt and parseFloat usually return
+  // on timeouts and a real measured 0 value.  So we force the timeout response
+  // to be -9999, which is not a common value for most variables measured by
+  // in-site environmental sensors.
+  setTimeoutValue(-9999);
 }
 SDI12::SDI12(int8_t dataPin) {
-  _bufferOverflow = false;
   _dataPin        = dataPin;
+  _bufferOverflow = false;
+  // SDI-12 protocol says sensors must respond within 15 milliseconds
+  // We'll bump that up to 150, just for good measure, but we don't want to
+  // wait the whole stream default of 1s for a response.
+  setTimeout(150);
+  // Because SDI-12 is mostly used for environmental sensors, we want to be able
+  // to distinguish between the '0' that parseInt and parseFloat usually return
+  // on timeouts and a real measured 0 value.  So we force the timeout response
+  // to be -9999, which is not a common value for most variables measured by
+  // in-site environmental sensors.
+  setTimeoutValue(-9999);
 }
 
 // Destructor
@@ -231,16 +252,6 @@ SDI12::~SDI12() {
 void SDI12::begin() {
   // setState(SDI12_HOLDING);
   setActive();
-  // SDI-12 protocol says sensors must respond within 15 milliseconds
-  // We'll bump that up to 150, just for good measure, but we don't want to
-  // wait the whole stream default of 1s for a response.
-  setTimeout(150);
-  // Because SDI-12 is mostly used for environmental sensors, we want to be able
-  // to distinguish between the '0' that parseInt and parseFloat usually return
-  // on timeouts and a real measured 0 value.  So we force the timeout response
-  // to be -9999, which is not a common value for most variables measured by
-  // in-site environmental sensors.
-  setTimeoutValue(-9999);
   // Set up the prescaler as needed for timers
   // This function is defined in SDI12_boards.h
   sdi12timer.configSDI12TimerPrescale();
@@ -352,7 +363,7 @@ void SDI12::setState(SDI12_STATES state) {
     case SDI12_HOLDING: {
       pinMode(_dataPin, INPUT);     // Turn off the pull-up resistor
       pinMode(_dataPin, OUTPUT);    // Pin mode = output
-      digitalWrite(_dataPin, LOW);  // Pin state = low - hold the line low
+      digitalWrite(_dataPin, LOW);  // Pin state = low - marking
       setPinInterrupts(false);      // Interrupts disabled on data pin
       break;
     }
@@ -363,7 +374,7 @@ void SDI12::setState(SDI12_STATES state) {
       break;
     }
     case SDI12_LISTENING: {
-      digitalWrite(_dataPin, LOW);  // Pin state = low
+      digitalWrite(_dataPin, LOW);  // Pin state = low (turns off pull-up)
       pinMode(_dataPin, INPUT);     // Pin mode = input, pull-up resistor off
       interrupts();                 // Enable general interrupts
       setPinInterrupts(true);       // Enable Rx interrupts on data pin
@@ -372,7 +383,7 @@ void SDI12::setState(SDI12_STATES state) {
     }
     default:  // SDI12_DISABLED or SDI12_ENABLED
     {
-      digitalWrite(_dataPin, LOW);  // Pin state = low
+      digitalWrite(_dataPin, LOW);  // Pin state = low (turns off pull-up)
       pinMode(_dataPin, INPUT);     // Pin mode = input, pull-up resistor off
       setPinInterrupts(false);      // Interrupts disabled on data pin
       break;
@@ -393,15 +404,16 @@ void SDI12::forceListen() {
 
 /* ================ Waking Up and Talking To Sensors ================================*/
 // this function wakes up the entire sensor bus
-void SDI12::wakeSensors() {
+void SDI12::wakeSensors(int8_t extraWakeTime) {
   setState(SDI12_TRANSMITTING);
   // Universal interrupts can be on while the break and marking happen because
   // timings for break and from the recorder are not critical.
   // Interrupts on the pin are disabled for the entire transmitting state
-  digitalWrite(_dataPin, HIGH);
-  delayMicroseconds(lineBreak_micros);  // Required break of 12 milliseconds
-  digitalWrite(_dataPin, LOW);
-  delayMicroseconds(marking_micros);  // Required marking of 8.33 milliseconds
+  digitalWrite(_dataPin, HIGH);         // break is HIGH
+  delayMicroseconds(lineBreak_micros);  // Required break of 12 milliseconds (12,000 µs)
+  delay(extraWakeTime);                 // allow the sensors to wake
+  digitalWrite(_dataPin, LOW);          // marking is LOW
+  delayMicroseconds(marking_micros);  // Required marking of 8.33 milliseconds(8,333 µs)
 }
 
 // this function writes a character out on the data line
@@ -475,24 +487,24 @@ size_t SDI12::write(uint8_t byte) {
 }
 
 // this function sends out the characters of the String cmd, one by one
-void SDI12::sendCommand(String& cmd) {
-  wakeSensors();  // set state to transmitting and send break/marking
+void SDI12::sendCommand(String& cmd, int8_t extraWakeTime) {
+  wakeSensors(extraWakeTime);  // wake up sensors
   for (int unsigned i = 0; i < cmd.length(); i++) {
     writeChar(cmd[i]);  // write each character
   }
   setState(SDI12_LISTENING);  // listen for reply
 }
 
-void SDI12::sendCommand(const char* cmd) {
-  wakeSensors();  // wake up sensors
+void SDI12::sendCommand(const char* cmd, int8_t extraWakeTime) {
+  wakeSensors(extraWakeTime);  // wake up sensors
   for (int unsigned i = 0; i < strlen(cmd); i++) {
     writeChar(cmd[i]);  // write each character
   }
   setState(SDI12_LISTENING);  // listen for reply
 }
 
-void SDI12::sendCommand(FlashString cmd) {
-  wakeSensors();  // wake up sensors
+void SDI12::sendCommand(FlashString cmd, int8_t extraWakeTime) {
+  wakeSensors(extraWakeTime);  // wake up sensors
   for (int unsigned i = 0; i < strlen_P((PGM_P)cmd); i++) {
     // write each character
     writeChar(static_cast<char>(pgm_read_byte((const char*)cmd + i)));
@@ -505,8 +517,8 @@ void SDI12::sendCommand(FlashString cmd) {
 // that is, when the Arduino itself is acting as an SDI-12 device rather than a
 // recorder).
 void SDI12::sendResponse(String& resp) {
-  setState(SDI12_TRANSMITTING);  // Get ready to send data to the recorder
-  digitalWrite(_dataPin, LOW);
+  setState(SDI12_TRANSMITTING);       // Get ready to send data to the recorder
+  digitalWrite(_dataPin, LOW);        // marking is LOW
   delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < resp.length(); i++) {
     writeChar(resp[i]);  // write each character
@@ -515,8 +527,8 @@ void SDI12::sendResponse(String& resp) {
 }
 
 void SDI12::sendResponse(const char* resp) {
-  setState(SDI12_TRANSMITTING);  // Get ready to send data to the recorder
-  digitalWrite(_dataPin, LOW);
+  setState(SDI12_TRANSMITTING);       // Get ready to send data to the recorder
+  digitalWrite(_dataPin, LOW);        // marking is LOW
   delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen(resp); i++) {
     writeChar(resp[i]);  // write each character
@@ -525,8 +537,8 @@ void SDI12::sendResponse(const char* resp) {
 }
 
 void SDI12::sendResponse(FlashString resp) {
-  setState(SDI12_TRANSMITTING);  // Get ready to send data to the recorder
-  digitalWrite(_dataPin, LOW);
+  setState(SDI12_TRANSMITTING);       // Get ready to send data to the recorder
+  digitalWrite(_dataPin, LOW);        // marking is LOW
   delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen_P((PGM_P)resp); i++) {
     // write each character
