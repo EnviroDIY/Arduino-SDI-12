@@ -48,7 +48,7 @@
  */
 
 
-#include "SDI12.h_ExtInts"  //  Header file for this library
+#include "SDI12_ExtInts.h"  //  Header file for this library
 
 /* ================  Set static constants ===========================================*/
 
