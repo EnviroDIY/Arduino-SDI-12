@@ -107,7 +107,8 @@ static uint8_t preSDI12_TCCR1A;
 #if F_CPU == 16000000L
 
 void SDI12Timer::configSDI12TimerPrescale(void) {
-  preSDI12_TCCR1A = TCCR1A TCCR1A = 0b00001011  // Set the prescaler to 1024
+  preSDI12_TCCR1A = TCCR1A;
+  TCCR1A = 0b00001011;  // Set the prescaler to 1024
 }
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR1A = preSDI12_TCCR1A;
@@ -117,7 +118,8 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 #elif F_CPU == 8000000L
 
 void SDI12Timer::configSDI12TimerPrescale(void) {
-  preSDI12_TCCR1A = TCCR1A TCCR1A = 0b00001010  // Set the prescaler to 512
+  preSDI12_TCCR1A = TCCR1A;
+  TCCR1A = 0b00001010;  // Set the prescaler to 512
 }
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR1A = preSDI12_TCCR1A;
