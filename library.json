@@ -24,7 +24,10 @@
   ],
   "license": "BSD-3-Clause",
   "frameworks": "arduino",
-  "platforms": "atmelavr, atmelsam",
+  "platforms": [
+      "atmelavr",
+      "atmelsam"
+  ]
   "export": {
     "exclude": ["doc/*"]
   },
