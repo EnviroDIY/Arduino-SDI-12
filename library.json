@@ -27,7 +27,7 @@
   "platforms": [
       "atmelavr",
       "atmelsam"
-  ]
+  ],
   "export": {
     "exclude": ["doc/*"]
   },
