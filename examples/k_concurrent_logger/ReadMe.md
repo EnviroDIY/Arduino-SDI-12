@@ -5,4 +5,8 @@ This is very similar to example B - finding all attached sensors and logging dat
 Unlike example B, however, which waits for each sensor to complete a measurement, this asks all sensors to take measurements concurrently and then waits until each is finished to query for results.
 This can be much faster than waiting for each sensor when you have multiple sensor attached.
 
-[//]: # ( @include{lineno} k_concurrent_logger.ino )
+[//]: # ( @section k_concurrent_logger_pio PlatformIO Configuration )
+
+[//]: # ( @include{lineno} k_concurrent_logger/platformio.ini )
+
+[//]: # ( @section k_concurrent_logger_code The Complete Example )

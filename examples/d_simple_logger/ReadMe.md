@@ -11,4 +11,8 @@ Each sensor should have a unique address already - if not, multiple sensors may 
 
 To address a sensor, please see Example B: b_address_change.ino
 
-[//]: # ( @include{lineno} d_simple_logger.ino )
+[//]: # ( @section d_simple_logger_pio PlatformIO Configuration )
+
+[//]: # ( @include{lineno} d_simple_logger/platformio.ini )
+
+[//]: # ( @section d_simple_logger_code The Complete Example )

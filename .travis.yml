@@ -1,12 +1,23 @@
-language: python
-python:
-  - "2.7"
+before_install:
+  - git config --global user.email "sdamiano@stroudcenter.org"
+  - git config --global user.name "SRGDamia1"
 
 sudo: false
+git:
+  depth: 1
+branches:
+  except:
+    - gh-pages
+
 cache:
+  pip: true
   directories:
     - "~/.platformio"
     - $TRAVIS_BUILD_DIR/doxygen-src
+
+language: python
+python:
+  - "2.7"
 
 install:
   # Remove the cloned repo to emulate a user library installation
@@ -50,6 +61,13 @@ jobs:
       language: node_js
       install: npm install -g jsonlint
       script: jsonlint -q library.json
+      after_success: |
+        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
+        if [[ ($TRAVIS_BRANCH == master) &&
+              ($TRAVIS_PULL_REQUEST == false) ]] ; then
+            curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
+            sh trigger-travis.sh EnviroDIY Libraries $TRAVIS_ACCESS_TOKEN
+        fi
 
     - name: "Build Doxygen Documentation"
       if: branch = master AND type != pull_request
@@ -65,6 +83,11 @@ jobs:
         - sudo apt-get -y install graphviz
         - sudo apt-get -y install flex
         - sudo apt-get -y install bison
+        - sudo apt-get -y install texlive-base
+        - sudo apt-get -y install texlive-latex-extra
+        - sudo apt-get -y install texlive-fonts-extra
+        - sudo apt-get -y install texlive-fonts-recommended
+        - pip3 install jinja2 Pygments
       install:
         - cd $TRAVIS_BUILD_DIR
         - chmod +x travis/copy-doc-sources.sh
@@ -85,7 +108,7 @@ jobs:
         token: $GH_REPO_TOKEN
         edge: true # opt in to dpl v2
         keep_history: false
-        local_dir: $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12Doxygen/html
+        local_dir: $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12Doxygen/m.css
         project_name: Arduino-SDI-12
 
     - name: "a_wild_card"

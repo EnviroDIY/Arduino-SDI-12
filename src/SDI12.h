@@ -193,7 +193,8 @@ enum LookaheadMode {
  */
 class SDI12 : public Stream {
   /**
-   * @defgroup sdi12_statics Static member variables
+   * @anchor sdi12_statics
+   * @name Static member variables
    *
    * @brief These are constants that apply to all SDI-12 instances.
    */
@@ -269,7 +270,8 @@ class SDI12 : public Stream {
    *
    * @param x The first 8 bit integer
    * @param y The second 8 bit integer
-   * @return **uint16_t** The result of the multiplication, as a 16 bit integer.
+   * @return @m_span{m-type} uint16_t @m_endspan The result of the multiplication, as a
+   * 16 bit integer.
    */
   static uint16_t mul8x8to16(uint8_t x, uint8_t y);
 
@@ -278,7 +280,8 @@ class SDI12 : public Stream {
    * given an 8-bit counter/timer timestamp.
    *
    * @param dt The current value of the 8-bit timer
-   * @return **uint16_t** The number of bit times that have passed at 1200 baud.
+   * @return @m_span{m-type} uint16_t @m_endspan The number of bit times that have
+   * passed at 1200 baud.
    *
    * Adds a rxWindowWidth fudge factor to the time difference to get the number of
    * ticks, and then multiplies the fudged ticks by the number of bits per tick.  Uses
@@ -293,7 +296,8 @@ class SDI12 : public Stream {
 
 
   /**
-   * @defgroup sdi12_buffer Buffer Setup
+   * @anchor sdi12_buffer
+   * @name Buffer Setup
    *
    * @brief Creating a circular buffer for incoming data.
    *
@@ -340,11 +344,12 @@ class SDI12 : public Stream {
 
 
   /**
-   * @defgroup reading_buffer Reading from the SDI-12 Buffer
+   * @anchor reading_buffer
+   * @name Reading from the SDI-12 Buffer
    *
    * @brief These functions are for reading incoming data stored in the SDI-12 buffer.
    *
-   * @copydetails sdi12_buffer
+   * @see <a href="class_s_d_i12.html#buffer-setup">Buffer Setup</a>
    *
    * @note peakNextDigit(), parseInt() and parseFloat() are fully implemented in the
    * parent Stream class but we don't want to them use as they are inherited.  Although
@@ -362,7 +367,7 @@ class SDI12 : public Stream {
   /**
    * @brief Return the number of bytes available in the Rx buffer
    *
-   * @return **int** The number of characters in the buffer
+   * @return @m_span{m-type} int @m_endspan The number of characters in the buffer
    *
    * available() is a public function that returns the number of characters available in
    * the Rx buffer.
@@ -406,7 +411,7 @@ class SDI12 : public Stream {
   /**
    * @brief Reveal next byte in the Rx buffer without consuming it.
    *
-   * @return **int** The next byte in the character buffer.
+   * @return @m_span{m-type} int @m_endspan The next byte in the character buffer.
    *
    * peek() is a public function that allows the user to look at the character that is
    * at the head of the buffer. Unlike read() it does not consume the character (i.e.
@@ -424,7 +429,7 @@ class SDI12 : public Stream {
   /**
    * @brief Return next byte in the Rx buffer, consuming it
    *
-   * @return **int** The next byte in the character buffer.
+   * @return @m_span{m-type} int @m_endspan The next byte in the character buffer.
    *
    * read() returns the character at the current head in the buffer after incrementing
    * the index of the buffer head. This action 'consumes' the character, meaning it can
@@ -440,7 +445,7 @@ class SDI12 : public Stream {
   /**
    * @brief Return the first valid (long) integer value from the current position.
    *
-   * lookahead determines how parseInt looks ahead in the stream.
+   * The value of lookahead determines how parseInt looks ahead in the stream.
    * See LookaheadMode enumeration at the top of the file.
    * Lookahead is terminated by the first character that is not a valid part of an
    * integer.
@@ -449,19 +454,19 @@ class SDI12 : public Stream {
    * @param lookahead the mode to use to look ahead in the
    * stream, default is LookaheadMode::SKIP_ALL
    * @param ignore a character to ignore in the stream, default is '\\x01'
-   * @return **long** The first valid integer in the stream
+   * @return @m_span{m-type} long @m_endspan The first valid integer in the stream
    *
-   * @note This function hides the Stream class function to allow a custom value to be
+   * @note This function _hides_ the Stream class function to allow a custom value to be
    * returned on timeout.  It cannot overwrite the Stream function because it is not
    * virtual.
-   * @see SDI12::LookaheadMode
+   * @see @ref SDI12::LookaheadMode
    */
   long parseInt(LookaheadMode lookahead = SKIP_ALL, char ignore = NO_IGNORE_CHAR);
 
   /**
    * @brief Return the first valid float value from the current position.
    *
-   * lookahead determines how parseInt looks ahead in the stream.
+   * The value of lookahead determines how parseInt looks ahead in the stream.
    * See LookaheadMode enumeration at the top of the file.
    * Lookahead is terminated by the first character that is not a valid part of an
    * integer.
@@ -470,12 +475,12 @@ class SDI12 : public Stream {
    * @param lookahead the mode to use to look ahead in the
    * stream, default is LookaheadMode::SKIP_ALL
    * @param ignore a character to ignore in the stream, default is '\\x01'
-   * @return **long** The first valid float in the stream
+   * @return @m_span{m-type} long @m_endspan The first valid float in the stream
    *
-   * @note This function hides the Stream class function to allow a custom value to be
+   * @note This function _hides_ the Stream class function to allow a custom value to be
    * returned on timeout.  It cannot overwrite the Stream function because it is not
    * virtual.
-   * @see SDI12::LookaheadMode
+   * @see @ref SDI12::LookaheadMode
    */
   float parseFloat(LookaheadMode lookahead = SKIP_ALL, char ignore = NO_IGNORE_CHAR);
 
@@ -487,14 +492,15 @@ class SDI12 : public Stream {
    * stream
    * @param detectDecimal True to accept a decimal point ('.') as part of a
    * number
-   * @return **int** The next numeric digit in the stream
+   * @return @m_span{m-type} int @m_endspan The next numeric digit in the stream
    */
   int peekNextDigit(LookaheadMode lookahead, bool detectDecimal);
   /**@}*/
 
 
   /**
-   * @defgroup ctor Constructor, Destructor, Begins, and Setters
+   * @anchor ctor
+   * @name Constructor, Destructor, Begins, and Setters
    *
    * @brief These functions set up the SDI-12 object and prepare it for use.
    */
@@ -595,7 +601,7 @@ class SDI12 : public Stream {
   /**
    * @brief Get the data pin for the current SDI-12 instance
    *
-   * @return **int8_t** the data pin number
+   * @return @m_span{m-type} int8_t @m_endspan the data pin number
    */
   int8_t getDataPin();
   /**
@@ -608,7 +614,8 @@ class SDI12 : public Stream {
 
 
   /**
-   * @defgroup multiple_objects Using more than one SDI-12 Object
+   * @anchor multiple_objects
+   * @name Using more than one SDI-12 Object
    *
    * @brief Functions needed for multiple instances of the SDI12 class.
    *
@@ -628,7 +635,7 @@ class SDI12 : public Stream {
    *     myOtherSDI12.setActive();
    * @endcode
    *
-   * #### Other notes:
+   * @note
    * - Promoting an object into the Active state will set it as `SDI12_HOLDING`.
    * - Calling mySDI12.begin() will assert mySDI12 as the new active object, until
    * another instance calls myOtherSDI12.begin() or myOtherSDI12.setActive().
@@ -641,9 +648,9 @@ class SDI12 : public Stream {
   /**
    * @brief Set this instance as the active SDI-12 instance
    *
-   * @return **bool** True indicates that the current SDI-12 instance was not formerly
-   * the active one and now is.  False indicates that the current SDI-12 instance *is
-   * already the active one* and the state was not changed.
+   * @return @m_span{m-type} bool @m_endspan True indicates that the current SDI-12
+   * instance was not formerly the active one and now is.  False indicates that the
+   * current SDI-12 instance *is already the active one* and the state was not changed.
    *
    * A method for setting the current object as the active object; returns TRUE if
    * the object was not formerly the active object and now is.
@@ -657,7 +664,8 @@ class SDI12 : public Stream {
   /**
    * @brief Check if this instance is active
    *
-   * @return **bool** True indicates that the curren SDI-12 instace is the active one.
+   * @return @m_span{m-type} bool @m_endspan True indicates that the curren SDI-12
+   * instace is the active one.
    *
    * isActive() is a method for checking if the object is the active object.  Returns
    * true if the object is currently the active object, false otherwise.
@@ -667,13 +675,16 @@ class SDI12 : public Stream {
 
 
   /**
-   * @defgroup line_states Data Line States
+   * @anchor line_states
+   * @name Data Line States
    *
    * @brief Functions for maintaining the proper data line state.
    *
    * The Arduino is responsible for managing communication with the sensors.  Since all
    * the data transfer happens on the same line, the state of the data line is very
    * important.
+   *
+   * @section line_state_spec Specifications
    *
    * Per the SDI-12 specification, the voltage ranges for SDI-12 are:
    *
@@ -689,6 +700,8 @@ class SDI12 : public Stream {
    * the SDI12_DISABLED state, removing the interrupt associated with the dataPin.  For
    * predictability, we set the pin to a LOW level high impedance state (INPUT).
    *
+   * @section line_state_table As a Table
+   *
    * Summarized in a table:
    *
    * | State               | Interrupts       | Pin Mode   | Pin Level |
@@ -699,13 +712,18 @@ class SDI12 : public Stream {
    * | SDI12_TRANSMITTING  | All/Pin Disable  | OUTPUT     | VARYING   |
    * | SDI12_LISTENING     | All Enable       | INPUT      | ---       |
    *
-   * ## Sequencing
    *
-   * Generally, this is acceptable.
-   * HOLDING --> TRANSMITTING --> LISTENING --> TRANSMITTING --> LISTENING -->
+   * @section line_state_seq Sequencing
    *
-   * If you have interference, you should force a hold, using forceHold(); HOLDING -->
-   * TRANSMITTING --> LISTENING --> done reading, forceHold(); HOLDING
+   * Generally, this flow of line states is acceptable:
+   *
+   * `HOLDING --> TRANSMITTING --> LISTENING --> TRANSMITTING --> LISTENING`
+   *
+   * If you have interference, you should force a hold, using forceHold().
+   * The flow would then be:
+   *
+   * `HOLDING --> TRANSMITTING --> LISTENING -->` done reading, forceHold() `--->
+   * HOLDING`
    *
    * @see For a detailed explanation of interrupts see @ref interrupts_page
    */
@@ -734,8 +752,8 @@ class SDI12 : public Stream {
    * @brief Calculate the parity value for a character using even parity.
    *
    * @param v **uint8_t (char)** the character to calculate the parity of
-   * @return **uint8_t** the input character with the 8th bit set to the even parity
-   * value for that character
+   * @return @m_span{m-type} uint8_t @m_endspan the input character with the 8th bit set
+   * to the even parity value for that character
    *
    * Sets up parity and interrupts for different processor types - that is, imports the
    * interrupts and parity for the AVR processors where they exist.
@@ -785,7 +803,8 @@ class SDI12 : public Stream {
 
 
   /**
-   * @defgroup communication Waking Up and Talking To Sensors
+   * @anchor communication
+   * @name Waking Up and Talking To Sensors
    *
    * @brief These functions are needed to communicate with SDI-12 sensors (slaves) or an
    * SDI-12 datalogger (master).
@@ -853,7 +872,7 @@ class SDI12 : public Stream {
    * @brief Write out a byte on the SDI-12 line
    *
    * @param byte The character to write
-   * @return **size_t** The number of characters written
+   * @return @m_span{m-type} size_t @m_endspan The number of characters written
    *
    * Sets the state to transmitting, writes a character, and then sets the state back to
    * listening.  This function must be implemented as part of the Arduino Stream
@@ -861,9 +880,7 @@ class SDI12 : public Stream {
    * SDI12::sendCommand() or SDI12::sendResponse() functions.
    */
   virtual size_t write(uint8_t byte);
-  /**@}*/
 
-  ///@{
   /**
    * @brief Send a command out on the data line, acting as a datalogger (master)
    *
@@ -876,14 +893,13 @@ class SDI12 : public Stream {
    * takes to wake before being ready to receive a command.  Default is 0ms - meaning
    * the sensor is ready for a command by the end of the 12ms break.  Should be lower
    * than 100.
-   *
-   * @ingroup communication
    */
   void sendCommand(String& cmd, int8_t extraWakeTime = 0);
+  /// @copydoc SDI12::sendCommand(String& cmd, int8_t extraWakeTime = 0)
   void sendCommand(const char* cmd, int8_t extraWakeTime = 0);
+  /// @copydoc SDI12::sendCommand(String& cmd, int8_t extraWakeTime = 0)
   void sendCommand(FlashString cmd, int8_t extraWakeTime = 0);
-  ///@}
-  ///@{
+
   /**
    * @brief Send a response out on the data line (for slave use)
    *
@@ -892,17 +908,18 @@ class SDI12 : public Stream {
    * A publicly accessible function that sends out an 8.33 ms marking and a response
    * byte by byte on the data line.  This is needed if the Arduino is acting as an
    * SDI-12 device itself, not as a recorder for another SDI-12 device.
-   *
-   * @ingroup communication
    */
   void sendResponse(String& resp);
+  /// @copydoc SDI12::sendResponse(String& resp)
   void sendResponse(const char* resp);
+  /// @copydoc SDI12::sendResponse(String& resp)
   void sendResponse(FlashString resp);
   ///@}
 
 
   /**
-   * @defgroup interrupt_fxns Interrupt Service Routine
+   * @anchor interrupt_fxns
+   * @name Interrupt Service Routine
    *
    * @brief Functions for handling interrupts - responding to changes on the data line
    * and converting them to characters in the Rx buffer.

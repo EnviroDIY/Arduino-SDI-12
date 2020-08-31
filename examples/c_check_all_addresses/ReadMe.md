@@ -9,4 +9,8 @@ Each sensor should have a unique address already - if not, multiple sensors may 
 
 To address a sensor, please see Example B: b_address_change.ino
 
-[//]: # ( @include{lineno} c_check_all_addresses.ino )
+[//]: # ( @section c_check_all_addresses_pio PlatformIO Configuration )
+
+[//]: # ( @include{lineno} c_check_all_addresses/platformio.ini )
+
+[//]: # ( @section c_check_all_addresses_code The Complete Example )

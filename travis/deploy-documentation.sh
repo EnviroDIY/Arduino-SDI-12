@@ -25,8 +25,8 @@ ls
 # Only upload if Doxygen successfully created the documentation.
 # Check this by verifying that the html directory and the file html/index.html
 # both exist. This is a good indication that Doxygen did it's work.
-if [ -d $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12Doxygen/html ] &&
-   [ -f $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12Doxygen/html/index.html ]; then
+if [ -d $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12Doxygen/m.css ] &&
+   [ -f $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12Doxygen/m.css/index.html ]; then
 
     echo 'Uploading documentation to the gh-pages branch...'
     # Add everything in this directory (the Doxygen code documentation) to the

@@ -72,3 +72,11 @@ doxygen/mcss-theme-compiled.css
 doxygen/__pycache__/conf.cpython-37.pyc
 doxygen/conf.py
 SDI12 Repo Token.txt
+__pycache__
+docs/LocalDoxyfile
+runDoxygen.bat
+docs/examples/*
+docs/doxygenOutput.log
+docs/mcss-doxy-output.log
+docs/mcss.log
+doygen-run.log
