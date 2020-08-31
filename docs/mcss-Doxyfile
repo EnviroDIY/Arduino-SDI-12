@@ -1,4 +1,4 @@
-@INCLUDE                = LocalDoxyfile
+@INCLUDE                = Doxyfile
 GENERATE_HTML           = NO
 GENERATE_XML            = YES
 XML_PROGRAMLISTING      = NO

@@ -2239,19 +2239,7 @@ PREDEFINED             = __attribute__((__progmem__))= \
                          ARDUINO=10808 \
                          __AVR_ATmega1284P__ \
                          SDI12_EXTERNAL_PCINT \
-                         NEOSWSERIAL_EXTERNAL_PCINT \
-                         MQTT_MAX_PACKET_SIZE=240 \
-                         TINY_GSM_RX_BUFFER=64 \
-                         TINY_GSM_YIELD_MS=2 \
-                         SERIAL_PORT_USBVIRTUAL=0 \
-                         STANDARD_SERIAL_OUTPUT=Serial \
-                         DEBUGGING_SERIAL_OUTPUT=Serial \
-                         DEEP_DEBUGGING_SERIAL_OUTPUT=Serial \
-                         MS_BUILD_TESTING \
-                         TINY_GSM_MODEM_HAS_GPRS \
-                         TINY_GSM_MODEM_HAS_WIFI \
-                         TINY_GSM_MODEM_HAS_BATTERY \
-                         TINY_GSM_MODEM_HAS_TEMPERATURE
+                         ESP32
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
@@ -2260,22 +2248,7 @@ PREDEFINED             = __attribute__((__progmem__))= \
 # definition found in the source code.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-EXPAND_AS_DEFINED      = MS_MODEM_EXTRA_SETUP \
-                         MS_IS_MODEM_AWAKE \
-                         MS_MODEM_WAKE \
-                         MS_MODEM_IS_INTERNET_AVAILABLE \
-                         MS_MODEM_SET_APN \
-                         MS_MODEM_CONNECT_INTERNET \
-                         MS_MODEM_DISCONNECT_INTERNET \
-                         MS_MODEM_GET_NIST_TIME \
-                         MS_MODEM_CALC_SIGNAL_QUALITY \
-                         MS_MODEM_GET_MODEM_SIGNAL_QUALITY \
-                         MS_MODEM_GET_MODEM_BATTERY_DATA \
-                         MS_MODEM_GET_MODEM_TEMPERATURE_DATA \
-                         STREAM_CSV_ROW \
-                         MS_START_DEBUG_TIMER \
-                         MS_RESET_DEBUG_TIMER \
-                         MS_PRINT_DEBUG_TIMER
+EXPAND_AS_DEFINED      =
 
 # If the SKIP_FUNCTION_MACROS tag is set to YES then doxygen's preprocessor will
 # remove all references to function-like macros that are alone on a line, have
