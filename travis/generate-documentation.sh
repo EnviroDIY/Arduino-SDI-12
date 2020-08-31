@@ -8,8 +8,6 @@
 # Exit with nonzero exit code if anything fails
 set -e
 
-cd $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12
-
 cd $TRAVIS_BUILD_DIR/code_docs/m.css
 echo 'Update the style sheets'
 cd $TRAVIS_BUILD_DIR/code_docs/m.css/css/EnviroDIY
