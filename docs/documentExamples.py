@@ -9,18 +9,18 @@ fileDir = os.path.dirname(os.path.realpath("__file__"))
 
 output_file = "examples.dox"
 read_mes = [
-    "..\\examples\\ReadMe.md",
-    "..\\examples\\a_wild_card\\ReadMe.md",
-    "..\\examples\\b_address_change\\ReadMe.md",
-    "..\\examples\\c_check_all_addresses\\ReadMe.md",
-    "..\\examples\\d_simple_logger\\ReadMe.md",
-    "..\\examples\\e_simple_parsing\\ReadMe.md",
-    "..\\examples\\f_basic_data_request\\ReadMe.md",
-    "..\\examples\\g_terminal_window\\ReadMe.md",
-    "..\\examples\\h_SDI-12_slave_implementation\\ReadMe.md",
-    "..\\examples\\i_SDI-12_interface\\ReadMe.md",
-    "..\\examples\\j_external_pcint_library\\ReadMe.md",
-    "..\\examples\\k_concurrent_logger\\ReadMe.md",
+    "../examples/ReadMe.md",
+    "../examples/a_wild_card/ReadMe.md",
+    "../examples/b_address_change/ReadMe.md",
+    "../examples/c_check_all_addresses/ReadMe.md",
+    "../examples/d_simple_logger/ReadMe.md",
+    "../examples/e_simple_parsing/ReadMe.md",
+    "../examples/f_basic_data_request/ReadMe.md",
+    "../examples/g_terminal_window/ReadMe.md",
+    "../examples/h_SDI-12_slave_implementation/ReadMe.md",
+    "../examples/i_SDI-12_interface/ReadMe.md",
+    "../examples/j_external_pcint_library/ReadMe.md",
+    "../examples/k_concurrent_logger/ReadMe.md",
 ]
 
 if not os.path.exists(os.path.join(fileDir, "examples")):
@@ -28,7 +28,7 @@ if not os.path.exists(os.path.join(fileDir, "examples")):
 
 for filename in read_mes:
     out_path = os.path.join(fileDir, "examples")
-    out_dir = filename.split("\\")[2]
+    out_dir = filename.split("/")[2]
     out_name = out_dir + ".dox"
     if out_name == "ReadMe.md.dox":
         out_name = "examples.dox"
@@ -53,8 +53,8 @@ for filename in read_mes:
                 # )
                 out_file.write(
                     "@example{{lineno}} {} @m_examplenavigation{{examples_page,}} @m_footernavigation \n\n".format(
-                        filename.replace("..\\examples\\", "").replace(
-                            "\\ReadMe.md", ".ino"
+                        filename.replace("../examples/", "").replace(
+                            "/ReadMe.md", ".ino"
                         )
                     )
                 )
