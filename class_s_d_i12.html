@@ -1,0 +1,2627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SDI12 class | SDI-12 for Arduino</title>
+  <link rel="stylesheet" href="m-EnviroDIY+documentation.compiled.css" />
+<link
+rel="stylesheet"
+id="ez-toc-css"
+href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/easy-table-of-contents/assets/css/screen.min.css?ver=2.0.11"
+type="text/css"
+media="all"
+/>
+<style id="ez-toc-inline-css" type="text/css">
+div#ez-toc-container p.ez-toc-title {
+  font-size: 120%;
+}
+div#ez-toc-container p.ez-toc-title {
+  font-weight: 500;
+}
+div#ez-toc-container ul li {
+  font-size: 95%;
+}
+div#ez-toc-container {
+  width: 400px;
+}
+</style>
+<link
+  rel="stylesheet"
+  id="gp-parent-style-css"
+  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/style.css?ver=5.5"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="ghostpool-style-css"
+  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize-child/style.css?ver=5.5"
+  type="text/css"
+  media="all"
+/>
+<style id="ghostpool-style-inline-css" type="text/css">
+  #gp-main-header {
+    min-height: 80px;
+  }
+  .gp-desktop-scrolling #gp-main-header {
+    min-height: 80px;
+  }
+  .gp-header-standard #gp-logo {
+    padding: 12.5px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-logo {
+    padding: 12.5px 0;
+  }
+  .gp-header-standard #gp-primary-main-nav .menu > li > a {
+    padding: 30.5px 0;
+  }
+  .gp-header-standard #gp-cart-button,
+  .gp-header-standard #gp-search-button,
+  .gp-header-standard #gp-profile-button {
+    padding: 31px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-primary-main-nav .menu > li > a {
+    padding: 30.5px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-cart-button,
+  .gp-desktop-scrolling.gp-header-standard #gp-search-button,
+  .gp-desktop-scrolling.gp-header-standard #gp-profile-button {
+    padding: 31px 0;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li:hover > a {
+    color: #fff;
+  }
+  .gp-theme li:hover .gp-primary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-theme .sub-menu li:hover .gp-secondary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-header-centered #gp-cart-button,
+  .gp-header-centered #gp-search-button,
+  .gp-header-centered #gp-profile-button {
+    line-height: 18px;
+  }
+  .gp-header-standard #gp-secondary-main-nav .menu > li > a {
+    padding: 31.5px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard
+    #gp-secondary-main-nav
+    .menu
+    > li
+    > a {
+    padding: 31.5px 0;
+  }
+  .gp-header-centered #gp-secondary-main-nav .menu > li > a {
+    line-height: 16px;
+  }
+  .gp-active {
+    color: #000;
+  }
+  .gp-theme .widget.buddypress div.item-options a.selected:hover {
+    color: #26a9e0 !important;
+  }
+  .gp-theme #buddypress .activity-list .activity-content blockquote a {
+    color: #26a9e0;
+  }
+  .gp-theme #buddypress .activity-list .activity-content blockquote a:hover {
+    color: #000;
+  }
+  @media only screen and (max-width: 1082px) {
+    .gp-header-standard #gp-primary-main-nav .menu > li > a {
+      padding: 30.5px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard
+      #gp-primary-main-nav
+      .menu
+      > li
+      > a {
+      padding: 30.5px 0;
+    }
+    .gp-header-standard #gp-cart-button,
+    .gp-header-standard #gp-search-button,
+    .gp-header-standard #gp-profile-button {
+      padding: 31px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard #gp-cart-button,
+    .gp-desktop-scrolling.gp-header-standard #gp-search-button,
+    .gp-desktop-scrolling.gp-header-standard #gp-profile-button {
+      padding: 31px 0;
+    }
+    .gp-header-standard #gp-secondary-main-nav .menu > li > a {
+      padding: 31.5px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard
+      #gp-secondary-main-nav
+      .menu
+      > li
+      > a {
+      padding: 31.5px 0;
+    }
+  }
+  @media only screen and (max-width: 1023px) {
+    .gp-responsive #gp-main-header {
+      min-height: 80px;
+    }
+    .gp-responsive #gp-logo {
+      padding: 26px 0;
+    }
+    .gp-responsive #gp-mobile-nav-button,
+    .gp-responsive #gp-cart-button,
+    .gp-responsive #gp-search-button,
+    .gp-responsive #gp-profile-button {
+      padding: 31px 0;
+    }
+  }
+</style>
+<link
+  rel="stylesheet"
+  id="fontawesome-css"
+  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=5.5"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="gp-bp-css"
+  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/css/bp.css?ver=5.5"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="gp-bbp-css"
+  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/css/bbpress.css?ver=5.5"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="redux-google-fonts-socialize-css"
+  href="https://fonts.googleapis.com/css?family=Roboto%3A300%2C400%2C500%7CRoboto+Slab%3A300&#038;subset=latin&#038;ver=5.5"
+  type="text/css"
+  media="all"
+/>
+<style type="text/css" id="wp-custom-css">
+  #gp-content a {
+    font-weight: 400;
+    text-decoration: underline;
+  }
+  /*Make activity feed content darker*/
+  #buddypress .activity-list .activity-content .activity-inner p {
+    color: #000000;
+  }
+  /* Style print link */
+  .pdfprnt-buttons > a > span {
+    margin: 15px 0;
+    padding-left: 0;
+    text-decoration: underline;
+  }
+  /*Change caption text color and size*/
+  .wp-caption-text {
+    color: #333;
+    font-size: 14px;
+  }
+  /*Collapse table borders */
+  #gp-content table {
+    border-collapse: collapse;
+  }
+  /*Add borders to Tableizer tables */
+  .tableizer table,
+  th,
+  td {
+    border: 1px solid #333;
+  }
+  /*Correct nested ordered list style*/
+  #gp-content ol ol li {
+    list-style-type: lower-latin;
+  }
+  /*Hide activity filter on activity page*/
+  #activity-filter-select.last {
+    display: none !important;
+  }
+  /* Add border */
+  tr:last-child td {
+    border-width: 1px;
+  }
+  /* Make forum title and description larger, remove link underlining */
+  div.bsp-forum-content {
+    font-size: 22px;
+    line-height: 28px;
+  }
+  div.bbp-forum-content p {
+    font-size: 16px;
+    line-height: 22px;
+  }
+  #bbpress-forums a.bbp-forum-title {
+    text-decoration: none;
+  }
+  .widgettitle {
+    border-bottom: 3px solid #92d050 !important;
+  }
+  .bbp-author-name {
+    font-size: 14px;
+  }
+</style>
+<style type="text/css" title="dynamic-css" class="options-output">
+  #footer-image img {
+    margin-top: 10px;
+    margin-right: 0;
+    margin-bottom: 10px;
+    margin-left: 0;
+  }
+  body {
+    background-color: #f1f1f1;
+  }
+  body:not(.gp-full-page-page-header) #gp-page-wrapper,
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-container,
+  .gp-homepage .widgettitle.gp-fancy-title:before {
+    background-color: #e8e8e8;
+  }
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-left-triangle {
+    border-left-color: #e8e8e8;
+  }
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-right-triangle {
+    border-bottom-color: #e8e8e8;
+  }
+  #gp-content {
+    background-color: #ffffff;
+  }
+  body {
+    font-family: Roboto, "Arial Black", Gadget, sans-serif;
+    line-height: 28px;
+    font-weight: 300;
+    font-style: normal;
+    color: #000;
+    font-size: 16px;
+  }
+  a {
+    color: #26a9e0;
+  }
+  a:hover {
+    color: #000;
+  }
+  h1 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 40px;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 36px;
+  }
+  h2 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 32px;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 28px;
+  }
+  h3,
+  #tab-description h2,
+  .woocommerce #comments h2,
+  .woocommerce #reviews h3,
+  .woocommerce .related h2,
+  .woocommerce-checkout .woocommerce h2,
+  .woocommerce-checkout .woocommerce h3 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 28px;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 24px;
+  }
+  h4 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 30px;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 20px;
+  }
+  h5 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 26px;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 18px;
+  }
+  h6 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 24px;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 16px;
+  }
+  .gp-entry-meta .gp-post-meta-row-1,
+  .gp-homepage #gp-content .gp-vc-element-3,
+  .gp-homepage #gp-content .gp-vc-element-4,
+  .gp-homepage #gp-content .gp-vc-element-5,
+  .gp-homepage #gp-content .gp-vc-element-6,
+  #comments .commentlist li .comment_container,
+  .gp-loop-divider:before,
+  .gp-recent-comments ul li,
+  .gp-search {
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .gp-entry-video-wrapper .gp-entry-meta .gp-post-meta-row-1,
+  .gp-footer-widget .gp-recent-comments ul li {
+    border-top: 1px solid #50504b;
+    border-bottom: 1px solid #50504b;
+  }
+  #gp-main-header {
+    background-color: #222222;
+  }
+  .gp-desktop-scrolling #gp-main-header {
+    background-color: #222222;
+  }
+  #gp-primary-main-nav .menu > li,
+  #gp-primary-main-nav .menu > li > a {
+    font-family: Roboto;
+    text-transform: none;
+    line-height: 16px;
+    font-weight: 300;
+    font-style: normal;
+    color: #ababab;
+    font-size: 16px;
+  }
+  #gp-primary-main-nav .menu > li:hover > a,
+  #gp-primary-main-nav .menu > li > a {
+    color: #fff;
+  }
+  #gp-primary-main-nav .menu > li:hover > a:hover,
+  #gp-primary-main-nav .menu > li > a:hover {
+    color: #fff;
+  }
+  #gp-primary-main-nav .menu > li > a:hover,
+  #gp-primary-main-nav .menu > li:hover > a {
+    border-top: 3px solid #fff;
+  }
+  #gp-secondary-main-nav .menu > li,
+  #gp-secondary-main-nav .menu > li > a {
+    font-family: Roboto;
+    text-transform: none;
+    line-height: 14px;
+    font-weight: 400;
+    font-style: normal;
+    color: #fff;
+    font-size: 14px;
+  }
+  #gp-secondary-main-nav .menu > li:hover > a,
+  #gp-secondary-main-nav .menu > li > a {
+    color: #fff;
+  }
+  #gp-secondary-main-nav .menu > li:hover > a:hover,
+  #gp-secondary-main-nav .menu > li > a:hover {
+    color: #fff;
+  }
+  #gp-secondary-main-nav .menu > li > a:hover,
+  #gp-secondary-main-nav .menu > li:hover > a {
+    border-top: 3px solid #fff;
+  }
+  #gp-search-button,
+  #gp-cart-button {
+    color: #fff;
+  }
+  #gp-search-button:hover,
+  #gp-cart-button:hover {
+    color: #fff;
+  }
+  .gp-nav .sub-menu,
+  .gp-nav .menu li .gp-menu-tabs li:hover,
+  .gp-nav .menu li .gp-menu-tabs li.gp-selected,
+  #gp-search-box {
+    background-color: #fff;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a:hover,
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li:hover > a {
+    background-color: #353535;
+  }
+  .gp-nav .gp-standard-menu .sub-menu li,
+  .gp-nav .gp-standard-menu .sub-menu li a,
+  .gp-nav li.gp-megamenu .sub-menu li,
+  .gp-nav .gp-megamenu .sub-menu li a {
+    font-family: Roboto;
+    font-weight: 300;
+    font-style: normal;
+    color: #000;
+    font-size: 14px;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a {
+    color: #000;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a:hover {
+    color: #fff;
+  }
+  .gp-nav .sub-menu li,
+  #gp-dropdowncart .total,
+  #gp-dropdowncart .buttons {
+    border-top: 1px solid #e0e0e0;
+  }
+  .gp-nav .gp-megamenu > .sub-menu > li > a,
+  .gp-nav .gp-megamenu > .sub-menu > li > span {
+    color: #000000;
+  }
+  .gp-nav li.gp-megamenu a {
+    color: #000;
+  }
+  .gp-nav li.gp-megamenu a:hover {
+    color: #e93100;
+  }
+  .gp-primary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-primary-dropdown-icon:hover {
+    color: #fff;
+  }
+  .gp-secondary-dropdown-icon {
+    color: #000;
+  }
+  .gp-secondary-dropdown-icon:hover {
+    color: #fff;
+  }
+  .gp-menu-tabs {
+    background-color: #353535;
+  }
+  .gp-nav .menu li .gp-menu-tabs li {
+    color: #ffffff;
+  }
+  .gp-nav .menu li .gp-menu-tabs li:hover,
+  .gp-nav .menu li .gp-menu-tabs li.gp-selected {
+    color: #e93100;
+  }
+  #gp-small-header #gp-top-nav {
+    background-color: #26a9e0;
+  }
+  #gp-small-header .menu > li,
+  #gp-small-header .menu > li > a {
+    color: #ffffff;
+  }
+  #gp-small-header .menu > li:hover,
+  #gp-small-header .menu > li > a:hover {
+    color: #e0e0e0;
+  }
+  #gp-mobile-nav-button,
+  #gp-profile-button,
+  #gp-mobile-nav-close-button {
+    color: #ffffff;
+  }
+  #gp-mobile-nav {
+    background-color: #fff;
+  }
+  #gp-mobile-nav-close-button {
+    background-color: #26a9e0;
+  }
+  #gp-mobile-nav li {
+    color: #000000;
+  }
+  #gp-mobile-nav .menu li span,
+  #gp-mobile-nav .menu li a {
+    color: #000;
+  }
+  #gp-mobile-nav .menu li span:hover,
+  #gp-mobile-nav .menu li a:hover {
+    color: #000;
+  }
+  #gp-mobile-nav li a:hover {
+    background-color: #f1f1f1;
+  }
+  #gp-mobile-nav li {
+    border-top: 1px solid #e0e0e0;
+  }
+  #gp-mobile-nav .gp-megamenu > .sub-menu > li > a {
+    color: #000000;
+  }
+  .gp-large-page-header .gp-page-header,
+  .gp-fullwidth-page-header .gp-page-header,
+  #gp-full-page-bg {
+    background-color: #353535;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: scroll;
+    background-position: center center;
+  }
+  .gp-page-header h1,
+  .gp-page-header h2 {
+    font-family: Roboto;
+    line-height: 90px;
+    font-weight: normal;
+    font-style: normal;
+    color: #fff;
+    font-size: 80px;
+  }
+  .gp-page-header .gp-container {
+    height: 250px;
+  }
+  .gp-entry-title,
+  .woocommerce .page-title,
+  .woocommerce div.product .entry-title.product_title {
+    font-family: Roboto;
+    line-height: 46px;
+    font-weight: 300;
+    font-style: normal;
+    color: #000;
+    font-size: 40px;
+  }
+  .gp-subtitle {
+    font-family: Roboto;
+    line-height: 32px;
+    font-weight: 300;
+    font-style: normal;
+    color: #888;
+    font-size: 20px;
+  }
+  #gp-post-links a,
+  .gp-pagination-arrows a.prev,
+  .gp-pagination-arrows a.next,
+  .gp-carousel-wrapper .flex-direction-nav a {
+    color: #aaa;
+  }
+  #gp-post-links a:hover,
+  .gp-pagination-arrows a.prev:hover,
+  .gp-pagination-arrows a.next:hover,
+  .gp-carousel-wrapper .flex-direction-nav a:hover {
+    color: #333;
+  }
+  .gp-entry-meta,
+  .gp-meta-comments a {
+    color: #aaaaaa;
+  }
+  .gp-entry-cats,
+  .gp-entry-cats a,
+  .gp-entry-cats a:hover {
+    color: #ffffff;
+  }
+  .gp-entry-cats {
+    background-color: #92d050;
+  }
+  .gp-entry-tags a,
+  .gp-entry-tags a:hover {
+    color: #ffffff;
+  }
+  .gp-entry-tags a {
+    background-color: #353535;
+  }
+  .gp-author-info,
+  #gp-post-navigation #gp-share-icons {
+    background-color: #353535;
+  }
+  .gp-author-info,
+  .gp-author-info a,
+  #gp-post-navigation #gp-share-icons h3 {
+    line-height: 24px;
+    color: #fff;
+    font-size: 14px;
+  }
+  .gp-author-info a {
+    color: #b1b1b1;
+  }
+  .gp-author-info a:hover {
+    color: #fff;
+  }
+  .gp-entry-video-wrapper {
+    background-color: #353535;
+  }
+  .gp-entry-video-wrapper .gp-entry-title {
+    color: #ffffff;
+  }
+  .gp-entry-video-wrapper .gp-video-description {
+    color: #777777;
+  }
+  blockquote {
+    background-color: #191919;
+  }
+  blockquote,
+  blockquote a,
+  blockquote a:hover {
+    font-family: "Roboto Slab";
+    line-height: 38px;
+    font-weight: 300;
+    font-style: normal;
+    color: #fff;
+    font-size: 24px;
+  }
+  .gp-loop-title {
+    line-height: 22px;
+    font-weight: 400;
+    font-size: 19px;
+  }
+  .gp-blog-large .gp-loop-title {
+    line-height: 46px;
+    font-weight: 200;
+    font-size: 40px;
+  }
+  .gp-loop-title a,
+  .bboss_search_item .entry-title a {
+    color: #000;
+  }
+  .gp-loop-title a:hover,
+  .bboss_search_item .entry-title a:hover {
+    color: #26a9e0;
+  }
+  .gp-loop-text,
+  .gp-login-wrapper p {
+    color: #545454;
+  }
+  .gp-loop-meta,
+  .gp-loop-meta a,
+  #gp-breadcrumbs,
+  #gp-breadcrumbs a,
+  .woocommerce .woocommerce-breadcrumb a,
+  .woocommerce .woocommerce-breadcrumb,
+  .comment-text time,
+  div.bbp-breadcrumb,
+  div.bbp-breadcrumb a,
+  .gp-statistics-wrapper .gp-stat-title,
+  .widget_display_replies ul li div,
+  .widget_display_topics ul li div {
+    color: #545454;
+  }
+  .gp-loop-cats,
+  .gp-loop-cats a,
+  .gp-loop-cats a:hover {
+    color: #545454;
+  }
+  .gp-loop-tags,
+  .gp-loop-tags a,
+  .gp-loop-tags a:hover {
+    color: #26a9e0;
+  }
+  .gp-blog-masonry section,
+  section.sticky {
+    background-color: #f8f8f8;
+  }
+  ul.page-numbers .page-numbers {
+    background-color: #92d050;
+  }
+  ul.page-numbers .page-numbers:hover,
+  ul.page-numbers .page-numbers.current,
+  ul.page-numbers > span.page-numbers {
+    background-color: #353535;
+  }
+  ul.page-numbers .page-numbers {
+    color: #ffffff;
+  }
+  .widgettitle {
+    font-family: Roboto;
+    line-height: 18px;
+    font-weight: 500;
+    font-style: normal;
+    color: #000;
+    font-size: 14px;
+  }
+  .widgettitle a {
+    color: #26a9e0;
+  }
+  .widgettitle a:hover {
+    color: #000;
+  }
+  .gp-sidebar .widgettitle,
+  .widgettitle.gp-standard-title {
+    border-bottom: 3px solid #92d050;
+  }
+  .widget,
+  .gp-vc-element,
+  .widgettitle.gp-fancy-title .gp-widget-title,
+  .widgettitle.gp-fancy-title .gp-element-icon,
+  .widget .woocommerce {
+    background-color: #ffffff;
+  }
+  .widgettitle.gp-fancy-title .gp-triangle {
+    border-left-color: #ffffff;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .gp-theme #buddypress .dir-search input[type="search"],
+  .gp-theme #buddypress .dir-search input[type="text"],
+  .gp-theme #buddypress .groups-members-search input[type="search"],
+  .gp-theme #buddypress .standard-form input[type="color"],
+  .gp-theme #buddypress .standard-form input[type="date"],
+  .gp-theme #buddypress .standard-form input[type="datetime-local"],
+  .gp-theme #buddypress .standard-form input[type="datetime"],
+  .gp-theme #buddypress .standard-form input[type="email"],
+  .gp-theme #buddypress .standard-form input[type="month"],
+  .gp-theme #buddypress .standard-form input[type="number"],
+  .gp-theme #buddypress .standard-form input[type="password"],
+  .gp-theme #buddypress .standard-form input[type="range"],
+  .gp-theme #buddypress .standard-form input[type="search"],
+  .gp-theme #buddypress .standard-form input[type="tel"],
+  .gp-theme #buddypress .standard-form input[type="text"],
+  .gp-theme #buddypress .standard-form input[type="time"],
+  .gp-theme #buddypress .standard-form input[type="url"],
+  .gp-theme #buddypress .standard-form input[type="week"],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .gp-theme #buddypress form#whats-new-form textarea {
+    background-color: #fafafa;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .gp-login-wrapper .gp-login-icon,
+  .gp-login-wrapper .gp-password-icon,
+  .gp-login-wrapper .gp-email-icon,
+  .gp-theme #buddypress .dir-search input[type="search"],
+  .gp-theme #buddypress .dir-search input[type="text"],
+  .gp-theme #buddypress .groups-members-search input[type="search"],
+  .gp-theme #buddypress .standard-form input[type="color"],
+  .gp-theme #buddypress .standard-form input[type="date"],
+  .gp-theme #buddypress .standard-form input[type="datetime-local"],
+  .gp-theme #buddypress .standard-form input[type="datetime"],
+  .gp-theme #buddypress .standard-form input[type="email"],
+  .gp-theme #buddypress .standard-form input[type="month"],
+  .gp-theme #buddypress .standard-form input[type="number"],
+  .gp-theme #buddypress .standard-form input[type="password"],
+  .gp-theme #buddypress .standard-form input[type="range"],
+  .gp-theme #buddypress .standard-form input[type="search"],
+  .gp-theme #buddypress .standard-form input[type="tel"],
+  .gp-theme #buddypress .standard-form input[type="text"],
+  .gp-theme #buddypress .standard-form input[type="time"],
+  .gp-theme #buddypress .standard-form input[type="url"],
+  .gp-theme #buddypress .standard-form input[type="week"],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .bb-global-search-ac.ui-autocomplete {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .gp-theme #buddypress .dir-search input[type="search"],
+  .gp-theme #buddypress .dir-search input[type="text"],
+  .gp-theme #buddypress .groups-members-search input[type="search"],
+  .gp-theme #buddypress .groups-members-search input[type="text"],
+  .gp-theme #buddypress .standard-form input[type="color"],
+  .gp-theme #buddypress .standard-form input[type="date"],
+  .gp-theme #buddypress .standard-form input[type="datetime-local"],
+  .gp-theme #buddypress .standard-form input[type="datetime"],
+  .gp-theme #buddypress .standard-form input[type="email"],
+  .gp-theme #buddypress .standard-form input[type="month"],
+  .gp-theme #buddypress .standard-form input[type="number"],
+  .gp-theme #buddypress .standard-form input[type="password"],
+  .gp-theme #buddypress .standard-form input[type="range"],
+  .gp-theme #buddypress .standard-form input[type="search"],
+  .gp-theme #buddypress .standard-form input[type="tel"],
+  .gp-theme #buddypress .standard-form input[type="text"],
+  .gp-theme #buddypress .standard-form input[type="time"],
+  .gp-theme #buddypress .standard-form input[type="url"],
+  .gp-theme #buddypress .standard-form input[type="week"],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .gp-theme #buddypress form#whats-new-form textarea {
+    color: #000000;
+  }
+  select,
+  .gp-theme #buddypress .standard-form select,
+  .gp-theme #buddypress form#whats-new-form #whats-new-options select,
+  #buddypress .standard-form select:focus {
+    background-color: #353535;
+  }
+  select,
+  .gp-theme #buddypress .standard-form select,
+  .gp-theme #buddypress form#whats-new-form #whats-new-options select {
+    color: #ffffff;
+  }
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  button,
+  .button,
+  .gp-theme #buddypress .comment-reply-link,
+  .gp-notification-counter,
+  #gp-cart-counter,
+  .gp-theme #buddypress a.button,
+  .gp-theme #buddypress button,
+  .gp-theme #buddypress div.generic-button a,
+  .gp-theme #buddypress input[type="button"],
+  .gp-theme #buddypress input[type="reset"],
+  .gp-theme #buddypress input[type="submit"],
+  .gp-theme #buddypress ul.button-nav li a,
+  a.bp-title-button,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  .tribe-events-calendar thead th,
+  #tribe-events .tribe-events-button,
+  #tribe-events .tribe-events-button:hover,
+  #tribe_events_filters_wrapper input[type="submit"],
+  .tribe-events-button,
+  .tribe-events-button.tribe-active:hover,
+  .tribe-events-button.tribe-inactive,
+  .tribe-events-button:hover,
+  .tribe-events-calendar
+    td.tribe-events-present
+    div[id*="tribe-events-daynum-"],
+  .tribe-events-calendar
+    td.tribe-events-present
+    div[id*="tribe-events-daynum-"]
+    > a,
+  #tribe-bar-form .tribe-bar-submit input[type="submit"],
+  .woocommerce #respond input#submit.alt,
+  .woocommerce a.button.alt,
+  .woocommerce button.button.alt,
+  .woocommerce input.button.alt,
+  #gp-dropdowncart .woocommerce a.button {
+    background-color: #26a9e0;
+  }
+  input[type="button"]:hover,
+  input[type="submit"]:hover,
+  input[type="reset"]:hover,
+  button:hover,
+  .button:hover,
+  .gp-theme #buddypress .comment-reply-link:hover,
+  .gp-theme #buddypress a.button:hover,
+  .gp-theme #buddypress button:hover,
+  .gp-theme #buddypress div.generic-button a:hover,
+  .gp-theme #buddypress input[type="button"]:hover,
+  .gp-theme #buddypress input[type="reset"]:hover,
+  .gp-theme #buddypress input[type="submit"]:hover,
+  .gp-theme #buddypress ul.button-nav li a:hover,
+  a.bp-title-button:hover,
+  .gp-theme #buddypress .activity-list #reply-title small a:hover span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action:hover span,
+  .woocommerce #respond input#submit.alt:hover,
+  .woocommerce a.button.alt:hover,
+  .woocommerce button.button.alt:hover,
+  .woocommerce input.button.alt:hover,
+  #gp-dropdowncart .woocommerce a.button:hover {
+    background-color: #353535;
+  }
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  button,
+  .button,
+  a.gp-notification-counter,
+  a.gp-notification-counter:hover,
+  #gp-cart-counter:hover,
+  .gp-theme #buddypress .comment-reply-link,
+  .gp-theme #buddypress a.button,
+  .gp-theme #buddypress button,
+  .gp-theme #buddypress div.generic-button a,
+  .gp-theme #buddypress input[type="button"],
+  .gp-theme #buddypress input[type="reset"],
+  .gp-theme #buddypress input[type="submit"],
+  .gp-theme #buddypress ul.button-nav li a,
+  a.bp-title-button,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  #gp-dropdowncart .woocommerce a.button {
+    color: #ffffff;
+  }
+  input[type="button"]:hover,
+  input[type="submit"]:hover,
+  input[type="reset"]:hover,
+  button,
+  .button:hover,
+  .gp-theme #buddypress .comment-reply-link:hover,
+  .gp-theme #buddypress a.button:hover,
+  .gp-theme #buddypress button:hover,
+  .gp-theme #buddypress div.generic-button a:hover,
+  .gp-theme #buddypress input[type="button"]:hover,
+  .gp-theme #buddypress input[type="reset"]:hover,
+  .gp-theme #buddypress input[type="submit"]:hover,
+  .gp-theme #buddypress ul.button-nav li a:hover,
+  a.bp-title-button:hover,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  #gp-dropdowncart .woocommerce a.button:hover {
+    color: #ffffff;
+  }
+  #gp-footer {
+    background-color: #353535;
+  }
+  .gp-footer-widget .widgettitle {
+    font-family: Roboto;
+    line-height: 20px;
+    font-weight: 300;
+    font-style: normal;
+    color: #fff;
+    font-size: 16px;
+  }
+  .gp-footer-widget {
+    font-family: Roboto;
+    line-height: 20px;
+    font-weight: 300;
+    font-style: normal;
+    color: #ffffff;
+    font-size: 14px;
+  }
+  .gp-footer-widget a {
+    color: #f9bd16;
+  }
+  .gp-footer-widget a:hover {
+    color: #b1b1b1;
+  }
+  #gp-copyright {
+    background-color: #353535;
+  }
+  #gp-copyright {
+    border-top: 1px solid #444;
+  }
+  #gp-copyright {
+    color: #777777;
+  }
+  #gp-copyright a {
+    color: #999;
+  }
+  #gp-copyright a:hover {
+    color: #e0e0e0;
+  }
+  #gp-to-top {
+    background-color: #26a9e0;
+  }
+  #gp-to-top {
+    color: #ffffff;
+  }
+  .woocommerce ul.products li.product .price,
+  .woocommerce div.product p.price,
+  .woocommerce div.product span.price {
+    color: #00bee9;
+  }
+  .woocommerce span.onsale {
+    background-color: #e93100;
+  }
+  #buddypress .activity-list .activity-content .activity-header,
+  #buddypress .activity-list .activity-content .comment-header,
+  #buddypress .activity-list .activity-header a,
+  #buddypress .activity-list div.activity-comments div.acomment-meta,
+  #buddypress .activity-list .acomment-meta a,
+  .widget.buddypress .item-title a,
+  .widget.buddypress div.item-options.gp-small-item-options:before,
+  .widget.buddypress div.item-options a,
+  #buddypress ul.item-list li div.item-title a,
+  #buddypress ul.item-list li h4 > a,
+  #buddypress ul.item-list li h5 > a,
+  #buddypress div#item-header div#item-meta {
+    color: #000000;
+  }
+  #buddypress .activity-list .activity-content .activity-inner {
+    color: #aaaaaa;
+  }
+  #buddypress .activity-list a.activity-time-since,
+  .widget_display_replies ul li a + div,
+  .widget_display_topics ul li a + div,
+  #buddypress .activity-list .acomment-meta a.activity-time-since,
+  #buddypress .activity-list div.activity-comments div.acomment-content,
+  .widget.buddypress div.item-meta,
+  #buddypress span.activity,
+  #buddypress ul.item-list li div.meta {
+    color: #545454;
+  }
+  .gp-theme #buddypress .activity-list div.activity-meta a.button,
+  .gp-theme #buddypress .activity .acomment-options a,
+  .gp-theme #buddypress .activity-list li.load-more a,
+  .gp-theme #buddypress .activity-list li.load-newest a,
+  .widget.buddypress div.item-options a.selected {
+    color: #26a9e0;
+  }
+  .gp-theme #buddypress .activity-list div.activity-meta a.button:hover,
+  .gp-theme #buddypress .activity .acomment-options a:hover,
+  .gp-theme #buddypress .activity-list li.load-more a:hover,
+  .gp-theme #buddypress .activity-list li.load-newest a:hover,
+  .widget.buddypress div.item-options a.selected:hover {
+    color: #000;
+  }
+  .gp-theme #buddypress ul.item-list li,
+  .gp-theme #buddypress div.activity-comments ul li:first-child,
+  .widget.buddypress #friends-list li,
+  .widget.buddypress #groups-list li,
+  .widget.buddypress #members-list li {
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .gp-theme #buddypress div.item-list-tabs {
+    background-color: #353535;
+  }
+  .gp-theme #buddypress div.item-list-tabs ul li a span,
+  .gp-theme #buddypress div.item-list-tabs ul li a:hover span,
+  .gp-theme #buddypress div.item-list-tabs ul li.current a span,
+  .gp-theme #buddypress div.item-list-tabs ul li.selected a span {
+    color: #353535;
+  }
+  .gp-theme #buddypress div.item-list-tabs ul li a span {
+    background-color: #ffffff;
+  }
+  .gp-theme #buddypress div.item-list-tabs ul li a,
+  .gp-theme #buddypress #gp-bp-tabs-button,
+  .gp-theme #buddypress div.item-list-tabs ul li span {
+    color: #ffffff;
+  }
+  .gp-theme #buddypress div.item-list-tabs ul li.current a,
+  .gp-theme #buddypress div.item-list-tabs ul li.selected a,
+  .gp-theme #buddypress div.item-list-tabs ul li a:hover {
+    color: #b1b1b1;
+  }
+  .gp-theme #buddypress div.item-list-tabs ul li a:hover span,
+  .gp-theme #buddypress div.item-list-tabs ul li.current a span,
+  .gp-theme #buddypress div.item-list-tabs ul li.selected a span {
+    background: #b1b1b1;
+  }
+  .gp-theme #buddypress div.item-list-tabs#subnav ul,
+  .widget.buddypress div.item-options.gp-small-item-options > a {
+    background-color: #f8f8f8;
+  }
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li a span,
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li a:hover span,
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li.current a span,
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li.selected a span {
+    color: #f8f8f8;
+  }
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li a span {
+    background-color: #000000;
+  }
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li a {
+    color: #000000;
+  }
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li.current a,
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li.selected a,
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li a:hover {
+    color: #26a9e0;
+  }
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li a:hover span,
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li.current a span,
+  .gp-theme #buddypress div.item-list-tabs#subnav ul li.selected a span {
+    background: #26a9e0;
+  }
+  #bbpress-forums
+    .gp-forum-home.bbp-forums
+    .bbp-has-subforums
+    .bbp-forum-info
+    > .bbp-forum-title,
+  #bbpress-forums .bbp-topics .bbp-header,
+  #bbpress-forums .bbp-replies .bbp-header,
+  #bbpress-forums .bbp-search-results .bbp-header {
+    background-color: #353535;
+  }
+  #bbpress-forums
+    .gp-forum-home.bbp-forums
+    .bbp-has-subforums
+    .bbp-forum-info
+    > .bbp-forum-title,
+  #bbpress-forums .bbp-topics .bbp-header,
+  #bbpress-forums .bbp-replies .bbp-header,
+  #bbpress-forums .bbp-search-results .bbp-header {
+    color: #ffffff;
+  }
+  #bbpress-forums .bbp-header div.bbp-reply-content a {
+    color: #ddd;
+  }
+  #bbpress-forums .bbp-header div.bbp-reply-content a:hover {
+    color: #fff;
+  }
+  #bbpress-forums .bbp-forums-list li.odd-forum-row,
+  #bbpress-forums div.odd,
+  #bbpress-forums ul.odd {
+    background-color: #f8f8f8;
+  }
+  #bbpress-forums .bbp-forums-list li.even-forum-row,
+  #bbpress-forums div.even,
+  #bbpress-forums ul.even {
+    background-color: #fff;
+  }
+  #bbpress-forums .gp-forum-home.bbp-forums .bbp-forum-info > .bbp-forum-title,
+  #bbpress-forums div.bbp-forum-header,
+  #bbpress-forums div.bbp-topic-header,
+  #bbpress-forums div.bbp-reply-header,
+  #bbpress-forums .bbp-forums-list,
+  #bbpress-forums li.bbp-body {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+  }
+  #bbpress-forums .bbp-forums-list .bbp-forum .bbp-forum-link,
+  body.forum #bbpress-forums .bbp-forums .bbp-forum-info > .bbp-forum-title,
+  #bbpress-forums .bbp-topics .bbp-topic-permalink,
+  #bbpress-forums .gp-forum-home.bbp-forums .bbp-forum-info > .bbp-forum-title,
+  .gp-theme
+    #bbpress-forums
+    .gp-forum-shortcode
+    ul.forum:not(.status-category)
+    .bbp-forum-info
+    a {
+    color: #000000;
+  }
+  #bbpress-forums div.bbp-forum-author .bbp-author-role,
+  #bbpress-forums div.bbp-topic-author .bbp-author-role,
+  #bbpress-forums div.bbp-reply-author .bbp-author-role {
+    background-color: #92d050;
+  }
+  #bbpress-forums div.bbp-forum-author .bbp-author-role,
+  #bbpress-forums div.bbp-topic-author .bbp-author-role,
+  #bbpress-forums div.bbp-reply-author .bbp-author-role {
+    color: #ffffff;
+  }
+</style>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4-wp"
+  id="jquery-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/buddypress/bp-core/js/jquery-query.min.js?ver=6.2.0"
+  id="bp-jquery-query-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/buddypress/bp-core/js/vendor/jquery-scroll-to.min.js?ver=6.2.0"
+  id="bp-jquery-scroll-to-js"
+></script>
+<script type="text/javascript" id="bp-legacy-js-js-extra">
+  /* <![CDATA[ */
+  var BP_DTheme = {
+    accepted: "Accepted",
+    close: "Close",
+    comments: "comments",
+    leave_group_confirm: "Are you sure you want to leave this group?",
+    mark_as_fav: "Favorite",
+    my_favs: "My Favorites",
+    rejected: "Rejected",
+    remove_fav: "Remove Favorite",
+    show_all: "Show all",
+    show_all_comments: "Show all comments for this thread",
+    show_x_comments: "Show all comments (%d)",
+    unsaved_changes:
+      "Your profile has unsaved changes. If you leave the page, the changes will be lost.",
+    view: "View",
+    store_filter_settings: "",
+  };
+  /* ]]> */
+</script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/buddypress/bp-templates/bp-legacy/js/buddypress.min.js?ver=6.2.0"
+  id="bp-legacy-js-js"
+></script>
+<script type="text/javascript" id="ct_public-js-extra">
+  /* <![CDATA[ */
+  var ctPublic = {
+    _ajax_nonce: "4e5622a10f",
+    _ajax_url: "https:\/\/www.envirodiy.org\/wp-admin\/admin-ajax.php",
+  };
+  /* ]]> */
+</script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/cleantalk-spam-protect/js/apbct-public.min.js?ver=5.144"
+  id="ct_public-js"
+></script>
+<script type="text/javascript" id="ct_nocache-js-extra">
+  /* <![CDATA[ */
+  var ctNocache = {
+    ajaxurl: "https:\/\/www.envirodiy.org\/wp-admin\/admin-ajax.php",
+    info_flag: "",
+    set_cookies_flag: "",
+    blog_home: "https:\/\/www.envirodiy.org\/",
+  };
+  /* ]]> */
+</script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/cleantalk-spam-protect/js/cleantalk_nocache.min.js?ver=5.144"
+  id="ct_nocache-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/pdf-print/js/html2canvas.js?ver=5.5"
+  id="html2canvas.js-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/pdf-print/js/jspdf.js?ver=5.5"
+  id="jspdf.js-js"
+></script>
+<script type="text/javascript" id="pdfprnt_front_script-js-extra">
+  /* <![CDATA[ */
+  var pdfprnt_file_settings = {
+    margin_left: "15",
+    margin_right: "15",
+    margin_top: "16",
+    margin_bottom: "16",
+    page_size: "A4",
+    file_action: "download",
+    file_name: "About",
+  };
+  /* ]]> */
+</script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/pdf-print/js/front-script.js?ver=5.5"
+  id="pdfprnt_front_script-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/bbp-style-pack/js/bsp_delete.js?ver=5.5"
+  id="bsp_delete_check-js"
+></script>  <link rel="icon" href="SDI-12Text-Cropped.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#cb4b16" />
+</head>
+
+<body class="bp-legacy page-template-default page page-id-2063 page-parent gp-theme gp-responsive gp-wide-layout gp-retina gp-normal-scrolling gp-back-to-top-all gp-relative-header gp-header-standard gp-cart-disabled gp-search-all gp-profile-disabled gp-small-header-all gp-standard-page-header gp-right-sidebar gp-sticky-sidebars wpb-js-composer js-comp-ver-6.2.0 vc_responsive no-js">
+	<div id="gp-site-wrapper">
+
+  <nav id="gp-mobile-nav">
+    <div id="gp-mobile-nav-close-button"></div>
+    <ul class="menu">
+        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+            <a class="menu-link main-menu-link" href="class_s_d_i12.html">SDI12</a>
+          <ul class="sub-menu menu-odd menu-depth-1">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="class_s_d_i12.html#data-line-states">Data Line States</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>
+              </li>
+          </ul>
+        </li>
+        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+            <a class="menu-link main-menu-link" href="examples_page.html">Examples</a>
+          <ul class="sub-menu menu-odd menu-depth-1">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="a_wild_card_8ino-example.html">Getting Sensor Information</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="b_address_change_8ino-example.html">Address Change</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="c_check_all_addresses_8ino-example.html">Checking all Addresses</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="d_simple_logger_8ino-example.html">Logging Data</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="e_simple_parsing_8ino-example.html">Parsing Data</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="f_basic_data_request_8ino-example.html">Simple Data Request</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="g_terminal_window_8ino-example.html">Terminal Emulator 1</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="h__s_d_i-12_slave_implementation_8ino-example.html">Slave Implementation</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="i__s_d_i-12_interface_8ino-example.html">Terminal Emulator 2</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="j_external_pcint_library_8ino-example.html">External Interrupts</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a href="k_concurrent_logger_8ino-example.html">Concurrent Measurements</a>
+              </li>
+          </ul>
+        </li>
+          <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page">
+<a class="menu-link main-menu-link" href="annotated.html">Classes</a>          </li>
+        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+            <a class="menu-link main-menu-link" href="pages.html">Notes</a>
+          <ul class="sub-menu menu-odd menu-depth-1">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>
+              </li>
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                <a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>
+              </li>
+          </ul>
+        </li>
+    </ul>
+  </nav><div id="gp-mobile-nav-bg"></div>
+
+  <div id="gp-page-wrapper">
+
+    <header id="gp-main-header">
+      <div class="gp-container">
+        <div id="gp-logo">
+          <a href="index.html" title="SDI-12 for Arduino">
+            <img
+              src="SDI-12Text.png"
+              alt="SDI-12 for Arduino"
+              width="264"
+              height="55"
+              class="gp-desktop-logo"
+            />
+            <img
+              src="SDI-12Text.png"
+              alt="SDI-12 for Arduino"
+              width="264"
+              height="55"
+              class="gp-scrolling-logo"
+            />
+            <img
+              src="SDI-12Text.png"
+              alt="SDI-12 for Arduino"
+              width="132"
+              height="28"
+              class="gp-mobile-logo"
+            />
+          </a>
+        </div>
+
+        <a id="gp-mobile-nav-button"></a>
+
+        <nav id="gp-main-nav" class="gp-nav">
+          <nav id="gp-primary-main-nav">
+              <ul id="menu-main-menu-1" class="menu">
+                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+                    <a class="menu-link main-menu-link" href="class_s_d_i12.html">SDI12</a>
+                  <ul class="sub-menu menu-odd menu-depth-1">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="class_s_d_i12.html#data-line-states">Data Line States</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>
+                      </li>
+                  </ul>
+                </li>
+                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+                    <a class="menu-link main-menu-link" href="examples_page.html">Examples</a>
+                  <ul class="sub-menu menu-odd menu-depth-1">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="a_wild_card_8ino-example.html">Getting Sensor Information</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="b_address_change_8ino-example.html">Address Change</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="c_check_all_addresses_8ino-example.html">Checking all Addresses</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="d_simple_logger_8ino-example.html">Logging Data</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="e_simple_parsing_8ino-example.html">Parsing Data</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="f_basic_data_request_8ino-example.html">Simple Data Request</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="g_terminal_window_8ino-example.html">Terminal Emulator 1</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="h__s_d_i-12_slave_implementation_8ino-example.html">Slave Implementation</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="i__s_d_i-12_interface_8ino-example.html">Terminal Emulator 2</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="j_external_pcint_library_8ino-example.html">External Interrupts</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a href="k_concurrent_logger_8ino-example.html">Concurrent Measurements</a>
+                      </li>
+                  </ul>
+                </li>
+                  <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page">
+<a class="menu-link main-menu-link" href="annotated.html">Classes</a>                  </li>
+                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+                    <a class="menu-link main-menu-link" href="pages.html">Notes</a>
+                  <ul class="sub-menu menu-odd menu-depth-1">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>
+                      </li>
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                        <a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>
+                      </li>
+                  </ul>
+                </li>
+              </ul>
+          </nav>
+
+          <div id="gp-search">
+            <div id="m-search-button" class="m-show-m" onclick="return showSearch()">
+            </div>
+					</div>
+
+
+
+          <nav id="gp-secondary-main-nav"></nav>
+        </nav></div>
+    </header><header id="gp-small-header">
+      <div class="gp-container">
+        <div class="gp-left-triangle"></div>
+        <div class="gp-right-triangle"></div>
+
+        <nav id="gp-top-nav" class="gp-nav">
+          <div id="gp-left-top-nav">
+            <p style="color:#fff">An Arduino library for SDI-12 communication without requiring any additional hardware.</p>
+          </div>
+
+          <div id="gp-right-top-nav">
+            <ul id="menu-icon-links" class="menu">
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 fa fa-github menu-item menu-item-type-custom menu-item-object-custom"
+              >
+                <a
+                  title="See it on GitHub"
+                  href="https://github.com/EnviroDIY/Arduino-SDI-12"
+                  class="menu-link main-menu-link"
+                  >See the source code on GitHub</a
+                >
+              </li>
+            </ul>
+          </div>
+
+        </nav>
+      </div>
+    </header><div id="gp-fixed-header-padding"></div>
+
+    <div class="m-doc-search" id="search">
+      <a href="#!" onclick="return hideSearch()"></a>
+      <div id="gp-header-area">
+        <div class="gp-container">
+          <div style="background-color:#fff;padding:20px;">
+            <div class="m-doc-search-header m-text m-small">
+              <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+              <div id="search-symbolcount">&hellip;</div>
+            </div>
+            <div class="m-doc-search-content">
+              <form>
+                <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+              </form>
+              <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+              <div id="search-help" class="m-text m-dim m-text-center">
+                <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+              </div>
+              <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+              <ul id="search-results"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="search-v1.js"></script>
+    <script src="searchdata-v1.js" async="async"></script>
+
+    <div class="gp-clear"></div>
+
+    <div id="gp-content-wrapper" class="gp-container">
+      <div id="gp-inner-container">
+          <div id="gp-content">
+
+            <main>
+              <article>
+                <div class="m-container m-container-inflatable">
+                  <div class="m-row">
+                    <div class="m-col-l-10 m-push-l-1">
+        <span class="m-breadcrumb">
+          <a href="index.html">
+            SDI-12 for Arduino
+          </a> &gt; <wbr/>
+        </span>
+        <span class="m-breadcrumb">
+          <a href="annotated.html">
+            Classes
+          </a> &gt; <wbr/>
+        </span>
+                <span class="m-breadcrumb">
+          SDI12
+        </span>
+
+        <header class="gp-entry-header">
+          <h1 class="gp-entry-title" itemprop="headline">
+
+
+            SDI12
+
+            <span class="m-thin">
+              class
+            </span>
+
+            <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="_s_d_i12_8h.html">&lt;SDI12.h&gt;</a></div>
+
+          </h1>
+        </header>
+
+        <p>The main class for SDI 12 instances.</p>
+
+        <div class="m-block m-default">
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#static-member-variables">Static member variables</a></li>
+                <li><a href="#buffer-setup">Buffer Setup</a></li>
+                <li><a href="#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a></li>
+                <li><a href="#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a></li>
+                <li><a href="#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a></li>
+                <li><a href="#data-line-states">Data Line States</a></li>
+                <li><a href="#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a></li>
+                <li><a href="#interrupt-service-routine">Interrupt Service Routine</a></li>
+              </ul>
+            </li>
+            <li>
+              Detailed Descriptions
+              <ul>
+                <li><a href="#enum-details">Enums</a></li>
+                <li><a href="#function-details">Functions</a></li>
+                <li><a href="#variable-details">Variables</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <section id="static-member-variables">
+          <h2>Static member variables</h2>
+            <p>These are constants that apply to all SDI-12 instances.</p><p><a name="sdi12_statics"></a></p>
+          <dl class="m-doc">
+                          <dt id="a66c8de65cf00a3b93ac5c4cc7c552064">
+              static <span class="m-type"><a href="class_s_d_i12.html" class="m-doc">SDI12</a>*</span> <a href="#a66c8de65cf00a3b93ac5c4cc7c552064" class="m-doc-self">_activeObject</a>
+            </dt>
+            <dd>static pointer to active <a href="class_s_d_i12.html" class="m-doc">SDI12</a> instance</dd>
+                          <dt id="aeaff7022e63d07efdace2c8d6b324d5c">
+              static <span class="m-type"><a href="class_s_d_i12_timer.html" class="m-doc">SDI12Timer</a></span> <a href="#aeaff7022e63d07efdace2c8d6b324d5c" class="m-doc-self">sdi12timer</a>
+            </dt>
+            <dd>The <a href="class_s_d_i12_timer.html" class="m-doc">SDI12Timer</a> instance to use for checking bit reception times.</dd>
+                          <dt>
+              static <span class="m-type">const uint16_t</span> <a href="#a0ed9adc46551c62d02c7f218c4152082" class="m-doc">bitWidth_micros</a>
+            </dt>
+            <dd>The size of a bit in microseconds.</dd>
+                          <dt id="a23e2d02966bdde45a2672151be7841c8">
+              static <span class="m-type">const uint16_t</span> <a href="#a23e2d02966bdde45a2672151be7841c8" class="m-doc-self">lineBreak_micros</a>
+            </dt>
+            <dd>The required &quot;break&quot; before sending commands, &gt;= 12ms.</dd>
+                          <dt id="aa72a3e433d3551f13eebbe95b95d58eb">
+              static <span class="m-type">const uint16_t</span> <a href="#aa72a3e433d3551f13eebbe95b95d58eb" class="m-doc-self">marking_micros</a>
+            </dt>
+            <dd>The required mark before a command or response, &gt;= 8.33ms.</dd>
+                          <dt id="a527c05688fc54eea8f4faae3f8543ba3">
+              static <span class="m-type">const uint8_t</span> <a href="#a527c05688fc54eea8f4faae3f8543ba3" class="m-doc-self">txBitWidth</a>
+            </dt>
+            <dd>the width of a single bit in &quot;ticks&quot; of the cpu clock.</dd>
+                          <dt id="ae06dc3256512e7fdd398cfefbd3ed6b0">
+              static <span class="m-type">const uint8_t</span> <a href="#ae06dc3256512e7fdd398cfefbd3ed6b0" class="m-doc-self">rxWindowWidth</a>
+            </dt>
+            <dd>A fudge factor to make things work.</dd>
+                          <dt id="a01e914f0b7d1e993d4c99ddb68d00557">
+              static <span class="m-type">const uint8_t</span> <a href="#a01e914f0b7d1e993d4c99ddb68d00557" class="m-doc-self">bitsPerTick_Q10</a>
+            </dt>
+            <dd>The number of bits per tick, shifted by 2^10.</dd>
+                          <dt id="a55e84985474df4700df24c5bce311eec">
+              static <span class="m-type">const uint8_t</span> <a href="#a55e84985474df4700df24c5bce311eec" class="m-doc-self">WAITING_FOR_START_BIT</a>
+            </dt>
+            <dd>A mask for the <a href="class_s_d_i12.html#afc41ba83e116964cd32424fa01916d96" class="m-doc">rxState</a> while waiting for a start bit; 0b11111111.</dd>
+                          <dt id="ac568c972269e3105012111199c7372c3">
+              static <span class="m-type">uint16_t</span> <a href="#ac568c972269e3105012111199c7372c3" class="m-doc-self">prevBitTCNT</a>
+            </dt>
+            <dd>Stores the time of the previous RX transition in micros.</dd>
+                          <dt>
+              static <span class="m-type">uint8_t</span> <a href="#afc41ba83e116964cd32424fa01916d96" class="m-doc">rxState</a>
+            </dt>
+            <dd>Tracks how many bits are accounted for on an incoming character.</dd>
+                          <dt>
+              static <span class="m-type">uint8_t</span> <a href="#a805a0624c9ec5fdfd6d8f1df1461ec60" class="m-doc">rxMask</a>
+            </dt>
+            <dd>a bit mask for building a received character</dd>
+                          <dt id="a432c6f5ea7e6d3662aea777cc215b9c0">
+              static <span class="m-type">uint8_t</span> <a href="#a432c6f5ea7e6d3662aea777cc215b9c0" class="m-doc-self">rxValue</a>
+            </dt>
+            <dd>the value of the character being built</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="buffer-setup">
+          <h2>Buffer Setup</h2>
+            <p>Creating a circular buffer for incoming data.</p><p><a name="sdi12_buffer"></a></p><p>The buffer is used to store characters from the SDI-12 data line. Characters are read into the buffer when an interrupt is received on the data line. The buffer uses a circular implementation with pointers to both the head and the tail. All SDI-12 instances share the same buffer.</p><p>The default buffer size is the maximum length of a response to a normal SDI-12 command, which is 81 characters:</p><ul><li>address is a single (1) character</li><li>values has a maximum value of 75 characters</li><li>CRC is 3 characters</li><li>CR is a single character</li><li>LF is a single character</li></ul><p>For more information on circular buffers: <a href="http://en.wikipedia.org/wiki/Circular_buffer">http://en.wikipedia.org/wiki/Circular_<wbr />buffer</a></p>
+          <dl class="m-doc">
+                          <dt>
+              static <span class="m-type">uint8_t</span> <a href="#a943b898257ae4a0ad9ae981d623b8769" class="m-doc">_rxBuffer</a>
+            </dt>
+            <dd>A single incoming character buffer for ALL SDI-12 objects (Rx buffer)</dd>
+                          <dt id="a6efdb270846bb19acee02cdbdfba7afd">
+              static <span class="m-type">uint8_t</span> <a href="#a6efdb270846bb19acee02cdbdfba7afd" class="m-doc-self">_rxBufferTail</a>
+            </dt>
+            <dd>Index of buffer head. (unsigned 8-bit integer, can map from 0-255)</dd>
+                          <dt id="a6930573c792df875b43ca5b56c423648">
+              static <span class="m-type">uint8_t</span> <a href="#a6930573c792df875b43ca5b56c423648" class="m-doc-self">_rxBufferHead</a>
+            </dt>
+            <dd>Index of buffer tail. (unsigned 8-bit integer, can map from 0-255)</dd>
+                          <dt id="a869c2dcc7a3f15805a0f71bea3278d8a">
+              <span class="m-type">bool</span> <a href="#a869c2dcc7a3f15805a0f71bea3278d8a" class="m-doc-self">_bufferOverflow</a>
+            </dt>
+            <dd>The buffer overflow status.</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="reading-from-the-sdi-12-buffer">
+          <h2>Reading from the SDI-12 Buffer</h2>
+            <p>These functions are for reading incoming data stored in the SDI-12 buffer.</p><p><a name="reading_buffer"></a></p><aside class="m-note m-default"><h4>See also</h4><p><a href="class_s_d_i12.html#buffer-setup">Buffer Setup</a></p></aside><aside class="m-note m-info"><h4>Note</h4><p>peakNextDigit(), <a href="class_s_d_i12.html#a1e245f90dfc2c79595707d791ec42214" class="m-doc">parseInt()</a> and <a href="class_s_d_i12.html#a3e5b1d2ac041ed4a796d9ffb94523f18" class="m-doc">parseFloat()</a> are fully implemented in the parent Stream class but we don&#x27;t want to them use as they are inherited. Although they are not virtual and cannot be overridden, recreating them here hides the stream default versions to allow for a custom timeout return value. The default value for the Stream class is to return 0. This makes distinguishing timeouts from true zero readings impossible. Therefore the default value has been set to -9999 in the being function. The value returned by a timeout (<a href="class_s_d_i12.html#a648545c61fd53e5073b4b480ad60edbc" class="m-doc">SDI12::<wbr />TIMEOUT</a>) is a public variable and can be changed dynamically within a program by calling <code>mySDI12.TIMEOUT = (int) newValue</code> or using <a href="class_s_d_i12.html#ae042fba505d7c36e31020648e6c532dc" class="m-doc">SDI12::<wbr />setTimeoutValue(int16_t value)</a>.</p></aside>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">int </span><a href="#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc">available</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd>Return the number of bytes available in the Rx buffer.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">int </span><a href="#a882820fe039a037eb0a30a8202c29ce1" class="m-doc">peek</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd>Reveal next byte in the Rx buffer without consuming it.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#aad923901cae3a2c89a18644b7d2c8ba3" class="m-doc">clearBuffer</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Clear the Rx buffer by setting the head and tail pointers to the same value.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">int </span><a href="#add1c9fb00af32e07a161511f39ba069c" class="m-doc">read</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd>Return next byte in the Rx buffer, consuming it.</dd>
+                          <dt id="a199808fca63316f34d97a81b33c35e63">
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#a199808fca63316f34d97a81b33c35e63" class="m-doc-self">flush</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
+            </dt>
+            <dd>Wait for sending to finish - because no TX buffering, does nothing.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">long </span><a href="#a1e245f90dfc2c79595707d791ec42214" class="m-doc">parseInt</a>(</span><span class="m-doc-wrap"><span class="m-type"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> lookahead<span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
+              <span class="m-type">char</span> ignore<span class="m-dim"> = <a href="_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921" class="m-doc">NO_<wbr />IGNORE_<wbr />CHAR</a></span>)</span>
+            </dt>
+            <dd>Return the first valid (long) integer value from the current position.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">float </span><a href="#a3e5b1d2ac041ed4a796d9ffb94523f18" class="m-doc">parseFloat</a>(</span><span class="m-doc-wrap"><span class="m-type"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> lookahead<span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
+              <span class="m-type">char</span> ignore<span class="m-dim"> = <a href="_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921" class="m-doc">NO_<wbr />IGNORE_<wbr />CHAR</a></span>)</span>
+            </dt>
+            <dd>Return the first valid float value from the current position.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">int </span><a href="#acb8f6c730ec467da1ab7d88742d47f2d" class="m-doc">peekNextDigit</a>(</span><span class="m-doc-wrap"><span class="m-type"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> lookahead,
+              <span class="m-type">bool</span> detectDecimal) <span class="m-label m-flat m-warning">protected</span></span>
+            </dt>
+            <dd>Return the next numeric digit in the stream or -1 if timeout.</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="constructor-destructor-begins-and-setters">
+          <h2>Constructor, Destructor, Begins, and Setters</h2>
+            <p>These functions set up the SDI-12 object and prepare it for use.</p><p><a name="ctor"></a></p>
+          <dl class="m-doc">
+                          <dt id="a519ca7e59f5097fef94320adae986361">
+              <span class="m-type">uint8_t</span> <a href="#a519ca7e59f5097fef94320adae986361" class="m-doc-self">_dataPin</a>
+            </dt>
+            <dd>reference to the data pin</dd>
+                          <dt>
+              <span class="m-type">int16_t</span> <a href="#a648545c61fd53e5073b4b480ad60edbc" class="m-doc">TIMEOUT</a>
+            </dt>
+            <dd>The value to return if a parse or read times out with no return from the sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type"></span><a href="#a2d59995d9505ad65284bda64f417bc1a" class="m-doc">SDI12</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Construct a new <a href="class_s_d_i12.html" class="m-doc">SDI12</a> instance with no data pin set.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type"></span><a href="#a974c74312129c6bb174eca13ee86f1e7" class="m-doc">SDI12</a>(</span><span class="m-doc-wrap"><span class="m-type">int8_t</span> dataPin) <span class="m-label m-flat m-info">explicit</span> </span>
+            </dt>
+            <dd>Construct a new <a href="class_s_d_i12.html" class="m-doc">SDI12</a> with the data pin set.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type"></span><a href="#a22af9fc4aead35df0af16127673a93cd" class="m-doc">~SDI12</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Destroy the <a href="class_s_d_i12.html" class="m-doc">SDI12</a> object.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#ab74c6f9f881f8ee79a933708e5c1db4f" class="m-doc">begin</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Begin the SDI-12 object.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#a83dd7f574a45a1051c57903e13a40c50" class="m-doc">begin</a>(</span><span class="m-doc-wrap"><span class="m-type">int8_t</span> dataPin)</span>
+            </dt>
+            <dd>Set the SDI12::_datapin and begin the SDI-12 object.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#a53e48ceffa1ecbcf9f3d62e4546f520e" class="m-doc">end</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Disable the SDI-12 object (but do not destroy it).</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#ae042fba505d7c36e31020648e6c532dc" class="m-doc">setTimeoutValue</a>(</span><span class="m-doc-wrap"><span class="m-type">int16_t</span> value)</span>
+            </dt>
+            <dd>Set the value to return if a parse int or parse float times out with no return from the sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">int8_t </span><a href="#a19490dc8f7222741133420049ac852b2" class="m-doc">getDataPin</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Get the data pin for the current SDI-12 instance.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#a0faebdc7b8776d5ce3f25dbdad790fae" class="m-doc">setDataPin</a>(</span><span class="m-doc-wrap"><span class="m-type">int8_t</span> dataPin)</span>
+            </dt>
+            <dd>Set the data pin for the current SDI-12 instance.</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="using-more-than-one-sdi-12-object">
+          <h2>Using more than one SDI-12 Object</h2>
+            <p>Functions needed for multiple instances of the <a href="class_s_d_i12.html" class="m-doc">SDI12</a> class.</p><p><a name="multiple_objects"></a></p><p>This library is allows for multiple instances of itself running on the same or different pins. SDI-12 can support up to 62 sensors on a single pin/bus, so it is not necessary to use an instance for each sensor.</p><p>Because we are using pin change interrupts there can only be one active object at a time (since this is the only reliable way to determine which pin the interrupt occurred on). The active object is the only object that will respond properly to interrupts. However promoting another instance to Active status does not automatically remove the interrupts on the other pin. For proper behavior it is recommended to use this pattern:</p><pre class="m-code"><span class="n">mySDI12</span><span class="p">.</span><span class="n">forceHold</span><span class="p">();</span>
+<span class="n">myOtherSDI12</span><span class="p">.</span><span class="n">setActive</span><span class="p">();</span></pre><aside class="m-note m-info"><h4>Note</h4><ul><li>Promoting an object into the Active state will set it as <code>SDI12_HOLDING</code>.</li><li>Calling mySDI12.begin() will assert mySDI12 as the new active object, until another instance calls myOtherSDI12.begin() or myOtherSDI12.setActive().</li><li>Calling mySDI12.end() does NOT hand-off active status to another SDI-12 instance.</li><li>You can check on the active object by calling mySDI12.isActive(), which will return a boolean value TRUE if active or FALSE if inactive.</li></ul></aside>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">bool </span><a href="#ac8aadcfe54c0ddd3cc4dfb13549a8cc0" class="m-doc">setActive</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Set this instance as the active SDI-12 instance.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">bool </span><a href="#a771650620377ebbf31fc27a9dd803f71" class="m-doc">isActive</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Check if this instance is active.</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="data-line-states">
+          <h2>Data Line States</h2>
+            <p>Functions for maintaining the proper data line state.</p><p><a name="line_states"></a></p><p>The Arduino is responsible for managing communication with the sensors. Since all the data transfer happens on the same line, the state of the data line is very important.</p><h4 id="line_state_spec">Specifications</h4><p>Per the SDI-12 specification, the voltage ranges for SDI-12 are:</p><ul><li>When the pin is in the SDI12_HOLDING state, it is holding the line LOW so that interference does not unintentionally wake the sensors up. The interrupt is disabled for the dataPin, because we are not expecting any SDI-12 traffic.</li><li>In the SDI12_TRANSMITTING state, we would like exclusive control of the Arduino, so we shut off all interrupts, and vary the voltage of the dataPin in order to wake up and send commands to the sensor.</li><li>In the SDI12_LISTENING state, we are waiting for a sensor to respond, so we drop the voltage level to LOW and relinquish control (INPUT).</li><li>If we would like to disable all SDI-12 functionality, then we set the system to the SDI12_DISABLED state, removing the interrupt associated with the dataPin. For predictability, we set the pin to a LOW level high impedance state (INPUT).</li></ul><h4 id="line_state_table">As a Table</h4><p>Summarized in a table:</p><table ><thead><tr><th>State</th><th>Interrupts</th><th>Pin Mode</th><th>Pin Level</th></tr></thead><tbody><tr><td>SDI12_DISABLED</td><td>Pin Disable</td><td>INPUT</td><td>&mdash;</td></tr><tr><td>SDI12_ENABLED</td><td>Pin Disable</td><td>INPUT</td><td>&mdash;</td></tr><tr><td>SDI12_HOLDING</td><td>Pin Disable</td><td>OUTPUT</td><td>LOW</td></tr><tr><td>SDI12_TRANSMITTING</td><td>All/Pin Disable</td><td>OUTPUT</td><td>VARYING</td></tr><tr><td>SDI12_LISTENING</td><td>All Enable</td><td>INPUT</td><td>&mdash;</td></tr></tbody></table><h4 id="line_state_seq">Sequencing</h4><p>Generally, this flow of line states is acceptable:</p><p><code>HOLDING --&gt; TRANSMITTING --&gt; LISTENING --&gt; TRANSMITTING --&gt; LISTENING</code></p><p>If you have interference, you should force a hold, using <a href="class_s_d_i12.html#a94b3831f6a65e19f6cabaaa2f28c913e" class="m-doc">forceHold()</a>. The flow would then be:</p><p><code>HOLDING --&gt; TRANSMITTING --&gt; LISTENING --&gt;</code> done reading, <a href="class_s_d_i12.html#a94b3831f6a65e19f6cabaaa2f28c913e" class="m-doc">forceHold()</a> <code>---&gt; HOLDING</code></p><aside class="m-note m-default"><h4>See also</h4><p>For a detailed explanation of interrupts see <a href="interrupts_page.html" class="m-doc">Overview of Interrupts</a></p></aside>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper">enum <a href="#ac01684807c6e726786a4468ef5d00175" class="m-doc">SDI12_STATES</a> { </span><span class="m-doc-wrap"><a href="#ac01684807c6e726786a4468ef5d00175a09a24375d21da05c2c76ae327d306ac0" class="m-doc">SDI12_DISABLED</a>,
+              <a href="#ac01684807c6e726786a4468ef5d00175a92377816c65a8d9ae426287d34559bc9" class="m-doc">SDI12_ENABLED</a>,
+              <a href="#ac01684807c6e726786a4468ef5d00175a8ef1844364e093a1556a0c39592f0bf6" class="m-doc">SDI12_HOLDING</a>,
+              <a href="#ac01684807c6e726786a4468ef5d00175a064638b0fd7d4695ac5a6bd182f7e7f3" class="m-doc">SDI12_TRANSMITTING</a>,
+              <a href="#ac01684807c6e726786a4468ef5d00175a71daf42bed128eeccc7adac2a5a540aa" class="m-doc">SDI12_LISTENING</a> }</span>
+            </dt>
+            <dd>The various SDI-12 line states.</dd>
+                          <dt id="aa54b1ba739e3fb6f87cfaa246d172247">
+              using <a href="#aa54b1ba739e3fb6f87cfaa246d172247" class="m-doc-self">SDI12_STATES</a> = <span class="m-type">enum <a href="class_s_d_i12.html#ac01684807c6e726786a4468ef5d00175" class="m-doc">SDI12::<wbr />SDI12_STATES</a></span>
+            </dt>
+            <dd>The various SDI-12 line states.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#a94b3831f6a65e19f6cabaaa2f28c913e" class="m-doc">forceHold</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Set line state to SDI12_HOLDING.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#a0c4769b9bc4c638b384541275d4e671f" class="m-doc">forceListen</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Set line state to SDI12_LISTENING.</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="waking-up-and-talking-to-sensors">
+          <h2>Waking Up and Talking To Sensors</h2>
+            <p>These functions are needed to communicate with SDI-12 sensors (slaves) or an SDI-12 datalogger (master).</p><p><a name="communication"></a></p>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">size_t </span><a href="#a507d87250b26bedc6ed99cfa4eb95e46" class="m-doc">write</a>(</span><span class="m-doc-wrap"><span class="m-type">uint8_t</span> byte) <span class="m-label m-flat m-warning">virtual</span></span>
+            </dt>
+            <dd>Write out a byte on the SDI-12 line.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#a22dc3cfa696028e766909406e82c37cf" class="m-doc">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-type">String&amp;</span> cmd,
+              <span class="m-type">int8_t</span> extraWakeTime<span class="m-dim"> = 0</span>)</span>
+            </dt>
+            <dd>Send a command out on the data line, acting as a datalogger (master)</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#aa2bb79df6de815c697c09960096fdd4d" class="m-doc">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-type">const char*</span> cmd,
+              <span class="m-type">int8_t</span> extraWakeTime<span class="m-dim"> = 0</span>)</span>
+            </dt>
+            <dd>Send a command out on the data line, acting as a datalogger (master)</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#aa77162643acf6e4d966c4304b9136307" class="m-doc">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-type"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> cmd,
+              <span class="m-type">int8_t</span> extraWakeTime<span class="m-dim"> = 0</span>)</span>
+            </dt>
+            <dd>Send a command out on the data line, acting as a datalogger (master)</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#a348ece4b0d89bd3d6a687c85013b50a0" class="m-doc">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-type">String&amp;</span> resp)</span>
+            </dt>
+            <dd>Send a response out on the data line (for slave use)</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#a74474c4f47491e72b28045ca2eea696b" class="m-doc">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-type">const char*</span> resp)</span>
+            </dt>
+            <dd>Send a response out on the data line (for slave use)</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void </span><a href="#ae51a8ca102896cda0de061d1bd527b5e" class="m-doc">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-type"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> resp)</span>
+            </dt>
+            <dd>Send a response out on the data line (for slave use)</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="interrupt-service-routine">
+          <h2>Interrupt Service Routine</h2>
+            <p>Functions for handling interrupts - responding to changes on the data line and converting them to characters in the Rx buffer.</p><p><a name="interrupt_fxns"></a></p><aside class="m-note m-default"><h4>See also</h4><p>For a detailed explanation of interrupts see <a href="interrupts_page.html" class="m-doc">Overview of Interrupts</a></p></aside>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper">static <span class="m-type">void </span><a href="#a8856fcfc9ba4776cf9f0e0f337408ce7" class="m-doc">handleInterrupt</a>(</span><span class="m-doc-wrap">)</span>
+            </dt>
+            <dd>Intermediary used by the ISR - passes off responsibility for the interrupt to the active object.</dd>
+          </dl>
+        </section>
+        <hr>
+
+
+
+        <section id="enum-details">
+          <h2>Enum documentation</h2>
+                      <section class="m-doc-details" id="ac01684807c6e726786a4468ef5d00175"><div>
+            <h3>
+              enum SDI12::<wbr /><a href="#ac01684807c6e726786a4468ef5d00175" class="m-doc-self">SDI12_STATES</a>
+            </h3>
+            <p>The various SDI-12 line states.</p>
+            <table class="m-table m-fullwidth m-flat m-doc">
+              <thead><tr><th style="width: 1%">Enumerators</th><th></th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><a href="#ac01684807c6e726786a4468ef5d00175a09a24375d21da05c2c76ae327d306ac0" class="m-doc-self" id="ac01684807c6e726786a4468ef5d00175a09a24375d21da05c2c76ae327d306ac0">SDI12_DISABLED</a></td>
+                  <td>
+                    <p>SDI-12 is disabled, pin mode INPUT, interrupts disabled for the pin</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td><a href="#ac01684807c6e726786a4468ef5d00175a92377816c65a8d9ae426287d34559bc9" class="m-doc-self" id="ac01684807c6e726786a4468ef5d00175a92377816c65a8d9ae426287d34559bc9">SDI12_ENABLED</a></td>
+                  <td>
+                    <p>SDI-12 is enabled, pin mode INPUT, interrupts disabled for the pin</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td><a href="#ac01684807c6e726786a4468ef5d00175a8ef1844364e093a1556a0c39592f0bf6" class="m-doc-self" id="ac01684807c6e726786a4468ef5d00175a8ef1844364e093a1556a0c39592f0bf6">SDI12_HOLDING</a></td>
+                  <td>
+                    <p>The line is being held LOW, pin mode OUTPUT, interrupts disabled for the pin</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td><a href="#ac01684807c6e726786a4468ef5d00175a064638b0fd7d4695ac5a6bd182f7e7f3" class="m-doc-self" id="ac01684807c6e726786a4468ef5d00175a064638b0fd7d4695ac5a6bd182f7e7f3">SDI12_TRANSMITTING</a></td>
+                  <td>
+                    <p>Data is being transmitted by the SDI-12 master, pin mode OUTPUT, interrupts disabled for the pin</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td><a href="#ac01684807c6e726786a4468ef5d00175a71daf42bed128eeccc7adac2a5a540aa" class="m-doc-self" id="ac01684807c6e726786a4468ef5d00175a71daf42bed128eeccc7adac2a5a540aa">SDI12_LISTENING</a></td>
+                  <td>
+                    <p>The SDI-12 master is listening for a response from the slave, pin mode INPUT, interrupts enabled for the pin</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+        </section>
+        <hr>
+
+
+        <section id="function-details">
+          <h2>Function documentation</h2>
+                      <section class="m-doc-details" id="a1b35cfdeb2358dfeac079cfa52839b2d"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">int</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc-self">available</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">override</span></span></span>
+            </h3>
+            <p>Return the number of bytes available in the Rx buffer.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-type">int</span> The number of characters in the buffer</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p><a href="class_s_d_i12.html#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc">available()</a> is a public function that returns the number of characters available in the Rx buffer.</p><p>To understand how: <code>_rxBufferTail + SDI12_BUFFER_SIZE - _rxBufferHead) % SDI12_BUFFER_SIZE;</code> accomplishes this task, we will use a few examples.</p><p>To start take the buffer below that has <code>SDI12_BUFFER_SIZE = 10</code>. The message &quot;abc&quot; has been wrapped around (circular buffer).</p><pre class="m-code"><span class="n">_rxBufferTail</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1">// points to the &#39;-&#39; after c</span>
+<span class="n">_rxBufferHead</span> <span class="o">=</span> <span class="mi">8</span> <span class="c1">// points to &#39;a&#39;</span></pre><p>[ c ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ a ] [ b ]</p><p>The number of available characters is (1 + 10 - 8) % 10 = 3</p><p>The &#x27;&#x27; or modulo operator finds the remainder of division of one number by another. In integer arithmetic 3 / 10 = 0, but has a remainder of 3. We can only get the remainder by using the the modulo &#x27;&#x27;. 3 % 10 = 3. This next case demonstrates more clearly why the modulo is used.</p><pre class="m-code"><span class="n">_rxBufferTail</span> <span class="o">=</span> <span class="mi">4</span> <span class="c1">// points to the &#39;-&#39; after c</span>
+<span class="n">_rxBufferHead</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1">// points to &#39;a&#39;</span></pre><p>[ a ] [ b ] [ c ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ]</p><p>The number of available characters is (4 + 10 - 1) % 10 = 3</p><p>If we did not use the modulo we would get either ( 4 + 10 - 1 ) = 13 characters or ( 4 + 10 - 1 ) / 10 = 1 character. Obviously neither is correct.</p><p>If there has been a buffer overflow, <a href="class_s_d_i12.html#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc">available()</a> will return -1.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a882820fe039a037eb0a30a8202c29ce1"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">int</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a882820fe039a037eb0a30a8202c29ce1" class="m-doc-self">peek</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">override</span></span></span>
+            </h3>
+            <p>Reveal next byte in the Rx buffer without consuming it.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-type">int</span> The next byte in the character buffer.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p><a href="class_s_d_i12.html#a882820fe039a037eb0a30a8202c29ce1" class="m-doc">peek()</a> is a public function that allows the user to look at the character that is at the head of the buffer. Unlike <a href="class_s_d_i12.html#add1c9fb00af32e07a161511f39ba069c" class="m-doc">read()</a> it does not consume the character (i.e. the index addressed by _rxBufferHead is not changed). <a href="class_s_d_i12.html#a882820fe039a037eb0a30a8202c29ce1" class="m-doc">peek()</a> returns -1 if there are no characters to show.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="aad923901cae3a2c89a18644b7d2c8ba3"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aad923901cae3a2c89a18644b7d2c8ba3" class="m-doc-self">clearBuffer</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p>Clear the Rx buffer by setting the head and tail pointers to the same value.</p>
+            <p><a href="class_s_d_i12.html#aad923901cae3a2c89a18644b7d2c8ba3" class="m-doc">clearBuffer()</a> is a public function that clears the buffers contents by setting the index for both head and tail back to zero.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="add1c9fb00af32e07a161511f39ba069c"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">int</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#add1c9fb00af32e07a161511f39ba069c" class="m-doc-self">read</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">override</span></span></span>
+            </h3>
+            <p>Return next byte in the Rx buffer, consuming it.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-type">int</span> The next byte in the character buffer.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p><a href="class_s_d_i12.html#add1c9fb00af32e07a161511f39ba069c" class="m-doc">read()</a> returns the character at the current head in the buffer after incrementing the index of the buffer head. This action &#x27;consumes&#x27; the character, meaning it can not be read from the buffer again. If you would rather see the character, but leave the index to head intact, you should use <a href="class_s_d_i12.html#a882820fe039a037eb0a30a8202c29ce1" class="m-doc">peek()</a>;</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a1e245f90dfc2c79595707d791ec42214"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">long</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a1e245f90dfc2c79595707d791ec42214" class="m-doc-self">parseInt</a>(</span><span class="m-doc-wrap"><span class="m-type"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> lookahead<span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
+              <span class="m-type">char</span> ignore<span class="m-dim"> = <a href="_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921" class="m-doc">NO_<wbr />IGNORE_<wbr />CHAR</a></span>)</span></span>
+            </h3>
+            <p>Return the first valid (long) integer value from the current position.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">lookahead</td>
+                  <td>the mode to use to look ahead in the stream, default is LookaheadMode::SKIP_ALL</td>
+                </tr>
+                <tr>
+                  <td class="m-type" >ignore</td>
+                  <td>a character to ignore in the stream, default is &#x27;\x01&#x27;</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-type">long</span> The first valid integer in the stream</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>The value of lookahead determines how parseInt looks ahead in the stream. See LookaheadMode enumeration at the top of the file. Lookahead is terminated by the first character that is not a valid part of an integer. Once parsing commences, &#x27;ignore&#x27; will be skipped in the stream.</p><aside class="m-note m-info"><h4>Note</h4><p>This function <em>hides</em> the Stream class function to allow a custom value to be returned on timeout. It cannot overwrite the Stream function because it is not virtual.</p></aside><aside class="m-note m-default"><h4>See also</h4><p><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">SDI12::<wbr />LookaheadMode</a></p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a3e5b1d2ac041ed4a796d9ffb94523f18"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">float</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3e5b1d2ac041ed4a796d9ffb94523f18" class="m-doc-self">parseFloat</a>(</span><span class="m-doc-wrap"><span class="m-type"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> lookahead<span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
+              <span class="m-type">char</span> ignore<span class="m-dim"> = <a href="_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921" class="m-doc">NO_<wbr />IGNORE_<wbr />CHAR</a></span>)</span></span>
+            </h3>
+            <p>Return the first valid float value from the current position.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">lookahead</td>
+                  <td>the mode to use to look ahead in the stream, default is LookaheadMode::SKIP_ALL</td>
+                </tr>
+                <tr>
+                  <td class="m-type" >ignore</td>
+                  <td>a character to ignore in the stream, default is &#x27;\x01&#x27;</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-type">long</span> The first valid float in the stream</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>The value of lookahead determines how parseInt looks ahead in the stream. See LookaheadMode enumeration at the top of the file. Lookahead is terminated by the first character that is not a valid part of an integer. Once parsing commences, &#x27;ignore&#x27; will be skipped in the stream.</p><aside class="m-note m-info"><h4>Note</h4><p>This function <em>hides</em> the Stream class function to allow a custom value to be returned on timeout. It cannot overwrite the Stream function because it is not virtual.</p></aside><aside class="m-note m-default"><h4>See also</h4><p><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">SDI12::<wbr />LookaheadMode</a></p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="acb8f6c730ec467da1ab7d88742d47f2d"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">int</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#acb8f6c730ec467da1ab7d88742d47f2d" class="m-doc-self">peekNextDigit</a>(</span><span class="m-doc-wrap"><span class="m-type"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> lookahead,
+              <span class="m-type">bool</span> detectDecimal) <span class="m-label m-warning">protected</span></span></span>
+            </h3>
+            <p>Return the next numeric digit in the stream or -1 if timeout.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">lookahead</td>
+                  <td>the mode to use to look ahead in the stream</td>
+                </tr>
+                <tr>
+                  <td class="m-type" >detectDecimal</td>
+                  <td>True to accept a decimal point (&#x27;.&#x27;) as part of a number</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-type">int</span> The next numeric digit in the stream</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a2d59995d9505ad65284bda64f417bc1a"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type"></span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a2d59995d9505ad65284bda64f417bc1a" class="m-doc-self">SDI12</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p>Construct a new <a href="class_s_d_i12.html" class="m-doc">SDI12</a> instance with no data pin set.</p>
+            <p>Before using the SDI-12 instance, the data pin must be set with SDI12::setDataPin(dataPin) or SDI12::begin(dataPin). This empty constructor is provided for easier integration with other Arduino libraries.</p><p>When the constructor is called it resets the buffer overflow status to FALSE.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a974c74312129c6bb174eca13ee86f1e7"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type"></span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a974c74312129c6bb174eca13ee86f1e7" class="m-doc-self">SDI12</a>(</span><span class="m-doc-wrap"><span class="m-type">int8_t</span> dataPin) <span class="m-label m-info">explicit</span> </span></span>
+            </h3>
+            <p>Construct a new <a href="class_s_d_i12.html" class="m-doc">SDI12</a> with the data pin set.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">dataPin</td>
+                  <td>The data pin&#x27;s digital pin number</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>When the constructor is called it resets the buffer overflow status to FALSE and assigns the pin number &quot;dataPin&quot; to the private variable &quot;_dataPin&quot;.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a22af9fc4aead35df0af16127673a93cd"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type"></span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a22af9fc4aead35df0af16127673a93cd" class="m-doc-self">~SDI12</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p>Destroy the <a href="class_s_d_i12.html" class="m-doc">SDI12</a> object.</p>
+            <p>When the destructor is called, it&#x27;s main task is to disable any interrupts that had been previously assigned to the pin, so that the pin will behave as expected when used for other purposes. This is achieved by putting the SDI-12 object in the SDI12_DISABLED state. After disabling interrupts, the pointer to the current active SDI-12 instance is set to null if it had pointed to the destroyed object. Finally, for AVR board, the timer prescaler is set back to whatever it had been prior to creating the SDI-12 object.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ab74c6f9f881f8ee79a933708e5c1db4f"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ab74c6f9f881f8ee79a933708e5c1db4f" class="m-doc-self">begin</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p>Begin the SDI-12 object.</p>
+            <p>This is called to begin the functionality of the SDI-12 object. It sets the object as the active object, sets the stream timeout to 150ms to match SDI-12 specs, sets the timeout return value to <a href="class_s_d_i12.html#a648545c61fd53e5073b4b480ad60edbc" class="m-doc">SDI12::<wbr />TIMEOUT</a>, and configures the timer prescaler.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a83dd7f574a45a1051c57903e13a40c50"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a83dd7f574a45a1051c57903e13a40c50" class="m-doc-self">begin</a>(</span><span class="m-doc-wrap"><span class="m-type">int8_t</span> dataPin)</span></span>
+            </h3>
+            <p>Set the SDI12::_datapin and begin the SDI-12 object.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">dataPin</td>
+                  <td>The data pin&#x27;s digital pin number</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>This is called to begin the functionality of the SDI-12 object. It sets the object as the active object, sets the stream timeout to 150ms to match SDI-12 specs, sets the timeout return value to <a href="class_s_d_i12.html#a648545c61fd53e5073b4b480ad60edbc" class="m-doc">SDI12::<wbr />TIMEOUT</a>, and configures the timer prescaler. If the SDI-12 instance is created using the empty constuctor, this must be used to set the data pin.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a53e48ceffa1ecbcf9f3d62e4546f520e"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a53e48ceffa1ecbcf9f3d62e4546f520e" class="m-doc-self">end</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p>Disable the SDI-12 object (but do not destroy it).</p>
+            <p>Set the SDI-12 state to disabled, set the pointer to the current active instance to null, and then, for AVR boards, unset the timer prescaler.</p><p>This can be called to temporarily cease all functionality of the SDI-12 object. It is not as harsh as destroying the object with the destructor, as it will maintain the memory buffer.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ae042fba505d7c36e31020648e6c532dc"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae042fba505d7c36e31020648e6c532dc" class="m-doc-self">setTimeoutValue</a>(</span><span class="m-doc-wrap"><span class="m-type">int16_t</span> value)</span></span>
+            </h3>
+            <p>Set the value to return if a parse int or parse float times out with no return from the sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">value</td>
+                  <td>the value to return on timeout</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>The &quot;standard&quot; timeout return for an Arduino stream object when no character is available in the Rx buffer is &quot;0.&quot; For enviromental sensors (the typical SDI-12 users) 0 is a common result value. To better distinguish between a timeout because of no sensor response and a true zero return, the timeout should be set to some value that is NOT a possible return from that sensor. If the timeout is not set, -9999 is used.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a19490dc8f7222741133420049ac852b2"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">int8_t</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a19490dc8f7222741133420049ac852b2" class="m-doc-self">getDataPin</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p>Get the data pin for the current SDI-12 instance.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-type">int8_t</span> the data pin number</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a0faebdc7b8776d5ce3f25dbdad790fae"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a0faebdc7b8776d5ce3f25dbdad790fae" class="m-doc-self">setDataPin</a>(</span><span class="m-doc-wrap"><span class="m-type">int8_t</span> dataPin)</span></span>
+            </h3>
+            <p>Set the data pin for the current SDI-12 instance.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">dataPin</td>
+                  <td>The data pin&#x27;s digital pin number</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ac8aadcfe54c0ddd3cc4dfb13549a8cc0"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">bool</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac8aadcfe54c0ddd3cc4dfb13549a8cc0" class="m-doc-self">setActive</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p>Set this instance as the active SDI-12 instance.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-type">bool</span> True indicates that the current SDI-12 instance was not formerly the active one and now is. False indicates that the current SDI-12 instance <em>is already the active one</em> and the state was not changed.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>A method for setting the current object as the active object; returns TRUE if the object was not formerly the active object and now is.</p><ul><li>Promoting an inactive to the active instance will start it in the SDI12_HOLDING state and return TRUE.</li><li>Otherwise, if the object is currently the active instance, it will remain unchanged and return FALSE.</li></ul>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a771650620377ebbf31fc27a9dd803f71"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">bool</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a771650620377ebbf31fc27a9dd803f71" class="m-doc-self">isActive</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p>Check if this instance is active.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-type">bool</span> True indicates that the curren SDI-12 instace is the active one.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p><a href="class_s_d_i12.html#a771650620377ebbf31fc27a9dd803f71" class="m-doc">isActive()</a> is a method for checking if the object is the active object. Returns true if the object is currently the active object, false otherwise.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a94b3831f6a65e19f6cabaaa2f28c913e"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a94b3831f6a65e19f6cabaaa2f28c913e" class="m-doc-self">forceHold</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p>Set line state to SDI12_HOLDING.</p>
+            <p>A public function which forces the line into a &quot;holding&quot; state. This is generally unneeded, but for deployments where interference is an issue, it should be used after all expected bytes have been returned from the sensor.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a0c4769b9bc4c638b384541275d4e671f"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a0c4769b9bc4c638b384541275d4e671f" class="m-doc-self">forceListen</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p>Set line state to SDI12_LISTENING.</p>
+            <p>A public function which forces the line into a &quot;listening&quot; state. This may be needed for implementing a slave-side device, which should relinquish control of the data line when not transmitting.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a507d87250b26bedc6ed99cfa4eb95e46"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">size_t</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a507d87250b26bedc6ed99cfa4eb95e46" class="m-doc-self">write</a>(</span><span class="m-doc-wrap"><span class="m-type">uint8_t</span> byte) <span class="m-label m-warning">virtual</span></span></span>
+            </h3>
+            <p>Write out a byte on the SDI-12 line.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">byte</td>
+                  <td>The character to write</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-type">size_t</span> The number of characters written</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>Sets the state to transmitting, writes a character, and then sets the state back to listening. This function must be implemented as part of the Arduino Stream instance, but is <em>NOT</em> intenteded to be used for SDI-12 objects. Instead, use the <a href="class_s_d_i12.html#a22dc3cfa696028e766909406e82c37cf" class="m-doc">SDI12::<wbr />sendCommand()</a> or <a href="class_s_d_i12.html#a348ece4b0d89bd3d6a687c85013b50a0" class="m-doc">SDI12::<wbr />sendResponse()</a> functions.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a22dc3cfa696028e766909406e82c37cf"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a22dc3cfa696028e766909406e82c37cf" class="m-doc-self">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-type">String&amp;</span> cmd,
+              <span class="m-type">int8_t</span> extraWakeTime<span class="m-dim"> = 0</span>)</span></span>
+            </h3>
+            <p>Send a command out on the data line, acting as a datalogger (master)</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">cmd</td>
+                  <td>the command to send</td>
+                </tr>
+                <tr>
+                  <td class="m-type" >extraWakeTime</td>
+                  <td>The amount of additional time in milliseconds that the sensor takes to wake before being ready to receive a command. Default is 0ms - meaning the sensor is ready for a command by the end of the 12ms break. Should be lower than 100.</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>A publicly accessible function that sends a break to wake sensors and sends out a command byte by byte on the data line.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="aa2bb79df6de815c697c09960096fdd4d"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aa2bb79df6de815c697c09960096fdd4d" class="m-doc-self">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-type">const char*</span> cmd,
+              <span class="m-type">int8_t</span> extraWakeTime<span class="m-dim"> = 0</span>)</span></span>
+            </h3>
+            <p>Send a command out on the data line, acting as a datalogger (master)</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">cmd</td>
+                  <td>the command to send</td>
+                </tr>
+                <tr>
+                  <td class="m-type" >extraWakeTime</td>
+                  <td>The amount of additional time in milliseconds that the sensor takes to wake before being ready to receive a command. Default is 0ms - meaning the sensor is ready for a command by the end of the 12ms break. Should be lower than 100.</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>A publicly accessible function that sends a break to wake sensors and sends out a command byte by byte on the data line.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="aa77162643acf6e4d966c4304b9136307"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aa77162643acf6e4d966c4304b9136307" class="m-doc-self">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-type"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> cmd,
+              <span class="m-type">int8_t</span> extraWakeTime<span class="m-dim"> = 0</span>)</span></span>
+            </h3>
+            <p>Send a command out on the data line, acting as a datalogger (master)</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">cmd</td>
+                  <td>the command to send</td>
+                </tr>
+                <tr>
+                  <td class="m-type" >extraWakeTime</td>
+                  <td>The amount of additional time in milliseconds that the sensor takes to wake before being ready to receive a command. Default is 0ms - meaning the sensor is ready for a command by the end of the 12ms break. Should be lower than 100.</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>A publicly accessible function that sends a break to wake sensors and sends out a command byte by byte on the data line.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a348ece4b0d89bd3d6a687c85013b50a0"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a348ece4b0d89bd3d6a687c85013b50a0" class="m-doc-self">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-type">String&amp;</span> resp)</span></span>
+            </h3>
+            <p>Send a response out on the data line (for slave use)</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">resp</td>
+                  <td>the response to send</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>A publicly accessible function that sends out an 8.33 ms marking and a response byte by byte on the data line. This is needed if the Arduino is acting as an SDI-12 device itself, not as a recorder for another SDI-12 device.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a74474c4f47491e72b28045ca2eea696b"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a74474c4f47491e72b28045ca2eea696b" class="m-doc-self">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-type">const char*</span> resp)</span></span>
+            </h3>
+            <p>Send a response out on the data line (for slave use)</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">resp</td>
+                  <td>the response to send</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>A publicly accessible function that sends out an 8.33 ms marking and a response byte by byte on the data line. This is needed if the Arduino is acting as an SDI-12 device itself, not as a recorder for another SDI-12 device.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ae51a8ca102896cda0de061d1bd527b5e"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae51a8ca102896cda0de061d1bd527b5e" class="m-doc-self">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-type"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> resp)</span></span>
+            </h3>
+            <p>Send a response out on the data line (for slave use)</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-type"  style="width: 1%">resp</td>
+                  <td>the response to send</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>A publicly accessible function that sends out an 8.33 ms marking and a response byte by byte on the data line. This is needed if the Arduino is acting as an SDI-12 device itself, not as a recorder for another SDI-12 device.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a8856fcfc9ba4776cf9f0e0f337408ce7"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper">static <span class="m-type">void</span> SDI12::<wbr /></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a8856fcfc9ba4776cf9f0e0f337408ce7" class="m-doc-self">handleInterrupt</a>(</span><span class="m-doc-wrap">)</span></span>
+            </h3>
+            <p>Intermediary used by the ISR - passes off responsibility for the interrupt to the active object.</p>
+            <p>On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM</p>
+
+            <hr>
+          </div>
+        </section>
+        </section>
+        <hr>
+
+        <section id="variable-details">
+          <h2>Variable documentation</h2>
+                      <section class="m-doc-details" id="a0ed9adc46551c62d02c7f218c4152082"><div>
+            <h3>
+              static <span class="m-type">const uint16_t</span> SDI12::<wbr /><a href="#a0ed9adc46551c62d02c7f218c4152082" class="m-doc-self">bitWidth_micros</a>
+            </h3>
+            <p>The size of a bit in microseconds.</p>
+            <p>1200 baud = 1200 bits/second ~ 833.333 µs/bit</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="afc41ba83e116964cd32424fa01916d96"><div>
+            <h3>
+              static <span class="m-type">uint8_t</span> SDI12::<wbr /><a href="#afc41ba83e116964cd32424fa01916d96" class="m-doc-self">rxState</a>
+            </h3>
+            <p>Tracks how many bits are accounted for on an incoming character.</p>
+            <ul><li>if 0: indicates that we got a start bit</li><li>if &gt;0: indicates the number of bits received</li></ul>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a805a0624c9ec5fdfd6d8f1df1461ec60"><div>
+            <h3>
+              static <span class="m-type">uint8_t</span> SDI12::<wbr /><a href="#a805a0624c9ec5fdfd6d8f1df1461ec60" class="m-doc-self">rxMask</a>
+            </h3>
+            <p>a bit mask for building a received character</p>
+            <p>The mask has a single bit set, in the place of the active bit based on the <a href="class_s_d_i12.html#afc41ba83e116964cd32424fa01916d96" class="m-doc">rxState</a>.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a943b898257ae4a0ad9ae981d623b8769"><div>
+            <h3>
+              static <span class="m-type">uint8_t</span> SDI12::<wbr /><a href="#a943b898257ae4a0ad9ae981d623b8769" class="m-doc-self">_rxBuffer</a>
+            </h3>
+            <p>A single incoming character buffer for ALL SDI-12 objects (Rx buffer)</p>
+            <p>Increasing the buffer size will use more RAM. If you exceed 256 characters, be sure to change the data type of the index to support the larger range of addresses. To adjust the size of the buffer, change the value of <code>SDI12_BUFFER_SIZE</code> in the header file.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a648545c61fd53e5073b4b480ad60edbc"><div>
+            <h3>
+              <span class="m-type">int16_t</span> SDI12::<wbr /><a href="#a648545c61fd53e5073b4b480ad60edbc" class="m-doc-self">TIMEOUT</a>
+            </h3>
+            <p>The value to return if a parse or read times out with no return from the sensor.</p>
+            <p>The timeout return for an Arduino stream object when no character is available in the Rx buffer is &quot;0.&quot; For enviromental sensors (the typical SDI-12 users) 0 is a common result value. To better distinguish between a timeout because of no sensor response and a true zero return, the timeout should be set to some value that is NOT a possible return from that sensor. If the timeout is not set, -9999 is used.</p>
+
+            <hr>
+          </div>
+        </section>
+        </section>
+        <hr>
+
+
+
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </main>
+
+          </div>      </div></div><footer id="gp-footer">
+      <div id="gp-copyright">
+        <div class="gp-container">
+          <div id="gp-copyright-text">
+            <p>
+              <a href="http://www.stroudcenter.org/" target="_blank"
+                ><img
+                  style="float: left; margin-right: 20px;"
+                  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/uploads/2017/01/stroud-white-white-165px.png"
+                  alt=""
+                  width="165"
+                  height="70" /></a
+              >EnviroDIY™ is a community for do-it-yourself ideas for
+              environmental science and monitoring. EnviroDIY is an
+              initiative of
+              <a href="http://www.stroudcenter.org/" target="_blank"
+                >Stroud™ Water Research Center</a
+              >, which seeks to advance knowledge and stewardship of
+              freshwater systems through global research, education, and
+              watershed restoration.
+            </p>
+            <p>
+              All content on EnviroDIY is licensed as Creative Commons
+              Attribution-ShareAlike 4.0 International (CC-BY-SA). Hardware
+              designs on this website are released under the CERN Open
+              Hardware License 1.2.
+              <a href="https://envirodiy.org/licenses/"
+                >Alternative licenses are available.</a
+              >
+              <a href="https://envirodiy.org/terms/">Terms of Use</a> |
+              <a href="https://envirodiy.org/privacy/">Privacy Policy</a> |
+              <a href="https://envirodiy.org/cookies/">Cookie Policy</a> |
+              <a href="https://envirodiy.org/contact/">Contact</a>
+            </p>
+            <p>
+              Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.0 and <a href="https://mcss.mosra.cz/">m.css</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div class="gp-clear"></div>
+
+    </div></div><div
+  data-theiaStickySidebar-sidebarSelector='".gp-sidebar"'
+  data-theiaStickySidebar-options='{"containerSelector":"#gp-content-wrapper","additionalMarginTop":100,"additionalMarginBottom":20,"updateSidebarHeight":false,"minWidth":1081,"sidebarBehavior":"modern","disableOnResponsiveLayouts":true}'
+></div>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=5.5"
+  id="comment-reply-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/theia-sticky-sidebar/js/ResizeSensor.js?ver=1.8.0"
+  id="theia-sticky-sidebar/ResizeSensor.js-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/theia-sticky-sidebar/js/theia-sticky-sidebar.js?ver=1.8.0"
+  id="theia-sticky-sidebar/theia-sticky-sidebar.js-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/theia-sticky-sidebar/js/main.js?ver=1.8.0"
+  id="theia-sticky-sidebar/main.js-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/jquery.ui.totop.min.js?ver=5.5"
+  id="jquery-totop-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/jquery.flexslider-min.js?ver=5.5"
+  id="jquery-flexslider-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/custom.js?ver=5.5"
+  id="ghostpool-custom-js-js"
+></script>
+<script type="text/javascript" id="ez-toc-js-js-extra">
+  /* <![CDATA[ */
+  var ezTOC = {
+    visibility_hide_by_default: "1",
+    width: "400px",
+    scroll_offset: "30",
+  };
+  /* ]]> */
+</script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/easy-table-of-contents/assets/js/front.min.js?ver=2.0.11-1589575487"
+  id="ez-toc-js-js"
+></script>
+</body>
+</html>
