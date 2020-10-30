@@ -206,9 +206,8 @@ void loop() {
         // '!' should be the last available character anyway, but exit the "for" loop
         // just in case there are any stray characters
         slaveSDI12.clearBuffer();
-        //to eliminate the chance to sense anoter information from outsite with
-        //the interrupt pin - set as hold and continue to code
-        slaveSDI12.forceHold(); 
+        // eliminate the chance of getting anything else after the '!'
+        slaveSDI12.forceHold();
         break;
       }
       // If the current character is anything but '!', it is part of the command
@@ -233,7 +232,8 @@ void loop() {
       // Populate the "dValues" String array with the values in SDI-12 format
       formatOutputSDI(measurementValues, dValues, 75);
       state = WAIT;
-      slaveSDI12.forceListen();  // sets SDIPIN as input to prepare for incoming message AGAIN
+      slaveSDI12
+        .forceListen();  // sets SDI-12 pin as input to prepare for incoming message AGAIN
       break;
     case INITIATE_MEASUREMENT:
       // Do whatever the sensor is supposed to do here
@@ -246,7 +246,8 @@ void loop() {
       // For aM!, Send "service request" (<address><CR><LF>) when data is ready
       slaveSDI12.sendResponse(String(sensorAddress) + "\r\n");
       state = WAIT;
-      slaveSDI12.forceListen();  // sets SDIPIN as input to prepare for incoming message AGAIN
+      slaveSDI12
+        .forceListen();  // sets SDI-12 pin as input to prepare for incoming message AGAIN
       break;
   }
 }
