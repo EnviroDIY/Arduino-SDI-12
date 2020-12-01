@@ -211,7 +211,7 @@ float SDI12::parseFloat(LookaheadMode lookahead, char ignore) {
 /* ================ Constructor, Destructor, begin(), end(), and timeout ============*/
 // Constructor
 SDI12::SDI12() {
-  _dataPin        = NULL;
+  _dataPin        = -1;
   _bufferOverflow = false;
   // SDI-12 protocol says sensors must respond within 15 milliseconds
   // We'll bump that up to 150, just for good measure, but we don't want to
