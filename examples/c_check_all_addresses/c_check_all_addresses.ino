@@ -49,7 +49,7 @@ void printInfo(SDI12 sdi, char i) {
 
   while (sdi.available()) {
     Serial.write(sdi.read());
-    delay(5);
+    delay(10);  // 1 character ~ 7.5ms
   }
 }
 

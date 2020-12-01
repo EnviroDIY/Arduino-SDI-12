@@ -80,3 +80,4 @@ docs/doxygenOutput.log
 docs/mcss-doxy-output.log
 docs/mcss.log
 doygen-run.log
+examples/TestCommands/TestCommands.ino

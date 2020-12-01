@@ -54,7 +54,7 @@ void loop() {
     if ((inByte != '\n') &&
         (inByte != '\r')) {  // read all values entered in terminal window before enter
       myCommand += inByte;
-      delay(5);
+      delay(10);  // 1 character ~ 7.5ms
     }
   }
 
@@ -68,7 +68,7 @@ void loop() {
       char c = mySDI12.read();
       if ((c != '\n') && (c != '\r')) {
         sdiResponse += c;
-        delay(5);
+        delay(10);  // 1 character ~ 7.5ms
       }
     }
     if (sdiResponse.length() >= 1)
