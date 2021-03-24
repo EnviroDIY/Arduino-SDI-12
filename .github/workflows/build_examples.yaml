@@ -79,6 +79,7 @@ jobs:
         if: matrix.example == 'examples/j_external_pcint_library/'
         env:
           PLATFORMIO_CI_SRC: ${{ matrix.example }}
+          PLATFORMIO_BUILD_FLAGS: -DSDI12_EXTERNAL_PCINT
         run: |
           echo "${{ env.LIBRARY_INSTALL_SOURCE }}"
           pio lib --global install ${{ env.LIBRARY_INSTALL_SOURCE }}
