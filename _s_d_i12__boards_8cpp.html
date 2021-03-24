@@ -5,37 +5,16 @@
   <title>SDI12_boards.cpp file | SDI-12 for Arduino</title>
   <link rel="stylesheet" href="m-EnviroDIY+documentation.compiled.css" />
 <link
-rel="stylesheet"
-id="ez-toc-css"
-href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/easy-table-of-contents/assets/css/screen.min.css?ver=2.0.11"
-type="text/css"
-media="all"
-/>
-<style id="ez-toc-inline-css" type="text/css">
-div#ez-toc-container p.ez-toc-title {
-  font-size: 120%;
-}
-div#ez-toc-container p.ez-toc-title {
-  font-weight: 500;
-}
-div#ez-toc-container ul li {
-  font-size: 95%;
-}
-div#ez-toc-container {
-  width: 400px;
-}
-</style>
-<link
   rel="stylesheet"
   id="gp-parent-style-css"
-  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/style.css?ver=5.5"
+  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/style.css?ver=5.6"
   type="text/css"
   media="all"
 />
 <link
   rel="stylesheet"
   id="ghostpool-style-css"
-  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize-child/style.css?ver=5.5"
+  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize-child/style.css?ver=5.6"
   type="text/css"
   media="all"
 />
@@ -47,7 +26,7 @@ div#ez-toc-container {
     min-height: 80px;
   }
   .gp-header-standard #gp-logo {
-    padding: 12.5px 0;
+    padding: 19px 0;
   }
   .gp-desktop-scrolling.gp-header-standard #gp-logo {
     padding: 12.5px 0;
@@ -157,6 +136,13 @@ div#ez-toc-container {
 <link
   rel="stylesheet"
   id="fontawesome-css"
+  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=5.6"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="fontawesome-css"
   href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=5.5"
   type="text/css"
   media="all"
@@ -164,21 +150,21 @@ div#ez-toc-container {
 <link
   rel="stylesheet"
   id="gp-bp-css"
-  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/css/bp.css?ver=5.5"
+  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/css/bp.css?ver=5.6"
   type="text/css"
   media="all"
 />
 <link
   rel="stylesheet"
   id="gp-bbp-css"
-  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/css/bbpress.css?ver=5.5"
+  href="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/css/bbpress.css?ver=5.6"
   type="text/css"
   media="all"
 />
 <link
   rel="stylesheet"
   id="redux-google-fonts-socialize-css"
-  href="https://fonts.googleapis.com/css?family=Roboto%3A300%2C400%2C500%7CRoboto+Slab%3A300&#038;subset=latin&#038;ver=5.5"
+  href="https://fonts.googleapis.com/css?family=Roboto%3A300%2C400%2C500%7CRoboto+Slab%3A300&#038;subset=latin&#038;ver=5.6"
   type="text/css"
   media="all"
 />
@@ -241,6 +227,47 @@ div#ez-toc-container {
   }
   .bbp-author-name {
     font-size: 14px;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget {
+    background-color: #fff;
+    padding: 15px;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > header {
+    text-transform: uppercase;
+    color: #000;
+    border-bottom: 3px solid #92d050;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > header
+    > h3 {
+    font-family: Roboto !important;
+    font-size: 14px !important;
+    font-weight: 500;
+    padding-bottom: 11px;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > div.tribe-events-widget-events-list__view-more.tribe-common-b1.tribe-common-b2--min-medium
+    > a {
+    color: #26a9e0;
+  }
+  /*Hide disabled BuddyPress status updates on profile page, activity page*/
+  #latest-update {
+    display: none;
+  }
+  .item-title .update {
+    display: none;
   }
 </style>
 <style type="text/css" title="dynamic-css" class="options-output">
@@ -954,287 +981,16 @@ div#ez-toc-container {
   #gp-to-top {
     color: #ffffff;
   }
-  .woocommerce ul.products li.product .price,
-  .woocommerce div.product p.price,
-  .woocommerce div.product span.price {
-    color: #00bee9;
-  }
-  .woocommerce span.onsale {
-    background-color: #e93100;
-  }
-  #buddypress .activity-list .activity-content .activity-header,
-  #buddypress .activity-list .activity-content .comment-header,
-  #buddypress .activity-list .activity-header a,
-  #buddypress .activity-list div.activity-comments div.acomment-meta,
-  #buddypress .activity-list .acomment-meta a,
-  .widget.buddypress .item-title a,
-  .widget.buddypress div.item-options.gp-small-item-options:before,
-  .widget.buddypress div.item-options a,
-  #buddypress ul.item-list li div.item-title a,
-  #buddypress ul.item-list li h4 > a,
-  #buddypress ul.item-list li h5 > a,
-  #buddypress div#item-header div#item-meta {
-    color: #000000;
-  }
-  #buddypress .activity-list .activity-content .activity-inner {
-    color: #aaaaaa;
-  }
-  #buddypress .activity-list a.activity-time-since,
-  .widget_display_replies ul li a + div,
-  .widget_display_topics ul li a + div,
-  #buddypress .activity-list .acomment-meta a.activity-time-since,
-  #buddypress .activity-list div.activity-comments div.acomment-content,
-  .widget.buddypress div.item-meta,
-  #buddypress span.activity,
-  #buddypress ul.item-list li div.meta {
-    color: #545454;
-  }
-  .gp-theme #buddypress .activity-list div.activity-meta a.button,
-  .gp-theme #buddypress .activity .acomment-options a,
-  .gp-theme #buddypress .activity-list li.load-more a,
-  .gp-theme #buddypress .activity-list li.load-newest a,
-  .widget.buddypress div.item-options a.selected {
-    color: #26a9e0;
-  }
-  .gp-theme #buddypress .activity-list div.activity-meta a.button:hover,
-  .gp-theme #buddypress .activity .acomment-options a:hover,
-  .gp-theme #buddypress .activity-list li.load-more a:hover,
-  .gp-theme #buddypress .activity-list li.load-newest a:hover,
-  .widget.buddypress div.item-options a.selected:hover {
-    color: #000;
-  }
-  .gp-theme #buddypress ul.item-list li,
-  .gp-theme #buddypress div.activity-comments ul li:first-child,
-  .widget.buddypress #friends-list li,
-  .widget.buddypress #groups-list li,
-  .widget.buddypress #members-list li {
-    border-top: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
-  }
-  .gp-theme #buddypress div.item-list-tabs {
-    background-color: #353535;
-  }
-  .gp-theme #buddypress div.item-list-tabs ul li a span,
-  .gp-theme #buddypress div.item-list-tabs ul li a:hover span,
-  .gp-theme #buddypress div.item-list-tabs ul li.current a span,
-  .gp-theme #buddypress div.item-list-tabs ul li.selected a span {
-    color: #353535;
-  }
-  .gp-theme #buddypress div.item-list-tabs ul li a span {
-    background-color: #ffffff;
-  }
-  .gp-theme #buddypress div.item-list-tabs ul li a,
-  .gp-theme #buddypress #gp-bp-tabs-button,
-  .gp-theme #buddypress div.item-list-tabs ul li span {
-    color: #ffffff;
-  }
-  .gp-theme #buddypress div.item-list-tabs ul li.current a,
-  .gp-theme #buddypress div.item-list-tabs ul li.selected a,
-  .gp-theme #buddypress div.item-list-tabs ul li a:hover {
-    color: #b1b1b1;
-  }
-  .gp-theme #buddypress div.item-list-tabs ul li a:hover span,
-  .gp-theme #buddypress div.item-list-tabs ul li.current a span,
-  .gp-theme #buddypress div.item-list-tabs ul li.selected a span {
-    background: #b1b1b1;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul,
-  .widget.buddypress div.item-options.gp-small-item-options > a {
-    background-color: #f8f8f8;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a span,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a:hover span,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.current a span,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.selected a span {
-    color: #f8f8f8;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a span {
-    background-color: #000000;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a {
-    color: #000000;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.current a,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.selected a,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a:hover {
-    color: #26a9e0;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a:hover span,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.current a span,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.selected a span {
-    background: #26a9e0;
-  }
-  #bbpress-forums
-    .gp-forum-home.bbp-forums
-    .bbp-has-subforums
-    .bbp-forum-info
-    > .bbp-forum-title,
-  #bbpress-forums .bbp-topics .bbp-header,
-  #bbpress-forums .bbp-replies .bbp-header,
-  #bbpress-forums .bbp-search-results .bbp-header {
-    background-color: #353535;
-  }
-  #bbpress-forums
-    .gp-forum-home.bbp-forums
-    .bbp-has-subforums
-    .bbp-forum-info
-    > .bbp-forum-title,
-  #bbpress-forums .bbp-topics .bbp-header,
-  #bbpress-forums .bbp-replies .bbp-header,
-  #bbpress-forums .bbp-search-results .bbp-header {
-    color: #ffffff;
-  }
-  #bbpress-forums .bbp-header div.bbp-reply-content a {
-    color: #ddd;
-  }
-  #bbpress-forums .bbp-header div.bbp-reply-content a:hover {
-    color: #fff;
-  }
-  #bbpress-forums .bbp-forums-list li.odd-forum-row,
-  #bbpress-forums div.odd,
-  #bbpress-forums ul.odd {
-    background-color: #f8f8f8;
-  }
-  #bbpress-forums .bbp-forums-list li.even-forum-row,
-  #bbpress-forums div.even,
-  #bbpress-forums ul.even {
-    background-color: #fff;
-  }
-  #bbpress-forums .gp-forum-home.bbp-forums .bbp-forum-info > .bbp-forum-title,
-  #bbpress-forums div.bbp-forum-header,
-  #bbpress-forums div.bbp-topic-header,
-  #bbpress-forums div.bbp-reply-header,
-  #bbpress-forums .bbp-forums-list,
-  #bbpress-forums li.bbp-body {
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    border-left: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-  }
-  #bbpress-forums .bbp-forums-list .bbp-forum .bbp-forum-link,
-  body.forum #bbpress-forums .bbp-forums .bbp-forum-info > .bbp-forum-title,
-  #bbpress-forums .bbp-topics .bbp-topic-permalink,
-  #bbpress-forums .gp-forum-home.bbp-forums .bbp-forum-info > .bbp-forum-title,
-  .gp-theme
-    #bbpress-forums
-    .gp-forum-shortcode
-    ul.forum:not(.status-category)
-    .bbp-forum-info
-    a {
-    color: #000000;
-  }
-  #bbpress-forums div.bbp-forum-author .bbp-author-role,
-  #bbpress-forums div.bbp-topic-author .bbp-author-role,
-  #bbpress-forums div.bbp-reply-author .bbp-author-role {
-    background-color: #92d050;
-  }
-  #bbpress-forums div.bbp-forum-author .bbp-author-role,
-  #bbpress-forums div.bbp-topic-author .bbp-author-role,
-  #bbpress-forums div.bbp-reply-author .bbp-author-role {
-    color: #ffffff;
-  }
 </style>
 <script
   type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.js?ver=1.12.4-wp"
-  id="jquery-js"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery.min.js?ver=3.5.1"
+  id="jquery-core-js"
 ></script>
 <script
   type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/buddypress/bp-core/js/jquery-query.min.js?ver=6.2.0"
-  id="bp-jquery-query-js"
-></script>
-<script
-  type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/buddypress/bp-core/js/vendor/jquery-scroll-to.min.js?ver=6.2.0"
-  id="bp-jquery-scroll-to-js"
-></script>
-<script type="text/javascript" id="bp-legacy-js-js-extra">
-  /* <![CDATA[ */
-  var BP_DTheme = {
-    accepted: "Accepted",
-    close: "Close",
-    comments: "comments",
-    leave_group_confirm: "Are you sure you want to leave this group?",
-    mark_as_fav: "Favorite",
-    my_favs: "My Favorites",
-    rejected: "Rejected",
-    remove_fav: "Remove Favorite",
-    show_all: "Show all",
-    show_all_comments: "Show all comments for this thread",
-    show_x_comments: "Show all comments (%d)",
-    unsaved_changes:
-      "Your profile has unsaved changes. If you leave the page, the changes will be lost.",
-    view: "View",
-    store_filter_settings: "",
-  };
-  /* ]]> */
-</script>
-<script
-  type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/buddypress/bp-templates/bp-legacy/js/buddypress.min.js?ver=6.2.0"
-  id="bp-legacy-js-js"
-></script>
-<script type="text/javascript" id="ct_public-js-extra">
-  /* <![CDATA[ */
-  var ctPublic = {
-    _ajax_nonce: "4e5622a10f",
-    _ajax_url: "https:\/\/www.envirodiy.org\/wp-admin\/admin-ajax.php",
-  };
-  /* ]]> */
-</script>
-<script
-  type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/cleantalk-spam-protect/js/apbct-public.min.js?ver=5.144"
-  id="ct_public-js"
-></script>
-<script type="text/javascript" id="ct_nocache-js-extra">
-  /* <![CDATA[ */
-  var ctNocache = {
-    ajaxurl: "https:\/\/www.envirodiy.org\/wp-admin\/admin-ajax.php",
-    info_flag: "",
-    set_cookies_flag: "",
-    blog_home: "https:\/\/www.envirodiy.org\/",
-  };
-  /* ]]> */
-</script>
-<script
-  type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/cleantalk-spam-protect/js/cleantalk_nocache.min.js?ver=5.144"
-  id="ct_nocache-js"
-></script>
-<script
-  type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/pdf-print/js/html2canvas.js?ver=5.5"
-  id="html2canvas.js-js"
-></script>
-<script
-  type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/pdf-print/js/jspdf.js?ver=5.5"
-  id="jspdf.js-js"
-></script>
-<script type="text/javascript" id="pdfprnt_front_script-js-extra">
-  /* <![CDATA[ */
-  var pdfprnt_file_settings = {
-    margin_left: "15",
-    margin_right: "15",
-    margin_top: "16",
-    margin_bottom: "16",
-    page_size: "A4",
-    file_action: "download",
-    file_name: "About",
-  };
-  /* ]]> */
-</script>
-<script
-  type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/pdf-print/js/front-script.js?ver=5.5"
-  id="pdfprnt_front_script-js"
-></script>
-<script
-  type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/bbp-style-pack/js/bsp_delete.js?ver=5.5"
-  id="bsp_delete_check-js"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2"
+  id="jquery-migrate-js"
 ></script>  <link rel="icon" href="SDI-12Text-Cropped.png" type="image/png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#cb4b16" />
@@ -1246,79 +1002,79 @@ div#ez-toc-container {
   <nav id="gp-mobile-nav">
     <div id="gp-mobile-nav-close-button"></div>
     <ul class="menu">
-        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
             <a class="menu-link main-menu-link" href="class_s_d_i12.html">SDI12</a>
           <ul class="sub-menu menu-odd menu-depth-1">
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="class_s_d_i12.html#data-line-states">Data Line States</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>
               </li>
           </ul>
         </li>
-        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
             <a class="menu-link main-menu-link" href="examples_page.html">Examples</a>
           <ul class="sub-menu menu-odd menu-depth-1">
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="a_wild_card_8ino-example.html">Getting Sensor Information</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="b_address_change_8ino-example.html">Address Change</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="c_check_all_addresses_8ino-example.html">Checking all Addresses</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="d_simple_logger_8ino-example.html">Logging Data</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="e_simple_parsing_8ino-example.html">Parsing Data</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="f_basic_data_request_8ino-example.html">Simple Data Request</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="g_terminal_window_8ino-example.html">Terminal Emulator 1</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="h__s_d_i-12_slave_implementation_8ino-example.html">Slave Implementation</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="i__s_d_i-12_interface_8ino-example.html">Terminal Emulator 2</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="j_external_pcint_library_8ino-example.html">External Interrupts</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a href="k_concurrent_logger_8ino-example.html">Concurrent Measurements</a>
               </li>
           </ul>
         </li>
-          <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page">
+          <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-post_type menu-item-object-page">
 <a class="menu-link main-menu-link" href="annotated.html">Classes</a>          </li>
-        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
             <a class="menu-link main-menu-link" href="pages.html">Notes</a>
           <ul class="sub-menu menu-odd menu-depth-1">
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>
               </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                 <a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>
               </li>
           </ul>
@@ -1361,79 +1117,79 @@ div#ez-toc-container {
         <nav id="gp-main-nav" class="gp-nav">
           <nav id="gp-primary-main-nav">
               <ul id="menu-main-menu-1" class="menu">
-                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
                     <a class="menu-link main-menu-link" href="class_s_d_i12.html">SDI12</a>
                   <ul class="sub-menu menu-odd menu-depth-1">
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="class_s_d_i12.html#data-line-states">Data Line States</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>
                       </li>
                   </ul>
                 </li>
-                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
                     <a class="menu-link main-menu-link" href="examples_page.html">Examples</a>
                   <ul class="sub-menu menu-odd menu-depth-1">
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="a_wild_card_8ino-example.html">Getting Sensor Information</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="b_address_change_8ino-example.html">Address Change</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="c_check_all_addresses_8ino-example.html">Checking all Addresses</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="d_simple_logger_8ino-example.html">Logging Data</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="e_simple_parsing_8ino-example.html">Parsing Data</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="f_basic_data_request_8ino-example.html">Simple Data Request</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="g_terminal_window_8ino-example.html">Terminal Emulator 1</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="h__s_d_i-12_slave_implementation_8ino-example.html">Slave Implementation</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="i__s_d_i-12_interface_8ino-example.html">Terminal Emulator 2</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="j_external_pcint_library_8ino-example.html">External Interrupts</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a href="k_concurrent_logger_8ino-example.html">Concurrent Measurements</a>
                       </li>
                   </ul>
                 </li>
-                  <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page">
+                  <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-post_type menu-item-object-page">
 <a class="menu-link main-menu-link" href="annotated.html">Classes</a>                  </li>
-                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children">
+                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
                     <a class="menu-link main-menu-link" href="pages.html">Notes</a>
                   <ul class="sub-menu menu-odd menu-depth-1">
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>
                       </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page">
+                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
                         <a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>
                       </li>
                   </ul>
@@ -1463,7 +1219,7 @@ div#ez-toc-container {
           <div id="gp-right-top-nav">
             <ul id="menu-icon-links" class="menu">
               <li
-                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 fa fa-github menu-item menu-item-type-custom menu-item-object-custom"
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 fa fa-github menu-item menu-item-param-custom menu-item-object-custom"
               >
                 <a
                   title="See it on GitHub"
@@ -1563,16 +1319,16 @@ div#ez-toc-container {
             </li>
           </ul>
         </div>
-<aside class="m-note m-default"><h4>Copyright</h4><p>(c) 2013-2020 Stroud Water Research Center (SWRC) and the EnviroDIY Development Team</p></aside><aside class="m-note m-default"><h4>Author</h4><p>Sara Geleskie Damiano (<a href="mailto:sdamiano@stroudcenter.org">sdamiano@stroudcenter.org</a>)</p></aside>
+          <aside class="m-note m-default"><h4>Copyright</h4><p>(c) 2013-2020 Stroud Water Research Center (SWRC) and the EnviroDIY Development Team</p></aside><aside class="m-note m-default"><h4>Author</h4><p>Sara Geleskie Damiano (<a href="mailto:sdamiano@stroudcenter.org">sdamiano@stroudcenter.org</a>)</p></aside>
         <section id="var-members">
           <h2>Variables</h2>
           <dl class="m-doc">
             <dt id="a4e85e210bd911a09d7f8de0c9e063b69">
-              static <span class="m-type">uint8_t</span> <a href="#a4e85e210bd911a09d7f8de0c9e063b69" class="m-doc-self">preSDI12_TCCR2A</a>
+              static <span class="m-dim">uint8_t</span> <a href="#a4e85e210bd911a09d7f8de0c9e063b69" class="m-doc-self">preSDI12_TCCR2A</a>
             </dt>
             <dd>The value of timer control register 2A prior to being set for SDI-12.</dd>
             <dt id="a2cf0d3479963664a1971d43a0517c677">
-              static <span class="m-type">uint8_t</span> <a href="#a2cf0d3479963664a1971d43a0517c677" class="m-doc-self">preSDI12_TCCR2B</a>
+              static <span class="m-dim">uint8_t</span> <a href="#a2cf0d3479963664a1971d43a0517c677" class="m-doc-self">preSDI12_TCCR2B</a>
             </dt>
             <dd>The value of timer control register 2B prior to being set for SDI-12.</dd>
           </dl>
@@ -1624,7 +1380,7 @@ div#ez-toc-container {
               <a href="https://envirodiy.org/contact/">Contact</a>
             </p>
             <p>
-              Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.0 and <a href="https://mcss.mosra.cz/">m.css</a>.
+              Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.
             </p>
           </div>
         </div>
@@ -1633,58 +1389,77 @@ div#ez-toc-container {
 
     <div class="gp-clear"></div>
 
-    </div></div><div
-  data-theiaStickySidebar-sidebarSelector='".gp-sidebar"'
-  data-theiaStickySidebar-options='{"containerSelector":"#gp-content-wrapper","additionalMarginTop":100,"additionalMarginBottom":20,"updateSidebarHeight":false,"minWidth":1081,"sidebarBehavior":"modern","disableOnResponsiveLayouts":true}'
-></div>
-<script
+    </div></div><script
   type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-includes/js/comment-reply.min.js?ver=5.5"
-  id="comment-reply-js"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/modernizr.js?ver=5.6"
+  id="modernizr-js"
 ></script>
 <script
   type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/theia-sticky-sidebar/js/ResizeSensor.js?ver=1.8.0"
-  id="theia-sticky-sidebar/ResizeSensor.js-js"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-includes/js/imagesloaded.min.js?ver=4.1.4"
+  id="imagesloaded-js"
 ></script>
 <script
   type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/theia-sticky-sidebar/js/theia-sticky-sidebar.js?ver=1.8.0"
-  id="theia-sticky-sidebar/theia-sticky-sidebar.js-js"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/selectivizr.min.js?ver=5.6"
+  id="selectivizr-js"
 ></script>
 <script
   type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/theia-sticky-sidebar/js/main.js?ver=1.8.0"
-  id="theia-sticky-sidebar/main.js-js"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/placeholders.min.js?ver=5.6"
+  id="placeholder-js"
 ></script>
 <script
   type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/jquery.ui.totop.min.js?ver=5.5"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/jquery.ui.totop.min.js?ver=5.6"
   id="jquery-totop-js"
 ></script>
 <script
   type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/jquery.flexslider-min.js?ver=5.5"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/jquery.flexslider-min.js?ver=5.6"
   id="jquery-flexslider-js"
 ></script>
-<script
-  type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/custom.js?ver=5.5"
-  id="ghostpool-custom-js-js"
-></script>
-<script type="text/javascript" id="ez-toc-js-js-extra">
+<script type="text/javascript" id="ghostpool-custom-js-js-extra">
   /* <![CDATA[ */
-  var ezTOC = {
-    visibility_hide_by_default: "1",
-    width: "400px",
-    scroll_offset: "30",
+  var ghostpool_script = {
+    lightbox: "disabled",
+    url: "https:\/\/www.envirodiy.org\/",
+    related_items_in_view: "",
   };
   /* ]]> */
 </script>
 <script
   type="text/javascript"
-  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/plugins/easy-table-of-contents/assets/js/front.min.js?ver=2.0.11-1589575487"
-  id="ez-toc-js-js"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/jquery.stellar.min.js?ver=5.6"
+  id="jquery-stellar-js"
+></script>
+<script type="text/javascript" id="ghostpool-custom-js-js-extra">
+  /* <![CDATA[ */
+  var ghostpool_script = {
+    lightbox: "disabled",
+    url: "https:\/\/www.envirodiy.org\/",
+    related_items_in_view: "",
+  };
+  /* ]]> */
+</script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/custom.js?ver=5.6"
+  id="ghostpool-custom-js-js"
+></script>
+<script type="text/javascript" id="ghostpool-ajax-loop-js-extra">
+  /* <![CDATA[ */
+  var ghostpoolAjax = {
+    ajaxurl: "https:\/\/www.envirodiy.org\/wp-admin\/admin-ajax.php",
+    ajaxnonce: "6049425e02",
+    querystring: "",
+  };
+  /* ]]> */
+</script>
+<script
+  type="text/javascript"
+  src="https://3qzcxr28gq9vutx8scdn91zq-wpengine.netdna-ssl.com/wp-content/themes/socialize/lib/scripts/ajax-loop.js?ver=5.6"
+  id="ghostpool-ajax-loop-js"
 ></script>
 </body>
 </html>
