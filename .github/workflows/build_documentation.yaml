@@ -13,7 +13,7 @@ on:
       - created
 
 env:
-  DOXYGEN_VERSION: Release_1_8_20
+  DOXYGEN_VERSION: Release_1_9_1
 
 jobs:
   build:

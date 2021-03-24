@@ -14,7 +14,7 @@ read_mes = [
     "../examples/b_address_change/ReadMe.md",
     "../examples/c_check_all_addresses/ReadMe.md",
     "../examples/d_simple_logger/ReadMe.md",
-    "../examples/e_simple_parsing/ReadMe.md",
+    "../examples/e_continuous_measurement/ReadMe.md",
     "../examples/f_basic_data_request/ReadMe.md",
     "../examples/g_terminal_window/ReadMe.md",
     "../examples/h_SDI-12_slave_implementation/ReadMe.md",

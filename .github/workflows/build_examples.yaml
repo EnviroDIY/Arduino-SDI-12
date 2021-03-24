@@ -12,17 +12,17 @@ jobs:
       matrix:
         example:
           [
-            examples/a_wild_card,
-            examples/b_address_change,
-            examples/c_check_all_addresses,
-            examples/d_simple_logger,
-            examples/e_simple_parsing,
-            examples/f_basic_data_request,
-            examples/g_terminal_window,
-            examples/h_SDI-12_slave_implementation,
-            examples/i_SDI-12_interface,
-            examples/j_external_pcint_library,
-            examples/k_concurrent_logger,
+            examples/a_wild_card/,
+            examples/b_address_change/,
+            examples/c_check_all_addresses/,
+            examples/d_simple_logger/,
+            examples/e_continuous_measurement/,
+            examples/f_basic_data_request/,
+            examples/g_terminal_window/,
+            examples/h_SDI-12_slave_implementation/,
+            examples/i_SDI-12_interface/,
+            examples/j_external_pcint_library/,
+            examples/k_concurrent_logger/,
           ]
 
     steps:
