@@ -1,0 +1,72 @@
+on:
+  push:
+    branches:
+      - master
+    # Sequence of patterns matched against refs/tags
+    paths:
+      - 'VERSION' # Push events when the VERSION file changes
+  workflow_dispatch:
+
+name: Prepare a new release
+
+env:
+  PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
+
+jobs:
+  release:
+    name: Prepare a new release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set variables
+        run: |
+          echo "::debug::Get the current version number"
+          VER=$(cat VERSION)
+          echo "VERSION=$VER" >> $GITHUB_ENV
+
+      - name: Restore or Cache pip
+        uses: actions/cache@v2.1.4
+        with:
+          path: ~/.cache/pip
+          # if requirements.txt hasn't changed, then it will be a "cache hit" and pip will be restored
+          # if requirements.txt HAS changed, it will be a "cache miss" and a new cache of pip will be created if the job completes successfully
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+
+      # This should be pulled from cache, if there's not a new version
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade platformio
+
+      - name: Get notes
+        id: generate_notes
+        uses: anmarkoulis/commitizen-changelog-reader@master
+        with:
+          # NOTE:  Need to add the refs/tags to work with the generate notes action
+          tag_name: ${{ format('refs/tags/{0}', env.VERSION) }}
+          changelog: ChangeLog.md
+
+      # Create a new release
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: ${{ env.VERSION }}
+          draft: false
+          prerelease: false
+          body: ${{join(fromJson(steps.generate_notes.outputs.notes).notes, '')}}
+
+      # Publish the new release to the pio package manager
+      - name: Publish release to PIO
+        id: publish-pio
+        run: pio package publish

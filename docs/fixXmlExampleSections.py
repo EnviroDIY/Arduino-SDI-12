@@ -12,25 +12,14 @@ abs_file_path = os.path.join(fileDir, relative_dir)
 abs_file_path = os.path.abspath(os.path.realpath(abs_file_path))
 # print("XML Directory: {}".format(fileDir))
 
-output_file = "examples.dox"
-read_mes = [
-    # '../Arduino-SDI-12Doxygen/xml_8ino-example.xml',
-    "../../Arduino-SDI-12Doxygen/xml/a_wild_card_8ino-example.xml",
-    "../../Arduino-SDI-12Doxygen/xml/b_address_change_8ino-example.xml",
-    "../../Arduino-SDI-12Doxygen/xml/c_check_all_addresses_8ino-example.xml",
-    "../../Arduino-SDI-12Doxygen/xml/d_simple_logger_8ino-example.xml",
-    "../../Arduino-SDI-12Doxygen/xml/e_simple_parsing_8ino-example.xml",
-    "../../Arduino-SDI-12Doxygen/xml/f_basic_data_request_8ino-example.xml",
-    "../../Arduino-SDI-12Doxygen/xml/g_terminal_window_8ino-example.xml",
-    "../../Arduino-SDI-12Doxygen/xml/h_SDI-12_slave_implementation_8ino-example.xml",
-    "../../Arduino-SDI-12Doxygen/xml/i_SDI-12_interface_8ino-example.xml",
-    "../../Arduino-SDI-12Doxygen/xml/j_external_pcint_library_8ino-example.xml",
-    "../../Arduino-SDI-12Doxygen/xml/k_concurrent_logger_8ino-example.xml",
+all_files = [
+    f
+    for f in os.listdir(abs_file_path)
+    if os.path.isfile(os.path.join(abs_file_path, f)) and f.endswith("8ino-example.xml")
 ]
-all_files = [f for f in os.listdir(abs_file_path) if os.path.isfile(os.path.join(abs_file_path, f))]
 
 for filename in all_files:
-    # print(filename)
+    print(filename)
 
     tree = ET.parse(os.path.join(abs_file_path, filename))
     root = tree.getroot()
@@ -58,6 +47,12 @@ for filename in all_files:
 
     if needs_to_be_fixed:
         tree.write(os.path.join(abs_file_path, filename + "_fixed"))
-        os.rename(os.path.join(abs_file_path, filename), os.path.join(abs_file_path, filename + "_original"))
-        os.rename(os.path.join(abs_file_path, filename + "_fixed"), os.path.join(abs_file_path, filename))
+        os.rename(
+            os.path.join(abs_file_path, filename),
+            os.path.join(abs_file_path, filename + "_original"),
+        )
+        os.rename(
+            os.path.join(abs_file_path, filename + "_fixed"),
+            os.path.join(abs_file_path, filename),
+        )
     # print()

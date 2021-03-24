@@ -10,18 +10,8 @@
  *
  * This is a simple demonstration of the SDI-12 library for Arduino.
  *
- * It discovers the address of all sensors active on a single bus and takes measurements
- * from them.
- *
- * Every SDI-12 device is different in the time it takes to take a
- * measurement, and the amount of data it returns. This sketch will not serve every
- * sensor type, but it will likely be helpful in getting you started.
- *
- * Each sensor should have a unique address already - if not, multiple sensors may
- * respond simultaenously to the same request and the output will not be readable by the
- * Arduino.
- *
- * To address a sensor, please see Example B: b_address_change.ino
+ * It discovers the address of all sensors active on a single bus and takes continuous
+ * measurements from them.
  */
 
 #include <SDI12.h>
@@ -100,7 +90,7 @@ void printInfo(char i) {
   Serial.print(", ");
 }
 
-bool getResults(char i, int resultsExpected) {
+bool getContinuousResults(char i, int resultsExpected) {
   uint8_t resultsReceived = 0;
   uint8_t cmd_number      = 0;
   while (resultsReceived < resultsExpected && cmd_number <= 9) {
@@ -108,7 +98,7 @@ bool getResults(char i, int resultsExpected) {
     // in this example we will only take the 'DO' measurement
     command = "";
     command += i;
-    command += "D";
+    command += "R";
     command += cmd_number;
     command += "!";  // SDI-12 command to get data [address][D][dataOption][!]
     mySDI12.sendCommand(command);
@@ -139,54 +129,6 @@ bool getResults(char i, int resultsExpected) {
   mySDI12.clearBuffer();
 
   return resultsReceived == resultsExpected;
-}
-
-bool takeMeasurement(char i, String meas_type = "") {
-  mySDI12.clearBuffer();
-  String command = "";
-  command += i;
-  command += "M";
-  command += meas_type;
-  command += "!";  // SDI-12 measurement command format  [address]['M'][!]
-  mySDI12.sendCommand(command);
-  delay(100);
-
-  // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of
-  // measurments available, 0-9]
-  String sdiResponse = mySDI12.readStringUntil('\n');
-  sdiResponse.trim();
-
-  String addr = sdiResponse.substring(0, 1);
-  Serial.print(addr);
-  Serial.print(", ");
-
-  // find out how long we have to wait (in seconds).
-  uint8_t wait = sdiResponse.substring(1, 4).toInt();
-  Serial.print(wait);
-  Serial.print(", ");
-
-  // Set up the number of results to expect
-  int numResults = sdiResponse.substring(4).toInt();
-  Serial.print(numResults);
-  Serial.print(", ");
-
-  unsigned long timerStart = millis();
-  while ((millis() - timerStart) < (1000 * (wait + 1))) {
-    if (mySDI12.available())  // sensor can interrupt us to let us know it is done early
-    {
-      Serial.print(millis() - timerStart);
-      Serial.print(", ");
-      mySDI12.clearBuffer();
-      break;
-    }
-  }
-  // Wait for anything else and clear it out
-  delay(30);
-  mySDI12.clearBuffer();
-
-  if (numResults > 0) { return getResults(i, numResults); }
-
-  return true;
 }
 
 // this checks for activity at a particular address
@@ -262,20 +204,17 @@ void setup() {
 }
 
 void loop() {
-  String commands[] = {"", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-  for (uint8_t a = 0; a < 3; a++) {
-    // measure one at a time
-    for (byte i = 0; i < 62; i++) {
-      char addr = decToChar(i);
-      if (isActive[i]) {
-        // Serial.print(millis() / 1000);
-        Serial.print(millis());
-        Serial.print(", ");
-        takeMeasurement(addr, commands[a]);
-        Serial.println();
-      }
+  // measure one at a time
+  for (byte i = 0; i < 62; i++) {
+    char addr = decToChar(i);
+    if (isActive[i]) {
+      // Serial.print(millis() / 1000);
+      Serial.print(millis());
+      Serial.print(", ");
+      getContinuousResults(addr, 4);
+      Serial.println();
     }
   }
 
-  delay(10000L);  // wait ten seconds between measurement attempts.
+  delay(5000L);  // wait ten seconds between measurement attempts.
 }
