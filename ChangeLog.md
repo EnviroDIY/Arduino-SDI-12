@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ****
 
-## v2.1.3 (2021-03-24) [Patches for ATTiny](https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.1.1)
+## v2.1.3 (2021-03-24) [Migrate to GitHub Actions](https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.1.3)
 
 ### Improvements
 - Migrate from Travis to GitHub actions

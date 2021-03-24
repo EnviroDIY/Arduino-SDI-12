@@ -78,7 +78,7 @@ jobs:
         env:
           TRAVIS_BUILD_DIR: ${{ github.workspace }}
         run: |
-          cd ${{ github.workspace }}/code_docs/ModularSensors/
+          cd ${{ github.workspace }}/code_docs/Arduino-SDI-12/
           chmod +x continuous_integration/build-install-doxygen.sh
           sh continuous_integration/build-install-doxygen.sh
 
@@ -98,7 +98,7 @@ jobs:
         env:
           TRAVIS_BUILD_DIR: ${{ github.workspace }}
         run: |
-          cd ${{ github.workspace }}/code_docs/ModularSensors/
+          cd ${{ github.workspace }}/code_docs/Arduino-SDI-12/
           chmod +x continuous_integration/generate-documentation.sh
           sh continuous_integration/generate-documentation.sh
 
@@ -106,4 +106,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ github.workspace }}/code_docs/ModularSensorsDoxygen/m.css
+          publish_dir: ${{ github.workspace }}/code_docs/Arduino-SDI-12Doxygen/m.css
