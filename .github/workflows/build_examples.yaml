@@ -78,7 +78,8 @@ jobs:
         env:
           PLATFORMIO_CI_SRC: ${{ matrix.example }}
         run: |
-          platformio lib --global update
           echo "${{ env.LIBRARY_INSTALL_SOURCE }}"
+          pio lib --global install ${{ env.LIBRARY_INSTALL_SOURCE }}
           pio lib --global install EnableInterrupt
+          platformio lib --global update
           platformio ci --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560
