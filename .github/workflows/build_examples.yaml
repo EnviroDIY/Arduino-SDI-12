@@ -65,23 +65,23 @@ jobs:
           pip install --upgrade platformio
 
       - name: Run PlatformIO
-        if:  matrix.example != 'examples/k_concurrent_logger/'
+        if:  matrix.example != 'examples/j_external_pcint_library/'
         env:
           PLATFORMIO_CI_SRC: ${{ matrix.example }}
         run: |
           echo "${{ env.LIBRARY_INSTALL_SOURCE }}"
           pio lib --global install ${{ env.LIBRARY_INSTALL_SOURCE }}
           pio lib --global install EnableInterrupt
-          platformio lib --global update
           platformio ci --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560 --board=huzzah --board=featheresp32
+          pio lib --global uninstall SDI-12
 
       - name: Run PlatformIO
-        if: matrix.example == 'examples/k_concurrent_logger/'
+        if: matrix.example == 'examples/j_external_pcint_library/'
         env:
           PLATFORMIO_CI_SRC: ${{ matrix.example }}
         run: |
           echo "${{ env.LIBRARY_INSTALL_SOURCE }}"
           pio lib --global install ${{ env.LIBRARY_INSTALL_SOURCE }}
           pio lib --global install EnableInterrupt
-          platformio lib --global update
           platformio ci --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560
+          pio lib --global uninstall SDI-12
