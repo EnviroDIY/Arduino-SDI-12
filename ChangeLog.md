@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ****
 
+## v2.1.4 (2021-05-05) [Revert wake delay to 0ms](https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.1.4)
+
+### Possibly breaking changes
+- Reverted the default wake delay to 0ms.
+  - In 92055d377b26fa862c43d1429de1ccbef054af01 this was bumped up to 10ms, which caused problems for several people.
+  - The delay can now also be set using the build flag `-D SDI12_WAKE_DELAY=#`
+
 ## v2.1.3 (2021-03-24) [Migrate to GitHub Actions](https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.1.3)
 
 ### Improvements

@@ -30,10 +30,10 @@
 #define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
 #define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
 #define FIRST_ADDRESS 0
-#define LAST_ADDRESS 1  // 62
+#define LAST_ADDRESS 6  // 62
 #define WAKE_DELAY 0    /*!< The extra time needed for the board to wake. */
 #define COMMANDS_TO_TEST \
-  10 /*!< The number of measurement commands to test, between 1 and 10. */
+  2 /*!< The number of measurement commands to test, between 1 and 11. */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(DATA_PIN);
@@ -41,7 +41,7 @@ SDI12 mySDI12(DATA_PIN);
 /// variable that alternates output type back and forth between parsed and raw
 boolean flip = 0;
 
-String commands[] = {"2", "2", "2", "2", "2", "2", "2", "2", "", "1", "3", "4", "5", "6", "7", "8", "9"};
+String commands[] = {"","0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
 // keeps track of active addresses
 bool isActive[LAST_ADDRESS - FIRST_ADDRESS] = {
@@ -425,7 +425,7 @@ String takeMeasurement(char i, String meas_type = "", bool printCommands = true)
   mySDI12.clearBuffer();
 
   // return getResults(i, numResults,printCommands);
-  String res= getStringResults(i, numResults, printCommands);
+  String res = getStringResults(i, numResults, printCommands);
   Serial.print("Result: ");
   Serial.println(res);
   return res;
@@ -529,9 +529,9 @@ void setup() {
 }
 
 void loop() {
-  flip = !flip;  // flip the switch between concurrent and not
+  // flip = !flip;  // flip the switch between concurrent and not
   // flip = 1;
-  // flip           = 0;
+  flip           = 0;
   uint32_t start = millis();
   Serial.print("Flip: ");
   Serial.println(flip);
@@ -559,8 +559,11 @@ void loop() {
       if (isActive[i]) {
         for (uint8_t a = 0; a < COMMANDS_TO_TEST; a++) {
           Serial.print("Command ");
-          Serial.println(commands[a]);
-          this_result[i] = takeMeasurement(addr, commands[a], false);
+          Serial.print(i);
+          Serial.print("M");
+          Serial.print(commands[a]);
+          Serial.println('!');
+          this_result[i] = takeMeasurement(addr, commands[a], true);
         }
         // getContinuousResults(addr, 3);
         Serial.println();
@@ -570,19 +573,24 @@ void loop() {
     Serial.println(millis() - start);
   } else {
     for (uint8_t a = 0; a < COMMANDS_TO_TEST; a++) {
-      Serial.print("Command ");
-      Serial.println(commands[a]);
-      uint8_t   min_wait  = 127;
-      uint8_t   max_wait  = 0;
+      uint8_t  min_wait  = 127;
+      uint8_t  max_wait  = 0;
       uint32_t for_start = millis();
       // start all sensors measuring concurrently
       for (byte i = FIRST_ADDRESS; i < LAST_ADDRESS; i++) {
         char addr = decToChar(i);
-        if (isActive[i]) { startConcurrentMeasurement(addr, commands[a], false); }
+        if (isActive[i]) {
+          Serial.print("Command ");
+          Serial.print(i);
+          Serial.print("C");
+          Serial.print(commands[a]);
+          Serial.println('!');
+          startConcurrentMeasurement(addr, commands[a], true);
+        }
         if (waitTime[i] < min_wait) { min_wait = waitTime[i]; }
         if (waitTime[i] > max_wait) { max_wait = waitTime[i]; }
       }
-      min_wait = max(0, (min_wait - 1) / 2);
+      min_wait = max(1, (min_wait - 1) / 2);
       max_wait = max(1, max_wait + 1);
       // Serial.print("minimum expected wait: ");
       // Serial.println(min_wait);
@@ -604,7 +612,7 @@ void loop() {
             // if (millis() > millisReady[i]) {
             // if (millis() > millisStarted[i] + a) {
             if (returnedResults[i] > 0) {
-              this_result[i] = getStringResults(addr, returnedResults[i], false);
+              this_result[i] = getStringResults(addr, returnedResults[i], true);
               // if (this_result[i] != "") {
               // Serial.print("timeWaited: ");
               // Serial.print(timeWaited);

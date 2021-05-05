@@ -137,6 +137,16 @@ typedef const __FlashStringHelper* FlashString;
 /// a char not found in a valid ASCII numeric field
 #define NO_IGNORE_CHAR '\x01'
 
+#ifndef SDI12_WAKE_DELAY
+/**
+ * @brief The amount of additional time in milliseconds that the sensor takes to wake
+ * before being ready to receive a command.  Default is 0ms - meaning the sensor is
+ * ready for a command by the end of the 12ms break.  Per protocol, the wake time must
+ * be less than 100 ms.
+ */
+#define SDI12_WAKE_DELAY 0
+#endif
+
 #ifndef SDI12_BUFFER_SIZE
 /**
  * @brief The buffer size for incoming SDI-12 data.
@@ -894,11 +904,11 @@ class SDI12 : public Stream {
    * the sensor is ready for a command by the end of the 12ms break.  Per protocol, the
    * wake time must be less than 100 ms.
    */
-  void sendCommand(String& cmd, int8_t extraWakeTime = 10);
+  void sendCommand(String& cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
   /// @copydoc SDI12::sendCommand(String&, int8_t)
-  void sendCommand(const char* cmd, int8_t extraWakeTime = 10);
+  void sendCommand(const char* cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
   /// @copydoc SDI12::sendCommand(String&, int8_t)
-  void sendCommand(FlashString cmd, int8_t extraWakeTime = 10);
+  void sendCommand(FlashString cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
 
   /**
    * @brief Send a response out on the data line (for slave use)
