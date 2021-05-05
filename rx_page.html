@@ -1349,14 +1349,14 @@
 <span class="o">-------------|-----------------------------------</span>
      <span class="nl">rxMask</span><span class="p">:</span> <span class="o">|</span>     <span class="mi">1</span>   <span class="mi">0</span>   <span class="mi">0</span>   <span class="mi">0</span>   <span class="mi">0</span>   <span class="mi">0</span>   <span class="mi">0</span>   <span class="mi">0</span>
     <span class="nl">rxState</span><span class="p">:</span> <span class="o">|</span>     <span class="mi">1</span>   <span class="mi">1</span>   <span class="mi">1</span>   <span class="mi">1</span>   <span class="mi">1</span>   <span class="mi">1</span>   <span class="mi">1</span>   <span class="mi">1</span></pre></section></section><section id="rx_fxn"><h2>The Full Interrupt Function</h2><p>Understanding how the masking creates the character, you should now be able to follow the full interrupt function below.</p><pre class="m-code"><span class="c1">// Creates a blank slate of bits for an incoming character</span>
-<span class="kt">void</span> <span class="n">SDI12</span><span class="o">::</span><span class="n">startChar</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">void</span> <span class="nf">SDI12::startChar</span><span class="p">()</span> <span class="p">{</span>
   <span class="n">rxState</span> <span class="o">=</span> <span class="mh">0x00</span><span class="p">;</span>  <span class="c1">// 0b00000000, got a start bit</span>
   <span class="n">rxMask</span>  <span class="o">=</span> <span class="mh">0x01</span><span class="p">;</span>  <span class="c1">// 0b00000001, bit mask, lsb first</span>
   <span class="n">rxValue</span> <span class="o">=</span> <span class="mh">0x00</span><span class="p">;</span>  <span class="c1">// 0b00000000, RX character to be, a blank slate</span>
 <span class="p">}</span>  <span class="c1">// startChar</span>
 
 <span class="c1">// The actual interrupt service routine</span>
-<span class="kt">void</span> <span class="n">SDI12</span><span class="o">::</span><span class="n">receiveISR</span><span class="p">()</span> <span class="p">{</span>
+<span class="kt">void</span> <span class="nf">SDI12::receiveISR</span><span class="p">()</span> <span class="p">{</span>
   <span class="c1">// time of this data transition (plus ISR latency)</span>
   <span class="n">sdi12timer</span><span class="o">-</span><span class="n">t</span> <span class="n">thisBitTCNT</span> <span class="o">=</span> <span class="n">READTIME</span><span class="p">;</span>
 
@@ -1462,7 +1462,7 @@
 <span class="p">}</span>
 
 <span class="c1">// Put a new character in the buffer</span>
-<span class="kt">void</span> <span class="n">SDI12</span><span class="o">::</span><span class="n">charToBuffer</span><span class="p">(</span><span class="n">uint8</span><span class="o">-</span><span class="n">t</span> <span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+<span class="kt">void</span> <span class="nf">SDI12::charToBuffer</span><span class="p">(</span><span class="n">uint8</span><span class="o">-</span><span class="n">t</span> <span class="n">c</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">// Check for a buffer overflow. If not, proceed.</span>
   <span class="k">if</span> <span class="p">((</span><span class="o">-</span><span class="n">rxBufferTail</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">SDI12</span><span class="o">-</span><span class="n">BUFFER</span><span class="o">-</span><span class="n">SIZE</span> <span class="o">==</span> <span class="o">-</span><span class="n">rxBufferHead</span><span class="p">)</span> <span class="p">{</span>
     <span class="o">-</span><span class="n">bufferOverflow</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
