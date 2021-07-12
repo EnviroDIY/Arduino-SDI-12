@@ -909,6 +909,12 @@ class SDI12 : public Stream {
   void sendCommand(const char* cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
   /// @copydoc SDI12::sendCommand(String&, int8_t)
   void sendCommand(FlashString cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
+ #ifdef USE_CRC
+  String addCRCResponse(String &resp);     // Add CRC to the  resp  string (for slave use)
+  char * addCRCResponse( char *resp);      // Add CRC to the  resp  string (for slave use)
+  String addCRCResponse(FlashString resp); // Add CRC to the  resp  string (for slave use)
+  String calculateCRC(String &resp);       // Calculate the CRC for a response
+ #endif
 
   /**
    * @brief Send a response out on the data line (for slave use)
