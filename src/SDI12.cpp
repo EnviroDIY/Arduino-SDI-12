@@ -848,7 +848,8 @@ void SDI12::sendResponse(FlashString resp) {
   }
   setState(SDI12_LISTENING);      // return to listening state
 }
-ifdef USE_CRC
+
+#ifdef USE_CRC
 #define POLY 0xa001
 String SDI12::addCRCResponse(String &resp) {
   char  crcStr[3] = {0};
@@ -857,12 +858,12 @@ String SDI12::addCRCResponse(String &resp) {
   for(int i = 0; i < resp.length(); i++) {
     crc ^= (uint16_t)resp[i];     //Set the CRC equal to the exclusive OR of the character and itself
     for (int j = 0; j <  8; j++){ //count = 1 to 8
-      if (crc & 0x0001){         //if the least significant bit of the CRC is one
-         crc >>= 1;              //right shift the CRC one bit
-         crc ^= POLY;            //set CRC equal to the exclusive OR of POLY and itself
+      if (crc & 0x0001){          //if the least significant bit of the CRC is one
+        crc >>= 1;                //right shift the CRC one bit
+        crc ^= POLY;              //set CRC equal to the exclusive OR of POLY and itself
       }
       else {
-         crc >>=  1;             //right shift the CRC one bit
+        crc >>=  1;               //right shift the CRC one bit
       }
     }
   }
@@ -873,15 +874,15 @@ String SDI12::addCRCResponse(String &resp) {
 }
 
 char * SDI12::addCRCResponse(char *resp) {
-  char *crcStr  = "\0";
-  uint16_t crc   = 0;
+  char *crcStr[3] = {0};
+  uint16_t crc    = 0;
 
   for(int i = 0; i < strlen(resp); i++) {
     crc ^= (uint16_t)resp[i];     //Set the CRC equal to the exclusive OR of the character and itself
     for (int j = 0; j <  8; j++){ //count = 1 to 8
-      if (crc & 0x0001){         //if the least significant bit of the CRC is one
-         crc >>= 1;              //right shift the CRC one bit
-         crc ^= POLY;            //set CRC equal to the exclusive OR of POLY and itself
+      if (crc & 0x0001){          //if the least significant bit of the CRC is one
+        crc >>= 1;                //right shift the CRC one bit
+        crc ^= POLY;              //set CRC equal to the exclusive OR of POLY and itself
       }
       else {
         crc >>=  1;             //right shift the CRC one bit
@@ -923,6 +924,29 @@ String SDI12::addCRCResponse(FlashString resp) {
   crcStr[2] = (char)( 0x0040 |  (crc & 0x003F));
   return (outResp  + String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
 }
+
+String SDI12::calculateCRC(String &resp){
+   char  crcStr[3] = {0};
+   uint16_t crc    = 0;
+
+   for(int i = 0; i < resp.length(); i++) {
+      crc ^= (uint16_t)resp[i];     //Set the CRC equal to the exclusive OR of the character and itself
+      for (int j = 0; j <  8; j++){ //count = 1 to 8
+         if (crc & 0x0001){         //if the least significant bit of the CRC is one
+            crc >>= 1;              //right shift the CRC one bit
+            crc ^= POLY;            //set CRC equal to the exclusive OR of POLY and itself
+         }
+         else {
+            crc >>=  1;             //right shift the CRC one bit
+         }
+      }
+   }
+   crcStr[0] = (char)( 0x0040 |  (crc >> 12));
+   crcStr[1] = (char)( 0x0040 | ((crc >> 6) & 0x003F));
+   crcStr[2] = (char)( 0x0040 |  (crc & 0x003F));
+   return (String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
+}
+
 #endif //USE_CRC
 
 

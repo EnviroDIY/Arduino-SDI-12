@@ -51,6 +51,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 typedef const __FlashStringHelper *FlashString;
 
+
+//#define USE_CRC
+
 #define NO_IGNORE_CHAR '\x01' // a char not found in a valid ASCII numeric field
 #define SDI12_BUFFER_SIZE  81 // <address> is a single character
                               // +<values> has a maximum value of 75 characters.
@@ -65,6 +68,7 @@ enum LookaheadMode
   SKIP_NONE,      // Nothing is skipped, and the stream is not touched unless the first waiting character is valid.
   SKIP_WHITESPACE // Only tabs, spaces, line feeds & carriage returns are skipped.
 };
+
 #define READTIME sdi12timer.SDI12TimerRead()
 #else
 #define READTIME TCNTX
@@ -134,6 +138,7 @@ public:
   String addCRCResponse(String &resp);     // Add CRC to the  resp  string (for slave use)
   char * addCRCResponse( char *resp);      // Add CRC to the  resp  string (for slave use)
   String addCRCResponse(FlashString resp); // Add CRC to the  resp  string (for slave use)
+  String calculateCRC(String &resp);       // Calculate the CRC for a response
  #endif
 
   int available();            // returns the number of bytes available in buffer
