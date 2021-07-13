@@ -228,7 +228,7 @@ SDI12Timer::SDI12Timer(){}
 
     void SDI12Timer::configSDI12TimerPrescale(void)  {  }
     void SDI12Timer::resetSDI12TimerPrescale(void)   {  }
-    sdi12timer_t SDI12Timer::SDI12TimerRead(void)
+    sdi12timer_t USE_INSTRUCTION_RAM SDI12Timer::SDI12TimerRead(void)
     {
         // Its a one microsecond clock but we want 64uS ticks so divide by 64 i.e. right shift 6
         return((sdi12timer_t) (micros() >> 6));

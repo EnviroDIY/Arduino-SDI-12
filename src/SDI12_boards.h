@@ -14,6 +14,14 @@ sensors. This library provides a general software solution, without requiring
   typedef uint8_t sdi12timer_t;
 #endif
 
+#if defined(ESP32)
+#define USE_INSTRUCTION_RAM IRAM_ATTR
+#elif defined(ESP8266)
+#define USE_INSTRUCTION_RAM  ICACHE_RAM_ATTR
+#else
+#define USE_INSTRUCTION_RAM
+#endif
+
 class SDI12Timer
 {
 public:
