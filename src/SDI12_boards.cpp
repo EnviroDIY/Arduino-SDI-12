@@ -262,6 +262,7 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   while (GCLK->STATUS.bit.SYNCBUSY) {}     // Wait for synchronization
 }
 
+<<<<<<< Upstream, based on fd9699b390edeac3a8681e2a6d4fe2ba8b1f9a51
 // Espressif ESP32/ESP8266 boards
 //
 #elif defined(ESP32) || defined(ESP8266)
@@ -273,6 +274,15 @@ sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
   // 6
   return ((sdi12timer_t)(micros() >> 6));
 }
+=======
+    void SDI12Timer::configSDI12TimerPrescale(void)  {  }
+    void SDI12Timer::resetSDI12TimerPrescale(void)   {  }
+    sdi12timer_t USE_INSTRUCTION_RAM SDI12Timer::SDI12TimerRead(void)
+    {
+        // Its a one microsecond clock but we want 64uS ticks so divide by 64 i.e. right shift 6
+        return((sdi12timer_t) (micros() >> 6));
+    }
+>>>>>>> f543a69 [Issue #79] ESP32- Core panic when using in conjunction with the "preferences" library.
 // Unknown board
 #else
 #error "Please define your board timer and pins"

@@ -652,25 +652,19 @@ String SDI12::calculateCRC(String &resp){
 
 // Passes off responsibility for the interrupt to the active object.
 // On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
-#if defined(ESP32) || defined(ESP8266)
-void ICACHE_RAM_ATTR SDI12::handleInterrupt() {
+void USE_INSTRUCTION_RAM SDI12::handleInterrupt(){
   if (_activeObject) _activeObject->receiveISR();
 }
-#else
-void SDI12::handleInterrupt() {
-  if (_activeObject) _activeObject->receiveISR();
-}
-#endif
 
 // Creates a blank slate of bits for an incoming character
-void SDI12::startChar() {
+void USE_INSTRUCTION_RAM SDI12::startChar() {
   rxState = 0x00;  // 0b00000000, got a start bit
   rxMask  = 0x01;  // 0b00000001, bit mask, lsb first
   rxValue = 0x00;  // 0b00000000, RX character to be, a blank slate
 }  // startChar
 
 // The actual interrupt service routine
-void SDI12::receiveISR() {
+void USE_INSTRUCTION_RAM SDI12::receiveISR() {
   // time of this data transition (plus ISR latency)
   sdi12timer_t thisBitTCNT = READTIME;
 

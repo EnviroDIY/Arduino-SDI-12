@@ -26,6 +26,14 @@ typedef uint32_t sdi12timer_t;
 typedef uint8_t sdi12timer_t;
 #endif
 
+#if defined(ESP32)
+#define USE_INSTRUCTION_RAM IRAM_ATTR
+#elif defined(ESP8266)
+#define USE_INSTRUCTION_RAM  ICACHE_RAM_ATTR
+#else
+#define USE_INSTRUCTION_RAM
+#endif
+
 /**
  * @brief The class used to define the processor timer for the SDI-12 serial emulation.
  */
