@@ -26,6 +26,7 @@ typedef uint32_t sdi12timer_t;
 typedef uint8_t sdi12timer_t;
 #endif
 
+// On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
 #if defined(ESP32)
 #define USE_INSTRUCTION_RAM IRAM_ATTR
 #elif defined(ESP8266)
