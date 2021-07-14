@@ -15,11 +15,11 @@ sensors. This library provides a general software solution, without requiring
 #endif
 
 #if defined(ESP32)
-#define USE_INSTRUCTION_RAM IRAM_ATTR
+#define ESPFAMILY_USE_INSTRUCTION_RAM IRAM_ATTR
 #elif defined(ESP8266)
-#define USE_INSTRUCTION_RAM  ICACHE_RAM_ATTR
+#define ESPFAMILY_USE_INSTRUCTION_RAM  ICACHE_RAM_ATTR
 #else
-#define USE_INSTRUCTION_RAM
+#define ESPFAMILY_USE_INSTRUCTION_RAM
 #endif
 
 class SDI12Timer

@@ -52,7 +52,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 typedef const __FlashStringHelper *FlashString;
 
 
-//#define USE_CRC
+//#define ENVIRODIY_SDI12_USE_CRC
 
 #define NO_IGNORE_CHAR '\x01' // a char not found in a valid ASCII numeric field
 #define SDI12_BUFFER_SIZE  81 // <address> is a single character
@@ -134,7 +134,7 @@ public:
   void sendResponse(String &resp);      // sends the String resp out on the data line (for slave use)
   void sendResponse(const char *resp);  // sends the String resp out on the data line (for slave use)
   void sendResponse(FlashString resp);  // sends the String resp out on the data line (for slave use)
- #ifdef USE_CRC
+ #ifdef ENVIRODIY_SDI12_USE_CRC
   String addCRCResponse(String &resp);     // Add CRC to the  resp  string (for slave use)
   char * addCRCResponse( char *resp);      // Add CRC to the  resp  string (for slave use)
   String addCRCResponse(FlashString resp); // Add CRC to the  resp  string (for slave use)

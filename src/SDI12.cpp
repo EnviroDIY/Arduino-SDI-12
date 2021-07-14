@@ -849,7 +849,7 @@ void SDI12::sendResponse(FlashString resp) {
   setState(SDI12_LISTENING);      // return to listening state
 }
 
-#ifdef USE_CRC
+#ifdef ENVIRODIY_SDI12_USE_CRC
 #define POLY 0xa001
 String SDI12::addCRCResponse(String &resp) {
   char  crcStr[3] = {0};
@@ -889,7 +889,7 @@ char * SDI12::addCRCResponse(char *resp) {
       }
     }
   }
-  crcStr[0] = (char)( 0x0040 |  (crc >> 12));
+
   crcStr[1] = (char)( 0x0040 | ((crc >> 6) & 0x003F));
   crcStr[2] = (char)( 0x0040 |  (crc & 0x003F));
   return (strncat(resp, crcStr,3));
@@ -947,7 +947,7 @@ String SDI12::calculateCRC(String &resp){
    return (String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
 }
 
-#endif //USE_CRC
+#endif //ENVIRODIY_SDI12_USE_CRC
 
 
 /* ============== 7. Interrupt Service Routine  ===================
@@ -979,12 +979,12 @@ takes to either a HIGH vs a LOW, and helps maintain a constant timing.
 the ISR is instructed to call handleInterrupt() when they trigger. */
 
 // 7.1 - Passes off responsibility for the interrupt to the active object.
-void USE_INSTRUCTION_RAM SDI12::handleInterrupt(){
+void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::handleInterrupt(){
   if (_activeObject) _activeObject->receiveISR();
 }
 
 // 7.2 - Creates a blank slate of bits for an incoming character
-void USE_INSTRUCTION_RAM SDI12::startChar()
+void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::startChar()
 {
   rxState = 0;           // got a start bit
   rxMask  = 0x01;  // 0b00000001, bit mask, lsb first
@@ -992,7 +992,7 @@ void USE_INSTRUCTION_RAM SDI12::startChar()
 } // startChar
 
 // 7.3 - The actual interrupt service routine
-void USE_INSTRUCTION_RAM SDI12::receiveISR()
+void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::receiveISR()
 {
 
   sdi12timer_t thisBitTCNT = READTIME;       // time of this data transition (plus ISR latency)
