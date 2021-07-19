@@ -266,12 +266,13 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 //
 #elif defined(ESP32) || defined(ESP8266)
 
-void         SDI12Timer::configSDI12TimerPrescale(void) {}
-void         SDI12Timer::resetSDI12TimerPrescale(void) {}
-sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
-  // Its a one microsecond clock but we want 64uS ticks so divide by 64 i.e. right shift
-  // 6
-  return ((sdi12timer_t)(micros() >> 6));
+void SDI12Timer::configSDI12TimerPrescale(void) {}
+void SDI12Timer::resetSDI12TimerPrescale(void) {}
+
+sdi12timer_t ESPFAMILY_USE_INSTRUCTION_RAM SDI12Timer::SDI12TimerRead(void)
+{
+   // Its a one microsecond clock but we want 64uS ticks so divide by 64 i.e. right shift 6
+   return ((sdi12timer_t)(micros() >> 6));
 }
 // Unknown board
 #else

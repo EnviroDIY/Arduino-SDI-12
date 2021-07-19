@@ -19,9 +19,13 @@ sensors. This library provides a general software solution, without requiring
 #include <Arduino.h>
 
 #if defined(ESP32) || defined(ESP8266)
+// On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
+#define ESPFAMILY_USE_INSTRUCTION_RAM IRAM_ATTR
 /** The interger type (size) of the timer return value */
 typedef uint32_t sdi12timer_t;
+
 #else
+#define ESPFAMILY_USE_INSTRUCTION_RAM
 /** The interger type (size) of the timer return value */
 typedef uint8_t sdi12timer_t;
 #endif
