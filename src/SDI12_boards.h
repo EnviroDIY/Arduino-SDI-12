@@ -19,22 +19,16 @@ sensors. This library provides a general software solution, without requiring
 #include <Arduino.h>
 
 #if defined(ESP32) || defined(ESP8266)
+// On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
+#define ESPFAMILY_USE_INSTRUCTION_RAM IRAM_ATTR
 /** The interger type (size) of the timer return value */
 typedef uint32_t sdi12timer_t;
+
 #else
+#define ESPFAMILY_USE_INSTRUCTION_RAM
 /** The interger type (size) of the timer return value */
 typedef uint8_t sdi12timer_t;
 #endif
-
-// On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
-#if defined(ESP32)
-#define ESPFAMILY_USE_INSTRUCTION_RAM IRAM_ATTR
-#elif defined(ESP8266)
-#define ESPFAMILY_USE_INSTRUCTION_RAM  ICACHE_RAM_ATTR
-#else
-#define ESPFAMILY_USE_INSTRUCTION_RAM
-#endif
-
 
 /**
  * @brief The class used to define the processor timer for the SDI-12 serial emulation.
