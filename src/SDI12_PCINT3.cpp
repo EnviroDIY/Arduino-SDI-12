@@ -696,7 +696,7 @@ void SDI12::charToBuffer(uint8_t c) {
 #ifdef SDI12_EXTERNAL_PCINT
 // Client code must call SDI12::handleInterrupt() in PCINT handler for the data pin
 #else
-
+/*
 #if defined(PCINT0_vect)
 ISR(PCINT0_vect) {
   SDI12::handleInterrupt();
@@ -714,7 +714,7 @@ ISR(PCINT2_vect) {
   SDI12::handleInterrupt();
 }
 #endif
-
+*/
 #if defined(PCINT3_vect)
 ISR(PCINT3_vect) {
   SDI12::handleInterrupt();
