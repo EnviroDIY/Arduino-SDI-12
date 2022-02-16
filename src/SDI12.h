@@ -938,7 +938,7 @@ class SDI12 : public Stream {
    * @see For a detailed explanation of interrupts see @ref interrupts_page
    */
   /**@{*/
- private:
+ protected:
   /**
    * @brief Creates a blank slate for a new incoming character
    */
@@ -957,7 +957,7 @@ class SDI12 : public Stream {
    * person, that 8.33ms is trivial, but for even a "slow" 8MHz processor, that's over
    * 60,000 ticks sitting idle per character.
    */
-  void receiveISR();
+  virtual void receiveISR();
   /**
    * @brief Put a finished character into the SDI12 buffer
    *

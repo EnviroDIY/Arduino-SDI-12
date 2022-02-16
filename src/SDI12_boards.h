@@ -86,8 +86,20 @@ class SDI12Timer {
  * The register used to access the timer/counter value is TCNT2
  */
 #define TCNTX TCNT2  // Using Timer 2
+/**
+ * @brief The c macro name for the assembly interrupt flag register
+ */
+#define TIFRX TIFR2  // Using Timer 2
+/**
+ * @brief The c macro name for the assembly timer overflow flag bit
+ */
+#define TOVX TOV2  // Using Timer 2
 
 #if F_CPU == 16000000L
+/**
+ * @brief Prescaler value in use.
+ */
+#define PRESCALE_IN_USE 1024
 /**
  * @brief A string description of the prescaler in use.
  */
@@ -120,6 +132,10 @@ class SDI12Timer {
 
 #elif F_CPU == 12000000L
 /**
+ * @brief Prescaler value in use.
+ */
+#define PRESCALE_IN_USE 1024
+/**
  * @brief A string description of the prescaler in use.
  */
 #define PRESCALE_IN_USE_STR "1024"
@@ -150,6 +166,10 @@ class SDI12Timer {
 #define RX_WINDOW_FUDGE 2
 
 #elif F_CPU == 8000000L
+/**
+ * @brief Prescaler value in use.
+ */
+#define PRESCALE_IN_USE 256
 /**
  * @brief A string description of the prescaler in use.
  */
@@ -213,6 +233,10 @@ class SDI12Timer {
 
 #if F_CPU == 16000000L
 /**
+ * @brief Prescaler value in use.
+ */
+#define PRESCALE_IN_USE 1024
+/**
  * @brief A string description of the prescaler in use.
  */
 #define PRESCALE_IN_USE_STR "1024"
@@ -243,6 +267,13 @@ class SDI12Timer {
 #define RX_WINDOW_FUDGE 2
 
 #elif F_CPU == 8000000L
+/**
+ * @brief Prescaler value in use.
+ */
+#define PRESCALE_IN_USE 512
+/**
+ * @brief A string description of the prescaler in use.
+ */
 #define PRESCALE_IN_USE_STR "512"
 /**
  * @brief The number of "ticks" of the timer that occur within the timing of one bit at
@@ -310,6 +341,10 @@ class SDI12Timer {
 
 #if F_CPU == 16000000L
 /**
+ * @brief Prescaler value in use.
+ */
+#define PRESCALE_IN_USE 1024
+/**
  * @brief A string description of the prescaler in use.
  */
 #define PRESCALE_IN_USE_STR "1024"
@@ -341,6 +376,10 @@ class SDI12Timer {
 #define RX_WINDOW_FUDGE 2
 
 #elif F_CPU == 8000000L
+/**
+ * @brief Prescaler value in use.
+ */
+#define PRESCALE_IN_USE 512
 /**
  * @brief A string description of the prescaler in use.
  */
@@ -434,6 +473,10 @@ class SDI12Timer {
 #define TCNTX REG_TC3_COUNT8_COUNT  // Using Timer 3 with generic clock 4
 
 /**
+ * @brief Prescaler value in use.
+ */
+#define PRESCALE_IN_USE (3*1024)
+/**
  * @brief A string description of the prescaler in use.
  */
 #define PRESCALE_IN_USE_STR "3x1024"
@@ -514,5 +557,18 @@ class SDI12Timer {
 #error "Please define your board timer and pins"
 #endif
 };
+
+/**
+ * @brief Calculate TCNTX tick period in microseconds.
+ * @return Microseconds per tick.
+ */
+#define SDI12_CLOCK_PERIOD_MICROS() ( PRESCALE_IN_USE / clockCyclesPerMicrosecond() )
+
+/**
+ * @brief Convert TCNTX ticks to microseconds.
+ * @param[in] ticks_ TCNTX ticks count.
+ * @return Elapsed microseconds.
+ */
+#define SDI12_TCNT_TO_MICROSECONDS(ticks_) ( (ticks_) * SDI12_CLOCK_PERIOD_MICROS() )
 
 #endif  // SRC_SDI12_BOARDS_H_
