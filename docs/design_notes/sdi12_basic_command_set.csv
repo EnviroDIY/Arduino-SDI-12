@@ -1,0 +1,31 @@
+SDI12 basic and extended command set minimum support by version
+minimum version,command, response, rules, description
+
+1.0,  a!,	a<CR><LF>,
+1.0,  aI!,	allccccccccmmmmmmvvvx...x[13]<CR><LF>,
+1.0,  aM!,	atttn<CR><LF>,  abort measurement if receive break before sending service request (max <value> len 35); sends service request when ready,
+1.0,  aM1~9!,	atttn<CR><LF>,  ttt=000 n=0 if unable to log data for measurement group
+1.0,  aD0~9!,	a<value><CR><LF>, used after aM/aMx/aC/aCx/aV command
+1.0,  aV!,	atttn<CR><LF>, standard response not specified; send service request when ready, verification i.e. ROM sig
+
+1.2,  ?!,	a<CR><LF>,
+1.2,  aAb!,	b<CR><LF>, return a<CR><LF> if sensor unable to change address
+1.2,  aC!,	atttnn<CR><LF>, abort if receive valid address (max <value> len 75)
+1.2,  aR0~9!,	a<value><CR><LF>, max <value> len 75
+1.2,  aC1~9!,	atttnn<CR><LF>, ttt=000 n=00 if unable to log data for measurement group
+
+1.3,  aMC! aMC1~9!, atttn<CR><LF>, Adds CRC computation
+1.3,  aVC!, atttn<CR><LF>, standard response not specified Adds CRC computation
+1.3,  aCC! aCC1~9!,	atttnn<CR><LF>, Adds CRC computation
+1.3,  aD0~9!,	a<value><crc><CR><LF>, extended v1.3 used after aMCx/aCCx/aVC command
+1.3,  aRC0~9!,	a<value><crc><CR><LF>, extended v1.2 just with <crc>
+
+1.4,  aHA! aHAC!, atttnnn<CR><LF>,works as concurrent command max <value> 75, High volume ascii measurement
+1.4,  aD0~999!, a<value><crc><CR><LF>, extended from v1.3 used after aHA/aHAC
+1.4,  aHB! aHBC!, atttnnn<CR><LF>, works as concurrent command, High volume binary measurement
+1.4,  aDB0~999!, a<2-byte-psize><1-byte-datatype><packet><2-byte-binary-CRC><CR><LF>, byte frame is 8 databits no parity used after aHB/aHBC; least significant byte transfered first; <packet> <= 1000bytes, high volume binary data request
+1.4,  aDB0~999!, a<value><crc><CR><LF>, for invalid aDBx! a<0x00><0x0><binary-crc><CR><LF> , continue high volume binary data type Table-16 page-26
+1.4,  aIvc! v(M|C|V|HA|HB) c(C) x[0-9], respond as per v() command, means to get response to a command without initating measurement, Metadata commands - Identify measurement
+1.4,  aIvc_x! v(M|C|V|R|HA|HB) c(C) x[0-9], a<field1><field2><field3>;<CR><LF>,a and field is delimiated with comma <field1> recommend SHEF code <field2>=units <field3+>=optional refer to page 29, Metadata commands - Identify measurement
+
+1.x,  aXNNN!,, X=prefix NNN not limited to 3 characters, extended commands no specification
