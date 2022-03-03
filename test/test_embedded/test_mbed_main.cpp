@@ -1,5 +1,6 @@
 #include <unity.h>
 #include "test_dtoa.hpp"
+#include "test_crc.hpp"
 
 // void setUp(void) {
 // // set stuff up here
@@ -18,6 +19,7 @@ void setup() {
     UNITY_BEGIN();
 
     process_dtoa_tests();
+    process_crc_tests();
 
     UNITY_END();
 }
