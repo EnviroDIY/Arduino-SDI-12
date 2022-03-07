@@ -2,7 +2,7 @@
  * @file SDI12Sensor.cpp
  *
  * @brief This file contains the main class for SDI-12 sensor implementation.
- * 
+ *
  * The class provides a general solution for sensor command handling defined by
  * SDI-12 Support Group Specification.
  * https://www.sdi-12.org/specification
@@ -16,6 +16,11 @@
 #include <WString.h>
 
 #include "SDI12Sensor.h"
+
+/* Initialize Static Variables */
+// Pointer reference to last active SDISensor instance
+SDI12Sensor *SDI12Sensor::last_set_active_object_ = nullptr;
+
 
 /**
  * @brief Construct a default SDI12Sensor::SDI12Sensor object.
@@ -56,7 +61,8 @@ SDI12Sensor::SDI12Sensor(const char address) {
  * @see SDI12Sensor(const char address)
  */
 SDI12Sensor::~SDI12Sensor(void) {
-    // Do nothing
+    // Reset active reference if current instance is being destroyed
+    if (IsActive()) { ClearLastActive(); }
 }
 
 
@@ -90,6 +96,82 @@ char SDI12Sensor::Address(void) const {
 }
 
 
+/**
+ * @brief Sets the active state of the current SDI12Sensor instance.
+ *
+ * @param active (optional) defaults: true
+ * @return true SDI12 object active status has changed
+ * @return false SDI12 object active status was the same and not changed
+ */
+bool SDI12Sensor::SetActive(const bool active) {
+    if (last_set_active_object_ != this && active) {
+        last_set_active_object_ = this;
+        active_ = true;
+        return true;
+    } else if (active_ != active) {
+        if (last_set_active_object_ == this && !active) {
+            ClearLastActive();
+        }
+        active_ = active;
+        return true;
+    }
+    return false;
+}
+
+
+/**
+ * @brief Checks if the current SDI12 object instance is set to active.
+ *
+ * @see SetActive(bool)
+ * @see ClearLastActive(void)
+ */
+bool SDI12Sensor::IsActive(void) const {
+  return active_;
+}
+
+
+/**
+ * @brief Get the pointer to last set active mutable SDI12Sensor object.
+ *
+ * @return SDI12Sensor* Pointer reference to  mutable active object, returns @c nullptr if no device is active
+ *
+ * @see SetActive(bool)
+ * @see ClearLastActive(void)
+ */
+SDI12Sensor *SDI12Sensor::LastActive(void) {
+    return last_set_active_object_;
+}
+
+
+/**
+ * @brief Clears the last set active SDI12Sensor object, resets
+ * the @p last_set_active_object_ reference to @c nullptr
+ *
+ * @see IsSetLastActive(void)
+ * @see LastActive(void)
+ * @see SetActive(bool)
+ * @see ClearLastActive(void)
+ */
+void SDI12Sensor::ClearLastActive(void) {
+    last_set_active_object_->active_ = false;
+    last_set_active_object_ = nullptr;
+}
+
+
+/**
+ * @brief Checks if last active SDI12Sensor object is set.
+ *
+ * @return true last_set_active_object_ != nullptr
+ * @return false last_set_active_object_ == nullptr
+ *
+ * @see ClearLastActive(void)
+ * @see LastActive(void)
+ */
+bool SDI12Sensor::IsSetLastActive(void) {
+    return (last_set_active_object_ != nullptr);
+}
+
+
 // void SDI12Sensor::SendSensorAddress() {
 //     char message[5];
 //     sprintf(message, "%c\r\n", sensor_address_);
@@ -107,7 +189,7 @@ char SDI12Sensor::Address(void) const {
 
 /**
  * @brief Counts the length of whole/integral parts of decimal values.
- * 
+ *
  * Integral part is to the left of the decimal point.
  *
  * @param[in] value Floating/Decimal number

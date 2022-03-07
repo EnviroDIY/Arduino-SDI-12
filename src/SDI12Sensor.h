@@ -91,6 +91,8 @@ class SDI12Sensor {
   private:
     /* Interal Variables */
     char sensor_address_;  // Reference to the sensor address, defaults is character '0'
+    bool active_ = false; // Reference to the active state of current device
+    static SDI12Sensor *last_set_active_object_; // Reference to the last set active SDI12Sensor object
 
   public:
     SDI12Sensor(void);  // constructor - without argument, for better library integration
@@ -98,6 +100,11 @@ class SDI12Sensor {
     ~SDI12Sensor(void); // Deconstructor
     bool SetAddress(const char address); // Set sensor address
     char Address(void) const; // Get sensor address
+    bool SetActive(const bool active = true); // Sets SDI12Sensor object active state
+    bool IsActive(void) const; // Return if SDI12Sensor instance active status
+    static SDI12Sensor *LastActive(void); // Get current last set active SDI12Sensor object
+    static void ClearLastActive(void); // Clears the reference to last set active SDI12Sensor object
+    static bool IsSetLastActive(void); // Check if last set active SDI12Sensor instance is set
     //     void SendSensorAddress();
     //     void SendSensorID();
 };
