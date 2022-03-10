@@ -78,6 +78,18 @@ void SDI12Node::ClearLineMarkingReceived(void) {
 
 
 /**
+ * @brief Holds line and marks line for 8.33 milliseconds in preparation for data transmitting.
+ * Does not release data line. Need to call forceListen() to release data line.
+ *
+ * @see forceListen()
+ */
+void SDI12Node::MarkLine(void) {
+    forceHold();
+    delayMicroseconds(SDI12NODE_LINE_MARK_MICROS);  // 8.33 ms marking before response
+};
+
+
+/**
  *
  * @brief Interrupt routine Override of SDI12::receiveISR() to detect line
  * break, line marking and ascii SDI-12 data.

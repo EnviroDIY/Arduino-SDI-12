@@ -41,6 +41,7 @@ class SDI12Node : public SDI12 {
     bool LineBreakReceived(void);
     bool LineMarkReceived(void);
     void ClearLineMarkingReceived(void);
+    void MarkLine(void); // Holds line and mark line in preparation for transmitting.
 
   private:
     void receiveISR(void) override;

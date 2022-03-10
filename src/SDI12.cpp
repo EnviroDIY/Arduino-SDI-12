@@ -103,7 +103,18 @@ int SDI12::available() {
 // reveals the next character in the buffer without consuming
 int SDI12::peek() {
   if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
-  return _rxBuffer[_rxBufferHead];                // Otherwise, read from "head"
+  return _rxBuffer[_rxBufferHead] & 0x7F;         // Otherwise, read from "head", excluding parity bit
+}
+
+/**
+ * @brief Reveals the byte in the buffer without consuming
+ *
+ * @param[in] offset Offset position from the buffer head, offset=0 refers to the buffer head.
+ * @return int - uint8_t representation of byte if valid, -1 if offset is outside buffer range.
+ */
+int SDI12::peekByte(uint8_t offset) {
+  if (_rxBufferHead + offset >= _rxBufferTail) return -1;  // Empty buffer? If yes, -1
+  return (uint8_t)_rxBuffer[_rxBufferHead];       // Otherwise, read from "head"
 }
 
 // a public function that clears the buffer contents and resets the status of the buffer
@@ -119,10 +130,73 @@ int SDI12::read() {
   if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
   uint8_t nextChar = _rxBuffer[_rxBufferHead];    // Otherwise, grab char at head
   _rxBufferHead    = (_rxBufferHead + 1) % SDI12_BUFFER_SIZE;  // increment head
+  return nextChar & 0x7F;                         // return the char, excluding parity bit
+}
+
+/**
+ * @brief Return next byte in the Rx buffer including parity bit, consuming it
+ *
+ * @return @m_span{m-type} int @m_endspan The next byte in the character buffer.
+ *
+ * readByte() returns the character at the current head in the buffer after incrementing
+ * the index of the buffer head. This action 'consumes' the character, meaning it can
+ * not be read from the buffer again. If you would rather see the character, but leave
+ * the index to head intact, you should use peekByte(uint8_t offset);
+ *
+ * @see peekByte(uint8_t offset)
+ * @see readBytes(char *output, size_t length)
+ */
+int SDI12::readByte() {
+  _bufferOverflow = false;                        // Reading makes room in the buffer
+  if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
+  uint8_t nextChar = _rxBuffer[_rxBufferHead];    // Otherwise, grab char at head
+  _rxBufferHead    = (_rxBufferHead + 1) % SDI12_BUFFER_SIZE;  // increment head
   return nextChar;                                             // return the char
 }
 
-// these functions HIDE the stream equivalents to return a custom timeout value
+/**
+ * @brief Return the number of bytes given by @p length or until timeout,
+ * and store it at reference pointed to by @p buffer in little-endian format.
+ *
+ * @param[out] output Reference to location in memory to store the bytes read from buffer
+ * @param[in] length Max number of bytes to read from buffer
+ * @return size_t Number of bytes read from buffer
+ *
+ * readBytes() attempts to return the number of bytes up to the given @p length
+ * after incrementing the index of the buffer head using @see timedReadByte().
+ * This action "consumes" the number of bytes requested by @p length, meaning
+ * it can not be used to read from the buffer again. If readBytes is unable to
+ * return to return the number of bytes before timeout, the number of bytes
+ * returned is less than the required @p length . The byte chunks are then
+ * stored at the location pointed to by @p buffer in little-endian format.
+ */
+size_t SDI12::readBytes(char *output, size_t length) {
+  size_t count = 0;
+  while (count < length) {
+    int c = timedReadByte();
+    if (c < 0) break;
+    *output++ = (char)c;
+    count++;
+  }
+  return count;
+}
+
+/**
+ * @brief Reads the next byte from the buffer (and moves the index ahead) with timeout
+ *
+ * @return int Byte data from buffer or -1 if buffer is empty or timeout during read
+ */
+int SDI12::timedReadByte(void) {
+  int c;
+  _startMillis = millis();
+  do {
+    c = readByte();
+    if (c >= 0) return c;
+  } while(millis() - _startMillis < _timeout);
+  return -1;     // -1 indicates timeout
+}
+
+// these functions hide the stream equivalents to return a custom timeout value
 // This peekNextDigit function is identical to the Stream version
 int SDI12::peekNextDigit(LookaheadMode lookahead, bool detectDecimal) {
   int c;
@@ -471,6 +545,82 @@ void SDI12::writeChar(uint8_t outChar) {
   while ((uint8_t)(READTIME - t0) < bitTimeRemaining) {}
 }
 
+/**
+   * @brief Used to send a byte (8N1) out on the data line, use writeBytes(T value) instead
+   *
+   * @param byte **uint8_t (char)** the byte to write
+   *
+   * This function writes a character out to the data line.  SDI-12 specifies the
+   * general transmission format of a single character as:
+   * - 10 bits per data frame (8N1)
+   *     - 1 start bit
+   *     - 8 data bits (least significant bit first)
+   *     - 1 stop bit
+   *
+   * Recall that we are using inverse logic, so HIGH represents 0, and LOW represents
+   * a 1.
+   *
+   * This function must be implemented as part of the Arduino Stream
+   * instance, but is *NOT* intenteded to be used for SDI-12 objects.
+   *
+   * @return size_t 1
+   */
+size_t SDI12::writeByte(uint8_t outByte) {
+  uint8_t currentTxBitNum = 0;  // first bit is start bit
+  uint8_t bitValue        = 1;  // start bit is HIGH (inverse parity...)
+
+  noInterrupts();  // _ALL_ interrupts disabled so timing can't be shifted
+
+  sdi12timer_t t0 = READTIME;  // start time
+
+  digitalWrite(
+    _dataPin,
+    HIGH);  // immediately get going on the start bit
+            // this gives us 833µs to calculate parity and position of last high bit
+  currentTxBitNum++;
+
+  // Calculate the position of the last bit that is a 0/HIGH (ie, HIGH, not marking)
+  // That bit will be the last time-critical bit.  All bits after that can be
+  // sent with interrupts enabled.
+
+  uint8_t lastHighBit = 9;  // The position of the last bit that is a 0 (ie, HIGH, not marking)
+  uint8_t msbMask = 0x80;  // A mask with all bits at 1
+  while (msbMask & outByte) {
+    lastHighBit--;
+    msbMask >>= 1;
+  }
+
+  // Hold the line for the rest of the start bit duration
+
+  while ((uint8_t)(READTIME - t0) < txBitWidth) {}
+  t0 = READTIME;  // advance start time
+
+  // repeat for all data bits until the last bit different from marking
+  while (currentTxBitNum++ < lastHighBit) {
+    bitValue = outByte & 0x01;  // get next bit in the character to send
+    if (bitValue) {
+      digitalWrite(_dataPin, LOW);  // set the pin state to LOW for 1's
+    } else {
+      digitalWrite(_dataPin, HIGH);  // set the pin state to HIGH for 0's
+    }
+    // Hold the line for this bit duration
+    while ((uint8_t)(READTIME - t0) < txBitWidth) {}
+    t0 = READTIME;  // start time
+
+    outByte = outByte >> 1;  // shift character to expose the following bit
+  }
+
+  // Set the line low for the all remaining 1's and the stop bit
+  digitalWrite(_dataPin, LOW);
+
+  interrupts();  // Re-enable universal interrupts as soon as critical timing is past
+
+  // Hold the line low until the end of the 10th bit
+  uint8_t bitTimeRemaining = txBitWidth * (10 - lastHighBit);
+  while ((uint8_t)(READTIME - t0) < bitTimeRemaining) {}
+  return 1;
+}
+
 // The typical write functionality for a stream object
 // This allows you to use the stream print functions to send commands out on
 // the SDI-12, line, but it will not wake the sensors in advance of the command.
@@ -660,7 +810,9 @@ void SDI12::receiveISR() {
 
     // If this was the 8th or more bit then the character and parity are complete.
     if (rxState > 7) {
-      rxValue &= 0x7F;        // Throw away the parity bit (and with 0b01111111)
+      // rxValue &= 0x7F;        // Throw away the parity bit (and with 0b01111111)
+      // Mask out all but the least significant byte (parity handling will be taken care by respective read function)
+      rxValue &= 0xFF;
       charToBuffer(rxValue);  // Put the finished character into the buffer
 
 
