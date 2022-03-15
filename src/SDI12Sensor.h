@@ -70,7 +70,6 @@ typedef enum SDI12SensorCommand_e: uint8_t {
     kByteDataRequest       = 12  // aDB0~999! for high volume byte
 } SDI12SensorCommand_e;
 
-
 /**
  * @brief References SDI12 command structure.
  *
@@ -84,18 +83,19 @@ typedef struct SDI12CommandSet_s {
     bool crc_requested = false; //
 } SDI12CommandSet_s;
 
-
-// enum SDI12SlaveState_e {
-//     LOW_POWER              = 0,
-//     WAIT                   = 1,
-//     ACKNOWLEDGEMENT        = 2,
-//     ADDRESS_QUERY          = 3,
-//     ADDRESS_UPDATE         = 4,
-//     MEASUREMENT_SINGLE     = 5,
-//     MEASUREMENT_CONCURRENT = 6,
-//     MEASUREMENT_CONTINUOUS = 7,
-//     SENDING_DATA           = 8
-// } SDI12SlaveState_e;
+/**
+ * @brief Enumerated type to reference the different sensor operational state
+ *
+ */
+typedef enum SDI12SensorState_e : uint8_t {
+    kStateLowPower        = 0,  // Perform low power operations
+    kStateReady           = 1,  // General non measurement state, includes identify meta requests
+    kStateVerify          = 2,  // When received aV! or aIV!
+    kStateMeasurement     = 3,  // When received aM! or aIM!
+    kStateConcurrent      = 4,  // When received aC! or aIC!
+    kStateContinuous      = 5,  // When received aRx!
+    kStateHighMeasurement = 6   // When received aHA! or aIHA! or aHB! or aIHB!
+} SDI12SensorState_e;
 
 
 /**
@@ -103,6 +103,9 @@ typedef struct SDI12CommandSet_s {
  * @brief SDI-12 Sensor object
  */
 class SDI12Sensor {
+  public:
+  int8_t state_ = kStateReady;
+
   private:
     /* Interal Variables */
     char sensor_address_;  // Reference to the sensor address, defaults is character '0'
@@ -124,6 +127,9 @@ class SDI12Sensor {
     void SetCrcRequest(const bool crc_request);
     bool CrcRequested(void) const;
     static const SDI12CommandSet_s ParseCommand(const char* received, const char ack_address = '\0');
+    bool DefineState(const SDI12CommandSet_s command_set);
+    bool SetState(const int8_t state);
+    int8_t State(void) const;
     //     void SendSensorAddress();
     //     void SendSensorID();
 

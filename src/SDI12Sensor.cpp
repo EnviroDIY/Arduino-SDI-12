@@ -583,6 +583,117 @@ bool SDI12Sensor::RuleIsIdentifyGroup(const SDI12SensorCommand_e cmd1, const SDI
 }
 
 
+/**
+ * @brief Set the sensor state based on a command structure set.
+ *
+ * @param[in] command_set Received command structure set
+ * @return true State was different and change was successfull
+ * @return false Same state as previous or command set received does not correspond
+ * to the sensor instance
+ *
+ * @see State(void)
+ * @see SetState(int8_t)
+ */
+bool SDI12Sensor::DefineState(const SDI12CommandSet_s command_set) {
+    if (command_set.address != sensor_address_) {
+        return false;
+    }
+    SDI12SensorState_e state = (SDI12SensorState_e)state_;
+    switch ((SDI12SensorCommand_e)command_set.primary) {
+        case kUnknown:
+        case kAcknowledge:
+        case kAddressChange:
+        case kAddressQuery:
+        case kByteDataRequest:
+        case kDataRequest:
+            state = kStateReady;
+            break;
+        case kIdentification:
+            // Set state to normal Ready state for normal Identify or Identify Parameter commands
+            // For Identify Measurement commands, set to appropriate measurement state to handle
+            switch (command_set.secondary) {
+                case kMeasurement:
+                    state = kStateMeasurement;
+                    break;
+                case kConcurrentMeasurement:
+                    state = kStateConcurrent;
+                    break;
+                case kHighVolumeASCII:
+                case kHighVolumeByte:
+                    state = kStateHighMeasurement;
+                    break;
+                case kVerification:
+                    state = kStateVerify;
+                    break;
+                default:
+                    state = kStateReady;
+                    break;
+            }
+            if (command_set.param2 >= 0) {
+                state = kStateReady;
+            }
+            crc_requested_ = command_set.crc_requested;
+            break;
+        case kVerification:
+            state = kStateVerify;
+            break;
+        case kMeasurement:
+            state = kStateMeasurement;
+            crc_requested_ = command_set.crc_requested;
+            break;
+        case kConcurrentMeasurement:
+            state = kStateConcurrent;
+            crc_requested_ = command_set.crc_requested;
+            break;
+        case kHighVolumeASCII:
+            // Set to same state as HighVolumeByte request
+        case kHighVolumeByte:
+            state = kStateHighMeasurement;
+            crc_requested_ = command_set.crc_requested;
+            break;
+        case kContinuousMeasurement:
+            state = kStateContinuous;
+            crc_requested_ = command_set.crc_requested;
+            break;
+    }
+
+    return SetState(state);
+}
+
+
+/**
+ * @brief Manually set the state of a sensor instance.
+ *
+ * @param[in] state State to set the sensor instance to.
+ * @return true New state is different to old state
+ * @return false New state is the same as the old state
+ *
+ * @see DefineState(SDI12CommandSet_s)
+ * @see State(void)
+ */
+bool SDI12Sensor::SetState(const int8_t state) {
+    if (state != state_) {
+        state_ = state;
+        return true;
+    }
+    return false;
+}
+
+
+/**
+ * @brief Gets the sensor current state.
+ *
+ * @return int8_t Integer or SDI12SensorState_e enumerated representation of the
+ * sensor state.
+ *
+ * @see DefineState(SDI12CommandSet_s)
+ * @see SetState(int8_t)
+ */
+int8_t SDI12Sensor::State(void) const {
+    return state_;
+}
+
+
 // void SDI12Sensor::SendSensorAddress() {
 //     char message[5];
 //     sprintf(message, "%c\r\n", sensor_address_);
