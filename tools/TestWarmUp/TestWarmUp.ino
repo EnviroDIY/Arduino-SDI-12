@@ -1,5 +1,5 @@
 /**
- * @file d_simple_logger.ino
+ * @file TestWarmUp.ino
  * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
  *                          and the EnviroDIY Development Team
  *            This example is published under the BSD-3 license.
@@ -11,16 +11,20 @@
 
 #define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
 #define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
-#define SENSOR_ADDRESS '0' /*!< The address of the SDI-12 sensor */
+#define SENSOR_ADDRESS '2' /*!< The address of the SDI-12 sensor */
 #define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
 
 /** Define the SDI-12 bus */
 SDI12   mySDI12(DATA_PIN);
-int32_t wake_delay      = 0;  /*!< The time for the board to wake after a line break. */
-int32_t increment_wake  = 10; /*!< The time to lengthen waits between reps. */
-int32_t power_delay     = 5400;   /*!< The time for the board to wake after power on. */
-int32_t increment_power = 50;    /*!< The time to lengthen waits between reps. */
+int32_t min_wake_delay  = 0;      /*!< The min time to test wake after a line break. */
+int32_t increment_wake  = 100;    /*!< The time to lengthen waits between reps. */
+int32_t max_wake_delay  = 100;    /*!< The max time to test wake (should be <=100). */
+int32_t min_power_delay = 100L;   /*!< The min time to test wake after power on. */
+int32_t increment_power = 100;    /*!< The time to lengthen waits between reps. */
 int32_t max_power_delay = 10000L; /*!< The max time to test wake after power on. */
+
+int32_t power_delay = min_power_delay;
+int32_t wake_delay  = min_wake_delay;
 
 /**
  * @brief gets identification information from a sensor, and prints it to the serial
@@ -96,7 +100,6 @@ boolean checkActive(char i, int8_t numPings = 3, bool printCommands = false) {
   return false;
 }
 
-
 void setup() {
   Serial.begin(SERIAL_BAUD);
   while (!Serial)
@@ -128,15 +131,18 @@ void loop() {
   }
 
   if (checkActive(SENSOR_ADDRESS, 5, true)) {
-    Serial.print("Got response after ");
+    Serial.print("Got some response after ");
     Serial.print(power_delay);
     Serial.print("ms after power with ");
     Serial.print(wake_delay);
     Serial.println("ms with wake delay");
     if (printInfo(SENSOR_ADDRESS, true)) {
       // if we got sensor info, stop
+      Serial.println("Looks good.  Stopping.");
       while (1)
         ;
+    } else {
+      Serial.println("Sensor info not valid!");
     }
   } else {
     Serial.print("No response after ");
@@ -148,9 +154,13 @@ void loop() {
   Serial.println("-------------------------------------------------------------------"
                  "------------");
   if (power_delay > max_power_delay) {
-    power_delay = 0;
+    power_delay = min_power_delay;
     wake_delay  = wake_delay + increment_wake;
   } else {
     power_delay = power_delay + increment_power;
+  }
+  if (wake_delay > max_wake_delay) {
+    Serial.println("FINISHED!!");
+    while (1) {}
   }
 }

@@ -41,40 +41,25 @@ SDI12 mySDI12(DATA_PIN);
 /// variable that alternates output type back and forth between parsed and raw
 boolean flip = 0;
 
-String commands[] = {"","0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+String commands[] = {"", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
 // keeps track of active addresses
-bool isActive[LAST_ADDRESS - FIRST_ADDRESS] = {
-  0,
-};
+bool isActive[62];
 
 // keeps track of the wait time for each active addresses
-uint8_t waitTime[LAST_ADDRESS - FIRST_ADDRESS] = {
-  0,
-};
+uint32_t meas_time_ms[62];
 
 // keeps track of the time each sensor was started
-uint32_t millisStarted[LAST_ADDRESS - FIRST_ADDRESS] = {
-  0,
-};
+uint32_t millisStarted[62];
 
 // keeps track of the time each sensor will be ready
-uint32_t millisReady[LAST_ADDRESS - FIRST_ADDRESS] = {
-  0,
-};
+uint32_t millisReady[62];
 
 // keeps track of the number of results expected
-uint8_t returnedResults[LAST_ADDRESS - FIRST_ADDRESS] = {
-  0,
-};
+uint8_t returnedResults[62];
 
-
-String prev_result[LAST_ADDRESS - FIRST_ADDRESS] = {
-  "",
-};
-String this_result[LAST_ADDRESS - FIRST_ADDRESS] = {
-  "",
-};
+String  prev_result[62];
+String  this_result[62];
 uint8_t numSensors = 0;
 
 

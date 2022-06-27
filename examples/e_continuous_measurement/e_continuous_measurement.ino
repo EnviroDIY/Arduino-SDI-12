@@ -30,7 +30,6 @@ bool isActive[64] = {
 
 uint8_t numSensors = 0;
 
-
 /**
  * @brief converts allowable address characters ('0'-'9', 'a'-'z', 'A'-'Z') to a
  * decimal number between 0 and 61 (inclusive) to cover the 62 possible
@@ -150,7 +149,6 @@ boolean checkActive(char i) {
   mySDI12.clearBuffer();
   return false;
 }
-
 
 void setup() {
   Serial.begin(SERIAL_BAUD);

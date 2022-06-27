@@ -29,7 +29,7 @@ bool isActive[64] = {
 };
 
 // keeps track of the wait time for each active addresses
-uint8_t waitTime[64] = {
+uint8_t meas_time_ms[64] = {
   0,
 };
 
@@ -49,7 +49,6 @@ uint8_t returnedResults[64] = {
 };
 
 uint8_t numSensors = 0;
-
 
 /**
  * @brief converts allowable address characters ('0'-'9', 'a'-'z', 'A'-'Z') to a
@@ -172,8 +171,8 @@ int startConcurrentMeasurement(char i, String meas_type = "") {
   // Set up the number of results to expect
   int numResults = sdiResponse.substring(4).toInt();
 
-  uint8_t sensorNum   = charToDec(i);  // e.g. convert '0' to 0, 'a' to 10, 'Z' to 61.
-  waitTime[sensorNum] = wait;
+  uint8_t sensorNum = charToDec(i);  // e.g. convert '0' to 0, 'a' to 10, 'Z' to 61.
+  meas_time_ms[sensorNum]  = wait;
   millisStarted[sensorNum] = millis();
   if (wait == 0) {
     millisReady[sensorNum] = millis();
@@ -204,7 +203,6 @@ boolean checkActive(char i) {
   mySDI12.clearBuffer();
   return false;
 }
-
 
 void setup() {
   Serial.begin(SERIAL_BAUD);

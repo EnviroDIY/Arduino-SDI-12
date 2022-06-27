@@ -29,6 +29,7 @@
 #define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
 #define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
 #define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
+#define WAKE_DELAY 0       /*!< Extra time needed for the sensor to wake (0-100ms) */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(DATA_PIN);
@@ -39,7 +40,6 @@ bool isActive[64] = {
 };
 
 uint8_t numSensors = 0;
-
 
 /**
  * @brief converts allowable address characters ('0'-'9', 'a'-'z', 'A'-'Z') to a
@@ -80,7 +80,7 @@ void printInfo(char i) {
   String command = "";
   command += (char)i;
   command += "I!";
-  mySDI12.sendCommand(command);
+  mySDI12.sendCommand(command, WAKE_DELAY);
   delay(100);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
@@ -111,7 +111,7 @@ bool getResults(char i, int resultsExpected) {
     command += "D";
     command += cmd_number;
     command += "!";  // SDI-12 command to get data [address][D][dataOption][!]
-    mySDI12.sendCommand(command);
+    mySDI12.sendCommand(command, WAKE_DELAY);
 
     uint32_t start = millis();
     while (mySDI12.available() < 3 && (millis() - start) < 1500) {}
@@ -148,8 +148,11 @@ bool takeMeasurement(char i, String meas_type = "") {
   command += "M";
   command += meas_type;
   command += "!";  // SDI-12 measurement command format  [address]['M'][!]
-  mySDI12.sendCommand(command);
+  mySDI12.sendCommand(command, WAKE_DELAY);
   delay(100);
+
+  Serial.print(command);
+  Serial.print(", ");
 
   // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of
   // measurments available, 0-9]
@@ -171,7 +174,7 @@ bool takeMeasurement(char i, String meas_type = "") {
   Serial.print(", ");
 
   unsigned long timerStart = millis();
-  while ((millis() - timerStart) < (1000 * (wait + 1))) {
+  while ((millis() - timerStart) < (1000UL * (wait + 1))) {
     if (mySDI12.available())  // sensor can interrupt us to let us know it is done early
     {
       Serial.print(millis() - timerStart);
@@ -198,7 +201,7 @@ boolean checkActive(char i) {
   myCommand += "!";
 
   for (int j = 0; j < 3; j++) {  // goes through three rapid contact attempts
-    mySDI12.sendCommand(myCommand);
+    mySDI12.sendCommand(myCommand, WAKE_DELAY);
     delay(100);
     if (mySDI12.available()) {  // If we here anything, assume we have an active sensor
       mySDI12.clearBuffer();
@@ -208,7 +211,6 @@ boolean checkActive(char i) {
   mySDI12.clearBuffer();
   return false;
 }
-
 
 void setup() {
   Serial.begin(SERIAL_BAUD);
@@ -224,10 +226,11 @@ void setup() {
 
   // Power the sensors;
   if (POWER_PIN > 0) {
-    Serial.println("Powering up sensors...");
+    Serial.println("Powering up sensors, wait...");
     pinMode(POWER_PIN, OUTPUT);
     digitalWrite(POWER_PIN, HIGH);
-    delay(200);
+    delay(15000L);
+    // delay(200);
   }
 
   // Quickly Scan the Address Space
@@ -254,16 +257,16 @@ void setup() {
   }
 
   Serial.println();
-  Serial.println(
-    "Time Elapsed (s), Sensor Address, Est Measurement Time (s), Number Measurements, "
-    "Real Measurement Time (ms), Measurement 1, Measurement 2, ... etc.");
+  Serial.println("Time Elapsed (s), Measurement Type, Sensor Address, Est Measurement "
+                 "Time (s), Number Measurements, "
+                 "Real Measurement Time (ms), Measurement 1, Measurement 2, ... etc.");
   Serial.println(
     "-------------------------------------------------------------------------------");
 }
 
 void loop() {
   String commands[] = {"", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
-  for (uint8_t a = 0; a < 3; a++) {
+  for (uint8_t a = 0; a < 1; a++) {
     // measure one at a time
     for (byte i = 0; i < 62; i++) {
       char addr = decToChar(i);
