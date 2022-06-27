@@ -97,41 +97,23 @@ char decToChar(byte i) {
  *
  * @param i a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
  */
-void printInfo(char i, bool printCommands = true) {
+void printInfo(char i) {
   String command = "";
   command += (char)i;
   command += "I!";
   mySDI12.sendCommand(command, WAKE_DELAY);
-  if (printCommands) {
-    Serial.print(">>>");
-    Serial.println(command);
-  }
-  delay(100);
+  Serial.print("\n>>>");
+  Serial.println(command);
+  delay(15);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
-  sdiResponse.trim();
+  // sdiResponse.trim();
   // allccccccccmmmmmmvvvxxx...xx<CR><LF>
-  if (printCommands) {
-    Serial.print("<<<");
-    Serial.println(sdiResponse);
-  }
-
-  Serial.print("Address: ");
-  Serial.print(sdiResponse.substring(0, 1));  // address
-  Serial.print(", SDI-12 Version: ");
-  Serial.print(sdiResponse.substring(1, 3).toFloat() / 10);  // SDI-12 version number
-  Serial.print(", Vendor ID: ");
-  Serial.print(sdiResponse.substring(3, 11));  // vendor id
-  Serial.print(", Sensor Model: ");
-  Serial.print(sdiResponse.substring(11, 17));  // sensor model
-  Serial.print(", Sensor Version: ");
-  Serial.print(sdiResponse.substring(17, 20));  // sensor version
-  Serial.print(", Sensor ID: ");
-  Serial.print(sdiResponse.substring(20));  // sensor id
-  Serial.println();
+  Serial.print("\n<<<");
+  Serial.println(sdiResponse);
 }
 
-bool getResults(char addr, int resultsExpected, bool printCommands = true) {
+bool getResults(char addr, int resultsExpected) {
   uint8_t resultsReceived = 0;
   uint8_t cmd_number      = 0;
   String  str_result      = "";
@@ -145,67 +127,32 @@ bool getResults(char addr, int resultsExpected, bool printCommands = true) {
     command += cmd_number;
     command += "!";  // SDI-12 command to get data [address][D][dataOption][!]
     mySDI12.sendCommand(command, WAKE_DELAY);
-    if (printCommands) {
-      Serial.print(">>>");
-      Serial.println(command);
-    }
+    Serial.print("\n>>>");
+    Serial.println(command);
 
     uint32_t start = millis();
     while (mySDI12.available() < 3 && (millis() - start) < 150) {}
-    if (printCommands) {
-      Serial.print("<<<");
-      Serial.write(mySDI12.read());  // ignore the repeated SDI12 address
-    } else {
-      mySDI12.read();
-    }
+    Serial.print("\n<<<");
+    Serial.write(mySDI12.read());  // ignore the repeated SDI12 address
 
-    bool gotResults = false;
+    uint8_t char_rcvd = 0;
     while (mySDI12.available()) {
-      // First peek to see if the next character in the buffer is a number
+      char_rcvd++;
       char c = mySDI12.peek();
-      // if there's a number, a decimal, or a negative sign next in the
-      // buffer, start reading it as a float.
-      if (c == '-' || (c >= '0' && c <= '9') || c == '.') {
-        // Read the float without skipping any in-valid characters.
-        // We don't want to skip anything because we want to be able to
-        // debug and see exactly which characters the sensor sent over
-        // if they weren't numbers.
-        // Reading the numbers as a float will remove them from the
-        // buffer.
-        float result = mySDI12.parseFloat(SKIP_NONE);
-        // add result to print out string
-        str_result += String(result, 8);
-        // also print results if we're printing commands
-        if (printCommands) { Serial.print(String(result, 8)); }
-        // add how many results we have
-        if (result != -9999) {
-          gotResults = true;
-          resultsReceived++;
-        }
+      if (c == '+') {
+        Serial.write(mySDI12.read());
+        resultsReceived++;
       } else if (c >= 0 && c != '\r' && c != '\n') {
-        str_result += String(c);
-        if (printCommands) {
-          Serial.write(mySDI12.read());
-        } else {
-          mySDI12.read();
-        }
+        Serial.write(mySDI12.read());
       } else {
         mySDI12.read();
+        Serial.println();
       }
       delay(10);  // 1 character ~ 7.5ms
     }
-    if (printCommands) {
-      Serial.print("\nTotal Results Received: ");
-      Serial.print(resultsReceived);
-      Serial.print(", Remaining: ");
-      Serial.println(resultsExpected - resultsReceived);
-    }
-    if (!gotResults) {
-      if (printCommands) {
-        Serial.println(("  No results received, will not continue requests!"));
-      }
+    if (char_rcvd <= 2) {
       break;
-    }  // don't do another loop if we got nothing
+    }  // don't do another loop if didn't get more than the address
     cmd_number++;
   }
   mySDI12.clearBuffer();
@@ -215,7 +162,7 @@ bool getResults(char addr, int resultsExpected, bool printCommands = true) {
   return success;
 }
 
-bool getContinuousResults(char i, int resultsExpected, bool printCommands = true) {
+bool getContinuousResults(char i, int resultsExpected) {
   uint8_t resultsReceived = 0;
   uint8_t cmd_number      = 0;
   while (resultsReceived < resultsExpected && cmd_number <= 9) {
@@ -227,17 +174,13 @@ bool getContinuousResults(char i, int resultsExpected, bool printCommands = true
     command += cmd_number;
     command += "!";  // SDI-12 command to get data [address][D][dataOption][!]
     mySDI12.sendCommand(command, WAKE_DELAY);
-    if (printCommands) {
-      Serial.print(">>>");
-      Serial.println(command);
-    }
+    Serial.print("\n>>>");
+    Serial.println(command);
 
     uint32_t start = millis();
     while (mySDI12.available() < 3 && (millis() - start) < 1500) {}
-    if (printCommands) {
-      Serial.print("<<<");
-      Serial.write(mySDI12.read());  // ignore the repeated SDI12 address
-    }
+    Serial.print("\n<<<");
+    Serial.write(mySDI12.read());  // ignore the repeated SDI12 address
 
     while (mySDI12.available()) {
       char c = mySDI12.peek();
@@ -248,15 +191,10 @@ bool getContinuousResults(char i, int resultsExpected, bool printCommands = true
       } else if (c >= 0 && c != '\r' && c != '\n') {
         Serial.write(mySDI12.read());
       } else {
-        mySDI12.read();
+        // mySDI12.read();
+        Serial.println();
       }
       delay(10);  // 1 character ~ 7.5ms
-    }
-    if (printCommands) {
-      Serial.print("Total Results Received: ");
-      Serial.print(resultsReceived);
-      Serial.print(", Remaining: ");
-      Serial.println(resultsExpected - resultsReceived);
     }
     if (!resultsReceived) { break; }  // don't do another loop if we got nothing
     cmd_number++;
@@ -266,44 +204,29 @@ bool getContinuousResults(char i, int resultsExpected, bool printCommands = true
   return resultsReceived == resultsExpected;
 }
 
-int startConcurrentMeasurement(char i, String meas_type = "",
-                               bool printCommands = true) {
+int startConcurrentMeasurement(char i, String meas_type = "") {
   String command = "";
   command += i;
   command += "C";
   command += meas_type;
   command += "!";  // SDI-12 concurrent measurement command format  [address]['C'][!]
   mySDI12.sendCommand(command, WAKE_DELAY);
-  if (printCommands) {
-    Serial.print(">>>");
-    Serial.println(command);
-  }
+  Serial.print("\n>>>");
+  Serial.println(command);
   delay(5);
 
   // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of
   // measurments available, 0-9]
   String sdiResponse = mySDI12.readStringUntil('\n');
-  sdiResponse.trim();
-  if (printCommands) {
-    Serial.print("<<<");
-    Serial.println(sdiResponse);
-  }
+  Serial.print("\n<<<");
+  Serial.println(sdiResponse);
   mySDI12.clearBuffer();
 
   // find out how long we have to wait (in seconds).
   uint8_t meas_time_s = sdiResponse.substring(1, 4).toInt();
-  if (printCommands) {
-    Serial.print("expected measurement time: ");
-    Serial.print(meas_time_s);
-    Serial.print(" s, ");
-  }
 
   // Set up the number of results to expect
   int numResults = sdiResponse.substring(4).toInt();
-  if (printCommands) {
-    Serial.print("Number Results: ");
-    Serial.println(numResults);
-  }
 
   uint8_t sensorNum = charToDec(i);  // e.g. convert '0' to 0, 'a' to 10, 'Z' to 61.
   meas_time_ms[sensorNum]  = ((uint32_t)(meas_time_s)) * 1000;
@@ -319,42 +242,28 @@ int startConcurrentMeasurement(char i, String meas_type = "",
   return numResults;
 }
 
-bool takeMeasurement(char i, String meas_type = "", bool printCommands = true) {
+bool takeMeasurement(char i, String meas_type = "") {
   String command = "";
   command += i;
   command += "M";
   command += meas_type;
   command += "!";  // SDI-12 measurement command format  [address]['M'][!]
   mySDI12.sendCommand(command, WAKE_DELAY);
-  if (printCommands) {
-    Serial.print(">>>");
-    Serial.println(command);
-  }
-  delay(100);
+  Serial.print("\n>>>");
+  Serial.println(command);
+  delay(15);
 
   // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of
   // measurments available, 0-9]
   String sdiResponse = mySDI12.readStringUntil('\n');
-  sdiResponse.trim();
-  if (printCommands) {
-    Serial.print("<<<");
-    Serial.println(sdiResponse);
-  }
+  Serial.print("\n<<<");
+  Serial.println(sdiResponse);
 
   // find out how long we have to wait (in seconds).
   uint32_t meas_time_s = sdiResponse.substring(1, 4).toInt();
-  if (printCommands) {
-    Serial.print("Sensor Reported Measurement Time: ");
-    Serial.print(meas_time_s);
-    Serial.print(" s, ");
-  }
 
   // Set up the number of results to expect
   int numResults = sdiResponse.substring(4).toInt();
-  if (printCommands) {
-    Serial.print("Number Results: ");
-    Serial.println(numResults);
-  }
   // if (numResults==0){return false;}
   if (numResults == 0) { return ""; }
 
@@ -363,14 +272,8 @@ bool takeMeasurement(char i, String meas_type = "", bool printCommands = true) {
     if (mySDI12.available())  // sensor can interrupt us to let us know it is done early
     {
       unsigned long measTime = millis() - timerStart;
-      if (printCommands) {
-        Serial.print("<<<");
-        Serial.println(mySDI12.readStringUntil('\n'));
-        // mySDI12.clearBuffer();
-      }
-      Serial.print("Completed after ");
-      Serial.print(measTime);
-      Serial.println(" ms");
+      Serial.print("\n<<<");
+      Serial.println(mySDI12.readStringUntil('\n'));
       break;
     }
   }
@@ -378,32 +281,28 @@ bool takeMeasurement(char i, String meas_type = "", bool printCommands = true) {
   delay(30);
   mySDI12.clearBuffer();
 
-  return getResults(i, numResults, printCommands);
+  return getResults(i, numResults);
 }
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-boolean checkActive(char i, int8_t numPings = 3, bool printCommands = false) {
+boolean checkActive(char i, int8_t numPings = 3) {
   String command = "";
   command += (char)i;  // sends basic 'acknowledge' command [address][!]
   command += "!";
 
   for (int j = 0; j < numPings; j++) {  // goes through three rapid contact attempts
-    if (printCommands) {
-      Serial.print(">>>");
-      Serial.println(command);
-    }
+    Serial.print("\n>>>");
+    Serial.println(command);
     mySDI12.sendCommand(command, WAKE_DELAY);
-    delay(100);
+    delay(15);
     if (mySDI12.available()) {  // If we here anything, assume we have an active sensor
-      if (printCommands) {
-        Serial.print("<<<");
-        while (mySDI12.available()) {
-          Serial.write(mySDI12.read());
-          delay(10);
-        }
-      } else {
-        mySDI12.clearBuffer();
+      Serial.print("\n<<<");
+      uint8_t i = 0;
+      while (mySDI12.available() && i < 60) {
+        Serial.write(mySDI12.read());
+        delay(5);
+        i++;
       }
       return true;
     }
@@ -457,19 +356,11 @@ void setup() {
 
   for (int8_t i = FIRST_ADDRESS; i <= LAST_ADDRESS; i++) {
     char addr = decToChar(i);
-    Serial.print("i: ");
-    Serial.print(i);
-    Serial.print(", addr: ");
-    Serial.print(addr);
-    Serial.print(", reversed: ");
-    Serial.println(charToDec(addr));
-    if (checkActive(addr, 5, true)) {
+    if (checkActive(addr, 5)) {
       numSensors++;
       isActive[i] = 1;
-      // Serial.println(", +");
-      printInfo(addr, true);
+      printInfo(addr);
     } else {
-      // Serial.println(", -");
     }
   }
   Serial.print("Total number of sensors found:  ");
@@ -489,118 +380,20 @@ void setup() {
 }
 
 void loop() {
-  flip = !flip;  // flip the switch between concurrent and not
-  // flip = 1;
-  // flip           = 0;
   uint32_t start = millis();
-  // Serial.print("Flip: ");
-  // Serial.println(flip);
-
-  // // Power the sensors;
-  // if (POWER_PIN > 0) {
-  //   Serial.println("Powering down sensors...");
-  //   pinMode(POWER_PIN, OUTPUT);
-  //   digitalWrite(POWER_PIN, LOW);
-  //   delay(5000L);
-  // }
-
-  // // Power the sensors;
-  // if (POWER_PIN > 0) {
-  //   Serial.println("Powering up sensors...");
-  //   pinMode(POWER_PIN, OUTPUT);
-  //   digitalWrite(POWER_PIN, HIGH);
-  //   delay(125);
-  // }
-
-  if (flip) {
-    // measure one at a time
-    for (int8_t i = 0; i < 62; i++) {
-      char addr = decToChar(i);
-      if (isActive[i]) {
-        for (uint8_t a = 0; a < COMMANDS_TO_TEST; a++) {
-          Serial.print("Command ");
-          Serial.print(i);
-          Serial.print("M");
-          Serial.print(commands[a]);
-          Serial.println('!');
-          takeMeasurement(addr, commands[a], true);
-        }
-        // getContinuousResults(addr, 3);
-        Serial.println();
-      } else {
-        Serial.print("Address ");
-        Serial.print(addr);
-        Serial.println(" is not active");
+  // measure one at a time
+  for (int8_t i = 0; i < 62; i++) {
+    char addr = decToChar(i);
+    if (isActive[i]) {
+      printInfo(addr);
+      for (uint8_t a = 0; a < COMMANDS_TO_TEST; a++) {
+        takeMeasurement(addr, commands[a]);
       }
+      Serial.println();
     }
-    Serial.print("Total Time for Individual Measurements: ");
-    Serial.println(millis() - start);
-  } else {
-    for (uint8_t a = 0; a < COMMANDS_TO_TEST; a++) {
-      uint32_t min_wait  = 60000L;
-      uint32_t max_wait  = 0;
-      uint32_t for_start = millis();
-      // start all sensors measuring concurrently
-      for (int8_t i = 0; i < 62; i++) {
-        char addr = decToChar(i);
-        if (isActive[i]) {
-          Serial.print("Command ");
-          Serial.print(i);
-          Serial.print("C");
-          Serial.print(commands[a]);
-          Serial.println('!');
-          startConcurrentMeasurement(addr, commands[a], true);
-          if (meas_time_ms[i] < min_wait) { min_wait = meas_time_ms[i]; }
-          if (meas_time_ms[i] > max_wait) { max_wait = meas_time_ms[i]; }
-        } else {
-          Serial.print("Address ");
-          Serial.print(addr);
-          Serial.println(" is not active");
-        }
-      }
-      min_wait = 800;
-      // min_wait = max(10, min_wait / 2);
-      max_wait = max(1000L, max_wait + 1000L);
-      Serial.print("minimum expected wait for all sensors: ");
-      Serial.println(min_wait);
-      Serial.print("maximum expected wait for all sensors: ");
-      Serial.println(max_wait);
-
-
-      uint8_t numReadingsRecorded = 0;
-      delay(min_wait);
-      do {
-        // get all readings
-        for (int8_t i = 0; i < 62; i++) {
-          uint32_t timeWaited = millis() - millisStarted[i];
-          if (this_result[i] != "") { prev_result[i] = this_result[i]; }
-
-          char addr = decToChar(i);
-          if (isActive[i]) {
-            // if (millis() > millisReady[i]) {
-            // if (millis() > millisStarted[i] + a) {
-            if (returnedResults[i] > 0) {
-              Serial.print("timeWaited: ");
-              Serial.println(timeWaited);
-              bool resultsReady = getResults(addr, returnedResults[i], true);
-              if (resultsReady) {
-                numReadingsRecorded++;
-                Serial.print("Got results from ");
-                Serial.print(numReadingsRecorded);
-                Serial.print(" of ");
-                Serial.print(numSensors);
-                Serial.println(" sensors");
-              }
-            }
-          }
-        }
-      } while (millis() - for_start < max_wait && numReadingsRecorded < numSensors);
-    }
-    Serial.print("Total Time for Concurrent Measurements: ");
-    Serial.println(millis() - start);
   }
 
   Serial.println("-------------------------------------------------------------------"
                  "------------");
-  // delay(1000);  // wait ten seconds between measurement attempts.
+  delay(1000);  // wait ten seconds
 }
