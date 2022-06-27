@@ -349,7 +349,7 @@ class SDI12 : public Stream {
   /**
    * @brief The buffer overflow status
    */
-  bool _bufferOverflow;
+  bool _bufferOverflow = false;
   /**@}*/
 
 
@@ -447,6 +447,7 @@ class SDI12 : public Stream {
    * the index to head intact, you should use peek();
    */
   int read() override;
+
   /**
    * @brief Wait for sending to finish - because no TX buffering, does nothing
    */
@@ -519,7 +520,7 @@ class SDI12 : public Stream {
   /**
    * @brief reference to the data pin
    */
-  int8_t _dataPin;
+  int8_t _dataPin = -1;
 
  public:
   /**

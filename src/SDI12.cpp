@@ -53,7 +53,7 @@
 /* ================  Set static constants ===========================================*/
 
 // Pointer to active SDI12 object
-SDI12* SDI12::_activeObject = NULL;
+SDI12* SDI12::_activeObject = nullptr;
 // Timer functions
 SDI12Timer SDI12::sdi12timer;
 
@@ -74,10 +74,10 @@ const uint8_t SDI12::bitsPerTick_Q10 = BITS_PER_TICK_Q10;
 // A mask waiting for a start bit; 0b11111111
 const uint8_t SDI12::WAITING_FOR_START_BIT = 0xFF;
 
-uint16_t SDI12::prevBitTCNT;  // previous RX transition in micros
-uint8_t  SDI12::rxState;      // 0: got start bit; >0: bits rcvd
-uint8_t  SDI12::rxMask;       // bit mask for building received character
-uint8_t  SDI12::rxValue;      // character being built
+uint16_t SDI12::prevBitTCNT;                      // previous RX transition in micros
+uint8_t  SDI12::rxState = WAITING_FOR_START_BIT;  // 0: got start bit; >0: bits rcvd
+uint8_t  SDI12::rxMask;   // bit mask for building received character
+uint8_t  SDI12::rxValue;  // character being built
 
 uint16_t SDI12::mul8x8to16(uint8_t x, uint8_t y) {
   return x * y;
@@ -87,12 +87,10 @@ uint16_t SDI12::bitTimes(uint8_t dt) {
   return mul8x8to16(dt + rxWindowWidth, bitsPerTick_Q10) >> 10;
 }
 
-
 /* ================ Buffer Setup ====================================================*/
 uint8_t          SDI12::_rxBuffer[SDI12_BUFFER_SIZE];  // The Rx buffer
 volatile uint8_t SDI12::_rxBufferTail = 0;             // index of buff tail
 volatile uint8_t SDI12::_rxBufferHead = 0;             // index of buff head
-
 
 /* ================ Reading from the SDI-12 Buffer ==================================*/
 
@@ -124,10 +122,11 @@ int SDI12::read() {
   return nextChar;                                             // return the char
 }
 
-// these functions hide the stream equivalents to return a custom timeout value
+// these functions HIDE the stream equivalents to return a custom timeout value
+// This peekNextDigit function is identical to the Stream version
 int SDI12::peekNextDigit(LookaheadMode lookahead, bool detectDecimal) {
   int c;
-  while (1) {
+  while (true) {
     c = timedPeek();
 
     if (c < 0 || c == '-' || (c >= '0' && c <= '9') || (detectDecimal && c == '.'))
@@ -211,8 +210,6 @@ float SDI12::parseFloat(LookaheadMode lookahead, char ignore) {
 /* ================ Constructor, Destructor, begin(), end(), and timeout ============*/
 // Constructor
 SDI12::SDI12() {
-  _dataPin        = -1;
-  _bufferOverflow = false;
   // SDI-12 protocol says sensors must respond within 15 milliseconds
   // We'll bump that up to 150, just for good measure, but we don't want to
   // wait the whole stream default of 1s for a response.
@@ -224,9 +221,9 @@ SDI12::SDI12() {
   // in-site environmental sensors.
   setTimeoutValue(-9999);
 }
+
 SDI12::SDI12(int8_t dataPin) {
-  _dataPin        = dataPin;
-  _bufferOverflow = false;
+  setDataPin(dataPin);
   // SDI-12 protocol says sensors must respond within 15 milliseconds
   // We'll bump that up to 150, just for good measure, but we don't want to
   // wait the whole stream default of 1s for a response.
@@ -256,15 +253,16 @@ void SDI12::begin() {
   // This function is defined in SDI12_boards.h
   sdi12timer.configSDI12TimerPrescale();
 }
+
 void SDI12::begin(int8_t dataPin) {
-  _dataPin = dataPin;
+  setDataPin(dataPin);
   begin();
 }
 
 // End
 void SDI12::end() {
   setState(SDI12_DISABLED);
-  _activeObject = NULL;
+  _activeObject = nullptr;
   // Set the timer prescalers back to original values
   // NOTE:  This does NOT reset SAMD board pre-scalers!
   sdi12timer.resetSDI12TimerPrescale();
@@ -285,7 +283,6 @@ int8_t SDI12::getDataPin() {
   return _dataPin;
 }
 
-
 /* ================ Using more than one SDI-12 object ===============================*/
 // a method for setting the current object as the active object
 bool SDI12::setActive() {
@@ -301,7 +298,6 @@ bool SDI12::setActive() {
 bool SDI12::isActive() {
   return this == _activeObject;
 }
-
 
 /* ================ Data Line States ================================================*/
 // Processor specific parity and interrupts
@@ -400,7 +396,6 @@ void SDI12::forceHold() {
 void SDI12::forceListen() {
   setState(SDI12_LISTENING);
 }
-
 
 /* ================ Waking Up and Talking To Sensors ================================*/
 // this function wakes up the entire sensor bus
@@ -582,8 +577,8 @@ void SDI12::receiveISR() {
     // Inverse logic start bit = HIGH
     if (pinLevel == LOW) { return; }
     // If the pin is HIGH, this should be a start bit.
-    // Thus startChar(), which sets the rxState to 0, create an empty character, and a
-    // new mask with a 1 in the lowest place
+    // Thus call startChar(), which zeros the timer counter, sets the rxState to 0, and
+    // creates an empty character and a new mask with a 1 in the lowest place
     startChar();
   } else {
     // If we're not waiting for a start bit, it's because we're in the middle of an
@@ -606,8 +601,18 @@ void SDI12::receiveISR() {
     // If the number of bits passed since the last transition is more than then number
     // of bits left on the character we were working on, a new character must have
     // started.
-    // This will happen if the parity bit is 1 or the last bit(s) of the character and
-    // the parity bit are all 1's.
+    // Because we're depending on pin **changes** here, and the stop bit at the end of a
+    // character is LOW/line idle, we cannot detect the end of a stop bit.  The last
+    // change we can detect from a character is the end of the last 0 bit (inverse logic
+    // - 0 = HIGH).  The end of the last 0 bit **might** be the start of the (1=LOW=line
+    // idle) stop bit, but it bit could actually be the end of start-bit itself - as in
+    // the case of the DEL character.  (DEL = 1 HIGH start - 7 LOW (1) data bits - 1 LOW
+    // (1) even parity bit - 1 LOW stop bit, last level change before line idle is the
+    // end of the start bit)  Because we cannot detect the end of the stop bit, in
+    // sequention characters the next change will be the next start bit and it will
+    // arrive with the rxState set to the middle of the last character.  So, since we
+    // cannot depend on the rxState telling us if we're WAITING_FOR_START_BIT, we have
+    // to figure it out by the time passed.
     bool nextCharStarted = (rxBits > bitsLeft);
 
     // Check how many data+parity bits have been sent in this frame.  This will be
