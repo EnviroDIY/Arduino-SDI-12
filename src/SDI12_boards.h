@@ -37,7 +37,8 @@ class SDI12Timer {
   SDI12Timer();
   /**
    * @brief Set the processor timer prescaler such that the 10 bits of an SDI-12
-   * character are divided into the rollover time of the timer.
+   * character are divided into the rollover time of the timer.  Also enable timer
+   * interrupts.
    *
    * @note  The ESP32 and ESP8266 are fast enough processors that they can take the
    * time to read the core 'micros()' function still complete the other processing
@@ -46,16 +47,44 @@ class SDI12Timer {
    * cycles to use the micros function and must manually configure the processor timer
    * and use the faster assembly macros to read that processor timer directly.
    */
-  void configSDI12TimerPrescale(void);
+  void configureSDI12Timer(void);
   /**
-   * @brief Reset the processor timer prescaler to whatever it was prior to being
+   * @brief Revert the processor timer prescaler to whatever it was prior to being
    * adjusted for this library.
    *
    * @note The prescaler is *NOT* set back to initial values for SAMD boards!  On those
    * processors, generic clock generator 4 will remain configured for SDI-12 until it is
    * reset outside of this library.
    */
-  void resetSDI12TimerPrescale(void);
+  void revertSDI12Timer(void);
+  /**
+   * @brief Zero the current timer counter value
+   */
+  void resetSDI12TimerValue(void);
+
+  /**
+   * @brief Read the current value of the timer.
+   */
+  sdi12timer_t SDI12TimerRead(void);
+
+  /**
+   * @brief Enable timer interrupts to help detect stop bits
+   */
+  void enableSDI12TimerInterrupt(void);
+
+  /**
+   * @brief Disable timer interrupts
+   */
+  void disableSDI12TimerInterrupt(void);
+
+  /**
+   * @brief Clear the timer interrupt flag.
+   *
+   * @note This is only necessary for some processors.  With AVR processors, the
+   * interrupt flag is automatically cleared when the interrupt is executed
+   */
+  void clearSDI12TimerInterrupt(void);
+};
 
 // Most 'standard' AVR boards
 //
@@ -80,12 +109,6 @@ class SDI12Timer {
  * - Allows Clocking from External 32kHz Watch Crystal Independent of the I/O Clock
  */
 #define TIMER_IN_USE_STR "TCNT2"
-/**
- * @brief The c macro name for the assembly timer to use
- *
- * The register used to access the timer/counter value is TCNT2
- */
-#define TCNTX TCNT2  // Using Timer 2
 
 #if F_CPU == 16000000L
 /**
@@ -98,10 +121,6 @@ class SDI12Timer {
  *
  * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
- *
- * The 8-bit timer rolls over after 256 ticks, 19.66085 bits, or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66085 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
  */
 #define TICKS_PER_BIT 13
 /**
@@ -110,6 +129,36 @@ class SDI12Timer {
  * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
  */
 #define BITS_PER_TICK_Q10 79
+/**
+ * @brief The timer count at which we want the timer to reset and activate an interrupt
+ *
+ * After we receive a start bit for a character, we will reset the timer.  We want the
+ * timer to roll over (reset) again as close to the completion of that character as
+ * possible. To achive this we put the timer into Clear Timer on Compare Match (CTC)
+ * Mode which allows us to specify the maximum value of the counter and enable an
+ * interrupt whenever the maximum counter value is reached.
+ *
+ * 1 character is 10 bits (1 start + 7 data + 1 parity + 1 stop)
+ * (1s/1200 bits) * (10 bits/character) = 8333 µs/character
+ * 8333 µs/character * 1 tick/64 µs = 130.2 ticks/character (round up to 131 = 0x83)
+ *
+ * The maximum spacing between the stop bit of one character and the start bit of the
+ * next character is 1.66ms (1660µs).  After the maximum spacing between characters, no
+ * new characters can be sent without waiting the full "marking" of 8.33 ms (8333µs).
+ *
+ * 8333 µs/character + 1660 µs maximum spacing = 9993.3 µs maximum until next character
+ * should start
+ * 9993 µs * 1 tick/64 µs = 156.1 upper maximum for a character
+ *
+ * So we'll set out TOP value (in OCR2A) on the timer to 157 (0x9D)
+ *
+ * In "normal" operation, the 8-bit timer would roll over after 256 ticks, 19.66085
+ * bits, or 16.38505 ms
+ *
+ * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66085 bits
+ * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
+ */
+#define TIMER_ROLLOVER_COUNT 0x9D
 /**
  * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
  * uneven tick increments get rounded up.
@@ -129,10 +178,6 @@ class SDI12Timer {
  *
  * 12MHz / 1024 prescaler = 11719 'ticks'/sec = 85 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/85 µs) = 9.765625 ticks/bit
- *
- * The 8-bit timer rolls over after 256 ticks, 26.2144 bits, or 21.84487 ms
- * (256 ticks/roll-over) * (1 bit/9.765625 ticks) = 26.2144 bits
- * (256 ticks/roll-over) * (1 sec/11719 ticks) = 21.84487 milliseconds
  */
 #define TICKS_PER_BIT 10
 /**
@@ -141,6 +186,36 @@ class SDI12Timer {
  * 1/(9.765625 ticks/bit) * 2^10 = 104.8576
  */
 #define BITS_PER_TICK_Q10 105
+/**
+ * @brief The timer count at which we want the timer to reset and activate an interrupt
+ *
+ * After we receive a start bit for a character, we will reset the timer.  We want the
+ * timer to roll over (reset) again as close to the completion of that character as
+ * possible. To achive this we put the timer into Clear Timer on Compare Match (CTC)
+ * Mode which allows us to specify the maximum value of the counter and enable an
+ * interrupt whenever the maximum counter value is reached.
+ *
+ * 1 character is 10 bits (1 start + 7 data + 1 parity + 1 stop)
+ * (1s/1200 bits) * (10 bits/character) = 8333 µs/character
+ * 8333 µs/character * 1 tick/85 µs = 98.04 ticks/character (round up to 99 = 0x83)
+ *
+ * The maximum spacing between the stop bit of one character and the start bit of the
+ * next character is 1.66ms (1660µs).  After the maximum spacing between characters, no
+ * new characters can be sent without waiting the full "marking" of 8.33 ms (8333µs).
+ *
+ * 8333 µs/character + 1660 µs maximum spacing = 9993.3 µs maximum until next character
+ * should start
+ * 9993 µs * 1 tick/85 µs = 117.6 upper maximum for a character
+ *
+ * So we'll set out TOP value (in OCR2A) on the timer to 118 (0x76)
+ *
+ * In "normal" operation, the 8-bit timer would roll over after 256 ticks, 26.2144 bits,
+ * or 21.84487 ms
+ *
+ * (256 ticks/roll-over) * (1 bit/9.765625 ticks) = 26.2144 bits
+ * (256 ticks/roll-over) * (1 sec/11719 ticks) = 21.84487 milliseconds
+ */
+#define TIMER_ROLLOVER_COUNT 0x76
 /**
  * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
  * uneven tick increments get rounded up.
@@ -160,11 +235,6 @@ class SDI12Timer {
  *
  * 8MHz / 256 prescaler = 31250 'ticks'/sec = 32 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/32 µs) = 26.04166667 ticks/bit
- *
- * The 8-bit timer rolls over after 256 ticks, 9.8304 bits, or 8.192 ms
- * (256 ticks/roll-over) * (1 bit/26.04166667 ticks) = 9.8304 bits
- * (256 ticks/roll-over) * (1 sec/31250 ticks) = 8.192 milliseconds
- * @note The timer will roll-over with each character!
  */
 #define TICKS_PER_BIT 26
 /**
@@ -174,6 +244,30 @@ class SDI12Timer {
  */
 #define BITS_PER_TICK_Q10 39
 /**
+ * @brief The timer count at which we want the timer to reset and activate an interrupt
+ *
+ * After we receive a start bit for a character, we will reset the timer.  We want the
+ * timer to roll over (reset) again as close to the completion of that character as
+ * possible. To achive this we put the timer into Clear Timer on Compare Match (CTC)
+ * Mode which allows us to specify the maximum value of the counter and enable an
+ * interrupt whenever the maximum counter value is reached.
+ *
+ * 1 character is 10 bits (1 start + 7 data + 1 parity + 1 stop)
+ * (1s/1200 bits) * (10 bits/character) = 8333 µs/character
+ * 8333 µs/character * 1 tick/32 µs = 260.4 ticks/character
+ *
+ * Since 260 > 256, the timer will actually roll over **BEFORE** a character is
+ * finished.
+ *
+ * In "normal" operation, the 8-bit timer would roll over after 256 ticks, 9.8304 bits,
+ * or 8.192 ms
+ *
+ * (256 ticks/roll-over) * (1 bit/26.04166667 ticks) = 9.8304 bits
+ * (256 ticks/roll-over) * (1 sec/31250 ticks) = 8.192 milliseconds
+ * @note The timer will roll-over with each character!
+ */
+#define TIMER_ROLLOVER_COUNT 0xFF
+/**
  * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
  * uneven tick increments get rounded up.
  *
@@ -181,13 +275,14 @@ class SDI12Timer {
  */
 #define RX_WINDOW_FUDGE 10
 
-  // #define PRESCALE_IN_USE_STR "1024"
-  // #define TICKS_PER_BIT 6
-  //     // 8MHz / 1024 prescaler = 31250 'ticks'/sec = 128 µs / 'tick'
-  //     // (1 sec/1200 bits) * (1 tick/128 µs) = 6.5104166667 ticks/bit
-  // #define BITS_PER_TICK_Q10 157
-  //     // 1/(6.5104166667 ticks/bit) * 2^10 = 157.2864
-  // #define RX_WINDOW_FUDGE 5
+// #define PRESCALE_IN_USE_STR "1024"
+// #define TICKS_PER_BIT 6
+//     // 8MHz / 1024 prescaler = 31250 'ticks'/sec = 128 µs / 'tick'
+//     // (1 sec/1200 bits) * (1 tick/128 µs) = 6.5104166667 ticks/bit
+// #define BITS_PER_TICK_Q10 157
+// #define TIMER_ROLLOVER_COUNT
+//     // 1/(6.5104166667 ticks/bit) * 2^10 = 157.2864
+// #define RX_WINDOW_FUDGE 5
 
 #endif
 
@@ -204,12 +299,6 @@ class SDI12Timer {
  * pulse width modulators using clock speeds up to 64MHz (or 32MHz in low speedmode).
  */
 #define TIMER_IN_USE_STR "TCNT1"
-/**
- * @brief The c macro name for the assembly timer to use
- *
- * The register used to access the timer/counter value is TCNT1.
- */
-#define TCNTX TCNT1  // Using Timer 1
 
 #if F_CPU == 16000000L
 /**
@@ -222,10 +311,6 @@ class SDI12Timer {
  *
  * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
- *
- * The 8-bit timer rolls over after 256 ticks, 19.66 bits, or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
  */
 #define TICKS_PER_BIT 13
 /**
@@ -234,6 +319,34 @@ class SDI12Timer {
  * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
  */
 #define BITS_PER_TICK_Q10 79
+/**
+ * @brief The timer count at which we want the timer to reset and activate an interrupt
+ *
+ * After we receive a start bit for a character, we will reset the timer.  We want the
+ * timer to roll over (reset) again as close to the completion of that character as
+ * possible. To achive this we put the timer into Clear Timer on Compare Match (CTC)
+ * Mode which allows us to specify the maximum value of the counter and enable an
+ * interrupt whenever the maximum counter value is reached.
+ *
+ * 1 character is 10 bits (1 start + 7 data + 1 parity + 1 stop)
+ * (1s/1200 bits) * (10 bits/character) = 8333 µs/character
+ * 8333 µs/character * 1 tick/64 µs = 130.2 ticks/character (round up to 131 = 0x83)
+ *
+ * The maximum spacing between the stop bit of one character and the start bit of the
+ * next character is 1.66ms (1660µs).  After the maximum spacing between characters, no
+ * new characters can be sent without waiting the full "marking" of 8.33 ms (8333µs).
+ *
+ * 8333 µs/character + 1660 µs maximum spacing = 9993.3 µs maximum until next character
+ * should start
+ * 9993 µs * 1 tick/64 µs = 156.1 upper maximum for a character
+ *
+ * So we'll set out TOP value (in OCR2A) on the timer to 157 (0x9D)
+ *
+ * In "normal" operation, the 8-bit timer would roll over after 256 ticks, 19.66 bits,
+ * or 16.38505 ms (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits (256
+ * ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
+ */
+#define TIMER_ROLLOVER_COUNT 0x9D
 /**
  * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
  * uneven tick increments get rounded up.
@@ -250,10 +363,6 @@ class SDI12Timer {
  *
  * 8MHz / 512 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
- *
- * The 8-bit timer rolls over after 256 ticks, 19.66 bits, or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
  */
 #define TICKS_PER_BIT 13
 /**
@@ -262,6 +371,34 @@ class SDI12Timer {
  * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
  */
 #define BITS_PER_TICK_Q10 79
+/**
+ * @brief The timer count at which we want the timer to reset and activate an interrupt
+ *
+ * After we receive a start bit for a character, we will reset the timer.  We want the
+ * timer to roll over (reset) again as close to the completion of that character as
+ * possible. To achive this we put the timer into Clear Timer on Compare Match (CTC)
+ * Mode which allows us to specify the maximum value of the counter and enable an
+ * interrupt whenever the maximum counter value is reached.
+ *
+ * 1 character is 10 bits (1 start + 7 data + 1 parity + 1 stop)
+ * (1s/1200 bits) * (10 bits/character) = 8333 µs/character
+ * 8333 µs/character * 1 tick/64 µs = 130.2 ticks/character (round up to 131 = 0x83)
+ *
+ * The maximum spacing between the stop bit of one character and the start bit of the
+ * next character is 1.66ms (1660µs).  After the maximum spacing between characters, no
+ * new characters can be sent without waiting the full "marking" of 8.33 ms (8333µs).
+ *
+ * 8333 µs/character + 1660 µs maximum spacing = 9993.3 µs maximum until next character
+ * should start
+ * 9993 µs * 1 tick/64 µs = 156.1 upper maximum for a character
+ *
+ * So we'll set out TOP value (in OCR2A) on the timer to 157 (0x9D)
+ *
+ * In "normal" operation, the 8-bit timer would roll over after 256 ticks, 19.66 bits,
+ * or 16.38505 ms (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits (256
+ * ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
+ */
+#define TIMER_ROLLOVER_COUNT 0x9D
 /**
  * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
  * uneven tick increments get rounded up.
@@ -299,14 +436,6 @@ class SDI12Timer {
  * - Separate Prescaler Unit
  */
 #define TIMER_IN_USE_STR "TCNT4"
-/**
- * @brief The c macro name for the assembly timer to use
- *
- * The register used to access the low byte timer/counter value is TCNT4.
- * @note We only utilize the low byte register, effectively using the 10-bit timer as an
- * 8-bit timer.
- */
-#define TCNTX TCNT4  // Using Timer 4
 
 #if F_CPU == 16000000L
 /**
@@ -319,11 +448,6 @@ class SDI12Timer {
  *
  * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
- *
- * The first 8-bits of the 10-bit timer roll over after 256 ticks, 19.66 bits,
- * or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
  */
 #define TICKS_PER_BIT 13
 /**
@@ -332,6 +456,35 @@ class SDI12Timer {
  * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
  */
 #define BITS_PER_TICK_Q10 79
+/**
+ * @brief The timer count at which we want the timer to reset and activate an interrupt
+ *
+ * After we receive a start bit for a character, we will reset the timer.  We want the
+ * timer to roll over (reset) again as close to the completion of that character as
+ * possible. To achive this we put the timer into Clear Timer on Compare Match (CTC)
+ * Mode which allows us to specify the maximum value of the counter and enable an
+ * interrupt whenever the maximum counter value is reached.
+ *
+ * 1 character is 10 bits (1 start + 7 data + 1 parity + 1 stop)
+ * (1s/1200 bits) * (10 bits/character) = 8333 µs/character
+ * 8333 µs/character * 1 tick/64 µs = 130.2 ticks/character (round up to 131 = 0x83)
+ *
+ * The maximum spacing between the stop bit of one character and the start bit of the
+ * next character is 1.66ms (1660µs).  After the maximum spacing between characters, no
+ * new characters can be sent without waiting the full "marking" of 8.33 ms (8333µs).
+ *
+ * 8333 µs/character + 1660 µs maximum spacing = 9993.3 µs maximum until next character
+ * should start
+ * 9993 µs * 1 tick/64 µs = 156.1 upper maximum for a character
+ *
+ * So we'll set out TOP value (in OCR2A) on the timer to 157 (0x9D)
+ *
+ * The first 8-bits of the 10-bit timer roll over after 256 ticks, 19.66 bits,
+ * or 16.38505 ms
+ * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
+ * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
+ */
+#define TIMER_ROLLOVER_COUNT 0x9D
 /**
  * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
  * uneven tick increments get rounded up.
@@ -351,11 +504,6 @@ class SDI12Timer {
  *
  * 8MHz / 512 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
- *
- * The first 8-bits of the 10-bit timer roll over after 256 ticks, 19.66 bits,
- * or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
  */
 #define TICKS_PER_BIT 13
 /**
@@ -364,6 +512,35 @@ class SDI12Timer {
  * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
  */
 #define BITS_PER_TICK_Q10 79
+/**
+ * @brief The timer count at which we want the timer to reset and activate an interrupt
+ *
+ * After we receive a start bit for a character, we will reset the timer.  We want the
+ * timer to roll over (reset) again as close to the completion of that character as
+ * possible. To achive this we put the timer into Clear Timer on Compare Match (CTC)
+ * Mode which allows us to specify the maximum value of the counter and enable an
+ * interrupt whenever the maximum counter value is reached.
+ *
+ * 1 character is 10 bits (1 start + 7 data + 1 parity + 1 stop)
+ * (1s/1200 bits) * (10 bits/character) = 8333 µs/character
+ * 8333 µs/character * 1 tick/64 µs = 130.2 ticks/character (round up to 131 = 0x83)
+ *
+ * The maximum spacing between the stop bit of one character and the start bit of the
+ * next character is 1.66ms (1660µs).  After the maximum spacing between characters, no
+ * new characters can be sent without waiting the full "marking" of 8.33 ms (8333µs).
+ *
+ * 8333 µs/character + 1660 µs maximum spacing = 9993.3 µs maximum until next character
+ * should start
+ * 9993 µs * 1 tick/64 µs = 156.1 upper maximum for a character
+ *
+ * So we'll set out TOP value (in OCR2A) on the timer to 157 (0x9D)
+ *
+ * The first 8-bits of the 10-bit timer roll over after 256 ticks, 19.66 bits,
+ * or 16.38505 ms
+ * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
+ * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
+ */
+#define TIMER_ROLLOVER_COUNT 0x9D
 /**
  * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
  * uneven tick increments get rounded up.
@@ -426,12 +603,6 @@ class SDI12Timer {
  * - Can be used with DMA and to trigger DMA transactions
  */
 #define TIMER_IN_USE_STR "GCLK4-TC3"
-/**
- * @brief The c macro name for the assembly timer to use
- *
- * This signifies the register of timer/counter 3, the 8-bit count, the count value
- */
-#define TCNTX REG_TC3_COUNT8_COUNT  // Using Timer 3 with generic clock 4
 
 /**
  * @brief A string description of the prescaler in use.
@@ -444,10 +615,6 @@ class SDI12Timer {
  * 48MHz / 3 pre-prescaler = 16MHz
  * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
- *
- * The 8-bit count rolls over after 256 ticks, 19.66 bits, or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
  */
 #define TICKS_PER_BIT 13
 /**
@@ -456,6 +623,34 @@ class SDI12Timer {
  * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
  */
 #define BITS_PER_TICK_Q10 79
+/**
+ * @brief The timer count at which we want the timer to reset and activate an interrupt
+ *
+ * After we receive a start bit for a character, we will reset the timer.  We want the
+ * timer to roll over (reset) again as close to the completion of that character as
+ * possible. To achive this we put the timer into Clear Timer on Compare Match (CTC)
+ * Mode which allows us to specify the maximum value of the counter and enable an
+ * interrupt whenever the maximum counter value is reached.
+ *
+ * 1 character is 10 bits (1 start + 7 data + 1 parity + 1 stop)
+ * (1s/1200 bits) * (10 bits/character) = 8333 µs/character
+ * 8333 µs/character * 1 tick/64 µs = 130.2 ticks/character (round up to 131 = 0x83)
+ *
+ * The maximum spacing between the stop bit of one character and the start bit of the
+ * next character is 1.66ms (1660µs).  After the maximum spacing between characters, no
+ * new characters can be sent without waiting the full "marking" of 8.33 ms (8333µs).
+ *
+ * 8333 µs/character + 1660 µs maximum spacing = 9993.3 µs maximum until next character
+ * should start
+ * 9993 µs * 1 tick/64 µs = 156.1 upper maximum for a character
+ *
+ * So we'll set out TOP value (in OCR2A) on the timer to 157 (0x9D)
+ *
+ * In "normal" operation, the 8-bit timer would roll over after 256 ticks, 19.66 bits,
+ * or 16.38505 ms (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits (256
+ * ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
+ */
+#define TIMER_ROLLOVER_COUNT 0x9D
 /**
  * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
  * uneven tick increments get rounded up.
@@ -467,21 +662,6 @@ class SDI12Timer {
 // Espressif ESP32/ESP8266 boards
 //
 #elif defined(ESP32) || defined(ESP8266)
-  /**
-   * @brief Read the processor micros and right shift 6 bits (ie, divide by 64) to get a
-   * 64µs tick.
-   *
-   * @note  The ESP32 and ESP8266 are fast enough processors that they can take the time
-   * to read the core 'micros()' function still complete the other processing needed on
-   * the serial bits.  All of the other processors using the Arduino core also have the
-   * micros function, but the rest are not fast enough to waste the processor cycles to
-   * use the micros function and must use the faster assembly macros to read the
-   * processor timer directly.
-   *
-   * @return **sdi12timer_t** The current processor micros
-   */
-  sdi12timer_t SDI12TimerRead(void);
-
 /**
  * @brief The number of "ticks" of the timer that occur within the timing of one bit
  * at the SDI-12 baud rate of 1200 bits/second.
@@ -489,10 +669,6 @@ class SDI12Timer {
  * 48MHz / 3 pre-prescaler = 16MHz
  * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
- *
- * The 8-bit count rolls over after 256 ticks, 19.66 bits, or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 microseconds
  */
 #define TICKS_PER_BIT 13
 /**
@@ -501,6 +677,35 @@ class SDI12Timer {
  * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
  */
 #define BITS_PER_TICK_Q10 79
+/**
+ * @brief The timer count at which we want the timer to reset and activate an interrupt
+ *
+ * After we receive a start bit for a character, we will reset the timer.  We want the
+ * timer to roll over (reset) again as close to the completion of that character as
+ * possible. To achive this we put the timer into Clear Timer on Compare Match (CTC)
+ * Mode which allows us to specify the maximum value of the counter and enable an
+ * interrupt whenever the maximum counter value is reached.
+ *
+ * 1 character is 10 bits (1 start + 7 data + 1 parity + 1 stop)
+ * (1s/1200 bits) * (10 bits/character) = 8333 µs/character
+ * 8333 µs/character * 1 tick/64 µs = 130.2 ticks/character (round up to 131 = 0x83)
+ *
+ * The maximum spacing between the stop bit of one character and the start bit of the
+ * next character is 1.66ms (1660µs).  After the maximum spacing between characters, no
+ * new characters can be sent without waiting the full "marking" of 8.33 ms (8333µs).
+ *
+ * 8333 µs/character + 1660 µs maximum spacing = 9993.3 µs maximum until next character
+ * should start
+ * 9993 µs * 1 tick/64 µs = 156.1 upper maximum for a character
+ *
+ * So we'll set out TOP value (in OCR2A) on the timer to 157 (0x9D)
+ *
+ * In "normal" operation, the 8-bit timer would roll over after 256 ticks, 19.66 bits,
+ * or 16.38505 ms (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits (256
+ * ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 microseconds
+ *
+ */
+#define TIMER_ROLLOVER_COUNT 0x9D
 /**
  * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
  * uneven tick increments get rounded up.
@@ -513,6 +718,5 @@ class SDI12Timer {
 #else
 #error "Please define your board timer and pins"
 #endif
-};
 
 #endif  // SRC_SDI12_BOARDS_H_

@@ -180,23 +180,8 @@ enum LookaheadMode {
   /** Only tabs, spaces, line feeds & carriage returns are skipped.*/
   SKIP_WHITESPACE
 };
-/**
- * @brief The function or macro used to read the clock timer value.
- *
- * @note  The ESP32 and ESP8266 are fast enough processors that they can take the
- * time to read the core 'micros()' function still complete the other processing needed
- * on the serial bits.  All of the other processors using the Arduino core also have the
- * micros function, but the rest are not fast enough to waste the processor cycles to
- * use the micros function and must use the faster assembly macros to read the
- * processor timer directly.
- */
-#define READTIME sdi12timer.SDI12TimerRead()
-#else
-/**
- * @brief The function or macro used to read the clock timer value.
- */
-#define READTIME TCNTX
 #endif  // defined(ESP32) || defined(ESP8266)
+
 
 /**
  * @brief The main class for SDI 12 instances
@@ -944,6 +929,11 @@ class SDI12 : public Stream {
    */
   void startChar();
   /**
+   * @brief The interrupt service routine (ISR) - the function responding to timer
+   * overflow.
+   */
+  void overflowISR();
+  /**
    * @brief The interrupt service routine (ISR) - the function responding to changes in
    * rx line state.
    *
@@ -967,12 +957,19 @@ class SDI12 : public Stream {
 
  public:
   /**
-   * @brief Intermediary used by the ISR - passes off responsibility for the interrupt
-   * to the active object.
+   * @brief Intermediary used by the ISR - passes off responsibility for the pin-change
+   * interrupt to the active object.
    *
    * On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
    */
   static void handleInterrupt();
+  /**
+   * @brief Intermediary used by the ISR - passes off responsibility for the timer
+   * match/overflow interrupt to the active object.
+   *
+   * On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
+   */
+  static void handleOverflow();
 
   /** on AVR boards, uncomment to use your own PCINT ISRs */
   // #define SDI12_EXTERNAL_PCINT

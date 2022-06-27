@@ -242,7 +242,7 @@ SDI12::~SDI12() {
   if (isActive()) { _activeObject = NULL; }
   // Set the timer prescalers back to original values
   // NOTE:  This does NOT reset SAMD board pre-scalers!
-  sdi12timer.resetSDI12TimerPrescale();
+  sdi12timer.revertSDI12Timer();
 }
 
 // Begin
@@ -251,7 +251,7 @@ void SDI12::begin() {
   setActive();
   // Set up the prescaler as needed for timers
   // This function is defined in SDI12_boards.h
-  sdi12timer.configSDI12TimerPrescale();
+  sdi12timer.configureSDI12Timer();
 }
 
 void SDI12::begin(int8_t dataPin) {
@@ -265,7 +265,7 @@ void SDI12::end() {
   _activeObject = nullptr;
   // Set the timer prescalers back to original values
   // NOTE:  This does NOT reset SAMD board pre-scalers!
-  sdi12timer.resetSDI12TimerPrescale();
+  sdi12timer.revertSDI12Timer();
 }
 
 // Set the timeout return
@@ -356,34 +356,43 @@ void SDI12::setPinInterrupts(bool enable) {
 // sets the state of the SDI-12 object.
 void SDI12::setState(SDI12_STATES state) {
   switch (state) {
-    case SDI12_HOLDING: {
-      pinMode(_dataPin, INPUT);     // Turn off the pull-up resistor
-      pinMode(_dataPin, OUTPUT);    // Pin mode = output
-      digitalWrite(_dataPin, LOW);  // Pin state = low - marking
-      setPinInterrupts(false);      // Interrupts disabled on data pin
-      break;
-    }
-    case SDI12_TRANSMITTING: {
-      pinMode(_dataPin, INPUT);   // Turn off the pull-up resistor
-      pinMode(_dataPin, OUTPUT);  // Pin mode = output
-      setPinInterrupts(false);    // Interrupts disabled on data pin
-      break;
-    }
-    case SDI12_LISTENING: {
-      digitalWrite(_dataPin, LOW);  // Pin state = low (turns off pull-up)
-      pinMode(_dataPin, INPUT);     // Pin mode = input, pull-up resistor off
-      interrupts();                 // Enable general interrupts
-      setPinInterrupts(true);       // Enable Rx interrupts on data pin
-      rxState = WAITING_FOR_START_BIT;
-      break;
-    }
+    case SDI12_HOLDING:
+      {
+        pinMode(_dataPin, INPUT);                 // Turn off the pull-up resistor
+        pinMode(_dataPin, OUTPUT);                // Pin mode = output
+        digitalWrite(_dataPin, LOW);              // Pin state = low - marking
+        setPinInterrupts(false);                  // Interrupts disabled on data pin
+        sdi12timer.disableSDI12TimerInterrupt();  // Timer match interrupts disabled
+        break;
+      }
+    case SDI12_TRANSMITTING:
+      {
+        pinMode(_dataPin, INPUT);                 // Turn off the pull-up resistor
+        pinMode(_dataPin, OUTPUT);                // Pin mode = output
+        setPinInterrupts(false);                  // Interrupts disabled on data pin
+        sdi12timer.disableSDI12TimerInterrupt();  // Timer match interrupts disabled
+        break;
+      }
+    case SDI12_LISTENING:
+      {
+        digitalWrite(_dataPin, LOW);        // Pin state = low (turns off pull-up)
+        pinMode(_dataPin, INPUT);           // Pin mode = input, pull-up resistor off
+        interrupts();                       // Enable general interrupts
+        setPinInterrupts(true);             // Enable Rx interrupts on data pin
+        sdi12timer.resetSDI12TimerValue();  // Reset the timer value to 0
+        sdi12timer.enableSDI12TimerInterrupt();  // Timer match interrupts enabled
+        prevBitTCNT = 0;
+        rxState     = WAITING_FOR_START_BIT;
+        break;
+      }
     default:  // SDI12_DISABLED or SDI12_ENABLED
-    {
-      digitalWrite(_dataPin, LOW);  // Pin state = low (turns off pull-up)
-      pinMode(_dataPin, INPUT);     // Pin mode = input, pull-up resistor off
-      setPinInterrupts(false);      // Interrupts disabled on data pin
-      break;
-    }
+      {
+        digitalWrite(_dataPin, LOW);  // Pin state = low (turns off pull-up)
+        pinMode(_dataPin, INPUT);     // Pin mode = input, pull-up resistor off
+        setPinInterrupts(false);      // Interrupts disabled on data pin
+        sdi12timer.disableSDI12TimerInterrupt();  // Timer match interrupts disabled
+        break;
+      }
   }
 }
 
@@ -418,7 +427,7 @@ void SDI12::writeChar(uint8_t outChar) {
 
   noInterrupts();  // _ALL_ interrupts disabled so timing can't be shifted
 
-  sdi12timer_t t0 = READTIME;  // start time
+  sdi12timer_t t0 = sdi12timer.SDI12TimerRead();  // start time
 
   digitalWrite(
     _dataPin,
@@ -442,9 +451,10 @@ void SDI12::writeChar(uint8_t outChar) {
   }
 
   // Hold the line for the rest of the start bit duration
-
-  while ((uint8_t)(READTIME - t0) < txBitWidth) {}
-  t0 = READTIME;  // advance start time
+  while ((uint8_t)(sdi12timer.SDI12TimerRead() - t0) < txBitWidth) {
+    // hold
+  }
+  t0 = sdi12timer.SDI12TimerRead();  // advance start time
 
   // repeat for all data bits until the last bit different from marking
   while (currentTxBitNum++ < lastHighBit) {
@@ -455,8 +465,8 @@ void SDI12::writeChar(uint8_t outChar) {
       digitalWrite(_dataPin, HIGH);  // set the pin state to HIGH for 0's
     }
     // Hold the line for this bit duration
-    while ((uint8_t)(READTIME - t0) < txBitWidth) {}
-    t0 = READTIME;  // start time
+    while ((uint8_t)(sdi12timer.SDI12TimerRead() - t0) < txBitWidth) {}
+    t0 = sdi12timer.SDI12TimerRead();  // start time
 
     outChar = outChar >> 1;  // shift character to expose the following bit
   }
@@ -468,7 +478,7 @@ void SDI12::writeChar(uint8_t outChar) {
 
   // Hold the line low until the end of the 10th bit
   uint8_t bitTimeRemaining = txBitWidth * (10 - lastHighBit);
-  while ((uint8_t)(READTIME - t0) < bitTimeRemaining) {}
+  while ((uint8_t)(sdi12timer.SDI12TimerRead() - t0) < bitTimeRemaining) {}
 }
 
 // The typical write functionality for a stream object
@@ -542,7 +552,6 @@ void SDI12::sendResponse(FlashString resp) {
   setState(SDI12_LISTENING);  // return to listening state
 }
 
-
 /* ================ Interrupt Service Routine =======================================*/
 
 // Passes off responsibility for the interrupt to the active object.
@@ -551,25 +560,118 @@ void SDI12::sendResponse(FlashString resp) {
 void ICACHE_RAM_ATTR SDI12::handleInterrupt() {
   if (_activeObject) _activeObject->receiveISR();
 }
+
+void ICACHE_RAM_ATTR SDI12::handleOverflow() {
+  if (_activeObject) _activeObject->overflowISR();
+}
 #else
 void SDI12::handleInterrupt() {
   if (_activeObject) _activeObject->receiveISR();
+}
+
+void SDI12::handleOverflow() {
+  sdi12timer.clearSDI12TimerInterrupt();
+  if (_activeObject) _activeObject->overflowISR();
 }
 #endif
 
 // Creates a blank slate of bits for an incoming character
 void SDI12::startChar() {
-  rxState = 0x00;  // 0b00000000, got a start bit
-  rxMask  = 0x01;  // 0b00000001, bit mask, lsb first
-  rxValue = 0x00;  // 0b00000000, RX character to be, a blank slate
-}  // startChar
+  sdi12timer.resetSDI12TimerValue();  // reset the timer to have just enough time for
+  rxState = 0x00;                     // 0b00000000, got a start bit
+  rxMask  = 0x01;                     // 0b00000001, bit mask, lsb first
+  rxValue = 0x00;                     // 0b00000000, RX character to be, a blank slate
+  // the character
+  // charToBuffer('*');
+}
+
+void SDI12::overflowISR() {
+  // Because the stop bit and idle line level are both low, we cannot detect the end of
+  // the stop bit via pin-change interrupt.  So we use the timer match interrupt to
+  // guarantee that the stop bit **must** have at least started.
+
+  // NOTE:  Where possible, we set the timer overflow value to be the full length of a
+  // character *PLUS* the maxiumum space between characters.  This means that when
+  // receiving a string of characters, we will usually be using the pin change of the
+  // next start bit to deduce that the stop bit must have happened.  The timer-overflow
+  // acts to cap off and add to the buffer the last character sent before the line has
+  // gone to idle.
+
+  // NOTE: If the pin level is HIGH at the time of overflow, it cannot be that we missed
+  // the stop bit.  Even in the case of the 8Mhz board with a 256 prescaler and 8 bit
+  // timer - where the timer will actually roll over before the *end* of the stop bit,
+  // the stop bit will *start* before the roll-over and the pin level will thus be low.
+
+  // See if we have a partially complete character at the time of overflow and that we
+  // could be in idle after a stop bit.
+  // if (rxState != WAITING_FOR_START_BIT && pinLevel == LOW) {
+  if (rxState != WAITING_FOR_START_BIT) {
+    // charToBuffer('^');
+    int pinLevel = digitalRead(_dataPin);  // current RX data level
+    // charToBuffer((uint8_t)(pinLevel) + '0');
+    // Check how many bit times have passed since the last change
+    uint16_t rxBits = bitTimes((uint8_t)(TIMER_ROLLOVER_COUNT - prevBitTCNT));
+
+    // Calculate how many *data+parity* bits should be left in the current character
+    //      - Each character has a total of 10 bits, 1 start bit, 7 data bits, 1
+    //      parity
+    // bit, and 1 stop bit
+    //      - The #rxState holds record of how many of the data + parity bits we've
+    // gotten (up to 8)
+    //      - We have to treat the parity bit as a data bit because we don't know its
+    // state
+    //      - Since we're mid character, we know the start bit is past which knocks us
+    // down to 9
+    //      - We don't count the stop bit here.
+    uint8_t bitsLeft = 9 - rxState;
+    // charToBuffer(bitsLeft + '0');
+    // charToBuffer((uint8_t)(rxBits + '0'));
+    if (rxBits == 0) {
+      // charToBuffer('%');
+      return;
+    }
+
+    // If the number of bits passed since the last transition is more than then number
+    // of bits left on the character we should have gotten all of the bits of the
+    // character
+    bool gotAllBits = (rxBits > bitsLeft);
+    // charToBuffer(gotAllBits + '0');
+
+    if (pinLevel == LOW && gotAllBits) {
+      // Set all the bits received between the last change and the end of the overflow.
+      // If the current state is steady at LOW (this is NOT a change interrupt), then
+      // all bits between the last change and now must have been LOW. We back fill
+      // previous bits with 1's (inverse logic - LOW = 1)
+      while (bitsLeft-- > 0) {
+        // for each of the bits that happened in this frame
+
+        rxValue |= rxMask;     // Add a 1 to the LSB/right-most place of our character
+                               // value from the mask
+        rxMask = rxMask << 1;  // Shift the 1 in the mask up by one position
+      }
+
+      // Since the character must be finished by the timer interrupt
+      rxValue &= 0x7F;  // Throw away the parity bit (and with 0b01111111)
+      // charToBuffer('#');
+      charToBuffer(rxValue);  // Put the finished character into the buffer
+
+      // Reset the receive state after noting the stop bit
+      rxState = WAITING_FOR_START_BIT;
+    } else {
+      // charToBuffer('&');
+    }
+  }
+}
 
 // The actual interrupt service routine
 void SDI12::receiveISR() {
+  // charToBuffer('_');
   // time of this data transition (plus ISR latency)
-  sdi12timer_t thisBitTCNT = READTIME;
+  sdi12timer_t thisBitTCNT = sdi12timer.SDI12TimerRead();
 
-  uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
+  // current RX data level
+  int pinLevel = digitalRead(_dataPin);
+  // charToBuffer((uint8_t)(pinLevel) + '0');
 
   // Check if we're ready for a start bit, and if this could possibly be it.
   if (rxState == WAITING_FOR_START_BIT) {
@@ -598,6 +700,8 @@ void SDI12::receiveISR() {
     // down to 9
     //      - There will always be one left over for the stop bit, which will be LOW/1
     uint8_t bitsLeft = 9 - rxState;
+    // charToBuffer(bitsLeft + '0');
+    // charToBuffer((uint8_t)(rxBits) + '0');
     // If the number of bits passed since the last transition is more than then number
     // of bits left on the character we were working on, a new character must have
     // started.
@@ -614,6 +718,7 @@ void SDI12::receiveISR() {
     // cannot depend on the rxState telling us if we're WAITING_FOR_START_BIT, we have
     // to figure it out by the time passed.
     bool nextCharStarted = (rxBits > bitsLeft);
+    // charToBuffer(uint8_t(nextCharStarted) + '0');
 
     // Check how many data+parity bits have been sent in this frame.  This will be
     // different from the rxBits if a new character has started because of the start
@@ -660,7 +765,8 @@ void SDI12::receiveISR() {
 
     // If this was the 8th or more bit then the character and parity are complete.
     if (rxState > 7) {
-      rxValue &= 0x7F;        // Throw away the parity bit (and with 0b01111111)
+      rxValue &= 0x7F;  // Throw away the parity bit (and with 0b01111111)
+      // charToBuffer('@');      // Put the finished character into the buffer
       charToBuffer(rxValue);  // Put the finished character into the buffer
 
 
@@ -727,5 +833,27 @@ ISR(PCINT3_vect) {
 #endif
 
 #endif  // SDI12_EXTERNAL_PCINT
+
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || \
+  defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) ||  \
+  defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__) ||   \
+  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
+ISR(TIMER2_COMPA_vect) {
+  SDI12::handleOverflow();
+}
+
+// ATtiny boards (ie, adafruit trinket)
+#elif defined(__AVR_ATtiny25__) | defined(__AVR_ATtiny45__) | defined(__AVR_ATtiny85__)
+ISR(TIMER1_COMPA_vect) {
+  SDI12::handleOverflow();
+}
+
+// Arduino Leonardo & Yun and other 32U4 boards
+#elif defined(ARDUINO_AVR_YUN) || defined(ARDUINO_AVR_LEONARDO) || \
+  defined(__AVR_ATmega32U4__)
+ISR(TIMER4_COMPA_vect) {
+  SDI12::handleOverflow();
+}
+#endif
 
 #endif  // __AVR__
