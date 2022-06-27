@@ -633,17 +633,20 @@
     color: #777777;
   }
   blockquote {
-    background-color: #191919;
+    /* background-color: #191919; */
+    background-color: #e8e8e8;
+    /* background-color: #ffffff; */
   }
   blockquote,
   blockquote a,
   blockquote a:hover {
     font-family: "Roboto Slab";
-    line-height: 38px;
+    /* line-height: 38px;
     font-weight: 300;
-    font-style: normal;
-    color: #fff;
-    font-size: 24px;
+    font-style: normal; */
+    /* color: #fff; */
+    color: #3c763d;
+    /* font-size: 24px; */
   }
   .gp-loop-title {
     line-height: 22px;
@@ -1271,8 +1274,8 @@
         </div>
       </div>
     </div>
-    <script src="search-v1.js"></script>
-    <script src="searchdata-v1.js" async="async"></script>
+    <script src="search-v2.js"></script>
+    <script src="searchdata-v2.js" async="async"></script>
 
     <div class="gp-clear"></div>
 
@@ -1309,21 +1312,21 @@
             <li><a href="#_simple_logger_code">The Complete Example</a></li>
           </ul>
         </div>
-        <section id="xample_d_page"><h2>Example D: Check all Addresses for Active Sensors and Log Data</h2><p>This is a simple demonstration of the SDI-12 library for Arduino.</p><p>It discovers the address of all sensors active on a single bus and takes measurements from them.</p><p>Every SDI-12 device is different in the time it takes to take a measurement, and the amount of data it returns. This sketch will not serve every sensor type, but it will likely be helpful in getting you started.</p><p>Each sensor should have a unique address already - if not, multiple sensors may respond simultaneously to the same request and the output will not be readable by the Arduino.</p><p>To address a sensor, please see Example B: b_address_change.ino</p></section><section id="_simple_logger_pio"><h2>PlatformIO Configuration</h2><pre class="m-code"><span class="c1">; PlatformIO Project Configuration File</span>
+        <section id="xample_d_page"><h2>Example D: Check all Addresses for Active Sensors and Log Data</h2><p>This is a simple demonstration of the SDI-12 library for Arduino.</p><p>It discovers the address of all sensors active on a single bus and takes measurements from them.</p><p>Every SDI-12 device is different in the time it takes to take a measurement, and the amount of data it returns. This sketch will not serve every sensor type, but it will likely be helpful in getting you started.</p><p>Each sensor should have a unique address already - if not, multiple sensors may respond simultaneously to the same request and the output will not be readable by the Arduino.</p><p>To address a sensor, please see Example B: b_address_change.ino</p></section><section id="_simple_logger_pio"><h2>PlatformIO Configuration</h2><pre class="m-code"><span class="c1">; PlatformIO Project Configuration File</span><span class="w"></span>
 
-<span class="k">[platformio]</span>
-<span class="na">description</span> <span class="o">=</span> <span class="s">SDI-12 Library Example D:  Getting Data from All Attached Sensors</span>
-<span class="na">src_dir</span> <span class="o">=</span> <span class="s">.piolibdeps/Arduino-SDI-12_ID1486/examples/d_simple_logger</span>
+<span class="k">[platformio]</span><span class="w"></span>
+<span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">SDI-12 Library Example D:  Getting Data from All Attached Sensors</span><span class="w"></span>
+<span class="na">src_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">.piolibdeps/Arduino-SDI-12_ID1486/examples/d_simple_logger</span><span class="w"></span>
 
-<span class="k">[env:mayfly]</span>
-<span class="na">monitor_speed</span> <span class="o">=</span> <span class="s">115200</span>
-<span class="na">board</span> <span class="o">=</span> <span class="s">mayfly</span>
-<span class="na">platform</span> <span class="o">=</span> <span class="s">atmelavr</span>
-<span class="na">framework</span> <span class="o">=</span> <span class="s">arduino</span>
-<span class="na">lib_ldf_mode</span> <span class="o">=</span> <span class="s">deep+</span>
-<span class="na">lib_ignore</span> <span class="o">=</span> <span class="s">RTCZero</span>
-<span class="na">lib_deps</span> <span class="o">=</span>
-    <span class="na">SDI-12</span></pre></section><section id="_simple_logger_code"><h2>The Complete Example</h2><pre class="m-code"><span class="cm">/**</span>
+<span class="k">[env:mayfly]</span><span class="w"></span>
+<span class="na">monitor_speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">115200</span><span class="w"></span>
+<span class="na">board</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mayfly</span><span class="w"></span>
+<span class="na">platform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">atmelavr</span><span class="w"></span>
+<span class="na">framework</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">arduino</span><span class="w"></span>
+<span class="na">lib_ldf_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">deep+</span><span class="w"></span>
+<span class="na">lib_ignore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">RTCZero</span><span class="w"></span>
+<span class="na">lib_deps</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
+<span class="w">    </span><span class="na">SDI-12</span><span class="w"></span></pre></section><section id="_simple_logger_code"><h2>The Complete Example</h2><pre class="m-code"><span class="cm">/**</span>
 <span class="cm"> * @file d_simple_logger.ino</span>
 <span class="cm"> * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)</span>
 <span class="cm"> *                          and the EnviroDIY Development Team</span>
@@ -1347,263 +1350,266 @@
 <span class="cm"> * Arduino.</span>
 <span class="cm"> *</span>
 <span class="cm"> * To address a sensor, please see Example B: b_address_change.ino</span>
-<span class="cm"> */</span>
+<span class="cm"> */</span><span class="w"></span>
 
-<span class="cp">#include</span> <span class="cpf">&lt;SDI12.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SDI12.h&gt;</span><span class="cp"></span>
 
 <span class="cp">#define SERIAL_BAUD 115200 </span><span class="cm">/*!&lt; The baud rate for the output serial port */</span><span class="cp"></span>
 <span class="cp">#define DATA_PIN 7         </span><span class="cm">/*!&lt; The pin of the SDI-12 data bus */</span><span class="cp"></span>
 <span class="cp">#define POWER_PIN 22       </span><span class="cm">/*!&lt; The sensor power pin (or -1 if not switching power) */</span><span class="cp"></span>
+<span class="cp">#define WAKE_DELAY 0       </span><span class="cm">/*!&lt; Extra time needed for the sensor to wake (0-100ms) */</span><span class="cp"></span>
 
-<span class="cm">/** Define the SDI-12 bus */</span>
-<span class="n">SDI12</span> <span class="nf">mySDI12</span><span class="p">(</span><span class="n">DATA_PIN</span><span class="p">);</span>
+<span class="cm">/** Define the SDI-12 bus */</span><span class="w"></span>
+<span class="n">SDI12</span><span class="w"> </span><span class="nf">mySDI12</span><span class="p">(</span><span class="n">DATA_PIN</span><span class="p">);</span><span class="w"></span>
 
 <span class="c1">// keeps track of active addresses</span>
-<span class="kr">bool</span> <span class="n">isActive</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="mi">0</span><span class="p">,</span>
-<span class="p">};</span>
+<span class="kr">bool</span><span class="w"> </span><span class="n">isActive</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
 
-<span class="kr">uint8_t</span> <span class="n">numSensors</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-
+<span class="kr">uint8_t</span><span class="w"> </span><span class="n">numSensors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
 
 <span class="cm">/**</span>
 <span class="cm"> * @brief converts allowable address characters (&#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, &#39;A&#39;-&#39;Z&#39;) to a</span>
 <span class="cm"> * decimal number between 0 and 61 (inclusive) to cover the 62 possible</span>
 <span class="cm"> * addresses.</span>
-<span class="cm"> */</span>
-<span class="kr">byte</span> <span class="nf">charToDec</span><span class="p">(</span><span class="kr">char</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">((</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="sc">&#39;0&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="sc">&#39;9&#39;</span><span class="p">))</span> <span class="k">return</span> <span class="n">i</span> <span class="o">-</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-  <span class="k">if</span> <span class="p">((</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="sc">&#39;a&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="sc">&#39;z&#39;</span><span class="p">))</span> <span class="k">return</span> <span class="n">i</span> <span class="o">-</span> <span class="sc">&#39;a&#39;</span> <span class="o">+</span> <span class="mi">10</span><span class="p">;</span>
-  <span class="k">if</span> <span class="p">((</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="sc">&#39;A&#39;</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="sc">&#39;Z&#39;</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">i</span> <span class="o">-</span> <span class="sc">&#39;A&#39;</span> <span class="o">+</span> <span class="mi">36</span><span class="p">;</span>
-  <span class="k">else</span>
-    <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="kr">byte</span><span class="w"> </span><span class="nf">charToDec</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;9&#39;</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;z&#39;</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;Z&#39;</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">36</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">else</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
 <span class="cm">/**</span>
 <span class="cm"> * @brief maps a decimal number between 0 and 61 (inclusive) to allowable</span>
 <span class="cm"> * address characters &#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, &#39;A&#39;-&#39;Z&#39;,</span>
 <span class="cm"> *</span>
 <span class="cm"> * THIS METHOD IS UNUSED IN THIS EXAMPLE, BUT IT MAY BE HELPFUL.</span>
-<span class="cm"> */</span>
-<span class="kr">char</span> <span class="nf">decToChar</span><span class="p">(</span><span class="kr">byte</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">)</span> <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="sc">&#39;0&#39;</span><span class="p">;</span>
-  <span class="k">if</span> <span class="p">((</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">36</span><span class="p">))</span> <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="sc">&#39;a&#39;</span> <span class="o">-</span> <span class="mi">10</span><span class="p">;</span>
-  <span class="k">if</span> <span class="p">((</span><span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">36</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">62</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="sc">&#39;A&#39;</span> <span class="o">-</span> <span class="mi">36</span><span class="p">;</span>
-  <span class="k">else</span>
-    <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="kr">char</span><span class="w"> </span><span class="nf">decToChar</span><span class="p">(</span><span class="kr">byte</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">36</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">36</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">62</span><span class="p">))</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">36</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">else</span><span class="w"></span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
 <span class="cm">/**</span>
 <span class="cm"> * @brief gets identification information from a sensor, and prints it to the serial</span>
 <span class="cm"> * port</span>
 <span class="cm"> *</span>
 <span class="cm"> * @param i a character between &#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, or &#39;A&#39;-&#39;Z&#39;.</span>
-<span class="cm"> */</span>
-<span class="kr">void</span> <span class="nf">printInfo</span><span class="p">(</span><span class="kr">char</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kr">String</span> <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
-  <span class="n">command</span> <span class="o">+=</span> <span class="p">(</span><span class="kr">char</span><span class="p">)</span><span class="n">i</span><span class="p">;</span>
-  <span class="n">command</span> <span class="o">+=</span> <span class="s">&quot;I!&quot;</span><span class="p">;</span>
-  <span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
-  <span class="nf">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="kr">void</span><span class="w"> </span><span class="nf">printInfo</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="kr">char</span><span class="p">)</span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;I!&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">command</span><span class="p">,</span><span class="w"> </span><span class="n">WAKE_DELAY</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span><span class="w"></span>
 
-  <span class="kr">String</span> <span class="n">sdiResponse</span> <span class="o">=</span> <span class="n">mySDI12</span><span class="p">.</span><span class="nf">readStringUntil</span><span class="p">(</span><span class="sc">&#39;\n&#39;</span><span class="p">);</span>
-  <span class="n">sdiResponse</span><span class="p">.</span><span class="n">trim</span><span class="p">();</span>
-  <span class="c1">// allccccccccmmmmmmvvvxxx...xx&lt;CR&gt;&lt;LF&gt;</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">));</span>  <span class="c1">// address</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">).</span><span class="n">toFloat</span><span class="p">()</span> <span class="o">/</span> <span class="mi">10</span><span class="p">);</span>  <span class="c1">// SDI-12 version number</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">));</span>  <span class="c1">// vendor id</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">17</span><span class="p">));</span>  <span class="c1">// sensor model</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">20</span><span class="p">));</span>  <span class="c1">// sensor version</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">20</span><span class="p">));</span>  <span class="c1">// sensor id</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">sdiResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">readStringUntil</span><span class="p">(</span><span class="sc">&#39;\n&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">trim</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// allccccccccmmmmmmvvvxxx...xx&lt;CR&gt;&lt;LF&gt;</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span><span class="w">  </span><span class="c1">// address</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">).</span><span class="n">toFloat</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span><span class="w">  </span><span class="c1">// SDI-12 version number</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">));</span><span class="w">  </span><span class="c1">// vendor id</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">17</span><span class="p">));</span><span class="w">  </span><span class="c1">// sensor model</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">));</span><span class="w">  </span><span class="c1">// sensor version</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">20</span><span class="p">));</span><span class="w">  </span><span class="c1">// sensor id</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="kr">bool</span> <span class="nf">getResults</span><span class="p">(</span><span class="kr">char</span> <span class="n">i</span><span class="p">,</span> <span class="kr">int</span> <span class="n">resultsExpected</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kr">uint8_t</span> <span class="n">resultsReceived</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="kr">uint8_t</span> <span class="n">cmd_number</span>      <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-  <span class="k">while</span> <span class="p">(</span><span class="n">resultsReceived</span> <span class="o">&lt;</span> <span class="n">resultsExpected</span> <span class="o">&amp;&amp;</span> <span class="n">cmd_number</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kr">String</span> <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
-    <span class="c1">// in this example we will only take the &#39;DO&#39; measurement</span>
-    <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
-    <span class="n">command</span> <span class="o">+=</span> <span class="n">i</span><span class="p">;</span>
-    <span class="n">command</span> <span class="o">+=</span> <span class="s">&quot;D&quot;</span><span class="p">;</span>
-    <span class="n">command</span> <span class="o">+=</span> <span class="n">cmd_number</span><span class="p">;</span>
-    <span class="n">command</span> <span class="o">+=</span> <span class="s">&quot;!&quot;</span><span class="p">;</span>  <span class="c1">// SDI-12 command to get data [address][D][dataOption][!]</span>
-    <span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
+<span class="kr">bool</span><span class="w"> </span><span class="nf">getResults</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kr">int</span><span class="w"> </span><span class="n">resultsExpected</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">cmd_number</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">resultsExpected</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">cmd_number</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">9</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kr">String</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// in this example we will only take the &#39;DO&#39; measurement</span>
+<span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;D&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">cmd_number</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span><span class="w">  </span><span class="c1">// SDI-12 command to get data [address][D][dataOption][!]</span>
+<span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">command</span><span class="p">,</span><span class="w"> </span><span class="n">WAKE_DELAY</span><span class="p">);</span><span class="w"></span>
 
-    <span class="kr">uint32_t</span> <span class="n">start</span> <span class="o">=</span> <span class="nf">millis</span><span class="p">();</span>
-    <span class="k">while</span> <span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nf">millis</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1500</span><span class="p">)</span> <span class="p">{}</span>
-    <span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>           <span class="c1">// ignore the repeated SDI12 address</span>
-    <span class="kr">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">mySDI12</span><span class="p">.</span><span class="nf">peek</span><span class="p">();</span>  <span class="c1">// check if there&#39;s a &#39;+&#39; and toss if so</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;+&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span> <span class="p">}</span>
+<span class="w">    </span><span class="kr">uint32_t</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">millis</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="nf">millis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1500</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+<span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span><span class="w">           </span><span class="c1">// ignore the repeated SDI12 address</span>
+<span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">peek</span><span class="p">();</span><span class="w">  </span><span class="c1">// check if there&#39;s a &#39;+&#39; and toss if so</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;+&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
 
-    <span class="k">while</span> <span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span> <span class="p">{</span>
-      <span class="kr">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">mySDI12</span><span class="p">.</span><span class="nf">peek</span><span class="p">();</span>
-      <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;-&#39;</span> <span class="o">||</span> <span class="p">(</span><span class="n">c</span> <span class="o">&gt;=</span> <span class="sc">&#39;0&#39;</span> <span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="sc">&#39;9&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;.&#39;</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kr">float</span> <span class="n">result</span> <span class="o">=</span> <span class="n">mySDI12</span><span class="p">.</span><span class="nf">parseFloat</span><span class="p">(</span><span class="n">SKIP_NONE</span><span class="p">);</span>
-        <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="kr">String</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="mi">10</span><span class="p">));</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">result</span> <span class="o">!=</span> <span class="mi">-9999</span><span class="p">)</span> <span class="p">{</span> <span class="n">resultsReceived</span><span class="o">++</span><span class="p">;</span> <span class="p">}</span>
-      <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">c</span> <span class="o">==</span> <span class="sc">&#39;+&#39;</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>
-        <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>
-      <span class="p">}</span>
-      <span class="nf">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>  <span class="c1">// 1 character ~ 7.5ms</span>
-    <span class="p">}</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">resultsReceived</span> <span class="o">&lt;</span> <span class="n">resultsExpected</span><span class="p">)</span> <span class="p">{</span> <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span> <span class="p">}</span>
-    <span class="n">cmd_number</span><span class="o">++</span><span class="p">;</span>
-  <span class="p">}</span>
-  <span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="kr">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">peek</span><span class="p">();</span><span class="w"></span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;-&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;9&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;.&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="kr">float</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">parseFloat</span><span class="p">(</span><span class="n">SKIP_NONE</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="kr">String</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">));</span><span class="w"></span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">-9999</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">resultsReceived</span><span class="o">++</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;+&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span><span class="w"></span>
+<span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">      </span><span class="nf">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="w">  </span><span class="c1">// 1 character ~ 7.5ms</span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">resultsExpected</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">cmd_number</span><span class="o">++</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span><span class="w"></span>
 
-  <span class="k">return</span> <span class="n">resultsReceived</span> <span class="o">==</span> <span class="n">resultsExpected</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">resultsExpected</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="kr">bool</span> <span class="nf">takeMeasurement</span><span class="p">(</span><span class="kr">char</span> <span class="n">i</span><span class="p">,</span> <span class="kr">String</span> <span class="n">meas_type</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">)</span> <span class="p">{</span>
-  <span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
-  <span class="kr">String</span> <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
-  <span class="n">command</span> <span class="o">+=</span> <span class="n">i</span><span class="p">;</span>
-  <span class="n">command</span> <span class="o">+=</span> <span class="s">&quot;M&quot;</span><span class="p">;</span>
-  <span class="n">command</span> <span class="o">+=</span> <span class="n">meas_type</span><span class="p">;</span>
-  <span class="n">command</span> <span class="o">+=</span> <span class="s">&quot;!&quot;</span><span class="p">;</span>  <span class="c1">// SDI-12 measurement command format  [address][&#39;M&#39;][!]</span>
-  <span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
-  <span class="nf">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="kr">bool</span><span class="w"> </span><span class="nf">takeMeasurement</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kr">String</span><span class="w"> </span><span class="n">meas_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;M&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">meas_type</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span><span class="w">  </span><span class="c1">// SDI-12 measurement command format  [address][&#39;M&#39;][!]</span>
+<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">command</span><span class="p">,</span><span class="w"> </span><span class="n">WAKE_DELAY</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span><span class="w"></span>
 
-  <span class="c1">// wait for acknowlegement with format [address][ttt (3 char, seconds)][number of</span>
-  <span class="c1">// measurments available, 0-9]</span>
-  <span class="kr">String</span> <span class="n">sdiResponse</span> <span class="o">=</span> <span class="n">mySDI12</span><span class="p">.</span><span class="nf">readStringUntil</span><span class="p">(</span><span class="sc">&#39;\n&#39;</span><span class="p">);</span>
-  <span class="n">sdiResponse</span><span class="p">.</span><span class="n">trim</span><span class="p">();</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">command</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
 
-  <span class="kr">String</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// wait for acknowlegement with format [address][ttt (3 char, seconds)][number of</span>
+<span class="w">  </span><span class="c1">// measurments available, 0-9]</span>
+<span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">sdiResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">readStringUntil</span><span class="p">(</span><span class="sc">&#39;\n&#39;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">trim</span><span class="p">();</span><span class="w"></span>
 
-  <span class="c1">// find out how long we have to wait (in seconds).</span>
-  <span class="kr">uint8_t</span> <span class="n">wait</span> <span class="o">=</span> <span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">).</span><span class="n">toInt</span><span class="p">();</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">wait</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
 
-  <span class="c1">// Set up the number of results to expect</span>
-  <span class="kr">int</span> <span class="n">numResults</span> <span class="o">=</span> <span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="n">toInt</span><span class="p">();</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">numResults</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// find out how long we have to wait (in seconds).</span>
+<span class="w">  </span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">wait</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">).</span><span class="n">toInt</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">wait</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
 
-  <span class="kr">unsigned</span> <span class="kr">long</span> <span class="n">timerStart</span> <span class="o">=</span> <span class="nf">millis</span><span class="p">();</span>
-  <span class="k">while</span> <span class="p">((</span><span class="nf">millis</span><span class="p">()</span> <span class="o">-</span> <span class="n">timerStart</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">1000</span> <span class="o">*</span> <span class="p">(</span><span class="n">wait</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span>  <span class="c1">// sensor can interrupt us to let us know it is done early</span>
-    <span class="p">{</span>
-      <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="nf">millis</span><span class="p">()</span> <span class="o">-</span> <span class="n">timerStart</span><span class="p">);</span>
-      <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-      <span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
-      <span class="k">break</span><span class="p">;</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-  <span class="c1">// Wait for anything else and clear it out</span>
-  <span class="nf">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
-  <span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">// Set up the number of results to expect</span>
+<span class="w">  </span><span class="kr">int</span><span class="w"> </span><span class="n">numResults</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">4</span><span class="p">).</span><span class="n">toInt</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">numResults</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
 
-  <span class="k">if</span> <span class="p">(</span><span class="n">numResults</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">getResults</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">numResults</span><span class="p">);</span> <span class="p">}</span>
+<span class="w">  </span><span class="kr">unsigned</span><span class="w"> </span><span class="kr">long</span><span class="w"> </span><span class="n">timerStart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">millis</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">((</span><span class="nf">millis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">timerStart</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="p">(</span><span class="mi">1000UL</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">wait</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span><span class="w">  </span><span class="c1">// sensor can interrupt us to let us know it is done early</span>
+<span class="w">    </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="nf">millis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">timerStart</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span><span class="w"></span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="c1">// Wait for anything else and clear it out</span>
+<span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span><span class="w"></span>
 
-  <span class="k">return</span> <span class="kr">true</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">numResults</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">getResults</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">numResults</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
 <span class="c1">// this checks for activity at a particular address</span>
 <span class="c1">// expects a char, &#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, or &#39;A&#39;-&#39;Z&#39;</span>
-<span class="kr">boolean</span> <span class="nf">checkActive</span><span class="p">(</span><span class="kr">char</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kr">String</span> <span class="n">myCommand</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
-  <span class="n">myCommand</span>        <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
-  <span class="n">myCommand</span> <span class="o">+=</span> <span class="p">(</span><span class="kr">char</span><span class="p">)</span><span class="n">i</span><span class="p">;</span>  <span class="c1">// sends basic &#39;acknowledge&#39; command [address][!]</span>
-  <span class="n">myCommand</span> <span class="o">+=</span> <span class="s">&quot;!&quot;</span><span class="p">;</span>
+<span class="kr">boolean</span><span class="w"> </span><span class="nf">checkActive</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">myCommand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">myCommand</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="n">myCommand</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="kr">char</span><span class="p">)</span><span class="n">i</span><span class="p">;</span><span class="w">  </span><span class="c1">// sends basic &#39;acknowledge&#39; command [address][!]</span>
+<span class="w">  </span><span class="n">myCommand</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span><span class="w"></span>
 
-  <span class="k">for</span> <span class="p">(</span><span class="kr">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>  <span class="c1">// goes through three rapid contact attempts</span>
-    <span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">myCommand</span><span class="p">);</span>
-    <span class="nf">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span> <span class="p">{</span>  <span class="c1">// If we here anything, assume we have an active sensor</span>
-      <span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
-      <span class="k">return</span> <span class="kr">true</span><span class="p">;</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-  <span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
-  <span class="k">return</span> <span class="kr">false</span><span class="p">;</span>
-<span class="p">}</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// goes through three rapid contact attempts</span>
+<span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">myCommand</span><span class="p">,</span><span class="w"> </span><span class="n">WAKE_DELAY</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// If we here anything, assume we have an active sensor</span>
+<span class="w">      </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span><span class="w"></span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
+<span class="kr">void</span><span class="w"> </span><span class="nb">setup</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">begin</span><span class="p">(</span><span class="n">SERIAL_BAUD</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">Serial</span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="p">;</span><span class="w"></span>
 
-<span class="kr">void</span> <span class="nb">setup</span><span class="p">()</span> <span class="p">{</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">begin</span><span class="p">(</span><span class="n">SERIAL_BAUD</span><span class="p">);</span>
-  <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="nf">Serial</span><span class="p">)</span>
-    <span class="p">;</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Opening SDI-12 bus...&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">begin</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span><span class="w">  </span><span class="c1">// allow things to settle</span>
 
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Opening SDI-12 bus...&quot;</span><span class="p">);</span>
-  <span class="n">mySDI12</span><span class="p">.</span><span class="nf">begin</span><span class="p">();</span>
-  <span class="nf">delay</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>  <span class="c1">// allow things to settle</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Timeout value: &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="n">TIMEOUT</span><span class="p">);</span><span class="w"></span>
 
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Timeout value: &quot;</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="n">TIMEOUT</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">// Power the sensors;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">POWER_PIN</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Powering up sensors, wait...&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="nf">pinMode</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span><span class="w"> </span><span class="kr">OUTPUT</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="nf">digitalWrite</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span><span class="w"> </span><span class="kr">HIGH</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mf">15000L</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// delay(200);</span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="c1">// Power the sensors;</span>
-  <span class="k">if</span> <span class="p">(</span><span class="n">POWER_PIN</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Powering up sensors...&quot;</span><span class="p">);</span>
-    <span class="nf">pinMode</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span> <span class="kr">OUTPUT</span><span class="p">);</span>
-    <span class="nf">digitalWrite</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span> <span class="kr">HIGH</span><span class="p">);</span>
-    <span class="nf">delay</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="c1">// Quickly Scan the Address Space</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Scanning all addresses, please wait...&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Sensor Address, Protocol Version, Sensor Vendor, Sensor Model, &quot;</span><span class="w"></span>
+<span class="w">                 </span><span class="s">&quot;Sensor Version, Sensor ID&quot;</span><span class="p">);</span><span class="w"></span>
 
-  <span class="c1">// Quickly Scan the Address Space</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Scanning all addresses, please wait...&quot;</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Sensor Address, Protocol Version, Sensor Vendor, Sensor Model, &quot;</span>
-                 <span class="s">&quot;Sensor Version, Sensor ID&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">byte</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">62</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">decToChar</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">checkActive</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">numSensors</span><span class="o">++</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">isActive</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">printInfo</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;Total number of sensors found:  &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">numSensors</span><span class="p">);</span><span class="w"></span>
 
-  <span class="k">for</span> <span class="p">(</span><span class="kr">byte</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">62</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kr">char</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">decToChar</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">checkActive</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span> <span class="p">{</span>
-      <span class="n">numSensors</span><span class="o">++</span><span class="p">;</span>
-      <span class="n">isActive</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-      <span class="n">printInfo</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span>
-      <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;Total number of sensors found:  &quot;</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">numSensors</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">numSensors</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="w"></span>
+<span class="w">      </span><span class="s">&quot;No sensors found, please check connections and restart the Arduino.&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="kr">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1">// do nothing forever</span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-  <span class="k">if</span> <span class="p">(</span><span class="n">numSensors</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span>
-      <span class="s">&quot;No sensors found, please check connections and restart the Arduino.&quot;</span><span class="p">);</span>
-    <span class="k">while</span> <span class="p">(</span><span class="kr">true</span><span class="p">)</span> <span class="p">{</span> <span class="nf">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span> <span class="p">}</span>  <span class="c1">// do nothing forever</span>
-  <span class="p">}</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Time Elapsed (s), Measurement Type, Sensor Address, Est Measurement &quot;</span><span class="w"></span>
+<span class="w">                 </span><span class="s">&quot;Time (s), Number Measurements, &quot;</span><span class="w"></span>
+<span class="w">                 </span><span class="s">&quot;Real Measurement Time (ms), Measurement 1, Measurement 2, ... etc.&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="s">&quot;-------------------------------------------------------------------------------&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span>
-    <span class="s">&quot;Time Elapsed (s), Sensor Address, Est Measurement Time (s), Number Measurements, &quot;</span>
-    <span class="s">&quot;Real Measurement Time (ms), Measurement 1, Measurement 2, ... etc.&quot;</span><span class="p">);</span>
-  <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span>
-    <span class="s">&quot;-------------------------------------------------------------------------------&quot;</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="kr">void</span><span class="w"> </span><span class="nb">loop</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">commands</span><span class="p">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;3&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;4&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;5&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;6&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;7&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;8&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;9&quot;</span><span class="p">};</span><span class="w"></span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">a</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="c1">// measure one at a time</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">byte</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">62</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="kr">char</span><span class="w"> </span><span class="n">addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">decToChar</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w"></span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isActive</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="c1">// Serial.print(millis() / 1000);</span>
+<span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="nf">millis</span><span class="p">());</span><span class="w"></span>
+<span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span><span class="w"></span>
+<span class="w">        </span><span class="n">takeMeasurement</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span><span class="w"> </span><span class="n">commands</span><span class="p">[</span><span class="n">a</span><span class="p">]);</span><span class="w"></span>
+<span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span><span class="w"></span>
+<span class="w">      </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="p">}</span><span class="w"></span>
 
-<span class="kr">void</span> <span class="nb">loop</span><span class="p">()</span> <span class="p">{</span>
-  <span class="kr">String</span> <span class="n">commands</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="s">&quot;1&quot;</span><span class="p">,</span> <span class="s">&quot;2&quot;</span><span class="p">,</span> <span class="s">&quot;3&quot;</span><span class="p">,</span> <span class="s">&quot;4&quot;</span><span class="p">,</span> <span class="s">&quot;5&quot;</span><span class="p">,</span> <span class="s">&quot;6&quot;</span><span class="p">,</span> <span class="s">&quot;7&quot;</span><span class="p">,</span> <span class="s">&quot;8&quot;</span><span class="p">,</span> <span class="s">&quot;9&quot;</span><span class="p">};</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kr">uint8_t</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="n">a</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// measure one at a time</span>
-    <span class="k">for</span> <span class="p">(</span><span class="kr">byte</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">62</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-      <span class="kr">char</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">decToChar</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-      <span class="k">if</span> <span class="p">(</span><span class="n">isActive</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
-        <span class="c1">// Serial.print(millis() / 1000);</span>
-        <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="nf">millis</span><span class="p">());</span>
-        <span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-        <span class="n">takeMeasurement</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">commands</span><span class="p">[</span><span class="n">a</span><span class="p">]);</span>
-        <span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-
-  <span class="nf">delay</span><span class="p">(</span><span class="mf">10000L</span><span class="p">);</span>  <span class="c1">// wait ten seconds between measurement attempts.</span>
-<span class="p">}</span></pre></section>
+<span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mf">10000L</span><span class="p">);</span><span class="w">  </span><span class="c1">// wait ten seconds between measurement attempts.</span>
+<span class="p">}</span><span class="w"></span></pre></section>
         <div class="m-note m-dim m-thin m-text-center"><a href="c_check_all_addresses_8ino-example.html" class="m-doc">&laquo; c_check_all_addresses.ino</a> | <a href="examples_page.html" class="m-doc">Examples</a> | <a href="e_continuous_measurement_8ino-example.html" class="m-doc">e_continuous_measurement.ino &raquo;</a></div>
 
                     </div>

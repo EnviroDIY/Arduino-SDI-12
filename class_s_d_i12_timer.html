@@ -633,17 +633,20 @@
     color: #777777;
   }
   blockquote {
-    background-color: #191919;
+    /* background-color: #191919; */
+    background-color: #e8e8e8;
+    /* background-color: #ffffff; */
   }
   blockquote,
   blockquote a,
   blockquote a:hover {
     font-family: "Roboto Slab";
-    line-height: 38px;
+    /* line-height: 38px;
     font-weight: 300;
-    font-style: normal;
-    color: #fff;
-    font-size: 24px;
+    font-style: normal; */
+    /* color: #fff; */
+    color: #3c763d;
+    /* font-size: 24px; */
   }
   .gp-loop-title {
     line-height: 22px;
@@ -1269,8 +1272,8 @@
         </div>
       </div>
     </div>
-    <script src="search-v1.js"></script>
-    <script src="searchdata-v1.js" async="async"></script>
+    <script src="search-v2.js"></script>
+    <script src="searchdata-v2.js" async="async"></script>
 
     <div class="gp-clear"></div>
 
@@ -1322,7 +1325,7 @@
           </h1>
         </header>
         <p>The class used to define the processor timer for the SDI-12 serial emulation.</p>
-        <div class="m-block m-default">
+        <nav class="m-block m-default">
           <ul>
             <li>
               Reference
@@ -1338,7 +1341,7 @@
               </ul>
             </li>
           </ul>
-        </div>
+        </nav>
 
 
 
@@ -1349,7 +1352,7 @@
           <h2>Constructors, destructors, conversion operators</h2>
           <dl class="m-doc">
                           <dt id="ae9b0fac78b0614cf6fa68938b6085a16">
-              <span class="m-doc-wrap-bumper"><span class="m-param"></span><a href="#ae9b0fac78b0614cf6fa68938b6085a16" class="m-doc-self">SDI12Timer</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim"></span><a href="#ae9b0fac78b0614cf6fa68938b6085a16" class="m-doc-self">SDI12Timer</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Construct a new <a href="class_s_d_i12_timer.html" class="m-doc">SDI12Timer</a>.</dd>
           </dl>
@@ -1360,11 +1363,11 @@
           <h2>Public functions</h2>
           <dl class="m-doc">
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#a84a0539d5874403608becd52a14bbea1" class="m-doc">configSDI12TimerPrescale</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span> <span class="m-param"></span>)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a84a0539d5874403608becd52a14bbea1" class="m-doc">configSDI12TimerPrescale</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span> <span class="m-param"></span>)</span>
             </dt>
             <dd>Set the processor timer prescaler such that the 10 bits of an SDI-12 character are divided into the rollover time of the timer.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#a27d511652473c06f88d6482e4de31a84" class="m-doc">resetSDI12TimerPrescale</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span> <span class="m-param"></span>)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a27d511652473c06f88d6482e4de31a84" class="m-doc">resetSDI12TimerPrescale</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span> <span class="m-param"></span>)</span>
             </dt>
             <dd>Reset the processor timer prescaler to whatever it was prior to being adjusted for this library.</dd>
           </dl>
@@ -1391,7 +1394,7 @@
           <h2>Function documentation</h2>
                       <section class="m-doc-details" id="a84a0539d5874403608becd52a14bbea1"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a84a0539d5874403608becd52a14bbea1" class="m-doc-self">configSDI12TimerPrescale</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span> <span class="m-param"></span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a84a0539d5874403608becd52a14bbea1" class="m-doc-self">configSDI12TimerPrescale</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span> <span class="m-param"></span>)</span>
             </h3>
             <p>Set the processor timer prescaler such that the 10 bits of an SDI-12 character are divided into the rollover time of the timer.</p>
             <aside class="m-note m-info"><h4>Note</h4><p>The ESP32 and ESP8266 are fast enough processors that they can take the time to read the core &#x27;micros()&#x27; function still complete the other processing needed on the serial bits. All of the other processors using the Arduino core also have the micros function, but the rest are not fast enough to waste the processor cycles to use the micros function and must manually configure the processor timer and use the faster assembly macros to read that processor timer directly.</p></aside>
@@ -1401,7 +1404,7 @@
         </section>
                       <section class="m-doc-details" id="a27d511652473c06f88d6482e4de31a84"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a27d511652473c06f88d6482e4de31a84" class="m-doc-self">resetSDI12TimerPrescale</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span> <span class="m-param"></span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a27d511652473c06f88d6482e4de31a84" class="m-doc-self">resetSDI12TimerPrescale</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span> <span class="m-param"></span>)</span>
             </h3>
             <p>Reset the processor timer prescaler to whatever it was prior to being adjusted for this library.</p>
             <aside class="m-note m-info"><h4>Note</h4><p>The prescaler is <em>NOT</em> set back to initial values for SAMD boards! On those processors, generic clock generator 4 will remain configured for SDI-12 until it is reset outside of this library.</p></aside>

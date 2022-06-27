@@ -633,17 +633,20 @@
     color: #777777;
   }
   blockquote {
-    background-color: #191919;
+    /* background-color: #191919; */
+    background-color: #e8e8e8;
+    /* background-color: #ffffff; */
   }
   blockquote,
   blockquote a,
   blockquote a:hover {
     font-family: "Roboto Slab";
-    line-height: 38px;
+    /* line-height: 38px;
     font-weight: 300;
-    font-style: normal;
-    color: #fff;
-    font-size: 24px;
+    font-style: normal; */
+    /* color: #fff; */
+    color: #3c763d;
+    /* font-size: 24px; */
   }
   .gp-loop-title {
     line-height: 22px;
@@ -1269,8 +1272,8 @@
         </div>
       </div>
     </div>
-    <script src="search-v1.js"></script>
-    <script src="searchdata-v1.js" async="async"></script>
+    <script src="search-v2.js"></script>
+    <script src="searchdata-v2.js" async="async"></script>
 
     <div class="gp-clear"></div>
 
@@ -1304,7 +1307,7 @@
           </h1>
         </header>
         <p>This file defines the timing units needed for various Arduino boards.</p>
-        <div class="m-block m-default">
+        <nav class="m-block m-default">
           <ul>
             <li>
               Reference
@@ -1322,7 +1325,7 @@
               </ul>
             </li>
           </ul>
-        </div>
+        </nav>
           <aside class="m-note m-default"><h4>Copyright</h4><p>(c) 2013-2020 Stroud Water Research Center (SWRC) and the EnviroDIY Development Team</p></aside><aside class="m-note m-default"><h4>Author</h4><p>Sara Geleskie Damiano (<a href="mailto:sdamiano@stroudcenter.org">sdamiano@stroudcenter.org</a>)</p></aside>
         <section id="nested-classes">
           <h2>Classes</h2>
@@ -1345,12 +1348,12 @@
         <section id="define-members">
           <h2>Defines</h2>
           <dl class="m-doc">
-            <dt id="afef0136d24b061ecbca900d40a802eb4">
-              <span class="m-doc-wrap-bumper">#define <a href="#afef0136d24b061ecbca900d40a802eb4" class="m-doc-self">TIMER_IN_USE_STR</a><span class="m-dim m-right-m m-text-right"> = "TCNT2"</span></span>
+            <dt>
+              <span class="m-doc-wrap-bumper">#define <a href="#afef0136d24b061ecbca900d40a802eb4" class="m-doc">TIMER_IN_USE_STR</a><span class="m-dim m-right-m m-text-right"> = "TCNT2"</span></span>
             </dt>
             <dd>A string description of the timer to use.</dd>
-            <dt id="a596e5e11e6a29ab641cfee180b8242f8">
-              <span class="m-doc-wrap-bumper">#define <a href="#a596e5e11e6a29ab641cfee180b8242f8" class="m-doc-self">TCNTX</a><span class="m-dim m-right-m m-text-right"> = TCNT2</span></span>
+            <dt>
+              <span class="m-doc-wrap-bumper">#define <a href="#a596e5e11e6a29ab641cfee180b8242f8" class="m-doc">TCNTX</a><span class="m-dim m-right-m m-text-right"> = TCNT2</span></span>
             </dt>
             <dd>The c macro name for the assembly timer to use.</dd>
             <dt id="adc8c079d3d8c49897db54247048cf74d">
@@ -1390,6 +1393,36 @@
 
         <section id="define-details">
           <h2>Define documentation</h2>
+        <section class="m-doc-details" id="afef0136d24b061ecbca900d40a802eb4">
+          <div>
+
+            <h3>
+              <span class="m-doc-wrap-bumper">#define <a href="#afef0136d24b061ecbca900d40a802eb4" class="m-doc-self">TIMER_IN_USE_STR</a><span class="m-dim m-right-m m-text-right"> = "TCNT2"</span></span>
+            </h3>
+
+            <p>A string description of the timer to use.</p>
+
+
+              <p>Timer/Counter2 (TC2) is a general purpose, single channel, 8-bit Timer/Counter module.</p><p>Features</p><ul><li>Single Channel Counter</li><li>Clear Timer on Compare Match (Auto Reload)</li><li>Glitch-free, Phase Correct Pulse Width Modulator (PWM)</li><li>Frequency Generator</li><li>10-bit Clock Prescaler</li><li>Overflow and Compare Match Interrupt Sources (TOV2, OCF2A, and OCF2B)</li><li>Allows Clocking from External 32kHz Watch Crystal Independent of the I/O Clock</li></ul>
+
+            <hr>
+          </div>
+        </section>
+        <section class="m-doc-details" id="a596e5e11e6a29ab641cfee180b8242f8">
+          <div>
+
+            <h3>
+              <span class="m-doc-wrap-bumper">#define <a href="#a596e5e11e6a29ab641cfee180b8242f8" class="m-doc-self">TCNTX</a><span class="m-dim m-right-m m-text-right"> = TCNT2</span></span>
+            </h3>
+
+            <p>The c macro name for the assembly timer to use.</p>
+
+
+              <p>The register used to access the timer/counter value is TCNT2</p>
+
+            <hr>
+          </div>
+        </section>
         <section class="m-doc-details" id="a959d73dd6618701a53b4db14ce3622df">
           <div>
 
@@ -1400,7 +1433,7 @@
             <p>The number of &quot;ticks&quot; of the timer that occur within the timing of one bit at the SDI-12 baud rate of 1200 bits/second.</p>
 
 
-              <p>8MHz / 256 prescaler = 31250 &#x27;ticks&#x27;/sec = 32 µs / &#x27;tick&#x27; (1 sec/1200 bits) * (1 tick/32 µs) = 26.04166667 ticks/bit</p>
+              <p>8MHz / 256 prescaler = 31250 &#x27;ticks&#x27;/sec = 32 µs / &#x27;tick&#x27; (1 sec/1200 bits) * (1 tick/32 µs) = 26.04166667 ticks/bit</p><p>The 8-bit timer rolls over after 256 ticks, 9.8304 bits, or 8.192 ms (256 ticks/roll-over) * (1 bit/26.04166667 ticks) = 9.8304 bits (256 ticks/roll-over) * (1 sec/31250 ticks) = 8.192 milliseconds</p><aside class="m-note m-info"><h4>Note</h4><p>The timer will roll-over with each character!</p></aside>
 
             <hr>
           </div>

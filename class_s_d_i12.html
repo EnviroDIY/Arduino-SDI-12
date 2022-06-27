@@ -633,17 +633,20 @@
     color: #777777;
   }
   blockquote {
-    background-color: #191919;
+    /* background-color: #191919; */
+    background-color: #e8e8e8;
+    /* background-color: #ffffff; */
   }
   blockquote,
   blockquote a,
   blockquote a:hover {
     font-family: "Roboto Slab";
-    line-height: 38px;
+    /* line-height: 38px;
     font-weight: 300;
-    font-style: normal;
-    color: #fff;
-    font-size: 24px;
+    font-style: normal; */
+    /* color: #fff; */
+    color: #3c763d;
+    /* font-size: 24px; */
   }
   .gp-loop-title {
     line-height: 22px;
@@ -1269,8 +1272,8 @@
         </div>
       </div>
     </div>
-    <script src="search-v1.js"></script>
-    <script src="searchdata-v1.js" async="async"></script>
+    <script src="search-v2.js"></script>
+    <script src="searchdata-v2.js" async="async"></script>
 
     <div class="gp-clear"></div>
 
@@ -1322,7 +1325,7 @@
           </h1>
         </header>
         <p>The main class for SDI 12 instances.</p>
-        <div class="m-block m-default">
+        <nav class="m-block m-default">
           <ul>
             <li>
               Reference
@@ -1346,7 +1349,7 @@
               </ul>
             </li>
           </ul>
-        </div>
+        </nav>
 
 
 
@@ -1383,11 +1386,11 @@
             </dt>
             <dd>The various SDI-12 line states.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#a94b3831f6a65e19f6cabaaa2f28c913e" class="m-doc">forceHold</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a94b3831f6a65e19f6cabaaa2f28c913e" class="m-doc">forceHold</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Set line state to SDI12_HOLDING.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#a0c4769b9bc4c638b384541275d4e671f" class="m-doc">forceListen</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a0c4769b9bc4c638b384541275d4e671f" class="m-doc">forceListen</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Set line state to SDI12_LISTENING.</dd>
           </dl>
@@ -1488,39 +1491,39 @@
             </dt>
             <dd>The value to return if a parse or read times out with no return from the sensor.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"></span><a href="#a2d59995d9505ad65284bda64f417bc1a" class="m-doc">SDI12</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim"></span><a href="#a2d59995d9505ad65284bda64f417bc1a" class="m-doc">SDI12</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Construct a new <a href="class_s_d_i12.html" class="m-doc">SDI12</a> instance with no data pin set.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"></span><a href="#a974c74312129c6bb174eca13ee86f1e7" class="m-doc">SDI12</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>) <span class="m-label m-flat m-info">explicit</span> </span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim"></span><a href="#a974c74312129c6bb174eca13ee86f1e7" class="m-doc">SDI12</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>) <span class="m-label m-flat m-info">explicit</span> </span>
             </dt>
             <dd>Construct a new <a href="class_s_d_i12.html" class="m-doc">SDI12</a> with the data pin set.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"></span><a href="#a22af9fc4aead35df0af16127673a93cd" class="m-doc">~SDI12</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim"></span><a href="#a22af9fc4aead35df0af16127673a93cd" class="m-doc">~SDI12</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Destroy the <a href="class_s_d_i12.html" class="m-doc">SDI12</a> object.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#ab74c6f9f881f8ee79a933708e5c1db4f" class="m-doc">begin</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ab74c6f9f881f8ee79a933708e5c1db4f" class="m-doc">begin</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Begin the SDI-12 object.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#a83dd7f574a45a1051c57903e13a40c50" class="m-doc">begin</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a83dd7f574a45a1051c57903e13a40c50" class="m-doc">begin</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>)</span>
             </dt>
             <dd>Set the SDI12::_datapin and begin the SDI-12 object.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#a53e48ceffa1ecbcf9f3d62e4546f520e" class="m-doc">end</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a53e48ceffa1ecbcf9f3d62e4546f520e" class="m-doc">end</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Disable the SDI-12 object (but do not destroy it).</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#ae042fba505d7c36e31020648e6c532dc" class="m-doc">setTimeoutValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">int16_t</span> <span class="m-param">value</span>)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ae042fba505d7c36e31020648e6c532dc" class="m-doc">setTimeoutValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">int16_t</span> <span class="m-param">value</span>)</span>
             </dt>
             <dd>Set the value to return if a parse int or parse float times out with no return from the sensor.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"><span class="m-dim">int8_t</span> </span><a href="#a19490dc8f7222741133420049ac852b2" class="m-doc">getDataPin</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">int8_t </span><a href="#a19490dc8f7222741133420049ac852b2" class="m-doc">getDataPin</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Get the data pin for the current SDI-12 instance.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#a0faebdc7b8776d5ce3f25dbdad790fae" class="m-doc">setDataPin</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a0faebdc7b8776d5ce3f25dbdad790fae" class="m-doc">setDataPin</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>)</span>
             </dt>
             <dd>Set the data pin for the current SDI-12 instance.</dd>
           </dl>
@@ -1531,37 +1534,37 @@
             <p>These functions are for reading incoming data stored in the SDI-12 buffer.</p><p><a name="reading_buffer"></a></p><aside class="m-note m-default"><h4>See also</h4><p><a href="class_s_d_i12.html#buffer-setup">Buffer Setup</a></p></aside><aside class="m-note m-info"><h4>Note</h4><p>peakNextDigit(), <a href="class_s_d_i12.html#a1e245f90dfc2c79595707d791ec42214" class="m-doc">parseInt()</a> and <a href="class_s_d_i12.html#a3e5b1d2ac041ed4a796d9ffb94523f18" class="m-doc">parseFloat()</a> are fully implemented in the parent Stream class but we don&#x27;t want to them use as they are inherited. Although they are not virtual and cannot be overridden, recreating them here hides the stream default versions to allow for a custom timeout return value. The default value for the Stream class is to return 0. This makes distinguishing timeouts from true zero readings impossible. Therefore the default value has been set to -9999 in the being function. The value returned by a timeout (<a href="class_s_d_i12.html#a648545c61fd53e5073b4b480ad60edbc" class="m-doc">SDI12::<wbr />TIMEOUT</a>) is a public variable and can be changed dynamically within a program by calling <code>mySDI12.TIMEOUT = (int) newValue</code> or using <a href="class_s_d_i12.html#ae042fba505d7c36e31020648e6c532dc" class="m-doc">SDI12::<wbr />setTimeoutValue(int16_t value)</a>.</p></aside>
           <dl class="m-doc">
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"><span class="m-dim">int</span> </span><a href="#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc">available</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">int </span><a href="#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc">available</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>Return the number of bytes available in the Rx buffer.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"><span class="m-dim">int</span> </span><a href="#a882820fe039a037eb0a30a8202c29ce1" class="m-doc">peek</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">int </span><a href="#a882820fe039a037eb0a30a8202c29ce1" class="m-doc">peek</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>Reveal next byte in the Rx buffer without consuming it.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#aad923901cae3a2c89a18644b7d2c8ba3" class="m-doc">clearBuffer</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#aad923901cae3a2c89a18644b7d2c8ba3" class="m-doc">clearBuffer</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Clear the Rx buffer by setting the head and tail pointers to the same value.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"><span class="m-dim">int</span> </span><a href="#add1c9fb00af32e07a161511f39ba069c" class="m-doc">read</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">int </span><a href="#add1c9fb00af32e07a161511f39ba069c" class="m-doc">read</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>Return next byte in the Rx buffer, consuming it.</dd>
                           <dt id="a199808fca63316f34d97a81b33c35e63">
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#a199808fca63316f34d97a81b33c35e63" class="m-doc-self">flush</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a199808fca63316f34d97a81b33c35e63" class="m-doc-self">flush</a>(</span><span class="m-doc-wrap">) <span class="m-label m-flat m-warning">override</span></span>
             </dt>
             <dd>Wait for sending to finish - because no TX buffering, does nothing.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"><span class="m-dim">long</span> </span><a href="#a1e245f90dfc2c79595707d791ec42214" class="m-doc">parseInt</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
+              <span class="m-doc-wrap-bumper"><span class="m-dim">long </span><a href="#a1e245f90dfc2c79595707d791ec42214" class="m-doc">parseInt</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
               <span class="m-dim">char</span> <span class="m-param">ignore</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921" class="m-doc">NO_<wbr />IGNORE_<wbr />CHAR</a></span>)</span>
             </dt>
             <dd>Return the first valid (long) integer value from the current position.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"><span class="m-dim">float</span> </span><a href="#a3e5b1d2ac041ed4a796d9ffb94523f18" class="m-doc">parseFloat</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float </span><a href="#a3e5b1d2ac041ed4a796d9ffb94523f18" class="m-doc">parseFloat</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
               <span class="m-dim">char</span> <span class="m-param">ignore</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921" class="m-doc">NO_<wbr />IGNORE_<wbr />CHAR</a></span>)</span>
             </dt>
             <dd>Return the first valid float value from the current position.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"><span class="m-dim">int</span> </span><a href="#acb8f6c730ec467da1ab7d88742d47f2d" class="m-doc">peekNextDigit</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span>,
+              <span class="m-doc-wrap-bumper"><span class="m-dim">int </span><a href="#acb8f6c730ec467da1ab7d88742d47f2d" class="m-doc">peekNextDigit</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span>,
               <span class="m-dim">bool</span> <span class="m-param">detectDecimal</span>) <span class="m-label m-flat m-warning">protected</span></span>
             </dt>
             <dd>Return the next numeric digit in the stream or -1 if timeout.</dd>
@@ -1570,15 +1573,15 @@
         <hr>
         <section id="using-more-than-one-sdi-12-object">
           <h2>Using more than one SDI-12 Object</h2>
-            <p>Functions needed for multiple instances of the <a href="class_s_d_i12.html" class="m-doc">SDI12</a> class.</p><p><a name="multiple_objects"></a></p><p>This library is allows for multiple instances of itself running on the same or different pins. SDI-12 can support up to 62 sensors on a single pin/bus, so it is not necessary to use an instance for each sensor.</p><p>Because we are using pin change interrupts there can only be one active object at a time (since this is the only reliable way to determine which pin the interrupt occurred on). The active object is the only object that will respond properly to interrupts. However promoting another instance to Active status does not automatically remove the interrupts on the other pin. For proper behavior it is recommended to use this pattern:</p><pre class="m-code"><span class="n">mySDI12</span><span class="p">.</span><span class="n">forceHold</span><span class="p">();</span>
-<span class="n">myOtherSDI12</span><span class="p">.</span><span class="n">setActive</span><span class="p">();</span></pre><aside class="m-note m-info"><h4>Note</h4><ul><li>Promoting an object into the Active state will set it as <code>SDI12_HOLDING</code>.</li><li>Calling mySDI12.begin() will assert mySDI12 as the new active object, until another instance calls myOtherSDI12.begin() or myOtherSDI12.setActive().</li><li>Calling mySDI12.end() does NOT hand-off active status to another SDI-12 instance.</li><li>You can check on the active object by calling mySDI12.isActive(), which will return a boolean value TRUE if active or FALSE if inactive.</li></ul></aside>
+            <p>Functions needed for multiple instances of the <a href="class_s_d_i12.html" class="m-doc">SDI12</a> class.</p><p><a name="multiple_objects"></a></p><p>This library is allows for multiple instances of itself running on the same or different pins. SDI-12 can support up to 62 sensors on a single pin/bus, so it is not necessary to use an instance for each sensor.</p><p>Because we are using pin change interrupts there can only be one active object at a time (since this is the only reliable way to determine which pin the interrupt occurred on). The active object is the only object that will respond properly to interrupts. However promoting another instance to Active status does not automatically remove the interrupts on the other pin. For proper behavior it is recommended to use this pattern:</p><pre class="m-code"><span class="n">mySDI12</span><span class="p">.</span><span class="n">forceHold</span><span class="p">();</span><span class="w"></span>
+<span class="n">myOtherSDI12</span><span class="p">.</span><span class="n">setActive</span><span class="p">();</span><span class="w"></span></pre><aside class="m-note m-info"><h4>Note</h4><ul><li>Promoting an object into the Active state will set it as <code>SDI12_HOLDING</code>.</li><li>Calling mySDI12.begin() will assert mySDI12 as the new active object, until another instance calls myOtherSDI12.begin() or myOtherSDI12.setActive().</li><li>Calling mySDI12.end() does NOT hand-off active status to another SDI-12 instance.</li><li>You can check on the active object by calling mySDI12.isActive(), which will return a boolean value TRUE if active or FALSE if inactive.</li></ul></aside>
           <dl class="m-doc">
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"><span class="m-dim">bool</span> </span><a href="#ac8aadcfe54c0ddd3cc4dfb13549a8cc0" class="m-doc">setActive</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#ac8aadcfe54c0ddd3cc4dfb13549a8cc0" class="m-doc">setActive</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Set this instance as the active SDI-12 instance.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"><span class="m-dim">bool</span> </span><a href="#a771650620377ebbf31fc27a9dd803f71" class="m-doc">isActive</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a771650620377ebbf31fc27a9dd803f71" class="m-doc">isActive</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Check if this instance is active.</dd>
           </dl>
@@ -1589,34 +1592,34 @@
             <p>These functions are needed to communicate with SDI-12 sensors (slaves) or an SDI-12 datalogger (master).</p><p><a name="communication"></a></p>
           <dl class="m-doc">
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param"><span class="m-dim">size_t</span> </span><a href="#a507d87250b26bedc6ed99cfa4eb95e46" class="m-doc">write</a>(</span><span class="m-doc-wrap"><span class="m-dim">uint8_t</span> <span class="m-param">byte</span>) <span class="m-label m-flat m-warning">virtual</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">size_t </span><a href="#a507d87250b26bedc6ed99cfa4eb95e46" class="m-doc">write</a>(</span><span class="m-doc-wrap"><span class="m-dim">uint8_t</span> <span class="m-param">byte</span>) <span class="m-label m-flat m-warning">virtual</span></span>
             </dt>
             <dd>Write out a byte on the SDI-12 line.</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#ac8b534fb074efd66d09d044b807bb270" class="m-doc">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim">String&amp;</span> <span class="m-param">cmd</span>,
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ac8b534fb074efd66d09d044b807bb270" class="m-doc">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim">String&amp;</span> <span class="m-param">cmd</span>,
               <span class="m-dim">int8_t</span> <span class="m-param">extraWakeTime</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908" class="m-doc">SDI12_<wbr />WAKE_<wbr />DELAY</a></span>)</span>
             </dt>
             <dd>Send a command out on the data line, acting as a datalogger (master)</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#ac7454e06f4706b44cebc5b9848846df6" class="m-doc">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim">const char*</span> <span class="m-param">cmd</span>,
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ac7454e06f4706b44cebc5b9848846df6" class="m-doc">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim">const char*</span> <span class="m-param">cmd</span>,
               <span class="m-dim">int8_t</span> <span class="m-param">extraWakeTime</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908" class="m-doc">SDI12_<wbr />WAKE_<wbr />DELAY</a></span>)</span>
             </dt>
             <dd>Send a command out on the data line, acting as a datalogger (master)</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#ae3f90d981509507a24136f3fc0e1d53f" class="m-doc">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> <span class="m-param">cmd</span>,
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ae3f90d981509507a24136f3fc0e1d53f" class="m-doc">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> <span class="m-param">cmd</span>,
               <span class="m-dim">int8_t</span> <span class="m-param">extraWakeTime</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908" class="m-doc">SDI12_<wbr />WAKE_<wbr />DELAY</a></span>)</span>
             </dt>
             <dd>Send a command out on the data line, acting as a datalogger (master)</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#a348ece4b0d89bd3d6a687c85013b50a0" class="m-doc">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim">String&amp;</span> <span class="m-param">resp</span>)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a348ece4b0d89bd3d6a687c85013b50a0" class="m-doc">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim">String&amp;</span> <span class="m-param">resp</span>)</span>
             </dt>
             <dd>Send a response out on the data line (for slave use)</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#a74474c4f47491e72b28045ca2eea696b" class="m-doc">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim">const char*</span> <span class="m-param">resp</span>)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a74474c4f47491e72b28045ca2eea696b" class="m-doc">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim">const char*</span> <span class="m-param">resp</span>)</span>
             </dt>
             <dd>Send a response out on the data line (for slave use)</dd>
                           <dt>
-              <span class="m-doc-wrap-bumper"><span class="m-param">void </span><a href="#ae51a8ca102896cda0de061d1bd527b5e" class="m-doc">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> <span class="m-param">resp</span>)</span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ae51a8ca102896cda0de061d1bd527b5e" class="m-doc">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> <span class="m-param">resp</span>)</span>
             </dt>
             <dd>Send a response out on the data line (for slave use)</dd>
           </dl>
@@ -1627,7 +1630,7 @@
             <p>Functions for handling interrupts - responding to changes on the data line and converting them to characters in the Rx buffer.</p><p><a name="interrupt_fxns"></a></p><aside class="m-note m-default"><h4>See also</h4><p>For a detailed explanation of interrupts see <a href="interrupts_page.html" class="m-doc">Overview of Interrupts</a></p></aside>
           <dl class="m-doc">
                           <dt>
-              <span class="m-doc-wrap-bumper">static <span class="m-param">void </span><a href="#a8856fcfc9ba4776cf9f0e0f337408ce7" class="m-doc">handleInterrupt</a>(</span><span class="m-doc-wrap">)</span>
+              <span class="m-doc-wrap-bumper">static <span class="m-dim">void </span><a href="#a8856fcfc9ba4776cf9f0e0f337408ce7" class="m-doc">handleInterrupt</a>(</span><span class="m-doc-wrap">)</span>
             </dt>
             <dd>Intermediary used by the ISR - passes off responsibility for the interrupt to the active object.</dd>
           </dl>
@@ -1690,7 +1693,7 @@
           <h2>Function documentation</h2>
                       <section class="m-doc-details" id="a94b3831f6a65e19f6cabaaa2f28c913e"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a94b3831f6a65e19f6cabaaa2f28c913e" class="m-doc-self">forceHold</a>(</span><span class="m-doc-wrap">)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a94b3831f6a65e19f6cabaaa2f28c913e" class="m-doc-self">forceHold</a>(</span><span class="m-doc-wrap">)</span>
             </h3>
             <p>Set line state to SDI12_HOLDING.</p>
             <p>A public function which forces the line into a &quot;holding&quot; state. This is generally unneeded, but for deployments where interference is an issue, it should be used after all expected bytes have been returned from the sensor.</p>
@@ -1700,7 +1703,7 @@
         </section>
                       <section class="m-doc-details" id="a0c4769b9bc4c638b384541275d4e671f"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a0c4769b9bc4c638b384541275d4e671f" class="m-doc-self">forceListen</a>(</span><span class="m-doc-wrap">)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a0c4769b9bc4c638b384541275d4e671f" class="m-doc-self">forceListen</a>(</span><span class="m-doc-wrap">)</span>
             </h3>
             <p>Set line state to SDI12_LISTENING.</p>
             <p>A public function which forces the line into a &quot;listening&quot; state. This may be needed for implementing a slave-side device, which should relinquish control of the data line when not transmitting.</p>
@@ -1710,7 +1713,7 @@
         </section>
                       <section class="m-doc-details" id="a2d59995d9505ad65284bda64f417bc1a"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim"></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a2d59995d9505ad65284bda64f417bc1a" class="m-doc-self">SDI12</a>(</span><span class="m-doc-wrap">)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim"></span><a href="#a2d59995d9505ad65284bda64f417bc1a" class="m-doc-self">SDI12</a>(</span><span class="m-doc-wrap">)</span>
             </h3>
             <p>Construct a new <a href="class_s_d_i12.html" class="m-doc">SDI12</a> instance with no data pin set.</p>
             <p>Before using the SDI-12 instance, the data pin must be set with SDI12::setDataPin(dataPin) or SDI12::begin(dataPin). This empty constructor is provided for easier integration with other Arduino libraries.</p><p>When the constructor is called it resets the buffer overflow status to FALSE.</p>
@@ -1720,7 +1723,7 @@
         </section>
                       <section class="m-doc-details" id="a974c74312129c6bb174eca13ee86f1e7"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim"></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a974c74312129c6bb174eca13ee86f1e7" class="m-doc-self">SDI12</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>) <span class="m-label m-info">explicit</span> </span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim"></span><a href="#a974c74312129c6bb174eca13ee86f1e7" class="m-doc-self">SDI12</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>) <span class="m-label m-info">explicit</span> </span>
             </h3>
             <p>Construct a new <a href="class_s_d_i12.html" class="m-doc">SDI12</a> with the data pin set.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -1741,7 +1744,7 @@
         </section>
                       <section class="m-doc-details" id="a22af9fc4aead35df0af16127673a93cd"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim"></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a22af9fc4aead35df0af16127673a93cd" class="m-doc-self">~SDI12</a>(</span><span class="m-doc-wrap">)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim"></span><a href="#a22af9fc4aead35df0af16127673a93cd" class="m-doc-self">~SDI12</a>(</span><span class="m-doc-wrap">)</span>
             </h3>
             <p>Destroy the <a href="class_s_d_i12.html" class="m-doc">SDI12</a> object.</p>
             <p>When the destructor is called, it&#x27;s main task is to disable any interrupts that had been previously assigned to the pin, so that the pin will behave as expected when used for other purposes. This is achieved by putting the SDI-12 object in the SDI12_DISABLED state. After disabling interrupts, the pointer to the current active SDI-12 instance is set to null if it had pointed to the destroyed object. Finally, for AVR board, the timer prescaler is set back to whatever it had been prior to creating the SDI-12 object.</p>
@@ -1751,7 +1754,7 @@
         </section>
                       <section class="m-doc-details" id="ab74c6f9f881f8ee79a933708e5c1db4f"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ab74c6f9f881f8ee79a933708e5c1db4f" class="m-doc-self">begin</a>(</span><span class="m-doc-wrap">)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ab74c6f9f881f8ee79a933708e5c1db4f" class="m-doc-self">begin</a>(</span><span class="m-doc-wrap">)</span>
             </h3>
             <p>Begin the SDI-12 object.</p>
             <p>This is called to begin the functionality of the SDI-12 object. It sets the object as the active object, sets the stream timeout to 150ms to match SDI-12 specs, sets the timeout return value to <a href="class_s_d_i12.html#a648545c61fd53e5073b4b480ad60edbc" class="m-doc">SDI12::<wbr />TIMEOUT</a>, and configures the timer prescaler.</p>
@@ -1761,7 +1764,7 @@
         </section>
                       <section class="m-doc-details" id="a83dd7f574a45a1051c57903e13a40c50"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a83dd7f574a45a1051c57903e13a40c50" class="m-doc-self">begin</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a83dd7f574a45a1051c57903e13a40c50" class="m-doc-self">begin</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>)</span>
             </h3>
             <p>Set the SDI12::_datapin and begin the SDI-12 object.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -1782,7 +1785,7 @@
         </section>
                       <section class="m-doc-details" id="a53e48ceffa1ecbcf9f3d62e4546f520e"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a53e48ceffa1ecbcf9f3d62e4546f520e" class="m-doc-self">end</a>(</span><span class="m-doc-wrap">)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a53e48ceffa1ecbcf9f3d62e4546f520e" class="m-doc-self">end</a>(</span><span class="m-doc-wrap">)</span>
             </h3>
             <p>Disable the SDI-12 object (but do not destroy it).</p>
             <p>Set the SDI-12 state to disabled, set the pointer to the current active instance to null, and then, for AVR boards, unset the timer prescaler.</p><p>This can be called to temporarily cease all functionality of the SDI-12 object. It is not as harsh as destroying the object with the destructor, as it will maintain the memory buffer.</p>
@@ -1792,7 +1795,7 @@
         </section>
                       <section class="m-doc-details" id="ae042fba505d7c36e31020648e6c532dc"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae042fba505d7c36e31020648e6c532dc" class="m-doc-self">setTimeoutValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">int16_t</span> <span class="m-param">value</span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ae042fba505d7c36e31020648e6c532dc" class="m-doc-self">setTimeoutValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">int16_t</span> <span class="m-param">value</span>)</span>
             </h3>
             <p>Set the value to return if a parse int or parse float times out with no return from the sensor.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -1813,7 +1816,7 @@
         </section>
                       <section class="m-doc-details" id="a19490dc8f7222741133420049ac852b2"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">int8_t</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a19490dc8f7222741133420049ac852b2" class="m-doc-self">getDataPin</a>(</span><span class="m-doc-wrap">)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">int8_t </span><a href="#a19490dc8f7222741133420049ac852b2" class="m-doc-self">getDataPin</a>(</span><span class="m-doc-wrap">)</span>
             </h3>
             <p>Get the data pin for the current SDI-12 instance.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -1830,7 +1833,7 @@
         </section>
                       <section class="m-doc-details" id="a0faebdc7b8776d5ce3f25dbdad790fae"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a0faebdc7b8776d5ce3f25dbdad790fae" class="m-doc-self">setDataPin</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a0faebdc7b8776d5ce3f25dbdad790fae" class="m-doc-self">setDataPin</a>(</span><span class="m-doc-wrap"><span class="m-dim">int8_t</span> <span class="m-param">dataPin</span>)</span>
             </h3>
             <p>Set the data pin for the current SDI-12 instance.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -1850,7 +1853,7 @@
         </section>
                       <section class="m-doc-details" id="a1b35cfdeb2358dfeac079cfa52839b2d"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">int</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc-self">available</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">override</span></span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">int </span><a href="#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc-self">available</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">override</span></span>
             </h3>
             <p>Return the number of bytes available in the Rx buffer.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -1861,16 +1864,16 @@
                 </tr>
               </tfoot>
             </table>
-            <p><a href="class_s_d_i12.html#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc">available()</a> is a public function that returns the number of characters available in the Rx buffer.</p><p>To understand how: <code>_rxBufferTail + SDI12_BUFFER_SIZE - _rxBufferHead) % SDI12_BUFFER_SIZE;</code> accomplishes this task, we will use a few examples.</p><p>To start take the buffer below that has <code>SDI12_BUFFER_SIZE = 10</code>. The message &quot;abc&quot; has been wrapped around (circular buffer).</p><pre class="m-code"><span class="n">_rxBufferTail</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1">// points to the &#39;-&#39; after c</span>
-<span class="n">_rxBufferHead</span> <span class="o">=</span> <span class="mi">8</span> <span class="c1">// points to &#39;a&#39;</span></pre><p>[ c ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ a ] [ b ]</p><p>The number of available characters is (1 + 10 - 8) % 10 = 3</p><p>The &#x27;&#x27; or modulo operator finds the remainder of division of one number by another. In integer arithmetic 3 / 10 = 0, but has a remainder of 3. We can only get the remainder by using the the modulo &#x27;&#x27;. 3 % 10 = 3. This next case demonstrates more clearly why the modulo is used.</p><pre class="m-code"><span class="n">_rxBufferTail</span> <span class="o">=</span> <span class="mi">4</span> <span class="c1">// points to the &#39;-&#39; after c</span>
-<span class="n">_rxBufferHead</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1">// points to &#39;a&#39;</span></pre><p>[ a ] [ b ] [ c ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ]</p><p>The number of available characters is (4 + 10 - 1) % 10 = 3</p><p>If we did not use the modulo we would get either ( 4 + 10 - 1 ) = 13 characters or ( 4 + 10 - 1 ) / 10 = 1 character. Obviously neither is correct.</p><p>If there has been a buffer overflow, <a href="class_s_d_i12.html#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc">available()</a> will return -1.</p>
+            <p><a href="class_s_d_i12.html#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc">available()</a> is a public function that returns the number of characters available in the Rx buffer.</p><p>To understand how: <code>_rxBufferTail + SDI12_BUFFER_SIZE - _rxBufferHead) % SDI12_BUFFER_SIZE;</code> accomplishes this task, we will use a few examples.</p><p>To start take the buffer below that has <code>SDI12_BUFFER_SIZE = 10</code>. The message &quot;abc&quot; has been wrapped around (circular buffer).</p><pre class="m-code"><span class="n">_rxBufferTail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c1">// points to the &#39;-&#39; after c</span>
+<span class="n">_rxBufferHead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="c1">// points to &#39;a&#39;</span></pre><p>[ c ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ a ] [ b ]</p><p>The number of available characters is (1 + 10 - 8) % 10 = 3</p><p>The &#x27;&#x27; or modulo operator finds the remainder of division of one number by another. In integer arithmetic 3 / 10 = 0, but has a remainder of 3. We can only get the remainder by using the the modulo &#x27;&#x27;. 3 % 10 = 3. This next case demonstrates more clearly why the modulo is used.</p><pre class="m-code"><span class="n">_rxBufferTail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="c1">// points to the &#39;-&#39; after c</span>
+<span class="n">_rxBufferHead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="c1">// points to &#39;a&#39;</span></pre><p>[ a ] [ b ] [ c ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ]</p><p>The number of available characters is (4 + 10 - 1) % 10 = 3</p><p>If we did not use the modulo we would get either ( 4 + 10 - 1 ) = 13 characters or ( 4 + 10 - 1 ) / 10 = 1 character. Obviously neither is correct.</p><p>If there has been a buffer overflow, <a href="class_s_d_i12.html#a1b35cfdeb2358dfeac079cfa52839b2d" class="m-doc">available()</a> will return -1.</p>
 
             <hr>
           </div>
         </section>
                       <section class="m-doc-details" id="a882820fe039a037eb0a30a8202c29ce1"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">int</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a882820fe039a037eb0a30a8202c29ce1" class="m-doc-self">peek</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">override</span></span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">int </span><a href="#a882820fe039a037eb0a30a8202c29ce1" class="m-doc-self">peek</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">override</span></span>
             </h3>
             <p>Reveal next byte in the Rx buffer without consuming it.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -1888,7 +1891,7 @@
         </section>
                       <section class="m-doc-details" id="aad923901cae3a2c89a18644b7d2c8ba3"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#aad923901cae3a2c89a18644b7d2c8ba3" class="m-doc-self">clearBuffer</a>(</span><span class="m-doc-wrap">)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#aad923901cae3a2c89a18644b7d2c8ba3" class="m-doc-self">clearBuffer</a>(</span><span class="m-doc-wrap">)</span>
             </h3>
             <p>Clear the Rx buffer by setting the head and tail pointers to the same value.</p>
             <p><a href="class_s_d_i12.html#aad923901cae3a2c89a18644b7d2c8ba3" class="m-doc">clearBuffer()</a> is a public function that clears the buffers contents by setting the index for both head and tail back to zero.</p>
@@ -1898,7 +1901,7 @@
         </section>
                       <section class="m-doc-details" id="add1c9fb00af32e07a161511f39ba069c"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">int</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#add1c9fb00af32e07a161511f39ba069c" class="m-doc-self">read</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">override</span></span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">int </span><a href="#add1c9fb00af32e07a161511f39ba069c" class="m-doc-self">read</a>(</span><span class="m-doc-wrap">) <span class="m-label m-warning">override</span></span>
             </h3>
             <p>Return next byte in the Rx buffer, consuming it.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -1916,8 +1919,8 @@
         </section>
                       <section class="m-doc-details" id="a1e245f90dfc2c79595707d791ec42214"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">long</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a1e245f90dfc2c79595707d791ec42214" class="m-doc-self">parseInt</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
-              <span class="m-dim">char</span> <span class="m-param">ignore</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921" class="m-doc">NO_<wbr />IGNORE_<wbr />CHAR</a></span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">long </span><a href="#a1e245f90dfc2c79595707d791ec42214" class="m-doc-self">parseInt</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
+              <span class="m-dim">char</span> <span class="m-param">ignore</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921" class="m-doc">NO_<wbr />IGNORE_<wbr />CHAR</a></span>)</span>
             </h3>
             <p>Return the first valid (long) integer value from the current position.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -1948,8 +1951,8 @@
         </section>
                       <section class="m-doc-details" id="a3e5b1d2ac041ed4a796d9ffb94523f18"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">float</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a3e5b1d2ac041ed4a796d9ffb94523f18" class="m-doc-self">parseFloat</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
-              <span class="m-dim">char</span> <span class="m-param">ignore</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921" class="m-doc">NO_<wbr />IGNORE_<wbr />CHAR</a></span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float </span><a href="#a3e5b1d2ac041ed4a796d9ffb94523f18" class="m-doc-self">parseFloat</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49a823ae842da6939bbada21ab3b5c4f2eb" class="m-doc">SKIP_<wbr />ALL</a></span>,
+              <span class="m-dim">char</span> <span class="m-param">ignore</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921" class="m-doc">NO_<wbr />IGNORE_<wbr />CHAR</a></span>)</span>
             </h3>
             <p>Return the first valid float value from the current position.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -1980,8 +1983,8 @@
         </section>
                       <section class="m-doc-details" id="acb8f6c730ec467da1ab7d88742d47f2d"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">int</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#acb8f6c730ec467da1ab7d88742d47f2d" class="m-doc-self">peekNextDigit</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span>,
-              <span class="m-dim">bool</span> <span class="m-param">detectDecimal</span>) <span class="m-label m-warning">protected</span></span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">int </span><a href="#acb8f6c730ec467da1ab7d88742d47f2d" class="m-doc-self">peekNextDigit</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49" class="m-doc">LookaheadMode</a></span> <span class="m-param">lookahead</span>,
+              <span class="m-dim">bool</span> <span class="m-param">detectDecimal</span>)</span>
             </h3>
             <p>Return the next numeric digit in the stream or -1 if timeout.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -2011,7 +2014,7 @@
         </section>
                       <section class="m-doc-details" id="ac8aadcfe54c0ddd3cc4dfb13549a8cc0"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">bool</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac8aadcfe54c0ddd3cc4dfb13549a8cc0" class="m-doc-self">setActive</a>(</span><span class="m-doc-wrap">)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#ac8aadcfe54c0ddd3cc4dfb13549a8cc0" class="m-doc-self">setActive</a>(</span><span class="m-doc-wrap">)</span>
             </h3>
             <p>Set this instance as the active SDI-12 instance.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -2029,7 +2032,7 @@
         </section>
                       <section class="m-doc-details" id="a771650620377ebbf31fc27a9dd803f71"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">bool</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a771650620377ebbf31fc27a9dd803f71" class="m-doc-self">isActive</a>(</span><span class="m-doc-wrap">)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a771650620377ebbf31fc27a9dd803f71" class="m-doc-self">isActive</a>(</span><span class="m-doc-wrap">)</span>
             </h3>
             <p>Check if this instance is active.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -2047,7 +2050,7 @@
         </section>
                       <section class="m-doc-details" id="a507d87250b26bedc6ed99cfa4eb95e46"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">size_t</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a507d87250b26bedc6ed99cfa4eb95e46" class="m-doc-self">write</a>(</span><span class="m-doc-wrap"><span class="m-dim">uint8_t</span> <span class="m-param">byte</span>) <span class="m-label m-warning">virtual</span></span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">size_t </span><a href="#a507d87250b26bedc6ed99cfa4eb95e46" class="m-doc-self">write</a>(</span><span class="m-doc-wrap"><span class="m-dim">uint8_t</span> <span class="m-param">byte</span>) <span class="m-label m-warning">virtual</span></span>
             </h3>
             <p>Write out a byte on the SDI-12 line.</p>
             <table class="m-table m-fullwidth m-flat">
@@ -2074,8 +2077,8 @@
         </section>
                       <section class="m-doc-details" id="ac8b534fb074efd66d09d044b807bb270"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac8b534fb074efd66d09d044b807bb270" class="m-doc-self">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim">String&amp;</span> <span class="m-param">cmd</span>,
-              <span class="m-dim">int8_t</span> <span class="m-param">extraWakeTime</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908" class="m-doc">SDI12_<wbr />WAKE_<wbr />DELAY</a></span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ac8b534fb074efd66d09d044b807bb270" class="m-doc-self">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim">String&amp;</span> <span class="m-param">cmd</span>,
+              <span class="m-dim">int8_t</span> <span class="m-param">extraWakeTime</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908" class="m-doc">SDI12_<wbr />WAKE_<wbr />DELAY</a></span>)</span>
             </h3>
             <p>Send a command out on the data line, acting as a datalogger (master)</p>
             <table class="m-table m-fullwidth m-flat">
@@ -2100,8 +2103,8 @@
         </section>
                       <section class="m-doc-details" id="ac7454e06f4706b44cebc5b9848846df6"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ac7454e06f4706b44cebc5b9848846df6" class="m-doc-self">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim">const char*</span> <span class="m-param">cmd</span>,
-              <span class="m-dim">int8_t</span> <span class="m-param">extraWakeTime</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908" class="m-doc">SDI12_<wbr />WAKE_<wbr />DELAY</a></span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ac7454e06f4706b44cebc5b9848846df6" class="m-doc-self">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim">const char*</span> <span class="m-param">cmd</span>,
+              <span class="m-dim">int8_t</span> <span class="m-param">extraWakeTime</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908" class="m-doc">SDI12_<wbr />WAKE_<wbr />DELAY</a></span>)</span>
             </h3>
             <p>Send a command out on the data line, acting as a datalogger (master)</p>
             <table class="m-table m-fullwidth m-flat">
@@ -2126,8 +2129,8 @@
         </section>
                       <section class="m-doc-details" id="ae3f90d981509507a24136f3fc0e1d53f"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae3f90d981509507a24136f3fc0e1d53f" class="m-doc-self">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> <span class="m-param">cmd</span>,
-              <span class="m-dim">int8_t</span> <span class="m-param">extraWakeTime</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908" class="m-doc">SDI12_<wbr />WAKE_<wbr />DELAY</a></span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ae3f90d981509507a24136f3fc0e1d53f" class="m-doc-self">sendCommand</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> <span class="m-param">cmd</span>,
+              <span class="m-dim">int8_t</span> <span class="m-param">extraWakeTime</span><span class="m-dim"> = <a href="_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908" class="m-doc">SDI12_<wbr />WAKE_<wbr />DELAY</a></span>)</span>
             </h3>
             <p>Send a command out on the data line, acting as a datalogger (master)</p>
             <table class="m-table m-fullwidth m-flat">
@@ -2152,7 +2155,7 @@
         </section>
                       <section class="m-doc-details" id="a348ece4b0d89bd3d6a687c85013b50a0"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a348ece4b0d89bd3d6a687c85013b50a0" class="m-doc-self">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim">String&amp;</span> <span class="m-param">resp</span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a348ece4b0d89bd3d6a687c85013b50a0" class="m-doc-self">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim">String&amp;</span> <span class="m-param">resp</span>)</span>
             </h3>
             <p>Send a response out on the data line (for slave use)</p>
             <table class="m-table m-fullwidth m-flat">
@@ -2173,7 +2176,7 @@
         </section>
                       <section class="m-doc-details" id="a74474c4f47491e72b28045ca2eea696b"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a74474c4f47491e72b28045ca2eea696b" class="m-doc-self">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim">const char*</span> <span class="m-param">resp</span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a74474c4f47491e72b28045ca2eea696b" class="m-doc-self">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim">const char*</span> <span class="m-param">resp</span>)</span>
             </h3>
             <p>Send a response out on the data line (for slave use)</p>
             <table class="m-table m-fullwidth m-flat">
@@ -2194,7 +2197,7 @@
         </section>
                       <section class="m-doc-details" id="ae51a8ca102896cda0de061d1bd527b5e"><div>
             <h3>
-              <span class="m-doc-wrap-bumper"><span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#ae51a8ca102896cda0de061d1bd527b5e" class="m-doc-self">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> <span class="m-param">resp</span>)</span></span>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#ae51a8ca102896cda0de061d1bd527b5e" class="m-doc-self">sendResponse</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf" class="m-doc">FlashString</a></span> <span class="m-param">resp</span>)</span>
             </h3>
             <p>Send a response out on the data line (for slave use)</p>
             <table class="m-table m-fullwidth m-flat">
@@ -2215,7 +2218,7 @@
         </section>
                       <section class="m-doc-details" id="a8856fcfc9ba4776cf9f0e0f337408ce7"><div>
             <h3>
-              <span class="m-doc-wrap-bumper">static <span class="m-dim">void</span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a href="#a8856fcfc9ba4776cf9f0e0f337408ce7" class="m-doc-self">handleInterrupt</a>(</span><span class="m-doc-wrap">)</span></span>
+              <span class="m-doc-wrap-bumper">static <span class="m-dim">void </span><a href="#a8856fcfc9ba4776cf9f0e0f337408ce7" class="m-doc-self">handleInterrupt</a>(</span><span class="m-doc-wrap">)</span>
             </h3>
             <p>Intermediary used by the ISR - passes off responsibility for the interrupt to the active object.</p>
             <p>On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM</p>
