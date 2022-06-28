@@ -22,7 +22,7 @@ jobs:
 
     steps:
       # check out the Arduino-SDI-12 repo
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: code_docs/Arduino-SDI-12
 
@@ -90,7 +90,7 @@ jobs:
 
       # check out my fork of m.css, for processing Doxygen output
       - name: Checkout m.css
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           # Repository name with owner. For example, actions/checkout
           repository: SRGDamia1/m.css
