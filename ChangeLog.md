@@ -4,7 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-****
+***
+
+
+## [Unreleased]
+
+### Changed
+- Added python version to GitHub actions (for PlatformIO)
+
+### Added
+
+### Removed
+
+### Fixed
+
+***
 
 ## v2.1.4 (2021-05-05) [Revert wake delay to 0ms](https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.1.4)
 
