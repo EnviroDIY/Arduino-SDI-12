@@ -1,0 +1,111 @@
+name: Build and Publish Documentation
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - master
+  # Also trigger on page_build, as well as release created events
+  page_build:
+  release:
+    types: # This configuration does not affect the page_build event above
+      - created
+
+env:
+  DOXYGEN_VERSION: Release_1_9_1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+
+    steps:
+      # check out the Arduino-SDI-12 repo
+      - uses: actions/checkout@v2
+        with:
+          path: code_docs/Arduino-SDI-12
+
+      - name: Restore or Cache pip
+        uses: actions/cache@v2.1.4
+        id: cache_pip
+        with:
+          path: ~/.cache/pip
+          # if requirements.txt hasn't changed, then it will be a "cache hit" and pip will be restored
+          # if requirements.txt HAS changed, it will be a "cache miss" and a new cache of pip will be created if the job completes successfully
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: Restore or Cache PlatformIO and Libraries
+        uses: actions/cache@v2.1.4
+        id: cache_pio
+        with:
+          path: ~/.platformio
+          # if nothing in the lock files has changed, then it will be a "cache hit"
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      # This should be pulled from cache, if there's not a new version
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade platformio
+
+      # Install *all* the dependencies!
+      # We're including the dependencies just so the includes can follow in the doxygen pre-processor
+      - name: Install the dependencies at global level
+        run: |
+          echo "::debug::Installing greygnome/EnableInterrupt"
+          pio lib -g install greygnome/EnableInterrupt
+
+      - name: Update Libraries from Cache
+        run: pio lib -g update
+
+      - name: Install GraphViz (dot)
+        run: sudo apt-get -y install graphviz
+
+      - name: Restore or Cache Doxygen
+        id: cache_doxygen
+        uses: actions/cache@v2.1.4
+        with:
+          path: doxygen-src
+          key: ${{ runner.os }}-doxygen-${{ env.DOXYGEN_VERSION }}
+
+      - name: Clone and build doxygen
+        if: steps.cache_doxygen.outputs.cache-hit != 'true'
+        env:
+          TRAVIS_BUILD_DIR: ${{ github.workspace }}
+        run: |
+          cd ${{ github.workspace }}/code_docs/Arduino-SDI-12/
+          chmod +x continuous_integration/build-install-doxygen.sh
+          sh continuous_integration/build-install-doxygen.sh
+
+      # This should be pulled from cache, if there's not a new version
+      - name: Install Pygments and other m.css requirements
+        run: pip3 install jinja2 Pygments beautifulsoup4
+
+      # check out my fork of m.css, for processing Doxygen output
+      - name: Checkout m.css
+        uses: actions/checkout@v2
+        with:
+          # Repository name with owner. For example, actions/checkout
+          repository: SRGDamia1/m.css
+          path: code_docs/m.css
+
+      - name: Generate all the documentation
+        env:
+          TRAVIS_BUILD_DIR: ${{ github.workspace }}
+        run: |
+          cd ${{ github.workspace }}/code_docs/Arduino-SDI-12/
+          chmod +x continuous_integration/generate-documentation.sh
+          sh continuous_integration/generate-documentation.sh
+
+      - name: Deploy to github pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ${{ github.workspace }}/code_docs/Arduino-SDI-12Doxygen/m.css

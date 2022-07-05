@@ -8,4 +8,8 @@ Code for an Arduino-based USB dongle translates serial comm from PC to SDI-12 (e
 
 Note: "translation" means timing and electrical interface.  It does not ensure SDI-12 compliance of commands sent via it.
 
-[//]: # ( @include{lineno} i_SDI-12_interface.ino )
+[//]: # ( @section i_SDI-12_interface_pio PlatformIO Configuration )
+
+[//]: # ( @include{lineno} i_SDI-12_interface/platformio.ini )
+
+[//]: # ( @section i_SDI-12_interface_code The Complete Example )

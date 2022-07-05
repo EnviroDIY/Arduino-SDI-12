@@ -43,7 +43,6 @@ int  state         = 0;
 // Create object by which to communicate with the SDI-12 bus on SDIPIN
 SDI12 slaveSDI12(DATA_PIN);
 
-
 void pollSensor(float* measurementValues) {
   measurementValues[0] = 1.111111;
   measurementValues[1] = -2.222222;
@@ -142,7 +141,6 @@ void parseSdi12Cmd(String command, String* dValues) {
   slaveSDI12.sendResponse(String(sensorAddress) + responseStr + "\r\n");
 }
 
-
 void formatOutputSDI(float* measurementValues, String* dValues, unsigned int maxChar) {
   /* Ingests an array of floats and produces Strings in SDI-12 output format */
 
@@ -171,7 +169,6 @@ void formatOutputSDI(float* measurementValues, String* dValues, unsigned int max
   while (j < 9) { dValues[++j] = ""; }
 }
 
-
 void setup() {
   slaveSDI12.begin();
   delay(500);
@@ -181,7 +178,7 @@ void setup() {
 void loop() {
   static float measurementValues[9];  // 9 floats to hold simulated sensor data
   static String
-                dValues[10];  // 10 String objects to hold the responses to aD0!-aD9! commands
+    dValues[10];  // 10 String objects to hold the responses to aD0!-aD9! commands
   static String commandReceived = "";  // String object to hold the incoming command
 
 
@@ -206,6 +203,8 @@ void loop() {
         // '!' should be the last available character anyway, but exit the "for" loop
         // just in case there are any stray characters
         slaveSDI12.clearBuffer();
+        // eliminate the chance of getting anything else after the '!'
+        slaveSDI12.forceHold();
         break;
       }
       // If the current character is anything but '!', it is part of the command
@@ -230,6 +229,8 @@ void loop() {
       // Populate the "dValues" String array with the values in SDI-12 format
       formatOutputSDI(measurementValues, dValues, 75);
       state = WAIT;
+      slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
+                                 // message AGAIN
       break;
     case INITIATE_MEASUREMENT:
       // Do whatever the sensor is supposed to do here
@@ -242,6 +243,8 @@ void loop() {
       // For aM!, Send "service request" (<address><CR><LF>) when data is ready
       slaveSDI12.sendResponse(String(sensorAddress) + "\r\n");
       state = WAIT;
+      slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
+                                 // message AGAIN
       break;
   }
 }

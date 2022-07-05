@@ -24,7 +24,6 @@ SDI12 mySDI12(DATA_PIN);
 String myCommand  = "";   // empty to start
 char   oldAddress = '!';  // invalid address as placeholder
 
-
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
 boolean checkActive(byte i) {  // this checks for activity at a particular address
@@ -49,7 +48,6 @@ boolean checkActive(byte i) {  // this checks for activity at a particular addre
   }
   return false;
 }
-
 
 void setup() {
   Serial.begin(SERIAL_BAUD);

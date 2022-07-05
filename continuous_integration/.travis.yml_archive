@@ -1,0 +1,135 @@
+before_install:
+  - git config --global user.email "sdamiano@stroudcenter.org"
+  - git config --global user.name "SRGDamia1"
+
+sudo: false
+git:
+  depth: 1
+branches:
+  except:
+    - gh-pages
+
+cache:
+  pip: true
+  directories:
+    - "~/.platformio"
+    - $TRAVIS_BUILD_DIR/doxygen-src
+
+language: python
+python:
+  - "2.7"
+
+install:
+  - pip install -U platformio
+  - pio upgrade
+  - pio lib --global install EnableInterrupt
+  - pio update
+  - pio lib --global update
+  - pio lib update
+
+script:
+  - platformio ci --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560 --board=huzzah --board=featheresp32
+
+jobs:
+  include:
+    - name: "Verify library JSON format"
+      language: node_js
+      install: npm install -g jsonlint
+      script: jsonlint -q library.json
+      after_success: |
+        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
+        if [[ ($TRAVIS_BRANCH == master) &&
+              ($TRAVIS_PULL_REQUEST == false) ]] ; then
+            curl -LO --retry 3 https://raw.github.com/mernst/plume-lib/master/bin/trigger-travis.sh
+            sh trigger-travis.sh EnviroDIY Libraries $TRAVIS_ACCESS_TOKEN
+        fi
+
+    - name: "Build Doxygen Documentation"
+      if: branch = master AND type != pull_request
+      language: python
+      python:
+        - "3.7"
+      before_install:
+        - git config --global user.email "sdamiano@stroudcenter.org"
+        - git config --global user.name "SRGDamia1"
+        - git config --global push.default simple
+        - sudo apt-get update
+        - sudo apt-get -y install build-essential
+        - sudo apt-get -y install graphviz
+        - sudo apt-get -y install flex
+        - sudo apt-get -y install bison
+        - sudo apt-get -y install texlive-base
+        - sudo apt-get -y install texlive-latex-extra
+        - sudo apt-get -y install texlive-fonts-extra
+        - sudo apt-get -y install texlive-fonts-recommended
+        - pip3 install jinja2 Pygments
+      install:
+        - cd $TRAVIS_BUILD_DIR
+        - chmod +x travis/copy-doc-sources.sh
+        - sh travis/copy-doc-sources.sh
+        - cd $TRAVIS_BUILD_DIR
+        - chmod +x travis/build-install-doxygen.sh
+        - sh travis/build-install-doxygen.sh
+      script:
+        - cd $TRAVIS_BUILD_DIR
+        - chmod +x travis/generate-documentation.sh
+        - sh travis/generate-documentation.sh
+      # after_success:
+      #   - cd $TRAVIS_BUILD_DIR
+      #   - chmod +x travis/deploy-documentation.sh
+      #   - sh travis/deploy-documentation.sh
+      deploy:
+        provider: pages:git
+        token: $GH_REPO_TOKEN
+        edge: true # opt in to dpl v2
+        keep_history: false
+        local_dir: $TRAVIS_BUILD_DIR/code_docs/Arduino-SDI-12Doxygen/m.css
+        project_name: Arduino-SDI-12
+
+    - name: "a_wild_card"
+      env:
+        - PLATFORMIO_CI_SRC=examples/a_wild_card/a_wild_card.ino
+
+    - name: "b_address_change"
+      env:
+        - PLATFORMIO_CI_SRC=examples/b_address_change/b_address_change.ino
+
+    - name: "c_check_all_addresses"
+      env:
+        - PLATFORMIO_CI_SRC=examples/c_check_all_addresses/c_check_all_addresses.ino
+
+    - name: "d_simple_logger"
+      env:
+        - PLATFORMIO_CI_SRC=examples/d_simple_logger/d_simple_logger.ino
+
+    - name: "e_simple_parsing"
+      env:
+        - PLATFORMIO_CI_SRC=examples/e_simple_parsing/e_simple_parsing.ino
+
+    - name: "f_basic_data_request"
+      env:
+        - PLATFORMIO_CI_SRC=examples/f_basic_data_request/f_basic_data_request.ino
+
+    - name: "g_terminal_window"
+      env:
+        - PLATFORMIO_CI_SRC=examples/g_terminal_window/g_terminal_window.ino
+
+    - name: "h_SDI-12_slave_implementation"
+      env:
+        - PLATFORMIO_CI_SRC=examples/h_SDI-12_slave_implementation/h_SDI-12_slave_implementation.ino
+
+    - name: "i_SDI-12_interface"
+      env:
+        - PLATFORMIO_CI_SRC=examples/i_SDI-12_interface/i_SDI-12_interface.ino
+
+    - name: "j_external_pcint_library"
+      env:
+        - PLATFORMIO_CI_SRC=examples/j_external_pcint_library/j_external_pcint_library.ino
+        - PLATFORMIO_BUILD_FLAGS=-DSDI12_EXTERNAL_PCINT
+      script:
+        - pio lib --global install EnableInterrupt
+        - platformio ci --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560
+
+    - name: "k_concurrent_logger"
+      env:
+        - PLATFORMIO_CI_SRC=examples/k_concurrent_logger/k_concurrent_logger.ino

@@ -5,4 +5,8 @@ This is identical to example D, except that instead of using internal definition
 
 To use this example, you must remove the comment braces around `#define SDI12_EXTERNAL_PCINT` in the library and re-compile it.
 
-[//]: # ( @include{lineno} j_external_pcint_library.ino )
+[//]: # ( @section j_external_pcint_library_pio PlatformIO Configuration )
+
+[//]: # ( @include{lineno} j_external_pcint_library/platformio.ini )
+
+[//]: # ( @section j_external_pcint_library_code The Complete Example )

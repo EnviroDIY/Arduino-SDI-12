@@ -2,7 +2,7 @@
 [//]: # ( @mainpage SDI-12 for Arduino)
 # SDI-12 for Arduino
 
-[//]: # ( @section mainpage_intro An Introduction )
+[//]: # ( @section mainpage_intro Introduction )
 ## Introduction
 
 This is an Arduino library for SDI-12 communication with a wide variety of environmental sensors.
@@ -13,6 +13,13 @@ It provides a general software solution, without requiring any additional hardwa
 
 This work is motivated by the [EnviroDIY community](http://envirodiy.org/) vision to create an open source hardware and software stack to deliver near real time environmental data from wireless sensor networks, such as the Arduino-compatible [EnviroDIY™ Mayfly Data Logger](http://envirodiy.org/mayfly/).
 
+[//]: # ( Start GitHub Only )
+## Documentation
+
+Extensive documentation on the SDI-12 functions and classes is available here:  https://envirodiy.github.io/Arduino-SDI-12/index.html
+
+[//]: # ( End GitHub Only )
+
 [//]: # ( @subsection mainpage_rename Renaming Notice )
 ### Renaming Notice
 **As of version 2.0.0 this library was renamed from "Arduino-SDI-12" to simply "SDI-12" to comply with requirements for inclusion in the Arduino.cc's IDE and Library Manager.**
@@ -22,6 +29,7 @@ This work is motivated by the [EnviroDIY community](http://envirodiy.org/) visio
 [//]: # ( Start GitHub Only )
 - [SDI-12 for Arduino](#sdi-12-for-arduino)
   - [Introduction](#introduction)
+  - [Documentation](#documentation)
     - [Renaming Notice](#renaming-notice)
   - [Getting Started](#getting-started)
   - [Origins and Inherited Limitations](#origins-and-inherited-limitations)

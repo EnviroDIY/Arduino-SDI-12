@@ -27,7 +27,6 @@
 #define FirstPin 5         /*! change to lowest pin number on your board */
 #define LastPin 24         /*! change to highest pin number on your board */
 
-
 /**
  * @brief gets identification information from a sensor, and prints it to the serial
  * port expects
@@ -49,10 +48,9 @@ void printInfo(SDI12 sdi, char i) {
 
   while (sdi.available()) {
     Serial.write(sdi.read());
-    delay(5);
+    delay(10);  // 1 character ~ 7.5ms
   }
 }
-
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
