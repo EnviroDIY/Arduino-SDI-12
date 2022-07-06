@@ -8,9 +8,9 @@
  * @brief Example J: Using External Interrupts
  *
  * This is identical to example B, except that it uses the library
- * [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) to define the
- * interrupt vector. This allows it to play nicely with any other libraries which define
- * interrupt vectors.
+ * [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) to assign the pin
+ * change interrupt vector. This allows it to play nicely with any other libraries that
+ * try to assign functionality to the pin change interrupt vectors.
  *
  * For this to work, you must remove the comment braces around
  * `#define SDI12_EXTERNAL_PCINT` in the library and re-compile it.

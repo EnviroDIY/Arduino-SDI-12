@@ -22,12 +22,12 @@ jobs:
 
     steps:
       # check out the Arduino-SDI-12 repo
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: code_docs/Arduino-SDI-12
 
       - name: Restore or Cache pip
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v3.0.4
         id: cache_pip
         with:
           path: ~/.cache/pip
@@ -37,7 +37,7 @@ jobs:
           restore-keys: ${{ runner.os }}-pip-
 
       - name: Restore or Cache PlatformIO and Libraries
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v3.0.4
         id: cache_pio
         with:
           path: ~/.platformio
@@ -70,7 +70,7 @@ jobs:
 
       - name: Restore or Cache Doxygen
         id: cache_doxygen
-        uses: actions/cache@v2.1.4
+        uses: actions/cache@v3.0.4
         with:
           path: doxygen-src
           key: ${{ runner.os }}-doxygen-${{ env.DOXYGEN_VERSION }}
@@ -90,7 +90,7 @@ jobs:
 
       # check out my fork of m.css, for processing Doxygen output
       - name: Checkout m.css
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           # Repository name with owner. For example, actions/checkout
           repository: SRGDamia1/m.css
