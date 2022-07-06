@@ -1339,9 +1339,9 @@
 <span class="cm"> * @brief Example J: Using External Interrupts</span>
 <span class="cm"> *</span>
 <span class="cm"> * This is identical to example B, except that it uses the library</span>
-<span class="cm"> * [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) to define the</span>
-<span class="cm"> * interrupt vector. This allows it to play nicely with any other libraries which define</span>
-<span class="cm"> * interrupt vectors.</span>
+<span class="cm"> * [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) to assign the pin</span>
+<span class="cm"> * change interrupt vector. This allows it to play nicely with any other libraries that</span>
+<span class="cm"> * try to assign functionality to the pin change interrupt vectors.</span>
 <span class="cm"> *</span>
 <span class="cm"> * For this to work, you must remove the comment braces around</span>
 <span class="cm"> * `#define SDI12_EXTERNAL_PCINT` in the library and re-compile it.</span>
