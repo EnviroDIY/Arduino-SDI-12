@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-node@v3.3.0
 
       - name: Cache Node.js modules
-        uses: actions/cache@v3.0.4
+        uses: actions/cache@v3.0.5
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
