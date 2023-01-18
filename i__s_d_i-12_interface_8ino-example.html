@@ -1312,21 +1312,21 @@
             <li><a href="#_SDI-12_interface_code">The Complete Example</a></li>
           </ul>
         </div>
-        <section id="xample_i_page"><h2>Example I: SDI-12 PC Interface</h2><p>Code for an Arduino-based USB dongle translates serial comm from PC to SDI-12 (electrical and timing)</p><ol><li>Allows user to communicate to SDI-12 devices from a serial terminal emulator (e.g. PuTTY).</li><li>Able to spy on an SDI-12 bus for troubleshooting comm between datalogger and sensors.</li><li>Can also be used as a hardware middleman for interfacing software to an SDI-12 sensor. For example, implementing an SDI-12 datalogger in Python on a PC. Use verbatim mode with feedback off in this case.</li></ol><p>Note: &quot;translation&quot; means timing and electrical interface. It does not ensure SDI-12 compliance of commands sent via it.</p></section><section id="_SDI-12_interface_pio"><h2>PlatformIO Configuration</h2><pre class="m-code"><span class="c1">; PlatformIO Project Configuration File</span><span class="w"></span>
+        <section id="xample_i_page"><h2>Example I: SDI-12 PC Interface</h2><p>Code for an Arduino-based USB dongle translates serial comm from PC to SDI-12 (electrical and timing)</p><ol><li>Allows user to communicate to SDI-12 devices from a serial terminal emulator (e.g. PuTTY).</li><li>Able to spy on an SDI-12 bus for troubleshooting comm between datalogger and sensors.</li><li>Can also be used as a hardware middleman for interfacing software to an SDI-12 sensor. For example, implementing an SDI-12 datalogger in Python on a PC. Use verbatim mode with feedback off in this case.</li></ol><p>Note: &quot;translation&quot; means timing and electrical interface. It does not ensure SDI-12 compliance of commands sent via it.</p></section><section id="_SDI-12_interface_pio"><h2>PlatformIO Configuration</h2><pre class="m-code"><span class="c1">; PlatformIO Project Configuration File</span>
 
-<span class="k">[platformio]</span><span class="w"></span>
-<span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">SDI-12 Library Example J:  Creating an SDI-12 Translator Dongle</span><span class="w"></span>
-<span class="na">src_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">.piolibdeps/Arduino-SDI-12_ID1486/examples/j_SDI-12_interface</span><span class="w"></span>
+<span class="k">[platformio]</span>
+<span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">SDI-12 Library Example J:  Creating an SDI-12 Translator Dongle</span>
+<span class="na">src_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">.piolibdeps/Arduino-SDI-12_ID1486/examples/j_SDI-12_interface</span>
 
-<span class="k">[env:mayfly]</span><span class="w"></span>
-<span class="na">monitor_speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">115200</span><span class="w"></span>
-<span class="na">board</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mayfly</span><span class="w"></span>
-<span class="na">platform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">atmelavr</span><span class="w"></span>
-<span class="na">framework</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">arduino</span><span class="w"></span>
-<span class="na">lib_ldf_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">deep+</span><span class="w"></span>
-<span class="na">lib_ignore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">RTCZero</span><span class="w"></span>
-<span class="na">lib_deps</span><span class="w"> </span><span class="o">=</span><span class="w"></span>
-<span class="w">    </span><span class="na">SDI-12</span><span class="w"></span></pre></section><section id="_SDI-12_interface_code"><h2>The Complete Example</h2><pre class="m-code"><span class="cm">/**</span>
+<span class="k">[env:mayfly]</span>
+<span class="na">monitor_speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">115200</span>
+<span class="na">board</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mayfly</span>
+<span class="na">platform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">atmelavr</span>
+<span class="na">framework</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">arduino</span>
+<span class="na">lib_ldf_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">deep+</span>
+<span class="na">lib_ignore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">RTCZero</span>
+<span class="na">lib_deps</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="na">SDI-12</span></pre></section><section id="_SDI-12_interface_code"><h2>The Complete Example</h2><pre class="m-code"><span class="cm">/**</span>
 <span class="cm"> * @file h_SDI-12_slave_implementation.ino</span>
 <span class="cm"> * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)</span>
 <span class="cm"> *                          and the EnviroDIY Development Team</span>
@@ -1359,7 +1359,7 @@
 <span class="cm"> *    out on the SDI-12 interface) instead of removing the previous char from it</span>
 <span class="cm"> *  - Suceptible to noise on the SDI-12 data line; consider hardware filtering or</span>
 <span class="cm"> *    software error-checking</span>
-<span class="cm"> */</span><span class="w"></span>
+<span class="cm"> */</span>
 
 <span class="cp">#define HELPTEXT                                                                    \</span>
 <span class="cp">  &quot;OPTIONS:\r\n&quot;                                                                    \</span>
@@ -1372,61 +1372,61 @@
 <span class="cp">  &quot;for developers)\r\n&quot;                                                             \</span>
 <span class="cp">  &quot;(else) : send command to SDI-12 bus&quot;</span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SDI12.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SDI12.h&gt;</span>
 
-<span class="cp">#define SERIAL_BAUD 115200 </span><span class="cm">/*!&lt; The baud rate for the output serial port */</span><span class="cp"></span>
-<span class="cp">#define DATA_PIN 7         </span><span class="cm">/*!&lt; The pin of the SDI-12 data bus */</span><span class="cp"></span>
-<span class="cp">#define POWER_PIN 22       </span><span class="cm">/*!&lt; The sensor power pin (or -1 if not switching power) */</span><span class="cp"></span>
+<span class="cp">#define SERIAL_BAUD 115200 </span><span class="cm">/*!&lt; The baud rate for the output serial port */</span>
+<span class="cp">#define DATA_PIN 7         </span><span class="cm">/*!&lt; The pin of the SDI-12 data bus */</span>
+<span class="cp">#define POWER_PIN 22       </span><span class="cm">/*!&lt; The sensor power pin (or -1 if not switching power) */</span>
 <span class="cp">#define SENSOR_ADDRESS 1</span>
 
-<span class="cm">/** Define the SDI-12 bus */</span><span class="w"></span>
-<span class="n">SDI12</span><span class="w"> </span><span class="nf">mySDI12</span><span class="p">(</span><span class="n">DATA_PIN</span><span class="p">);</span><span class="w"></span>
+<span class="cm">/** Define the SDI-12 bus */</span>
+<span class="n">SDI12</span><span class="w"> </span><span class="nf">mySDI12</span><span class="p">(</span><span class="n">DATA_PIN</span><span class="p">);</span>
 
-<span class="kr">void</span><span class="w"> </span><span class="nb">setup</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">begin</span><span class="p">(</span><span class="n">SERIAL_BAUD</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">Serial</span><span class="p">)</span><span class="w"></span>
-<span class="w">    </span><span class="p">;</span><span class="w"></span>
+<span class="kr">void</span><span class="w"> </span><span class="nb">setup</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">begin</span><span class="p">(</span><span class="n">SERIAL_BAUD</span><span class="p">);</span>
+<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">Serial</span><span class="p">)</span>
+<span class="w">    </span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">// Power the sensors;</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">POWER_PIN</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Powering up sensors...&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="nf">pinMode</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span><span class="w"> </span><span class="kr">OUTPUT</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="nf">digitalWrite</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span><span class="w"> </span><span class="kr">HIGH</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">POWER_PIN</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Powering up sensors...&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="nf">pinMode</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span><span class="w"> </span><span class="kr">OUTPUT</span><span class="p">);</span>
+<span class="w">    </span><span class="nf">digitalWrite</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span><span class="w"> </span><span class="kr">HIGH</span><span class="p">);</span>
+<span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">// Initiate serial connection to SDI-12 bus</span>
-<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">begin</span><span class="p">();</span><span class="w"></span>
-<span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span><span class="w"></span>
-<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">forceListen</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">begin</span><span class="p">();</span>
+<span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
+<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">forceListen</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">// Print help text (may wish to comment out if used for communicating to software)</span>
-<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">HELPTEXT</span><span class="p">);</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">HELPTEXT</span><span class="p">);</span>
+<span class="p">}</span>
 
-<span class="kr">void</span><span class="w"> </span><span class="nb">loop</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">String</span><span class="w">  </span><span class="n">serialMsgStr</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span><span class="w"></span>
+<span class="kr">void</span><span class="w"> </span><span class="nb">loop</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">String</span><span class="w">  </span><span class="n">serialMsgStr</span><span class="p">;</span>
+<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
 
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">String</span><span class="w">  </span><span class="n">sdiMsgStr</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">String</span><span class="w">  </span><span class="n">sdiMsgStr</span><span class="p">;</span>
+<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
 
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span><span class="w"></span>
+<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
 
 
 <span class="w">  </span><span class="c1">// -- READ SERIAL (PC COMMS) DATA --</span>
 <span class="w">  </span><span class="c1">// If serial data is available, read in a single byte and add it to</span>
 <span class="w">  </span><span class="c1">// a String on each iteration</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">Serial</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">inByte1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">inByte1</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\r&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">inByte1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="n">serialMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">inByte1</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">Serial</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">inByte1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">inByte1</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\r&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">inByte1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">serialMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">inByte1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">// -- READ SDI-12 DATA --</span>
 <span class="w">  </span><span class="c1">// If SDI-12 data is available, keep reading until full message consumed</span>
@@ -1434,74 +1434,74 @@
 <span class="w">  </span><span class="c1">//  is being read in--as the serial example above--but SDI-12 depends on very precise</span>
 <span class="w">  </span><span class="c1">//  timing, so it is probably best to let it hold up loop() until the string is</span>
 <span class="w">  </span><span class="c1">//  complete)</span>
-<span class="w">  </span><span class="kr">int</span><span class="w"> </span><span class="n">avail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">();</span><span class="w"></span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">avail</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="kr">int</span><span class="w"> </span><span class="n">avail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">();</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">avail</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
 <span class="w">  </span><span class="p">}</span><span class="w">  </span><span class="c1">// Buffer is full; clear</span>
-<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">avail</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">avail</span><span class="p">;</span><span class="w"> </span><span class="n">a</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="kr">char</span><span class="w"> </span><span class="n">inByte2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span><span class="w"></span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">inByte2</span><span class="p">);</span><span class="w"></span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span><span class="w"></span>
-<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;!&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">sdiMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span><span class="w"></span>
-<span class="w">        </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span><span class="w"></span>
-<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">sdiMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="kr">String</span><span class="p">(</span><span class="n">inByte2</span><span class="p">);</span><span class="w"></span>
-<span class="w">      </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">avail</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">avail</span><span class="p">;</span><span class="w"> </span><span class="n">a</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kr">char</span><span class="w"> </span><span class="n">inByte2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>
+<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">inByte2</span><span class="p">);</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;!&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">sdiMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">sdiMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="kr">String</span><span class="p">(</span><span class="n">inByte2</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
 
 
 <span class="w">  </span><span class="c1">// Report completed SDI-12 messages back to serial interface</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sdiMsgReady</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">sdiMsgStr</span><span class="p">);</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sdiMsgReady</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">sdiMsgStr</span><span class="p">);</span>
 <span class="w">    </span><span class="c1">// Reset String for next SDI-12 message</span>
-<span class="w">    </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">sdiMsgStr</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+<span class="w">    </span><span class="n">sdiMsgStr</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">// Send completed Serial message as SDI-12 command</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">serialMsgReady</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span><span class="w"></span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">serialMsgReady</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
 <span class="w">    </span><span class="c1">// Check if the serial message is a known command to the SDI-12 interface program</span>
-<span class="w">    </span><span class="kr">String</span><span class="w"> </span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">serialMsgStr</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">lowerMsgStr</span><span class="p">.</span><span class="n">toLowerCase</span><span class="p">();</span><span class="w"></span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;mode v&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span><span class="w"></span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Verbatim mode; exact text will be sent.  Enter </span><span class="se">\&quot;</span><span class="s">mode s</span><span class="se">\&quot;</span><span class="s"> for &quot;</span><span class="w"></span>
-<span class="w">                     </span><span class="s">&quot;SDI-12 command mode.&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;mode s&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span><span class="w"></span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;SDI-12 command mode; uppercase and ! suffix optional.  Enter &quot;</span><span class="w"></span>
-<span class="w">                     </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">mode v</span><span class="se">\&quot;</span><span class="s"> for verbatim mode.&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;help&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">HELPTEXT</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;fb off&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span><span class="w"></span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Feedback off; typed commands will not be visible.  Enter </span><span class="se">\&quot;</span><span class="s">fb &quot;</span><span class="w"></span>
-<span class="w">                     </span><span class="s">&quot;on</span><span class="se">\&quot;</span><span class="s"> to enable feedback.&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;fb on&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span><span class="w"></span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Feedback on; typed commands will be visible.  Enter </span><span class="se">\&quot;</span><span class="s">fb off</span><span class="se">\&quot;</span><span class="s"> &quot;</span><span class="w"></span>
-<span class="w">                     </span><span class="s">&quot;to disable feedback.&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="kr">String</span><span class="w"> </span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">serialMsgStr</span><span class="p">;</span>
+<span class="w">    </span><span class="n">lowerMsgStr</span><span class="p">.</span><span class="n">toLowerCase</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;mode v&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
+<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Verbatim mode; exact text will be sent.  Enter </span><span class="se">\&quot;</span><span class="s">mode s</span><span class="se">\&quot;</span><span class="s"> for &quot;</span>
+<span class="w">                     </span><span class="s">&quot;SDI-12 command mode.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;mode s&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;SDI-12 command mode; uppercase and ! suffix optional.  Enter &quot;</span>
+<span class="w">                     </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">mode v</span><span class="se">\&quot;</span><span class="s"> for verbatim mode.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;help&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">HELPTEXT</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;fb off&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Feedback off; typed commands will not be visible.  Enter </span><span class="se">\&quot;</span><span class="s">fb &quot;</span>
+<span class="w">                     </span><span class="s">&quot;on</span><span class="se">\&quot;</span><span class="s"> to enable feedback.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;fb on&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
+<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Feedback on; typed commands will be visible.  Enter </span><span class="se">\&quot;</span><span class="s">fb off</span><span class="se">\&quot;</span><span class="s"> &quot;</span>
+<span class="w">                     </span><span class="s">&quot;to disable feedback.&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="c1">// If not a known command to the SDI-12 interface program, send out on SDI-12 data</span>
 <span class="w">    </span><span class="c1">// pin</span>
-<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">verbatim</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">serialMsgStr</span><span class="p">);</span><span class="w"></span>
-<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">        </span><span class="n">serialMsgStr</span><span class="p">.</span><span class="n">toUpperCase</span><span class="p">();</span><span class="w"></span>
-<span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">serialMsgStr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">);</span><span class="w"></span>
-<span class="w">      </span><span class="p">}</span><span class="w"></span>
-<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">verbatim</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">serialMsgStr</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">serialMsgStr</span><span class="p">.</span><span class="n">toUpperCase</span><span class="p">();</span>
+<span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">serialMsgStr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
 <span class="w">    </span><span class="c1">// Reset String for next serial message</span>
-<span class="w">    </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">serialMsgStr</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span><span class="w"></span>
-<span class="w">  </span><span class="p">}</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span></pre></section>
+<span class="w">    </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+<span class="w">    </span><span class="n">serialMsgStr</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span></pre></section>
         <div class="m-note m-dim m-thin m-text-center"><a href="h__s_d_i-12_slave_implementation_8ino-example.html" class="m-doc">&laquo; h_SDI-12_slave_implementation.ino</a> | <a href="examples_page.html" class="m-doc">Examples</a> | <a href="j_external_pcint_library_8ino-example.html" class="m-doc">j_external_pcint_library.ino &raquo;</a></div>
 
                     </div>
