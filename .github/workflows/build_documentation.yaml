@@ -27,7 +27,7 @@ jobs:
           path: code_docs/Arduino-SDI-12
 
       - name: Restore or Cache pip
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.3
         id: cache_pip
         with:
           path: ~/.cache/pip
@@ -37,7 +37,7 @@ jobs:
           restore-keys: ${{ runner.os }}-pip-
 
       - name: Restore or Cache PlatformIO and Libraries
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.3
         id: cache_pio
         with:
           path: ~/.platformio
@@ -70,7 +70,7 @@ jobs:
 
       - name: Restore or Cache Doxygen
         id: cache_doxygen
-        uses: actions/cache@v3.0.11
+        uses: actions/cache@v3.2.3
         with:
           path: doxygen-src
           key: ${{ runner.os }}-doxygen-${{ env.DOXYGEN_VERSION }}
