@@ -28,7 +28,7 @@ jobs:
           echo "VERSION=$VER" >> $GITHUB_ENV
 
       - name: Restore or Cache pip
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.3.1
         with:
           path: ~/.cache/pip
           # if requirements.txt hasn't changed, then it will be a "cache hit" and pip will be restored
