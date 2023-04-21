@@ -319,12 +319,18 @@ uint8_t SDI12::parity_even_bit(uint8_t v) {
 
 // a helper function to switch pin interrupts on or off
 void SDI12::setPinInterrupts(bool enable) {
-#if defined(ARDUINO_ARCH_SAMD) || defined(ESP32) || defined(ESP8266)|| defined(PARTICLE)
+#if defined(ARDUINO_ARCH_SAMD) || defined(ESP32) || defined(ESP8266)
+  // Merely need to attach the interrupt function to the pin
+  if (enable) attachInterrupt(digitalPinToInterrupt(_dataPin), handleInterrupt, CHANGE);
+  // Merely need to detach the interrupt function from the pin
+  else
+    detachInterrupt(digitalPinToInterrupt(_dataPin));
+#elif defined(PARTICLE)
   // Merely need to attach the interrupt function to the pin
   if (enable) attachInterrupt(_dataPin, handleInterrupt, CHANGE);
   // Merely need to detach the interrupt function from the pin
   else
-    detachInterrupt(digitalPinToInterrupt(_dataPin));
+    detachInterrupt(_dataPin);
 
 #elif defined(__AVR__) && not defined(SDI12_EXTERNAL_PCINT)
   if (enable) {
