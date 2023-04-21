@@ -161,7 +161,7 @@ typedef const __FlashStringHelper* FlashString;
 #define SDI12_BUFFER_SIZE 81
 #endif
 
-#if defined(ESP32) || defined(ESP8266)
+#if defined(ESP32) || defined(ESP8266) || defined(PARTICLE)
 /**
  * @brief This enumeration provides the lookahead options for parseInt(), parseFloat().
  *
