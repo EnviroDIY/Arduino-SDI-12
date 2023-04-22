@@ -117,6 +117,9 @@ The known compatibile pins for common variants are shown below:
 **ESP32:**
 - Any GPIO
 
+**Particle (Boron LTE):**
+- Any digital GPIO
+
 Note that not all of these pins are available with our [Variants and Branches](https://github.com/EnviroDIY/Arduino-SDI-12#variants-and-branches), below.
 
 
