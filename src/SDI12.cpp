@@ -232,7 +232,7 @@ SDI12::SDI12(int8_t dataPin) {
   // to distinguish between the '0' that parseInt and parseFloat usually return
   // on timeouts and a real measured 0 value.  So we force the timeout response
   // to be -9999, which is not a common value for most variables measured by
-  // in-site environmental sensors.
+  // in-situ environmental sensors.
   setTimeoutValue(-9999);
 }
 
