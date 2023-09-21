@@ -126,6 +126,7 @@
 #define SRC_SDI12_H_
 
 //  Import Required Libraries
+
 #include <inttypes.h>      // integer types library
 #include <Arduino.h>       // Arduino core library
 #include <Stream.h>        // Arduino Stream library
@@ -180,6 +181,7 @@ enum LookaheadMode {
   /** Only tabs, spaces, line feeds & carriage returns are skipped.*/
   SKIP_WHITESPACE
 };
+
 /**
  * @brief The function or macro used to read the clock timer value.
  *
@@ -190,6 +192,7 @@ enum LookaheadMode {
  * use the micros function and must use the faster assembly macros to read the
  * processor timer directly.
  */
+
 #define READTIME sdi12timer.SDI12TimerRead()
 #else
 /**
@@ -911,6 +914,13 @@ class SDI12 : public Stream {
   /// @copydoc SDI12::sendCommand(String&, int8_t)
   void sendCommand(FlashString cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
 
+ #ifdef ENVIRODIY_SDI12_USE_CRC
+  String addCRCResponse(String &resp);     // Add CRC to the  resp  string (for slave use)
+  char * addCRCResponse( char *resp);      // Add CRC to the  resp  string (for slave use)
+  String addCRCResponse(FlashString resp); // Add CRC to the  resp  string (for slave use)
+  String calculateCRC(String &resp);       // Calculate the CRC for a response
+ #endif
+
   /**
    * @brief Send a response out on the data line (for slave use)
    *
@@ -926,7 +936,6 @@ class SDI12 : public Stream {
   /// @copydoc SDI12::sendResponse(String& resp)
   void sendResponse(FlashString resp);
   ///@}
-
 
   /**
    * @anchor interrupt_fxns
@@ -977,6 +986,7 @@ class SDI12 : public Stream {
   /** on AVR boards, uncomment to use your own PCINT ISRs */
   // #define SDI12_EXTERNAL_PCINT
   /**@}*/
+
 };
 
 #endif  // SRC_SDI12_H_

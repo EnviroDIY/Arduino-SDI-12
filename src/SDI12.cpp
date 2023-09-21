@@ -542,32 +542,130 @@ void SDI12::sendResponse(FlashString resp) {
   setState(SDI12_LISTENING);  // return to listening state
 }
 
+#ifdef ENVIRODIY_SDI12_USE_CRC
+
+#define POLY 0xa001
+String SDI12::addCRCResponse(String &resp) {
+  char  crcStr[3] = {0};
+  uint16_t crc    = 0;
+
+  for(int i = 0; i < resp.length(); i++) {
+    crc ^= (uint16_t)resp[i];     //Set the CRC equal to the exclusive OR of the character and itself
+    for (int j = 0; j <  8; j++){ //count = 1 to 8
+      if (crc & 0x0001){          //if the least significant bit of the CRC is one
+        crc >>= 1;                //right shift the CRC one bit
+        crc ^= POLY;              //set CRC equal to the exclusive OR of POLY and itself
+      }
+      else {
+        crc >>=  1;               //right shift the CRC one bit
+      }
+    }
+  }
+  crcStr[0] = (char)( 0x0040 |  (crc >> 12));
+  crcStr[1] = (char)( 0x0040 | ((crc >> 6) & 0x003F));
+  crcStr[2] = (char)( 0x0040 |  (crc & 0x003F));
+  return (resp  + String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
+}
+
+
+char * SDI12::addCRCResponse(char *resp) {
+  char crcStr[3] = {0};
+  uint16_t crc    = 0;
+
+  for(int i = 0; i < strlen(resp); i++) {
+    crc ^= (uint16_t)resp[i];     //Set the CRC equal to the exclusive OR of the character and itself
+    for (int j = 0; j <  8; j++){ //count = 1 to 8
+      if (crc & 0x0001){          //if the least significant bit of the CRC is one
+        crc >>= 1;                //right shift the CRC one bit
+        crc ^= POLY;              //set CRC equal to the exclusive OR of POLY and itself
+      }
+      else {
+        crc >>=  1;             //right shift the CRC one bit
+      }
+    }
+  }
+
+  crcStr[1] = (char)( 0x0040 | ((crc >> 6) & 0x003F));
+  crcStr[2] = (char)( 0x0040 |  (crc & 0x003F));
+  return (strncat(resp, crcStr,3));
+}
+
+String SDI12::addCRCResponse(FlashString resp) {
+  char  crcStr[3] = {0};
+  char  respBuffer[SDI12_BUFFER_SIZE - 5]; // don't need space for the CRC or CR/LF
+  uint16_t crc    = 0;
+  int i = 0;
+  char responsechar ;
+
+
+  for(i = 0; i < strlen_P((PGM_P)resp); i++) {
+    responsechar = (char)pgm_read_byte((const char *)resp + i);
+    crc ^= (uint16_t)responsechar;     //Set the CRC equal to the exclusive OR of the character and itself
+    for (int j = 0; j <  8; j++){      //count = 1 to 8
+       if (crc & 0x0001){              //if the least significant bit of the CRC is one
+          crc >>= 1;                   //right shift the CRC one bit
+          crc ^= POLY;                 //set CRC equal to the exclusive OR of POLY and itself
+       }
+       else {
+          crc >>=  1;                  //right shift the CRC one bit
+       }
+    }
+    respBuffer[i] = responsechar;
+  }
+  respBuffer[++i] = '\0';
+  String outResp = respBuffer;
+  crcStr[0] = (char)( 0x0040 |  (crc >> 12));
+  crcStr[1] = (char)( 0x0040 | ((crc >> 6) & 0x003F));
+  crcStr[2] = (char)( 0x0040 |  (crc & 0x003F));
+  return (outResp  + String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
+}
+
+String SDI12::calculateCRC(String &resp){
+   char  crcStr[3] = {0};
+   uint16_t crc    = 0;
+
+   for(int i = 0; i < resp.length(); i++) {
+      crc ^= (uint16_t)resp[i];     //Set the CRC equal to the exclusive OR of the character and itself
+      for (int j = 0; j <  8; j++){ //count = 1 to 8
+         if (crc & 0x0001){         //if the least significant bit of the CRC is one
+            crc >>= 1;              //right shift the CRC one bit
+            crc ^= POLY;            //set CRC equal to the exclusive OR of POLY and itself
+         }
+         else {
+            crc >>=  1;             //right shift the CRC one bit
+         }
+      }
+   }
+   crcStr[0] = (char)( 0x0040 |  (crc >> 12));
+   crcStr[1] = (char)( 0x0040 | ((crc >> 6) & 0x003F));
+   crcStr[2] = (char)( 0x0040 |  (crc & 0x003F));
+   return (String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
+}
+
+#endif //ENVIRODIY_SDI12_USE_CRC
+
+
 
 /* ================ Interrupt Service Routine =======================================*/
 
-// Passes off responsibility for the interrupt to the active object.
-// On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
-#if defined(ESP32) || defined(ESP8266)
-void ICACHE_RAM_ATTR SDI12::handleInterrupt() {
+// 7.1 - Passes off responsibility for the interrupt to the active object.
+void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::handleInterrupt(){
   if (_activeObject) _activeObject->receiveISR();
 }
-#else
-void SDI12::handleInterrupt() {
-  if (_activeObject) _activeObject->receiveISR();
-}
-#endif
 
-// Creates a blank slate of bits for an incoming character
-void SDI12::startChar() {
-  rxState = 0x00;  // 0b00000000, got a start bit
+// 7.2 - Creates a blank slate of bits for an incoming character
+void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::startChar()
+{
+  rxState = 0;           // got a start bit
   rxMask  = 0x01;  // 0b00000001, bit mask, lsb first
   rxValue = 0x00;  // 0b00000000, RX character to be, a blank slate
 }  // startChar
 
-// The actual interrupt service routine
-void SDI12::receiveISR() {
-  // time of this data transition (plus ISR latency)
-  sdi12timer_t thisBitTCNT = READTIME;
+// 7.3 - The actual interrupt service routine
+void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::receiveISR()
+{
+
+  sdi12timer_t thisBitTCNT = READTIME;       // time of this data transition (plus ISR latency)
 
   uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
 
