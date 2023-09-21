@@ -44,6 +44,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   TCCR2B = 0x07;  // TCCR2B = 0x07 = 0b00000111 - Clock Select bits 22, 21, & 20 on -
                   // prescaler set to CK/1024
 }
+
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR2A = preSDI12_TCCR2A;
   TCCR2B = preSDI12_TCCR2B;
@@ -59,6 +60,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   TCCR2B = 0x07;  // TCCR2B = 0x07 = 0b00000111 - Clock Select bits 22, 21, & 20 on -
                   // prescaler set to CK/1024
 }
+
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR2A = preSDI12_TCCR2A;
   TCCR2B = preSDI12_TCCR2B;
@@ -74,6 +76,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   TCCR2B = 0x06;  // TCCR2B = 0x06 = 0b00000110 - Clock Select bits 22 & 20 on -
                   // prescaler set to CK/256
 }
+
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR2A = preSDI12_TCCR2A;
   TCCR2B = preSDI12_TCCR2B;
@@ -108,8 +111,9 @@ static uint8_t preSDI12_TCCR1A;
 
 void SDI12Timer::configSDI12TimerPrescale(void) {
   preSDI12_TCCR1A = TCCR1;
-  TCCR1 = 0b00001011;  // Set the prescaler to 1024
+  TCCR1           = 0b00001011;  // Set the prescaler to 1024
 }
+
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR1 = preSDI12_TCCR1A;
 }
@@ -119,8 +123,9 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 
 void SDI12Timer::configSDI12TimerPrescale(void) {
   preSDI12_TCCR1A = TCCR1;
-  TCCR1 = 0b00001010;  // Set the prescaler to 512
+  TCCR1           = 0b00001010;  // Set the prescaler to 512
 }
+
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR1 = preSDI12_TCCR1A;
 }
@@ -170,6 +175,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   TCCR4D = 0x00;  // TCCR4D = 0x00 = No fault protection
   TCCR4E = 0x00;  // TCCR4E = 0x00 = No register locks or overrides
 }
+
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR4A = preSDI12_TCCR4A;
   TCCR4B = preSDI12_TCCR4B;
@@ -194,6 +200,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   TCCR4D = 0x00;  // TCCR4D = 0x00 = No fault protection
   TCCR4E = 0x00;  // TCCR4E = 0x00 = No register locks or overrides
 }
+
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR4A = preSDI12_TCCR4A;
   TCCR4B = preSDI12_TCCR4B;
@@ -245,6 +252,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
     TC_CTRLA_ENABLE;              // Enable TC3
   while (TC3->COUNT16.STATUS.bit.SYNCBUSY) {}  // Wait for synchronization
 }
+
 // NOT resetting the SAMD timer settings
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   // Disable TCx
@@ -267,13 +275,15 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 #elif defined(ESP32) || defined(ESP8266)
 
 void SDI12Timer::configSDI12TimerPrescale(void) {}
+
 void SDI12Timer::resetSDI12TimerPrescale(void) {}
 
-sdi12timer_t ESPFAMILY_USE_INSTRUCTION_RAM SDI12Timer::SDI12TimerRead(void)
-{
-   // Its a one microsecond clock but we want 64uS ticks so divide by 64 i.e. right shift 6
-   return ((sdi12timer_t)(micros() >> 6));
+sdi12timer_t ESPFAMILY_USE_INSTRUCTION_RAM SDI12Timer::SDI12TimerRead(void) {
+  // Its a one microsecond clock but we want 64uS ticks so divide by 64 i.e. right shift
+  // 6
+  return ((sdi12timer_t)(micros() >> 6));
 }
+
 // Unknown board
 #else
 #error "Please define your board timer and pins"
