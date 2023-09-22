@@ -914,28 +914,41 @@ class SDI12 : public Stream {
   /// @copydoc SDI12::sendCommand(String&, int8_t)
   void sendCommand(FlashString cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
 
-#ifdef ENVIRODIY_SDI12_USE_CRC
-  String addCRCResponse(String& resp);  // Add CRC to the resp string (for slave use)
-  char*  addCRCResponse(char* resp);    // Add CRC to the resp string (for slave use)
-  String
-  addCRCResponse(FlashString resp);   // Add CRC to the resp string (for slave use)
-  String calculateCRC(String& resp);  // Calculate the CRC for a response
-#endif
+  /**
+   * @brief Calculates the 16-bit Cyclic Redundancy Check (CRC) for an SDI-12 message.
+   *
+   * @param resp The message to calculate the CRC for.
+   * @return *uint16_t* The calculated CRC
+   */
+  uint16_t calculateCRC(String& resp);
+  /// @copydoc SDI12::calculateCRC(String&)
+  uint16_t calculateCRC(const char* resp);
+  /// @copydoc SDI12::calculateCRC(String&)
+  uint16_t calculateCRC(FlashString resp);
+
+  /**
+   * @brief Converts a numeric 16-bit CRC to an ASCII String.
+   *
+   * @param crc The 16-bit CRC
+   * @return *String* An ASCII string for the CRC
+   */
+  String crcToString(uint16_t crc);
 
   /**
    * @brief Send a response out on the data line (for slave use)
    *
    * @param resp the response to send
+   * @param addCRC True to append a CRC to the outgoing response
    *
    * A publicly accessible function that sends out an 8.33 ms marking and a response
    * byte by byte on the data line.  This is needed if the Arduino is acting as an
    * SDI-12 device itself, not as a recorder for another SDI-12 device.
    */
-  void sendResponse(String& resp);
+  void sendResponse(String& resp, bool addCRC = false);
   /// @copydoc SDI12::sendResponse(String& resp)
-  void sendResponse(const char* resp);
+  void sendResponse(const char* resp, bool addCRC = false);
   /// @copydoc SDI12::sendResponse(String& resp)
-  void sendResponse(FlashString resp);
+  void sendResponse(FlashString resp, bool addCRC = false);
   ///@}
 
   /**

@@ -514,27 +514,41 @@ void SDI12::sendCommand(FlashString cmd, int8_t extraWakeTime) {
 // marking and then sending out the characters of resp one by one (for slave-side use,
 // that is, when the Arduino itself is acting as an SDI-12 device rather than a
 // recorder).
-void SDI12::sendResponse(String& resp) {
+void SDI12::sendResponse(String& resp, bool addCRC) {
   setState(SDI12_TRANSMITTING);       // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);        // marking is LOW
   delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < resp.length(); i++) {
     writeChar(resp[i]);  // write each character
   }
+  // tack on the CRC if requested
+  if (addCRC) {
+    String crc = crcToString(calculateCRC(resp));
+    for (int unsigned i = 0; i < 3; i++) {
+      writeChar(crc[i]);  // write each character
+    }
+  }
   setState(SDI12_LISTENING);  // return to listening state
 }
 
-void SDI12::sendResponse(const char* resp) {
+void SDI12::sendResponse(const char* resp, bool addCRC) {
   setState(SDI12_TRANSMITTING);       // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);        // marking is LOW
   delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen(resp); i++) {
     writeChar(resp[i]);  // write each character
   }
+  // tack on the CRC if requested
+  if (addCRC) {
+    String crc = crcToString(calculateCRC(resp));
+    for (int unsigned i = 0; i < 3; i++) {
+      writeChar(crc[i]);  // write each character
+    }
+  }
   setState(SDI12_LISTENING);  // return to listening state
 }
 
-void SDI12::sendResponse(FlashString resp) {
+void SDI12::sendResponse(FlashString resp, bool addCRC) {
   setState(SDI12_TRANSMITTING);       // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);        // marking is LOW
   delayMicroseconds(marking_micros);  // 8.33 ms marking before response
@@ -542,16 +556,20 @@ void SDI12::sendResponse(FlashString resp) {
     // write each character
     writeChar(static_cast<char>(pgm_read_byte((const char*)resp + i)));
   }
+  // tack on the CRC if requested
+  if (addCRC) {
+    String crc = crcToString(calculateCRC(resp));
+    for (int unsigned i = 0; i < 3; i++) {
+      writeChar(crc[i]);  // write each character
+    }
+  }
   setState(SDI12_LISTENING);  // return to listening state
 }
 
-#ifdef ENVIRODIY_SDI12_USE_CRC
-
 #define POLY 0xa001
 
-String SDI12::addCRCResponse(String& resp) {
-  char     crcStr[3] = {0};
-  uint16_t crc       = 0;
+uint16_t SDI12::calculateCRC(String& resp) {
+  uint16_t crc = 0;
 
   for (int i = 0; i < resp.length(); i++) {
     crc ^= (uint16_t)
@@ -565,15 +583,11 @@ String SDI12::addCRCResponse(String& resp) {
       }
     }
   }
-  crcStr[0] = (char)(0x0040 | (crc >> 12));
-  crcStr[1] = (char)(0x0040 | ((crc >> 6) & 0x003F));
-  crcStr[2] = (char)(0x0040 | (crc & 0x003F));
-  return (resp + String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
+  return crc;
 }
 
-char* SDI12::addCRCResponse(char* resp) {
-  char     crcStr[3] = {0};
-  uint16_t crc       = 0;
+uint16_t SDI12::calculateCRC(const char* resp) {
+  uint16_t crc = 0;
 
   for (int i = 0; i < strlen(resp); i++) {
     crc ^= (uint16_t)
@@ -587,21 +601,14 @@ char* SDI12::addCRCResponse(char* resp) {
       }
     }
   }
-
-  crcStr[1] = (char)(0x0040 | ((crc >> 6) & 0x003F));
-  crcStr[2] = (char)(0x0040 | (crc & 0x003F));
-  return (strncat(resp, crcStr, 3));
+  return crc;
 }
 
-String SDI12::addCRCResponse(FlashString resp) {
-  char     crcStr[3] = {0};
-  char     respBuffer[SDI12_BUFFER_SIZE - 5];  // don't need space for the CRC or CR/LF
+uint16_t SDI12::calculateCRC(FlashString resp) {
   uint16_t crc = 0;
-  int      i   = 0;
   char     responsechar;
 
-
-  for (i = 0; i < strlen_P((PGM_P)resp); i++) {
+  for (int i = 0; i < strlen_P((PGM_P)resp); i++) {
     responsechar = (char)pgm_read_byte((const char*)resp + i);
     crc ^= (uint16_t)responsechar;  // Set the CRC equal to the exclusive OR of the
                                     // character and itself
@@ -613,40 +620,17 @@ String SDI12::addCRCResponse(FlashString resp) {
         crc >>= 1;  // right shift the CRC one bit
       }
     }
-    respBuffer[i] = responsechar;
   }
-  respBuffer[++i] = '\0';
-  String outResp  = respBuffer;
-  crcStr[0]       = (char)(0x0040 | (crc >> 12));
-  crcStr[1]       = (char)(0x0040 | ((crc >> 6) & 0x003F));
-  crcStr[2]       = (char)(0x0040 | (crc & 0x003F));
-  return (outResp + String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
+  return crc;
 }
 
-String SDI12::calculateCRC(String& resp) {
-  char     crcStr[3] = {0};
-  uint16_t crc       = 0;
-
-  for (int i = 0; i < resp.length(); i++) {
-    crc ^= (uint16_t)
-      resp[i];  // Set the CRC equal to the exclusive OR of the character and itself
-    for (int j = 0; j < 8; j++) {  // count = 1 to 8
-      if (crc & 0x0001) {          // if the least significant bit of the CRC is one
-        crc >>= 1;                 // right shift the CRC one bit
-        crc ^= POLY;  // set CRC equal to the exclusive OR of POLY and itself
-      } else {
-        crc >>= 1;  // right shift the CRC one bit
-      }
-    }
-  }
-  crcStr[0] = (char)(0x0040 | (crc >> 12));
-  crcStr[1] = (char)(0x0040 | ((crc >> 6) & 0x003F));
-  crcStr[2] = (char)(0x0040 | (crc & 0x003F));
+String SDI12::crcToString(uint16_t crc) {
+  char crcStr[3] = {0};
+  crcStr[0]      = (char)(0x0040 | (crc >> 12));
+  crcStr[1]      = (char)(0x0040 | ((crc >> 6) & 0x003F));
+  crcStr[2]      = (char)(0x0040 | (crc & 0x003F));
   return (String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
 }
-
-#endif  // ENVIRODIY_SDI12_USE_CRC
-
 
 /* ================ Interrupt Service Routine =======================================*/
 
