@@ -1,0 +1,142 @@
+/**
+ * @file f_basic_data_request.ino
+ * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
+ *                          and the EnviroDIY Development Team
+ *            This example is published under the BSD-3 license.
+ * @author Ruben Kertesz <github@emnet.net> or @rinnamon on twitter
+ * @date 2/10/2016
+ *
+ * @brief Example F: Basic Data Request to a Single Sensor
+ *
+ * This is a very basic (stripped down) example where the user initiates a measurement
+ * and receives the results to a terminal window without typing numerous commands into
+ * the terminal.
+ *
+ * Edited by Ruben Kertesz for ISCO Nile 502 2/10/2016
+ */
+
+#include <SDI12.h>
+
+#define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
+#define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
+#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
+#define SENSOR_ADDRESS 2
+
+/** Define the SDI-12 bus */
+SDI12 mySDI12(DATA_PIN);
+
+String sdiResponse = "";
+String myCommand   = "";
+
+void setup() {
+  Serial.begin(SERIAL_BAUD);
+  while (!Serial)
+    ;
+
+  Serial.println("Opening SDI-12 bus...");
+  mySDI12.begin();
+  delay(500);  // allow things to settle
+
+  // Power the sensors;
+  if (POWER_PIN > 0) {
+    Serial.println("Powering up sensors...");
+    pinMode(POWER_PIN, OUTPUT);
+    digitalWrite(POWER_PIN, HIGH);
+    delay(200);
+  }
+
+  // print out the sensor info
+  String command = "";
+  command += String(SENSOR_ADDRESS);
+  command += "I!";
+  mySDI12.sendCommand(command);
+  Serial.print(">>>");
+  Serial.println(command);
+  delay(100);
+
+  sdiResponse = mySDI12.readStringUntil('\n');
+  sdiResponse.trim();
+  // allccccccccmmmmmmvvvxxx...xx<CR><LF>
+  Serial.print("<<<");
+  Serial.println(sdiResponse);
+
+  Serial.print("Address: ");
+  Serial.print(sdiResponse.substring(0, 1));  // address
+  Serial.print(", SDI-12 Version: ");
+  Serial.print(sdiResponse.substring(1, 3).toFloat() / 10);  // SDI-12 version number
+  Serial.print(", Vendor ID: ");
+  Serial.print(sdiResponse.substring(3, 11));  // vendor id
+  Serial.print(", Sensor Model: ");
+  Serial.print(sdiResponse.substring(11, 17));  // sensor model
+  Serial.print(", Sensor Version: ");
+  Serial.print(sdiResponse.substring(17, 20));  // sensor version
+  Serial.print(", Sensor ID: ");
+  Serial.print(sdiResponse.substring(20));  // sensor id
+  Serial.println();
+}
+
+void loop() {
+  // first command to take a measurement
+  myCommand = String(SENSOR_ADDRESS) + "MC!";
+  Serial.print(">>>");
+  Serial.println(myCommand);  // echo command to terminal
+
+  mySDI12.sendCommand(myCommand);
+  delay(5);
+
+  // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of
+  // measurments available, 0-9]
+  String sdiResponse = mySDI12.readStringUntil('\n');
+  sdiResponse.trim();
+  Serial.print("<<<");
+  Serial.println(sdiResponse);
+  mySDI12.clearBuffer();
+
+  // find out how long we have to wait (in seconds).
+  uint8_t meas_time_s = sdiResponse.substring(1, 4).toInt();
+  Serial.print("expected measurement time: ");
+  Serial.print(meas_time_s);
+  Serial.print(" s, ");
+
+  // Set up the number of results to expect
+  int numResults = sdiResponse.substring(4).toInt();
+  Serial.print("Number Results: ");
+  Serial.println(numResults);
+
+  // listen for measurement to finish
+  unsigned long timerStart = millis();
+  while ((millis() - timerStart) < (meas_time_s + 1) * 1000) {
+    if (mySDI12.available())  // sensor can interrupt us to let us know it is done early
+    {
+      unsigned long measTime = millis() - timerStart;
+      Serial.print("<<<");
+      Serial.println(mySDI12.readStringUntil('\n'));
+      Serial.print("Completed after ");
+      Serial.print(measTime);
+      Serial.println(" ms");
+      break;
+    }
+  }
+
+
+  // next command to request data from last measurement
+  myCommand = String(SENSOR_ADDRESS) + "D0!";
+  Serial.print(">>>");
+  Serial.println(myCommand);  // echo command to terminal
+
+  mySDI12.sendCommand(myCommand);
+  delay(30);  // wait a while for a response
+
+
+  sdiResponse = mySDI12.readStringUntil('\n');
+  sdiResponse.trim();
+  Serial.print("<<<");
+  Serial.println(sdiResponse);  // write the response to the screen
+  bool crcMatch = mySDI12.verifyCRC(sdiResponse);
+  if (crcMatch) {
+    Serial.println("CRC matches!");
+  } else {
+    Serial.println("CRC check failed!");
+  }
+  mySDI12.clearBuffer();
+}
