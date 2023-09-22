@@ -23,6 +23,7 @@ jobs:
             examples/i_SDI-12_interface/,
             examples/j_external_pcint_library/,
             examples/k_concurrent_logger/,
+            examples/l_verify_crc/,
           ]
 
     steps:
@@ -67,7 +68,7 @@ jobs:
           pip install --upgrade platformio
 
       - name: Run PlatformIO
-        if:  matrix.example != 'examples/j_external_pcint_library/'
+        if: matrix.example != 'examples/j_external_pcint_library/'
         env:
           PLATFORMIO_CI_SRC: ${{ matrix.example }}
         run: |
