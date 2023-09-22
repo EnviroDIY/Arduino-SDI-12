@@ -166,7 +166,8 @@ void loop() {
         mySDI12.sendCommand(serialMsgStr);
       } else {
         serialMsgStr.toUpperCase();
-        mySDI12.sendCommand(serialMsgStr + "!");
+        String fullCommand = serialMsgStr + "!";
+        mySDI12.sendCommand(fullCommand);
       }
     }
     // Reset String for next serial message
