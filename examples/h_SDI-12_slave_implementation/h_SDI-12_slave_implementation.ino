@@ -137,8 +137,9 @@ void parseSdi12Cmd(String command, String* dValues) {
     }
   }
 
-  // Issue the response speficied in the switch-case structure above.
-  slaveSDI12.sendResponse(String(sensorAddress) + responseStr + "\r\n");
+  // Issue the response specified in the switch-case structure above.
+  String fullResponse = String(sensorAddress) + responseStr + "\r\n";
+  slaveSDI12.sendResponse(fullResponse);
 }
 
 void formatOutputSDI(float* measurementValues, String* dValues, unsigned int maxChar) {
@@ -241,7 +242,8 @@ void loop() {
       // Populate the "dValues" String array with the values in SDI-12 format
       formatOutputSDI(measurementValues, dValues, 35);
       // For aM!, Send "service request" (<address><CR><LF>) when data is ready
-      slaveSDI12.sendResponse(String(sensorAddress) + "\r\n");
+      String fullResponse = String(sensorAddress) + "\r\n";
+      slaveSDI12.sendResponse(fullResponse);
       state = WAIT;
       slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
                                  // message AGAIN

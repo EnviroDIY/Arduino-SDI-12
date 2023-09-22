@@ -239,7 +239,7 @@ SDI12::SDI12(int8_t dataPin) {
 // Destructor
 SDI12::~SDI12() {
   setState(SDI12_DISABLED);
-  if (isActive()) { _activeObject = NULL; }
+  if (isActive()) { _activeObject = nullptr; }
   // Set the timer prescalers back to original values
   // NOTE:  This does NOT reset SAMD board pre-scalers!
   sdi12timer.resetSDI12TimerPrescale();
@@ -571,7 +571,7 @@ void SDI12::sendResponse(FlashString resp, bool addCRC) {
 uint16_t SDI12::calculateCRC(String& resp) {
   uint16_t crc = 0;
 
-  for (int i = 0; i < resp.length(); i++) {
+  for (uint16_t i = 0; i < resp.length(); i++) {
     crc ^= (uint16_t)
       resp[i];  // Set the CRC equal to the exclusive OR of the character and itself
     for (int j = 0; j < 8; j++) {  // count = 1 to 8
@@ -589,7 +589,7 @@ uint16_t SDI12::calculateCRC(String& resp) {
 uint16_t SDI12::calculateCRC(const char* resp) {
   uint16_t crc = 0;
 
-  for (int i = 0; i < strlen(resp); i++) {
+  for (size_t i = 0; i < strlen(resp); i++) {
     crc ^= (uint16_t)
       resp[i];  // Set the CRC equal to the exclusive OR of the character and itself
     for (int j = 0; j < 8; j++) {  // count = 1 to 8
@@ -608,7 +608,7 @@ uint16_t SDI12::calculateCRC(FlashString resp) {
   uint16_t crc = 0;
   char     responsechar;
 
-  for (int i = 0; i < strlen_P((PGM_P)resp); i++) {
+  for (size_t i = 0; i < strlen_P((PGM_P)resp); i++) {
     responsechar = (char)pgm_read_byte((const char*)resp + i);
     crc ^= (uint16_t)responsechar;  // Set the CRC equal to the exclusive OR of the
                                     // character and itself
@@ -640,10 +640,10 @@ bool SDI12::verifyCRC(String& respWithCRC) {
   String recString = "";  // the data portion of the response
 
   // extract the data portion of the string
-  for (int i = 0; i < (nChar - 3); i++) recString += respWithCRC[i];
+  for (uint16_t i = 0; i < (nChar - 3); i++) recString += respWithCRC[i];
 
   // extract the last 3 characters that are the CRC from the full response string
-  for (int i = (nChar - 3); i < nChar; i++) recCRC += respWithCRC[i];
+  for (uint16_t i = (nChar - 3); i < nChar; i++) recCRC += respWithCRC[i];
 
   // calculate the CRC for the data portion
   String calcCRC = crcToString(calculateCRC(recString));
