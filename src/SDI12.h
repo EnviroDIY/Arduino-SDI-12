@@ -935,6 +935,16 @@ class SDI12 : public Stream {
   String crcToString(uint16_t crc);
 
   /**
+   * @brief Verifies that the CRC returned at the end of an SDI-12 message matches that
+   * of the content of the message.
+   *
+   * @param respWithCRC The full SDI-12 message, including the CRC at the end.
+   * @return *true* The CRC matches and the message is valid
+   * @return *false* The CRC doesn't match; the conversation should be retried.
+   */
+  bool verifyCRC(String& respWithCRC);
+
+  /**
    * @brief Send a response out on the data line (for slave use)
    *
    * @param resp the response to send

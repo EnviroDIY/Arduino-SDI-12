@@ -632,6 +632,29 @@ String SDI12::crcToString(uint16_t crc) {
   return (String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
 }
 
+bool SDI12::verifyCRC(String& respWithCRC) {
+  uint16_t nChar = respWithCRC.length() -
+    2;  // number of characters without <CR> and <LF> (readable string composed of
+        // sensor address, values separated by + and -) and the 3 characters
+  String recCRC    = "";  // the CRC portion of the response
+  String recString = "";  // the data portion of the response
+
+  // extract the data portion of the string
+  for (int i = 0; i < (nChar - 3); i++) recString += respWithCRC[i];
+
+  // extract the last 3 characters that are the CRC from the full response string
+  for (int i = (nChar - 3); i < nChar; i++) recCRC += respWithCRC[i];
+
+  // calculate the CRC for the data portion
+  String calcCRC = crcToString(calculateCRC(recString));
+
+  if (recCRC == calcCRC) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 /* ================ Interrupt Service Routine =======================================*/
 
 // 7.1 - Passes off responsibility for the interrupt to the active object.
