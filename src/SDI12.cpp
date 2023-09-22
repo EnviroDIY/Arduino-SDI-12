@@ -633,11 +633,14 @@ String SDI12::crcToString(uint16_t crc) {
 }
 
 bool SDI12::verifyCRC(String& respWithCRC) {
-  uint16_t nChar = respWithCRC.length() -
-    2;  // number of characters without <CR> and <LF> (readable string composed of
-        // sensor address, values separated by + and -) and the 3 characters
-  String recCRC    = "";  // the CRC portion of the response
-  String recString = "";  // the data portion of the response
+  // trim trailing \r and \n (<CR> and <LF>)
+  respWithCRC.trim();
+  uint16_t nChar =
+    respWithCRC.length();  // number of characters without  (readable string composed of
+                           // sensor address, values separated by + and -) and the 3
+                           // characters of the CRC
+  String recCRC    = "";   // the CRC portion of the response
+  String recString = "";   // the data portion of the response
 
   // extract the data portion of the string
   for (uint16_t i = 0; i < (nChar - 3); i++) recString += respWithCRC[i];
