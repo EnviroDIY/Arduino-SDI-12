@@ -46,29 +46,44 @@ class String; // Forward declaration for WString.h String object
 #define SDI12SENSOR_OTHER_INFO "001"  // (optional) up to 13 char for serial or other sensor info
 #endif
 
+/* ERROR MACRO */
+#define SDI12SENSOR_ERR_INVALID -1 // General INVALID/ERROR/DISABLE
 
-// struct Command_s {
-//     bool msgBreak;
-//     bool msgMark;
-//     char address;
-//     char action;
-//     uint8_t altAction;
-//     String additional;
-//     uint8_t lastState;
-// };
 
-// enum SDI12SlaveCommand_e {
-//     UNKNOWN = 0,
-//     ADDRESS_QUERY = 1,          // ?!
-//     ACKNOWLEDGEMENT = 2,        // a!
-//     IDENTIFICATION = 3,         // aI!
-//     ADDRESS_CHANGE = 4,         // aAb!
-//     INITIATE_MEASUREMENT = 5,   // aM!, aMC!, aM1~9!, aMC1~9!
-//     DATA_REQUEST = 6,           // aD0! ~ aD9!, aD0 ~ aD999! for high ascii
-//     CONCURRENT_MEASUREMENT = 7, // aC!, aCC!, aC1~9!, aCC1~9!
-//     CONTINUOUS_MEASUREMENT = 8, // aR0!, aCC!, aC1~9!, aCC1~9!
-//     VERIFICATION = 9,           // aV!
-// };
+/**
+ * @brief Enumerated type to reference supported SDI12 commands.
+ *
+ */
+typedef enum SDI12SensorCommand_e: uint8_t {
+    kUnknown               = 0,  // Debug Purposes
+    kAcknowledge           = 1,  // a!
+    kAddressQuery          = 2,  // ?!
+    kIdentification        = 3,  // aI!, aI(M|C|V|HA|HB)(C|"")(0-9)!
+    kAddressChange         = 4,  // aAb!
+    kMeasurement           = 5,  // aM!, aMC!, aM1~9!, aMC1~9!
+    kDataRequest           = 6,  // aD0~9!, aD0~999! for high ascii
+    kConcurrentMeasurement = 7,  // aC!, aCC!, aC1~9!, aCC1~9!
+    kContinuousMeasurement = 8,  // aR0~9!, aRC0~9!
+    kVerification          = 9,  // aV!, aVC!
+    kHighVolumeASCII       = 10, // aHA!, aHAC! high volume ascii
+    kHighVolumeByte        = 11, // aHB!, aHBC! high volume byte
+    kByteDataRequest       = 12  // aDB0~999! for high volume byte
+} SDI12SensorCommand_e;
+
+
+/**
+ * @brief References SDI12 command structure.
+ *
+ */
+typedef struct SDI12CommandSet_s {
+    char address = '\0'; // Address received
+    int8_t primary = kUnknown; // Primary command received
+    int8_t secondary = kUnknown; // Secondary command received
+    int8_t param1 = SDI12SENSOR_ERR_INVALID; // Storage of primary command parameter i.e aM1~9 or new address aAb!
+    int16_t param2 = SDI12SENSOR_ERR_INVALID; // Storage of secondary command parameter, i.e Identify meta group aI_001~999!
+    bool crc_requested = false; //
+} SDI12CommandSet_s;
+
 
 // enum SDI12SlaveState_e {
 //     LOW_POWER              = 0,
@@ -91,6 +106,7 @@ class SDI12Sensor {
   private:
     /* Interal Variables */
     char sensor_address_;  // Reference to the sensor address, defaults is character '0'
+    bool crc_requested_ = false; // References if a CRC is required for aDx! commands
     bool active_ = false; // Reference to the active state of current device
     static SDI12Sensor *last_set_active_object_; // Reference to the last set active SDI12Sensor object
 
@@ -105,8 +121,23 @@ class SDI12Sensor {
     static SDI12Sensor *LastActive(void); // Get current last set active SDI12Sensor object
     static void ClearLastActive(void); // Clears the reference to last set active SDI12Sensor object
     static bool IsSetLastActive(void); // Check if last set active SDI12Sensor instance is set
+    void SetCrcRequest(const bool crc_request);
+    bool CrcRequested(void) const;
+    static const SDI12CommandSet_s ParseCommand(const char* received, const char ack_address = '\0');
     //     void SendSensorAddress();
     //     void SendSensorID();
+
+  protected:
+    static SDI12SensorCommand_e ReadCommand(const char* received);
+    static bool RuleIsAddressChange(const SDI12SensorCommand_e cmd, const int param1, const bool is_end);
+    static bool RuleIsMeasurement(const SDI12SensorCommand_e cmd, int *param1, const bool is_end);
+    static bool RuleIsConcurrent(const SDI12SensorCommand_e cmd, int *param1, const bool is_end);
+    static bool RuleIsContinous(const SDI12SensorCommand_e cmd, const int param1);
+    static bool RuleIsDataRequest(const SDI12SensorCommand_e cmd, const int param1);
+    static bool RuleIsVerify(const SDI12SensorCommand_e cmd, const int param1, const bool is_end);
+    static bool RuleIsHighVolumeMeasure(const SDI12SensorCommand_e cmd, const int param1, const bool is_end);
+    static bool RuleIsIdentifyGroup(const SDI12SensorCommand_e cmd1, const SDI12SensorCommand_e cmd2,
+            int *param1, const int param2, const bool is_end);
 };
 
 

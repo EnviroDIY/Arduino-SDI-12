@@ -17,6 +17,10 @@
 
 #include "SDI12Sensor.h"
 
+/* Internal ERROR MACRO */
+#define ERROR_INVALID_FORMAT -2
+#define ERROR_IS_METAGROUP_SEP -3
+
 /* Initialize Static Variables */
 // Pointer reference to last active SDISensor instance
 SDI12Sensor *SDI12Sensor::last_set_active_object_ = nullptr;
@@ -169,6 +173,413 @@ void SDI12Sensor::ClearLastActive(void) {
  */
 bool SDI12Sensor::IsSetLastActive(void) {
     return (last_set_active_object_ != nullptr);
+}
+
+
+/**
+ * @brief Manually set a flag reference to remember if CRC was requested. Not
+ * required if already using SDI12Sensor::ParseCommand(received, ack_address).
+ *
+ * @param crc_request (true/false) If a crc was requested
+ *
+ * @see ParseCommand(char*, char)
+ * @see CrcRequested(void)
+ */
+void SDI12Sensor::SetCrcRequest(const bool crc_request) {
+    crc_requested_ = crc_request;
+}
+
+
+/**
+ * @brief Gets the reference flag if a CRC was requested from the sensor.
+ *
+ * @see ParseCommand(char*, char)
+ * @see SetCrcRequest(bool)
+ */
+bool SDI12Sensor::CrcRequested(void) const {
+    return crc_requested_;
+}
+
+
+/**
+ * @brief Translates the incoming command to the enumerated type SDI12SensorCommand_e,
+ * does not apply any rules.
+ *
+ * @param received Incoming string command
+ * @return SDI12SensorCommand_e Enumeration of received command
+ *
+ * @see ParseCommand(char*, char)
+ */
+SDI12SensorCommand_e SDI12Sensor::ReadCommand(const char* received) {
+    uint8_t len = strlen(received);
+    char first_char = kUnknown;
+    char second_char = kUnknown;
+    char third_char = kUnknown;
+
+    if (len >= 3) {
+        first_char = received[0];
+        second_char = received[1];
+        third_char = received[2];
+    } else if (len >= 2) {
+        first_char = received[0];
+        second_char = received[1];
+    } else if (len >= 1) {
+        first_char = received[0];
+    } else {
+        // Not enough info to bother proceeding
+        return kUnknown;
+    }
+
+    switch (first_char) {
+        case '?': // Query Address, v1.2+
+            if (second_char == '!' || second_char == '\0') { return kAddressQuery; }
+            break;
+        case 'I': // Identification, v1.0+
+            return kIdentification;
+            break;
+        case 'A': // Change address v1.2+
+            if (isgraph(second_char) &&
+                    (third_char == '!' || third_char == '\0')) {
+                return kAddressChange;
+            }
+            break;
+        case 'M': // Blocking Measurement v1.0+
+            return kMeasurement;
+            break;
+        case 'C': // Concurrent Measurement v1.2+
+            return kConcurrentMeasurement;
+            break;
+        case 'D': // Data Request
+            if (second_char == 'B') {
+                return kByteDataRequest; // v1.4+
+            } else {
+                return kDataRequest; // v1.0+
+            }
+            break;
+        case 'R': // Continous Measurement v1.2+
+            return kContinuousMeasurement;
+            break;
+        case 'V': // Verification v1.0+
+            return kVerification;
+            break;
+        case 'H': // High Volume Measurement v1.4+
+            if (second_char == 'A') {
+                return kHighVolumeASCII;
+            } else if (second_char == 'B') {
+                return kHighVolumeByte;
+            }
+            break;
+        default: // For debugging purposes
+            return kUnknown;
+            break;
+    }
+    return kUnknown;
+}
+
+
+/**
+ * @brief Decipher received commands and apply rules to determine if the command
+ * is in appropriate format.
+ *
+ * @param received Incoming string reference which contains the command
+ * @param ack_address (Optional) Sensor address to determine if received command
+ * is an acknowledge command for sensor instance, use @p '\0' if not required to
+ * match any particular address
+ * @return const SDI12CommandSet_s Received commands structure separated into their
+ * primary, and first param, and secondary and secondary parameters.
+ */
+const SDI12CommandSet_s SDI12Sensor::ParseCommand(const char* received, const char ack_address) {
+    SDI12CommandSet_s parsed_command;
+    uint8_t len = strlen(received);
+    SDI12SensorCommand_e cmd1 = kUnknown;
+    SDI12SensorCommand_e cmd2 = kUnknown;
+    int param1 = SDI12SENSOR_ERR_INVALID;
+    int param2 = SDI12SENSOR_ERR_INVALID;
+
+    if (len > 0) {
+        // Get first command instruction set
+        if (received[1] == '!' || received[1] == '\0') {
+            // command string length is <= 2
+            if (received[0] == ack_address || isalnum(received[0])) {
+                parsed_command.address = *received;
+                parsed_command.primary = kAcknowledge; // Acknowledge, v1.0+
+            } else {
+                // Expect to capture QueryAddress here only
+                parsed_command.primary = ReadCommand(received);
+            }
+        } else if (received[0] == ack_address || isalnum(received[0])) {
+            // Store address, move pointer along and read instruction
+            parsed_command.address = *received;
+            cmd1 = ReadCommand(++received);
+        }
+
+        /* Escape at this point as cmd1 is either UNK for string of all lengths,
+        or cmd1 is ACK or QueryAddress for string length of <=2 */
+        if (cmd1 == kUnknown) { return parsed_command; }
+
+        // Moving pointer to end of first instruction
+        if ((cmd1 == kHighVolumeASCII || cmd1 == kHighVolumeByte)) {
+            received++;
+        } else if (cmd1 == kByteDataRequest) {
+            received++;
+        }
+        received++; // Pointer at char after first instruction
+
+        /* Get second instruction set if exist */
+        if (cmd1 == kIdentification && len > 2) {
+            // v1.4 Identify metada command support
+            cmd2 = ReadCommand(received);
+            if (cmd2 != kUnknown) {
+                received++;
+                if ((cmd2 == kHighVolumeASCII || cmd2 == kHighVolumeByte)) {
+                    received++;
+                }
+                // Pointer at char after second instruction
+            }
+        }
+    }
+
+    /* Parse CRC request for the follwing instruction group, v1.3+ */
+    if (*received == 'C') {
+        switch (cmd1) {
+            case kIdentification:
+                // v1.4 Identify metada command support
+                if (cmd2 != kUnknown && cmd2 == kVerification) {
+                    break;
+                }
+            case kMeasurement:
+            case kConcurrentMeasurement:
+            case kContinuousMeasurement:
+            case kHighVolumeASCII:
+            case kHighVolumeByte:
+                parsed_command.crc_requested = true;
+                received++;
+                // Pointer at char after CRC request 'C'
+        }
+    }
+
+    /* Parse option/group number for the following instruction sets */
+    // if (cmd1 == kDataRequest || cmd1 == kByteDataRequest || cmd1 == kMeasurement ||
+    //         cmd1 == kConcurrentMeasurement || cmd1 == kContinuousMeasurement ||
+    //         // v1.4 Identify metada command support
+    //         (cmd1 == kIdentification && (cmd2 == kMeasurement ||
+    //         cmd2 == kConcurrentMeasurement || cmd2 == kContinuousMeasurement))) {
+    if (cmd1 == kAddressChange) {
+        // Store the new desired address as param and move pointer along
+        param1 = (char)*received++;
+    } else if (cmd1 != kUnknown) {
+        param1 = atoi(received);
+        // if (param1 == 0 && (*received != '0' || (strlen(received) > 1 && received[1] != '!')) ) {
+        if (param1 == 0 && *received != '0') {
+            // false positive 0 case
+            param1 = SDI12SENSOR_ERR_INVALID;
+        } else if (cmd1 != kIdentification
+                // && (
+                // (strlen(received) >= 4 && received[3] != '!' && param1 < 1000) ||
+                // (strlen(received) >= 3 && received[2] != '!' && param1 < 100) ||
+                // (strlen(received) >= 2 && received[1] != '!' && param1 < 10)
+                // )
+                ) {
+            // scan remaining char up to terminator or kIdentification metagroup separator
+            for (size_t i = 0; i < strlen(received); i++) {
+                if ((received[i] == '!' || received[i] == '_') && param1 >= 0) {
+                    // Nothing wrong, all char up to termination or separator is numeric
+                    break;
+                } else if (!isdigit(received[i]) || (*received == '0' && param1 > 0)) {
+                    // Leading zeros or trailing non numeric characters
+                    param1 = ERROR_INVALID_FORMAT;
+                    break;
+                }
+            }
+            // // Leading zeros or trailing non numeric
+            // param1 = ERROR_INVALID_FORMAT;
+        }
+    }
+
+    /* Parse identity metadata parameter group/option, v1.4+ */
+    if (*received == '_') { param1 = ERROR_IS_METAGROUP_SEP; }
+    char *meta_group = strchr(received, '_');
+    if (cmd1 == kIdentification && meta_group != NULL) {
+        received = meta_group + 1; // advance to next char after '_'
+        for (int i = 0; i < 3; i++) {
+            if (!isdigit(received[i]) ||
+                    (i == 2 && (received[i+1] != '!' && received[i+1] != '\0'))) {
+                param2 = ERROR_INVALID_FORMAT; // Not appropriate format, ddd
+                break;
+            }
+        }
+        if (param2 != ERROR_INVALID_FORMAT) {
+            // Should be start of number
+            param2 = atoi(received);
+        }
+        // Already expect Identify Meta command, fail if meta param not valid
+        if (param2 < 0) {return parsed_command; }
+    }
+
+    // Determine if at end of command, i.e after all digits
+    bool is_end = (*received == '!' || *received == '\0');
+
+    /* Instruction Rule Set */
+    if ((meta_group == NULL &&
+            (RuleIsMeasurement(cmd1, &param1, is_end) ||
+            RuleIsDataRequest(cmd1, param1) ||
+            RuleIsConcurrent(cmd1, &param1, is_end) ||
+            RuleIsContinous(cmd1, param1) ||
+            RuleIsHighVolumeMeasure(cmd1, param1, is_end) ||
+            RuleIsVerify(cmd1, param1, is_end) ||
+            RuleIsAddressChange(cmd1, param1, is_end)) ) ||
+            RuleIsIdentifyGroup(cmd1, cmd2, &param1, param2, is_end)) {
+        parsed_command.primary = cmd1;
+        parsed_command.secondary = cmd2;
+        parsed_command.param1 = param1;
+        parsed_command.param2 = param2;
+        return parsed_command;
+    }
+
+    // Failed all rule check
+    parsed_command.crc_requested = false;
+    return parsed_command;
+}
+
+
+/**
+ * @brief Rule to test if received address change command is correct.
+ *
+ * @param[in] cmd Deciphered command enumerated type
+ * @param[in] param1 Parameter associated with command
+ * @param[in] is_end If deciphered command string is at end
+ */
+bool SDI12Sensor::RuleIsAddressChange(const SDI12SensorCommand_e cmd, const int param1, const bool is_end) {
+    if (cmd == kAddressChange && isalnum(param1) && is_end) {
+        return true;
+    }
+    return false;
+}
+
+
+/**
+ * @brief Rule to test if received measurement command is correct.
+ *
+ * @param[in] cmd Deciphered command enumerated type
+ * @param[out] param1 Parameter associated with command
+ * @param[in] is_end If deciphered command string is at end
+ */
+bool SDI12Sensor::RuleIsMeasurement(const SDI12SensorCommand_e cmd, int *param1, const bool is_end) {
+    if (cmd == kMeasurement && (is_end || (*param1 >= 1 && *param1 <= 9) ||
+            *param1 == ERROR_IS_METAGROUP_SEP) ) {
+        if (is_end || *param1 == ERROR_IS_METAGROUP_SEP) {
+            *param1 = 0;
+        }
+        return true;
+    }
+    return false;
+}
+
+
+/**
+ * @brief Rule to test if received concurrent measurement is correct.
+ *
+ * @param[in] cmd Deciphered command enumerated type
+ * @param[out] param1 Parameter associated with command
+ * @param[in] is_end If deciphered command string is at end
+ */
+bool SDI12Sensor::RuleIsConcurrent(const SDI12SensorCommand_e cmd, int *param1, const bool is_end) {
+    if (cmd == kConcurrentMeasurement &&
+            (is_end || (*param1 >= 1 && *param1 <= 9) || *param1 == ERROR_IS_METAGROUP_SEP)
+            ) {
+        if (is_end || *param1 == ERROR_IS_METAGROUP_SEP) {
+            *param1 = 0;
+        }
+        return true;
+    }
+    return false;
+}
+
+
+/**
+ * @brief Rule to test if received continuous measurement is correct.
+ *
+ * @param[in] cmd Deciphered command enumerated type
+ * @param[in] param1 Parameter associated with command
+ */
+bool SDI12Sensor::RuleIsContinous(const SDI12SensorCommand_e cmd, const int param1) {
+    if (cmd == kContinuousMeasurement && (param1 >= 0 && param1 <= 9)) {
+        return true;
+    }
+    return false;
+}
+
+
+/**
+ * @brief Rule to test if received data request is correct.
+ *
+ * @param[in] cmd Deciphered command enumerated type
+ * @param[in] param1 Parameter associated with command
+ */
+bool SDI12Sensor::RuleIsDataRequest(const SDI12SensorCommand_e cmd, const int param1) {
+    if ((cmd == kDataRequest || cmd == kByteDataRequest) &&
+        (param1 >= 0 && param1 <= 999)) {
+        return true;
+    }
+    return false;
+}
+
+
+/**
+ * @brief Rule to test if received verify command is correct.
+ *
+ * @param[in] cmd Deciphered command enumerated type
+ * @param[in] param1 Parameter associated with command
+ * @param[in] is_end If deciphered command string is at end
+ */
+bool SDI12Sensor::RuleIsVerify(const SDI12SensorCommand_e cmd, const int param1, const bool is_end) {
+    if (cmd == kVerification && (is_end || param1 == ERROR_IS_METAGROUP_SEP)) {
+        return true;
+    }
+    return false;
+}
+
+
+/**
+ * @brief Rule to test if received high volume measurement command is correct.
+ * Belongs to ascii or byte high volume measurement.
+ *
+ * @param[in] cmd Deciphered command enumerated type
+ * @param[in] param1 Parameter associated with command
+ * @param[in] is_end If deciphered command string is at end
+ */
+bool SDI12Sensor::RuleIsHighVolumeMeasure(const SDI12SensorCommand_e cmd, const int param1, const bool is_end) {
+    if ((cmd == kHighVolumeASCII || cmd == kHighVolumeByte) &&
+            (is_end || param1 == ERROR_IS_METAGROUP_SEP)) {
+        return true;
+    }
+    return false;
+}
+
+
+/**
+ * @brief Rule to determine if received identify command is correct
+ *
+ * @param[in] cmd1 Deciphered primary command enumerated type
+ * @param[in] cmd2 Deciphered secondary command enumerated type
+ * @param[out] param1 Parameter associated with primary command
+ * @param[in] param2 Parameter associated with secondary command
+ * @param[in] is_end If deciphered command string is at end
+ */
+bool SDI12Sensor::RuleIsIdentifyGroup(const SDI12SensorCommand_e cmd1, const SDI12SensorCommand_e cmd2,
+        int *param1, const int param2, const bool is_end) {
+    if (cmd1 == kIdentification &&
+            (((param2 == SDI12SENSOR_ERR_INVALID || (param2 >= 1 && param2 <= 999)) &&
+            ((is_end && cmd2 == kUnknown) ||
+            RuleIsMeasurement(cmd2, param1, is_end) ||
+            RuleIsConcurrent(cmd2, param1, is_end) ||
+            RuleIsVerify(cmd2, *param1, is_end) ||
+            RuleIsHighVolumeMeasure(cmd2, *param1, is_end))) ||
+            (RuleIsContinous(cmd2, *param1) && (param2 >= 1 && param2 <= 999)))
+            ) {
+        return true;
+    }
+    return false;
 }
 
 
