@@ -652,9 +652,9 @@ bool SDI12::verifyCRC(String& respWithCRC) {
   String calcCRC = crcToString(calculateCRC(recString));
 
   if (recCRC == calcCRC) {
-    return false;
-  } else {
     return true;
+  } else {
+    return false;
   }
 }
 
