@@ -116,7 +116,7 @@ void setup() {
 
 void loop() {
   // Power the sensors;
-  if (powerPin > 0) {
+  if (powerPin >= 0) {
     Serial.println("Powering down sensors...");
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, LOW);
@@ -124,7 +124,7 @@ void loop() {
   }
 
   // Power the sensors;
-  if (powerPin > 0) {
+  if (powerPin >= 0) {
     Serial.println("Powering up sensors...");
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);

@@ -29,7 +29,7 @@
 /* connection information */
 uint32_t serialBaud   = 115200; /*!< The baud rate for the output serial port */
 uint8_t  dataPin      = 7;      /*!< The pin of the SDI-12 data bus */
-uint8_t  powerPin     = 22; /*!< The sensor power pin (or -1 if not switching power) */
+int8_t   powerPin     = 22; /*!< The sensor power pin (or -1 if not switching power) */
 uint32_t wakeDelay    = 0;  /*!< Extra time needed for the sensor to wake (0-100ms) */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
 int8_t   lastAddress = 62; /* The last address in the address space to check (62='z') */
@@ -436,7 +436,7 @@ void setup() {
   }
 
   // Power the sensors;
-  if (powerPin > 0) {
+  if (powerPin >= 0) {
     Serial.println("Powering down sensors...");
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, LOW);
@@ -445,7 +445,7 @@ void setup() {
   }
 
   // Power the sensors;
-  if (powerPin > 0) {
+  if (powerPin >= 0) {
     Serial.println("Powering up sensors, wait...");
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
@@ -498,7 +498,7 @@ void loop() {
   // Serial.println(flip);
 
   // // Power the sensors;
-  // if (powerPin > 0) {
+  // if (powerPin >= 0) {
   //   Serial.println("Powering down sensors...");
   //   pinMode(powerPin, OUTPUT);
   //   digitalWrite(powerPin, LOW);
@@ -506,7 +506,7 @@ void loop() {
   // }
 
   // // Power the sensors;
-  // if (powerPin > 0) {
+  // if (powerPin >= 0) {
   //   Serial.println("Powering up sensors...");
   //   pinMode(powerPin, OUTPUT);
   //   digitalWrite(powerPin, HIGH);

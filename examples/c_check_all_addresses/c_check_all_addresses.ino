@@ -89,7 +89,7 @@ void setup() {
   Serial.println("//\n// Start Search for SDI-12 Devices \n// -----------------------");
 
   // Power the sensors;
-  if (powerPin > 0) {
+  if (powerPin >= 0) {
     Serial.println("Powering up sensors...");
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
