@@ -30,10 +30,10 @@
 
 #include <SDI12.h>
 
-#define DATA_PIN 7 /*!< The pin of the SDI-12 data bus */
+int8_t dataPin = 7; /*!< The pin of the SDI-12 data bus */
 
 // Create object by which to communicate with the SDI-12 bus on SDIPIN
-SDI12 slaveSDI12(DATA_PIN);
+SDI12 slaveSDI12(dataPin);
 
 void setup() {
   Serial.begin(115200);

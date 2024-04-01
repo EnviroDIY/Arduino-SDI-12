@@ -30,18 +30,17 @@
 
 #include <SDI12.h>
 
-#define DATA_PIN 7   /*!< The pin of the SDI-12 data bus */
-#define POWER_PIN 22 /*!< The sensor power pin (or -1 if not switching power) */
-
-char sensorAddress = '5';
-int  state         = 0;
+int8_t dataPin       = 7;   /*!< The pin of the SDI-12 data bus */
+int8_t powerPin      = 22;  /*!< The sensor power pin (or -1 if not switching power) */
+char   sensorAddress = '5'; /*!< The address of the SDI-12 sensor */
+int    state         = 0;
 
 #define WAIT 0
 #define INITIATE_CONCURRENT 1
 #define INITIATE_MEASUREMENT 2
 
 // Create object by which to communicate with the SDI-12 bus on SDIPIN
-SDI12 slaveSDI12(DATA_PIN);
+SDI12 slaveSDI12(dataPin);
 
 void pollSensor(float* measurementValues) {
   measurementValues[0] = 1.111111;

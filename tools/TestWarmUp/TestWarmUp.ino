@@ -9,13 +9,14 @@
 
 #include <SDI12.h>
 
-#define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
-#define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
-#define SENSOR_ADDRESS '2' /*!< The address of the SDI-12 sensor */
-#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
+/* connection information */
+uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port */
+int8_t   dataPin       = 7;      /*!< The pin of the SDI-12 data bus */
+char     sensorAddress = '\1';   /*!< The address of the SDI-12 sensor */
+int8_t   powerPin      = 22; /*!< The sensor power pin (or -1 if not switching power) */
 
 /** Define the SDI-12 bus */
-SDI12   mySDI12(DATA_PIN);
+SDI12   mySDI12(dataPin);
 int32_t min_wake_delay  = 0;      /*!< The min time to test wake after a line break. */
 int32_t increment_wake  = 100;    /*!< The time to lengthen waits between reps. */
 int32_t max_wake_delay  = 100;    /*!< The max time to test wake (should be <=100). */
@@ -101,7 +102,7 @@ boolean checkActive(char i, int8_t numPings = 3, bool printCommands = false) {
 }
 
 void setup() {
-  Serial.begin(SERIAL_BAUD);
+  Serial.begin(serialBaud);
   while (!Serial)
     ;
 
@@ -115,28 +116,28 @@ void setup() {
 
 void loop() {
   // Power the sensors;
-  if (POWER_PIN > 0) {
+  if (powerPin > 0) {
     Serial.println("Powering down sensors...");
-    pinMode(POWER_PIN, OUTPUT);
-    digitalWrite(POWER_PIN, LOW);
-    delay(2500L);
+    pinMode(powerPin, OUTPUT);
+    digitalWrite(powerPin, LOW);
+    delay(10000L);
   }
 
   // Power the sensors;
-  if (POWER_PIN > 0) {
+  if (powerPin > 0) {
     Serial.println("Powering up sensors...");
-    pinMode(POWER_PIN, OUTPUT);
-    digitalWrite(POWER_PIN, HIGH);
+    pinMode(powerPin, OUTPUT);
+    digitalWrite(powerPin, HIGH);
     delay(power_delay);
   }
 
-  if (checkActive(SENSOR_ADDRESS, 5, true)) {
+  if (checkActive(sensorAddress, 5, true)) {
     Serial.print("Got some response after ");
     Serial.print(power_delay);
     Serial.print("ms after power with ");
     Serial.print(wake_delay);
     Serial.println("ms with wake delay");
-    if (printInfo(SENSOR_ADDRESS, true)) {
+    if (printInfo(sensorAddress, true)) {
       // if we got sensor info, stop
       Serial.println("Looks good.  Stopping.");
       while (1)
