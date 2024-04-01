@@ -12,7 +12,7 @@
 /* connection information */
 uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port */
 int8_t   dataPin       = 7;      /*!< The pin of the SDI-12 data bus */
-char     sensorAddress = '\1';   /*!< The address of the SDI-12 sensor */
+char     sensorAddress = '1';    /*!< The address of the SDI-12 sensor */
 int8_t   powerPin      = 22; /*!< The sensor power pin (or -1 if not switching power) */
 
 /** Define the SDI-12 bus */
