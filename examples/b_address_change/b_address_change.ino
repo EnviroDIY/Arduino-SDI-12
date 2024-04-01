@@ -1,8 +1,7 @@
 /**
  * @file b_address_change.ino
- * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
- *                          and the EnviroDIY Development Team
- *            This example is published under the BSD-3 license.
+ * @copyright Stroud Water Research Center
+ * This example is published under the BSD-3 license.
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
  *
