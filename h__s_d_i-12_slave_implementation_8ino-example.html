@@ -1783,6 +1783,7 @@
 <span class="cp">#define WAIT 0</span>
 <span class="cp">#define INITIATE_CONCURRENT 1</span>
 <span class="cp">#define INITIATE_MEASUREMENT 2</span>
+<span class="cp">#define PROCESS_COMMAND 3                         </span>
 
 <span class="c1">// Create object by which to communicate with the SDI-12 bus on SDIPIN</span>
 <span class="n">SDI12</span><span class="w"> </span><span class="nf">slaveSDI12</span><span class="p">(</span><span class="n">DATA_PIN</span><span class="p">);</span>
@@ -1940,6 +1941,7 @@
 <span class="w">      </span><span class="c1">// Character &#39;!&#39; indicates the end of an SDI-12 command; if the current</span>
 <span class="w">      </span><span class="c1">// character is &#39;!&#39;, stop listening and respond to the command</span>
 <span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">charReceived</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;!&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PROCESS_COMMAND</span><span class="p">;</span><span class="w">                  </span>
 <span class="w">        </span><span class="c1">// Command string is completed; do something with it</span>
 <span class="w">        </span><span class="n">parseSdi12Cmd</span><span class="p">(</span><span class="n">commandReceived</span><span class="p">,</span><span class="w"> </span><span class="n">dValues</span><span class="p">);</span>
 <span class="w">        </span><span class="c1">// Clear command string to reset for next command</span>
@@ -1989,6 +1991,10 @@
 <span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WAIT</span><span class="p">;</span>
 <span class="w">      </span><span class="n">slaveSDI12</span><span class="p">.</span><span class="n">forceListen</span><span class="p">();</span><span class="w">  </span><span class="c1">// sets SDI-12 pin as input to prepare for incoming</span>
 <span class="w">                                 </span><span class="c1">// message AGAIN</span>
+<span class="w">      </span><span class="k">break</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">PROCESS_COMMAND</span><span class="p">:</span>
+<span class="w">      </span><span class="n">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">WAIT</span><span class="p">;</span>
+<span class="w">      </span><span class="n">slaveSDI12</span><span class="p">.</span><span class="n">forceListen</span><span class="p">();</span><span class="w">                         </span>
 <span class="w">      </span><span class="k">break</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span></pre></section>
