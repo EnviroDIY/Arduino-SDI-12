@@ -20,7 +20,7 @@
 #define _OVERFLOW_OFFSET(a) (1 << (sizeof(a) * 8))
 
 
-sdi12timer_t SDI12Node::_previous_TCNT = 0;  // previous RX transition in micros
+unsigned long SDI12Node::_previous_TCNT = 0;  // previous RX transition in micros
 
 
 /**
@@ -90,36 +90,29 @@ void SDI12Node::ClearLineMarkingReceived(void) {
 void SDI12Node::receiveISR(void) {
     if (waiting_for_mark_ || waiting_for_break_) {
         // time of this data transition (plus ISR latency)
-        sdi12timer_t current_TCNT = READTIME;
-        sdi12timer_t dt;
+        unsigned long current_TCNT = micros();
         uint8_t pinLevel = digitalRead(getDataPin());  // current RX data level
-
-        if (current_TCNT < _previous_TCNT) {
-            dt = ((current_TCNT + _OVERFLOW_OFFSET(sdi12timer_t)) - _previous_TCNT);
-        } else {
-            dt = (current_TCNT - _previous_TCNT);
-        }
 
         // Serial.print(pinLevel);
         // Serial.print(" : "); Serial.print(current_TCNT);
         // Serial.print(" : "); Serial.print(_previous_TCNT);
-        // Serial.print(" : "); Serial.print(dt);
+        // Serial.print(" : "); Serial.print((current_TCNT - _previous_TCNT));
 
         if (waiting_for_break_) {
             if (pinLevel == HIGH) {
                 return;
-            } else if (SDI12_TCNT_TO_MICROSECONDS(dt) >= SDI12NODE_LINE_BREAK_MICROS) {
+            } else if ((current_TCNT - _previous_TCNT) >= SDI12NODE_LINE_BREAK_MICROS) {
                 waiting_for_break_ = false;
             }
         } else if (waiting_for_mark_ && (pinLevel == HIGH) &&
-                (SDI12_TCNT_TO_MICROSECONDS(dt) >= SDI12NODE_LINE_MARK_MICROS)) {
+                ((current_TCNT - _previous_TCNT) >= SDI12NODE_LINE_MARK_MICROS)) {
             waiting_for_mark_ = false;
         }
 
         // Serial.print(" : "); Serial.print(waiting_for_break_);
-        // Serial.print(" : "); Serial.print(SDI12_TCNT_TO_MICROSECONDS(dt) >= SDI12NODE_LINE_BREAK_MICROS);
+        // Serial.print(" : "); Serial.print((current_TCNT - _previous_TCNT) >= SDI12NODE_LINE_BREAK_MICROS);
         // Serial.print(" : "); Serial.print(waiting_for_mark_);
-        // Serial.print(" : "); Serial.print(SDI12_TCNT_TO_MICROSECONDS(dt) >= SDI12NODE_LINE_MARK_MICROS);
+        // Serial.print(" : "); Serial.print((current_TCNT - _previous_TCNT) >= SDI12NODE_LINE_MARK_MICROS);
         // Serial.println("");
 
         _previous_TCNT = current_TCNT;  // Remember timestamp of this change!

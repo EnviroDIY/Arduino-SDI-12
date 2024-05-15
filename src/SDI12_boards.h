@@ -86,14 +86,6 @@ class SDI12Timer {
  * The register used to access the timer/counter value is TCNT2
  */
 #define TCNTX TCNT2  // Using Timer 2
-/**
- * @brief The c macro name for the assembly interrupt flag register
- */
-#define TIFRX TIFR2  // Using Timer 2
-/**
- * @brief The c macro name for the assembly timer overflow flag bit
- */
-#define TOVX TOV2  // Using Timer 2
 
 #if F_CPU == 16000000L
 /**
