@@ -39,7 +39,7 @@ jobs:
           fi
 
       - name: Restore or Cache pip
-        uses: actions/cache@v3.3.2
+        uses: actions/cache@v4.0.2
         with:
           path: ~/.cache/pip
           # if requirements.txt hasn't changed, then it will be a "cache hit" and pip will be restored
@@ -48,7 +48,7 @@ jobs:
           restore-keys: ${{ runner.os }}-pip-
 
       - name: Restore or Cache PlatformIO and Libraries
-        uses: actions/cache@v3.3.2
+        uses: actions/cache@v4.0.2
         with:
           path: ~/.platformio
           # if nothing in the lock files has changed, then it will be a "cache hit" and pip will be restored
