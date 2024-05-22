@@ -46,8 +46,31 @@ class String; // Forward declaration for WString.h String object
 #define SDI12SENSOR_OTHER_INFO "001"  // (optional) up to 13 char for serial or other sensor info
 #endif
 
-/* ERROR MACRO */
-#define SDI12SENSOR_ERR_INVALID -1 // General INVALID/ERROR/DISABLE
+
+/* Macro for Bit Flag */
+#define BIT(n) (0x1U << (n))  // Bit flag
+
+/* Defines for Command String Flags Bits */
+#define CMD_IS_END_BIT          0U // Command parsed till end of string
+#define CMD_PARAM1_BIT          1U // Primary parameter set
+#define CMD_HAS_META_BIT        2U // Meta delimiter detected
+#define CMD_PARAM2_BIT          3U // Second parameter set
+#define CMD_PARAM_ERR_BIT       4U // Error during parameter parsing
+#define CMD_PARAM_SIGN_BIT      5U // Paramter value is signed '+' or '-'
+
+#define CMD_IS_END_FLAG         BIT(CMD_IS_END_BIT)
+#define CMD_PARAM1_FLAG         BIT(CMD_PARAM1_BIT)
+#define CMD_HAS_META_FLAG       BIT(CMD_HAS_META_BIT)
+#define CMD_PARAM2_FLAG         BIT(CMD_PARAM2_BIT)
+#define CMD_PARAM_ERR_FLAG      BIT(CMD_PARAM_ERR_BIT)
+#define CMD_PARAM_SIGN_FLAG     BIT(CMD_PARAM_SIGN_BIT)
+
+/* Macros for bit wise operation, macro is not type safe. Use at own discretion */
+#define SET_BITS(var, mask)     ((var)  |=  (mask)) // Set bits using bit mask
+#define CLEAR_BITS(var, mask)   ((var)  &= ~(mask)) // Clear bits from bit mask
+#define FLIP_BITS(var, mask)    ((var)  ^=  (mask)) // Flip masked bits
+#define GET_BITS(var, mask)     ((var)  &   (mask)) // Get bits
+#define BITS_IS_SET(var, mask)  ((mask) == GET_BITS(var, mask)) // Check bits are set
 
 
 /**
@@ -67,20 +90,22 @@ typedef enum SDI12SensorCommand_e: uint8_t {
     kVerification          = 9,  // aV!, aVC!
     kHighVolumeASCII       = 10, // aHA!, aHAC! high volume ascii
     kHighVolumeByte        = 11, // aHB!, aHBC! high volume byte
-    kByteDataRequest       = 12  // aDB0~999! for high volume byte
+    kByteDataRequest       = 12, // aDB0~999! for high volume byte
+    kExtended              = 13  // aXNNN! Extended, only recommended format
 } SDI12SensorCommand_e;
 
 /**
- * @brief References SDI12 command structure.
+ * @brief References SDI12Sensor command structure storage.
  *
  */
 typedef struct SDI12CommandSet_s {
     char address = '\0'; // Address received
     int8_t primary = kUnknown; // Primary command received
     int8_t secondary = kUnknown; // Secondary command received
-    int8_t param1 = SDI12SENSOR_ERR_INVALID; // Storage of primary command parameter i.e aM1~9 or new address aAb!
-    int16_t param2 = SDI12SENSOR_ERR_INVALID; // Storage of secondary command parameter, i.e Identify meta group aI_001~999!
-    bool crc_requested = false; //
+    int16_t param1 = 0; // Storage of primary command parameter i.e aM1~9 or new address aAb!
+    int16_t param2 = 0; // Storage of secondary command parameter, i.e Identify meta group aI_001~999!
+    bool crc_requested = false; // Storage if CRC request was detected
+    uint8_t flags = 0x00; // Flag to store parsing info/error
 } SDI12CommandSet_s;
 
 /**
@@ -94,7 +119,8 @@ typedef enum SDI12SensorState_e : uint8_t {
     kStateMeasurement     = 3,  // When received aM! or aIM!
     kStateConcurrent      = 4,  // When received aC! or aIC!
     kStateContinuous      = 5,  // When received aRx!
-    kStateHighMeasurement = 6   // When received aHA! or aIHA! or aHB! or aIHB!
+    kStateHighMeasurement = 6,  // When received aHA! or aIHA! or aHB! or aIHB!
+    kStateExtended        = 7   // When received an Extended command
 } SDI12SensorState_e;
 
 
@@ -126,8 +152,8 @@ class SDI12Sensor {
     static bool IsSetLastActive(void); // Check if last set active SDI12Sensor instance is set
     void SetCrcRequest(const bool crc_request);
     bool CrcRequested(void) const;
-    static const SDI12CommandSet_s ParseCommand(const char* received, const char ack_address = '\0');
-    bool DefineState(const SDI12CommandSet_s command_set);
+    static const SDI12CommandSet_s ParseCommand(const char* received, const char ack_address = '\0', char **_endptr = NULL);
+    virtual bool DefineState(const SDI12CommandSet_s command_set);
     bool SetState(const int8_t state);
     int8_t State(void) const;
     //     void SendSensorAddress();
@@ -135,15 +161,15 @@ class SDI12Sensor {
 
   protected:
     static SDI12SensorCommand_e ReadCommand(const char* received);
-    static bool RuleIsAddressChange(const SDI12SensorCommand_e cmd, const int param1, const bool is_end);
-    static bool RuleIsMeasurement(const SDI12SensorCommand_e cmd, int *param1, const bool is_end);
-    static bool RuleIsConcurrent(const SDI12SensorCommand_e cmd, int *param1, const bool is_end);
-    static bool RuleIsContinous(const SDI12SensorCommand_e cmd, const int param1);
-    static bool RuleIsDataRequest(const SDI12SensorCommand_e cmd, const int param1);
-    static bool RuleIsVerify(const SDI12SensorCommand_e cmd, const int param1, const bool is_end);
-    static bool RuleIsHighVolumeMeasure(const SDI12SensorCommand_e cmd, const int param1, const bool is_end);
+    static bool RuleIsAddressChange(const SDI12SensorCommand_e cmd, const int param1, const uint8_t flags);
+    static bool RuleIsMeasurement(const SDI12SensorCommand_e cmd, int param1, const uint8_t flags);
+    static bool RuleIsConcurrent(const SDI12SensorCommand_e cmd, int param1, const uint8_t flags);
+    static bool RuleIsContinous(const SDI12SensorCommand_e cmd, const int param1, const uint8_t flags);
+    static bool RuleIsDataRequest(const SDI12SensorCommand_e cmd, const int param1, const uint8_t flags);
+    static bool RuleIsVerify(const SDI12SensorCommand_e cmd, const uint8_t flags);
+    static bool RuleIsHighVolumeMeasure(const SDI12SensorCommand_e cmd, const uint8_t flags);
     static bool RuleIsIdentifyGroup(const SDI12SensorCommand_e cmd1, const SDI12SensorCommand_e cmd2,
-            int *param1, const int param2, const bool is_end);
+            int param1, const int param2, const uint8_t flags);
 };
 
 
