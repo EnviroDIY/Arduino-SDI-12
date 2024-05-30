@@ -18,7 +18,7 @@ sensors. This library provides a general software solution, without requiring
 
 #include <Arduino.h>
 
-#if defined(ESP32) || defined(ESP8266)
+#if defined(ESP32) || defined(ESP8266) || defined(PARTICLE)
 /** The interger type (size) of the timer return value */
 typedef uint32_t sdi12timer_t;
 #else
@@ -466,7 +466,7 @@ class SDI12Timer {
 
 // Espressif ESP32/ESP8266 boards
 //
-#elif defined(ESP32) || defined(ESP8266)
+#elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE)
   /**
    * @brief Read the processor micros and right shift 6 bits (ie, divide by 64) to get a
    * 64µs tick.

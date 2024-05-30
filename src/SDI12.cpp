@@ -325,6 +325,12 @@ void SDI12::setPinInterrupts(bool enable) {
   // Merely need to detach the interrupt function from the pin
   else
     detachInterrupt(digitalPinToInterrupt(_dataPin));
+#elif defined(PARTICLE)
+  // Merely need to attach the interrupt function to the pin
+  if (enable) attachInterrupt(_dataPin, handleInterrupt, CHANGE);
+  // Merely need to detach the interrupt function from the pin
+  else
+    detachInterrupt(_dataPin);
 
 #elif defined(__AVR__) && not defined(SDI12_EXTERNAL_PCINT)
   if (enable) {
@@ -547,7 +553,7 @@ void SDI12::sendResponse(FlashString resp) {
 
 // Passes off responsibility for the interrupt to the active object.
 // On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
-#if defined(ESP32) || defined(ESP8266)
+#if defined(ESP32) || defined(ESP8266) 
 void ICACHE_RAM_ATTR SDI12::handleInterrupt() {
   if (_activeObject) _activeObject->receiveISR();
 }

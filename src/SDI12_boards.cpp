@@ -264,7 +264,7 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 
 // Espressif ESP32/ESP8266 boards
 //
-#elif defined(ESP32) || defined(ESP8266)
+#elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE)
 
 void         SDI12Timer::configSDI12TimerPrescale(void) {}
 void         SDI12Timer::resetSDI12TimerPrescale(void) {}
