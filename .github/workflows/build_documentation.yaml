@@ -1,111 +1,39 @@
-name: Build and Publish Documentation
+name: Check, Build, and Publish Documentation
 
 on:
-  # Trigger the workflow on push or pull request,
-  # but only for the main branch
+  # Triggers the workflow on push or pull request events
   push:
-    branches:
-      - master
-  # Also trigger on page_build, as well as release created events
-  page_build:
+  pull_request:
+  # Trigger when a release is created
+  # NOTE: This will only trigger if the release is created from the UI or with a personal access token
   release:
-    types: # This configuration does not affect the page_build event above
-      - created
+    types:
+      - published
+  # Trigger with the release workflow finishes
+  workflow_run:
+    workflows: ['Create a New Release']
+    types: [completed]
+    branches: [master]
+  # Also give a manual trigger
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish Documentation to GitHub Pages'
+        required: false
+        type: boolean
+        default: false
 
-env:
-  DOXYGEN_VERSION: Release_1_9_1
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
-
-    steps:
-      # check out the Arduino-SDI-12 repo
-      - uses: actions/checkout@v4
-        with:
-          path: code_docs/Arduino-SDI-12
-
-      - name: Restore or Cache pip
-        uses: actions/cache@v3.3.2
-        id: cache_pip
-        with:
-          path: ~/.cache/pip
-          # if requirements.txt hasn't changed, then it will be a "cache hit" and pip will be restored
-          # if requirements.txt HAS changed, it will be a "cache miss" and a new cache of pip will be created if the job completes successfully
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: ${{ runner.os }}-pip-
-
-      - name: Restore or Cache PlatformIO and Libraries
-        uses: actions/cache@v3.3.2
-        id: cache_pio
-        with:
-          path: ~/.platformio
-          # if nothing in the lock files has changed, then it will be a "cache hit"
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      # This should be pulled from cache, if there's not a new version
-      - name: Install PlatformIO
-        run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade platformio
-
-      # Install *all* the dependencies!
-      # We're including the dependencies just so the includes can follow in the doxygen pre-processor
-      - name: Install the dependencies at global level
-        run: |
-          echo "::debug::Installing greygnome/EnableInterrupt"
-          pio lib -g install greygnome/EnableInterrupt
-
-      - name: Update Libraries from Cache
-        run: pio lib -g update
-
-      - name: Install GraphViz (dot)
-        run: sudo apt-get -y install graphviz
-
-      - name: Restore or Cache Doxygen
-        id: cache_doxygen
-        uses: actions/cache@v3.3.2
-        with:
-          path: doxygen-src
-          key: ${{ runner.os }}-doxygen-${{ env.DOXYGEN_VERSION }}
-
-      - name: Clone and build doxygen
-        if: steps.cache_doxygen.outputs.cache-hit != 'true'
-        env:
-          TRAVIS_BUILD_DIR: ${{ github.workspace }}
-        run: |
-          cd ${{ github.workspace }}/code_docs/Arduino-SDI-12/
-          chmod +x continuous_integration/build-install-doxygen.sh
-          sh continuous_integration/build-install-doxygen.sh
-
-      # This should be pulled from cache, if there's not a new version
-      - name: Install Pygments and other m.css requirements
-        run: pip3 install jinja2 Pygments beautifulsoup4
-
-      # check out my fork of m.css, for processing Doxygen output
-      - name: Checkout m.css
-        uses: actions/checkout@v4
-        with:
-          # Repository name with owner. For example, actions/checkout
-          repository: SRGDamia1/m.css
-          path: code_docs/m.css
-
-      - name: Generate all the documentation
-        env:
-          TRAVIS_BUILD_DIR: ${{ github.workspace }}
-        run: |
-          cd ${{ github.workspace }}/code_docs/Arduino-SDI-12/
-          chmod +x continuous_integration/generate-documentation.sh
-          sh continuous_integration/generate-documentation.sh
-
-      - name: Deploy to github pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ github.workspace }}/code_docs/Arduino-SDI-12Doxygen/m.css
+  doc_build:
+    if: ${{ (! contains(github.event.head_commit.message, 'ci skip')) && (github.event_name != 'workflow_run' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')) }}
+    name: Build documentation
+    uses: EnviroDIY/workflows/.github/workflows/build_documentation.yaml@main
+    with:
+      use_graphviz: false
+      publish: ${{ (github.event_name == 'release' && github.event.action == 'published') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')  || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true')}}
+      rebuild_cache_number: 1
+    secrets: inherit

@@ -17,6 +17,9 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+# Microsoft Office temp files
+~$*
+
 # =========================
 # Operating System Files
 # =========================
@@ -49,36 +52,114 @@ Temporary Items
 # PyCharm
 .idea/
 
+# Python
+__pycache__/
 
-# VSCode
-.history
-.vscode
+# Prerequisites
+*.d
 
-# Atom / PlatformIO
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Ignore list for Eagle, a PCB layout tool
+
+# Backup files
+*.s#?
+*.b#?
+*.l#?
+*.b$?
+*.s$?
+*.l$?
+
+# Eagle project file
+# It contains a serial number and references to the file structure
+# on your computer.
+# comment the following line if you want to have your project file included.
+eagle.epf
+
+# Autorouter files
+*.pro
+*.job
+
+# CAM files
+*.$$$
+*.cmp
+*.ly2
+*.l15
+*.sol
+*.plc
+*.stc
+*.sts
+*.crc
+*.crs
+
+*.dri
+*.drl
+*.gpi
+*.pls
+*.ger
+*.xln
+
+*.drd
+*.drd.*
+
+*.s#*
+*.b#*
+
+*.info
+
+*.eps
+
+# file locks introduced since 7.x
+*.lck
+
+# PlatformIO
 .pio
+.pioenvs
+.piolibdeps
 .clang_complete
 .gcc-flags.json
 lib/readme.txt
-include/readme.txt
-platformio.ini
+/platformio.ini
+tests/*
 
-
-examples/debug_print/
-doxygen/doxygenOutput.log
-Doxyfile-mcss
-examples/debugging_prints/*
-doxygen/mcss-theme.css
-doxygen/mcss-theme-compiled.css
-doxygen/__pycache__/conf.cpython-37.pyc
-doxygen/conf.py
-SDI12 Repo Token.txt
-__pycache__
-docs/LocalDoxyfile
-runDoxygen.bat
-docs/examples/*
-docs/doxygenOutput.log
-docs/mcss-doxy-output.log
-docs/mcss.log
-doygen-run.log
-examples/TestCommands/TestCommands.ino
+# VSCode
+.vscode
+.history
 compile_commands.json
+
+# Other Stuff
+pioScripts
+runDoxygen.bat
+generateKeywords.bat
+output_*.log
+sync.ffs_db
+docs/Doxyfile.bak
+SDI12 Repo Token.txt

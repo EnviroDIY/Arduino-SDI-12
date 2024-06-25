@@ -12,7 +12,7 @@ jobs:
       - name: Changelog Reminder
         uses: peterjgrainger/action-changelog-reminder@v1.3.0
         with:
-          changelog_regex: '/ChangeLog\/.*\/*.md'
+          changelog_regex: '/CHANGELOG\/.*\/*.md/i'
           customPrMessage: 'Please add your changes to the change log!'
         env:
-          GITHUB_TOKEN: ${{ secrets.SARA_PUSH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
