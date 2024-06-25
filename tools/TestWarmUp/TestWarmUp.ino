@@ -11,13 +11,13 @@
 /* connection information */
 uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port */
 int8_t   dataPin       = 7;      /*!< The pin of the SDI-12 data bus */
-char     sensorAddress = '1';    /*!< The address of the SDI-12 sensor */
+char     sensorAddress = '0';    /*!< The address of the SDI-12 sensor */
 int8_t   powerPin      = 22; /*!< The sensor power pin (or -1 if not switching power) */
 
 /** Define the SDI-12 bus */
 SDI12   mySDI12(dataPin);
 int32_t min_wake_delay  = 0;      /*!< The min time to test wake after a line break. */
-int32_t increment_wake  = 100;    /*!< The time to lengthen waits between reps. */
+int32_t increment_wake  = 5;      /*!< The time to lengthen waits between reps. */
 int32_t max_wake_delay  = 100;    /*!< The max time to test wake (should be <=100). */
 int32_t min_power_delay = 100L;   /*!< The min time to test wake after power on. */
 int32_t increment_power = 100;    /*!< The time to lengthen waits between reps. */
@@ -71,9 +71,9 @@ bool printInfo(char i, bool printCommands = true) {
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-boolean checkActive(char i, int8_t numPings = 3, bool printCommands = false) {
+bool checkActive(char address, int8_t numPings = 3, bool printCommands = false) {
   String command = "";
-  command += (char)i;  // sends basic 'acknowledge' command [address][!]
+  command += (char)address;  // sends basic 'acknowledge' command [address][!]
   command += "!";
 
   for (int j = 0; j < numPings; j++) {  // goes through three rapid contact attempts
@@ -82,19 +82,21 @@ boolean checkActive(char i, int8_t numPings = 3, bool printCommands = false) {
       Serial.println(command);
     }
     mySDI12.sendCommand(command, wake_delay);
-    delay(100);
-    if (mySDI12.available()) {  // If we here anything, assume we have an active sensor
-      if (printCommands) {
-        Serial.print("<<<");
-        while (mySDI12.available()) {
-          Serial.write(mySDI12.read());
-          delay(10);
-        }
-      } else {
-        mySDI12.clearBuffer();
-      }
-      return true;
+
+    // the sensor should just return its address
+    String sdiResponse = mySDI12.readStringUntil('\n');
+    sdiResponse.trim();
+    if (printCommands) {
+      Serial.print("<<<");
+      Serial.println(sdiResponse);
     }
+    mySDI12.clearBuffer();
+
+    // check the address, return false if it's incorrect
+    String returned_address = sdiResponse.substring(0, 1);
+    char   ret_addr_array[2];
+    returned_address.toCharArray(ret_addr_array, sizeof(ret_addr_array));
+    if (returned_address == String(address)) { return true; }
   }
   mySDI12.clearBuffer();
   return false;
@@ -114,52 +116,49 @@ void setup() {
 }
 
 void loop() {
-  // Power the sensors;
-  if (powerPin >= 0) {
-    Serial.println("Powering down sensors...");
-    pinMode(powerPin, OUTPUT);
-    digitalWrite(powerPin, LOW);
-    delay(10000L);
-  }
-
-  // Power the sensors;
-  if (powerPin >= 0) {
-    Serial.println("Powering up sensors...");
-    pinMode(powerPin, OUTPUT);
-    digitalWrite(powerPin, HIGH);
-    delay(power_delay);
-  }
-
-  if (checkActive(sensorAddress, 5, true)) {
-    Serial.print("Got some response after ");
-    Serial.print(power_delay);
-    Serial.print("ms after power with ");
-    Serial.print(wake_delay);
-    Serial.println("ms with wake delay");
-    if (printInfo(sensorAddress, true)) {
-      // if we got sensor info, stop
-      Serial.println("Looks good.  Stopping.");
-      while (1)
-        ;
-    } else {
-      Serial.println("Sensor info not valid!");
+  while (wake_delay <= max_wake_delay) {
+    // Power the sensors;
+    if (powerPin >= 0) {
+      Serial.println("Powering down sensors...");
+      pinMode(powerPin, OUTPUT);
+      digitalWrite(powerPin, LOW);
+      delay(300000L);
     }
-  } else {
-    Serial.print("No response after ");
-    Serial.print(power_delay);
-    Serial.print("ms after power with ");
-    Serial.print(wake_delay);
-    Serial.println("ms with wake delay");
+
+    // Power the sensors;
+    if (powerPin >= 0) {
+      Serial.println("Powering up sensors...");
+      pinMode(powerPin, OUTPUT);
+      digitalWrite(powerPin, HIGH);
+      delay(power_delay);
+    }
+
+    if (checkActive(sensorAddress, 1, true)) {
+      Serial.print("Got some response after ");
+      Serial.print(power_delay);
+      Serial.print("ms after power with ");
+      Serial.print(wake_delay);
+      Serial.println("ms with wake delay");
+      if (printInfo(sensorAddress, true)) {
+        // if we got sensor info, stop
+        Serial.println("Looks good.  Stopping.");
+        while (1)
+          ;
+      } else {
+        Serial.println("Sensor info not valid!");
+      }
+    } else {
+      Serial.print("No response after ");
+      Serial.print(power_delay);
+      Serial.print("ms after power with ");
+      Serial.print(wake_delay);
+      Serial.println("ms with wake delay");
+    }
+    Serial.println("-------------------------------------------------------------------"
+                   "------------");
   }
-  Serial.println("-------------------------------------------------------------------"
-                 "------------");
+  power_delay = power_delay + increment_power;
   if (power_delay > max_power_delay) {
-    power_delay = min_power_delay;
-    wake_delay  = wake_delay + increment_wake;
-  } else {
-    power_delay = power_delay + increment_power;
-  }
-  if (wake_delay > max_wake_delay) {
     Serial.println("FINISHED!!");
     while (1) {}
   }
