@@ -7,6 +7,8 @@ To use this example, you must remove the comment braces around `#define SDI12_EX
 
 [//]: # ( @section j_external_pcint_library_pio PlatformIO Configuration )
 
+[//]: # ( @example{lineno} j_external_pcint_library.ino @m_examplenavigation{examples_page,} @m_footernavigation )
+
 [//]: # ( @include{lineno} j_external_pcint_library/platformio.ini )
 
 [//]: # ( @section j_external_pcint_library_code The Complete Example )

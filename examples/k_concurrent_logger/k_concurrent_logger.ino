@@ -1,7 +1,7 @@
 /**
  * @file k_concurrent_logger.ino
  * @copyright Stroud Water Research Center
- * This example is published under the BSD-3 license.
+ * @license This example is published under the BSD-3 license.
  * @author Sara Geleskie Damiano <sdamiano@stroudcenter.org>
  *
  * @brief Example K:  Concurrent Measurements

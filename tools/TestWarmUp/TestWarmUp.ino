@@ -1,7 +1,7 @@
 /**
  * @file TestWarmUp.ino
  * @copyright Stroud Water Research Center
- * This example is published under the BSD-3 license.
+ * @license This example is published under the BSD-3 license.
  * @author Sara Damiano <sdamiano@stroudcenter.org>
  * @date March 2021
  */

@@ -1,7 +1,7 @@
 /**
  * @file SDI12.cpp
- * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
- *                          and the EnviroDIY Development Team
+ * @copyright Stroud Water Research Center
+ * @license This library is published under the BSD-3 license.
  * @date August 2013
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  *

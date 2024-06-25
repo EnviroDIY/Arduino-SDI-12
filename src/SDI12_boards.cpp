@@ -1,7 +1,7 @@
 /**
  * @file SDI12_boards.cpp
- * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
- *                          and the EnviroDIY Development Team
+ * @copyright Stroud Water Research Center
+ * @license This library is published under the BSD-3 license.
  * @author Sara Geleskie Damiano (sdamiano@stroudcenter.org)
  *
  * @brief This file implements the setting and unsetting of the proper prescalers for

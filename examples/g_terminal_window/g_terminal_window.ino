@@ -1,7 +1,7 @@
 /**
  * @file g_terminal_window.ino
  * @copyright Stroud Water Research Center
- * This example is published under the BSD-3 license.
+ * @license This example is published under the BSD-3 license.
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
  * @author Ruben Kertesz <github@emnet.net> or @rinnamon on twitter

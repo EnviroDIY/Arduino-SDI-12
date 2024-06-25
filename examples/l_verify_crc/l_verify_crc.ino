@@ -1,7 +1,7 @@
 /**
  * @file f_basic_data_request.ino
  * @copyright Stroud Water Research Center
- * This example is published under the BSD-3 license.
+ * @license This example is published under the BSD-3 license.
  * @author Ruben Kertesz <github@emnet.net> or @rinnamon on twitter
  * @date 2/10/2016
  *
