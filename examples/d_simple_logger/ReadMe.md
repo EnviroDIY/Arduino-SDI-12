@@ -13,6 +13,8 @@ To address a sensor, please see Example B: b_address_change.ino
 
 [//]: # ( @section d_simple_logger_pio PlatformIO Configuration )
 
+[//]: # ( @example{lineno} d_simple_logger.ino @m_examplenavigation{examples_page,} @m_footernavigation )
+
 [//]: # ( @include{lineno} d_simple_logger/platformio.ini )
 
 [//]: # ( @section d_simple_logger_code The Complete Example )

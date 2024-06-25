@@ -13,6 +13,8 @@ To address a sensor, please see Example B: b_address_change.ino
 
 [//]: # ( @section e_continuous_measurement_pio PlatformIO Configuration )
 
+[//]: # ( @example{lineno} e_continuous_measurement.ino @m_examplenavigation{examples_page,} @m_footernavigation )
+
 [//]: # ( @include{lineno} e_continuous_measurement/platformio.ini )
 
 [//]: # ( @section e_continuous_measurement_code The Complete Example )

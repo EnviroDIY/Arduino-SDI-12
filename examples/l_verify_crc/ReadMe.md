@@ -7,6 +7,8 @@ This is a very basic (stripped down) example where the user initiates a measurem
 
 [//]: # ( @sectionl_verify_crc_pio PlatformIO Configuration )
 
+[//]: # ( @example{lineno} l_verify_crc.ino @m_examplenavigation{examples_page,} @m_footernavigation )
+
 [//]: # ( @include{lineno} l_verify_crc/platformio.ini )
 
 [//]: # ( @section l_verify_crc_code The Complete Example )

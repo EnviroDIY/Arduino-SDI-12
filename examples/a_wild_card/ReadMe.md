@@ -6,6 +6,8 @@ It requests information about a single attached sensor, including its address an
 
 [//]: # ( @section a_wild_card_pio PlatformIO Configuration )
 
+[//]: # ( @example{lineno} a_wild_card.ino @m_examplenavigation{examples_page,} @m_footernavigation )
+
 [//]: # ( @include{lineno} a_wild_card/platformio.ini )
 
 [//]: # ( @section a_wild_card_code The Complete Example )
