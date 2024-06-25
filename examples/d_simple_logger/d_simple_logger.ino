@@ -28,7 +28,7 @@
 uint32_t serialBaud   = 115200; /*!< The baud rate for the output serial port */
 int8_t   dataPin      = 7;      /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin     = 22; /*!< The sensor power pin (or -1 if not switching power) */
-uint32_t wakeDelay    = 0;  /*!< Extra time needed for the sensor to wake (0-100ms) */
+uint32_t wake_delay   = 0;  /*!< Extra time needed for the sensor to wake (0-100ms) */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
 int8_t   lastAddress = 62; /* The last address in the address space to check (62='z') */
 
@@ -81,7 +81,7 @@ void printInfo(char i) {
   String command = "";
   command += (char)i;
   command += "I!";
-  mySDI12.sendCommand(command, wakeDelay);
+  mySDI12.sendCommand(command, wake_delay);
   delay(100);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
@@ -112,7 +112,7 @@ bool getResults(char i, int resultsExpected) {
     command += "D";
     command += cmd_number;
     command += "!";  // SDI-12 command to get data [address][D][dataOption][!]
-    mySDI12.sendCommand(command, wakeDelay);
+    mySDI12.sendCommand(command, wake_delay);
 
     uint32_t start = millis();
     while (mySDI12.available() < 3 && (millis() - start) < 1500) {}
@@ -149,7 +149,7 @@ bool takeMeasurement(char i, String meas_type = "") {
   command += "M";
   command += meas_type;
   command += "!";  // SDI-12 measurement command format  [address]['M'][!]
-  mySDI12.sendCommand(command, wakeDelay);
+  mySDI12.sendCommand(command, wake_delay);
   delay(100);
 
   Serial.print(command);
@@ -202,7 +202,7 @@ boolean checkActive(char i) {
   myCommand += "!";
 
   for (int j = 0; j < 3; j++) {  // goes through three rapid contact attempts
-    mySDI12.sendCommand(myCommand, wakeDelay);
+    mySDI12.sendCommand(myCommand, wake_delay);
     delay(100);
     if (mySDI12.available()) {  // If we here anything, assume we have an active sensor
       mySDI12.clearBuffer();
