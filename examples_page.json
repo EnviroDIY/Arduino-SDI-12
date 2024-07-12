@@ -1,0 +1,68 @@
+{
+  "version": "1.9.1",
+  "compound": {
+    "kind": "page",
+    "id": "examples_page",
+    "name": "Examples",
+    "url_base": "examples_page",
+    "url": "examples_page.html",
+    "include": null,
+    "has_template_details": false,
+    "templates": null,
+    "brief": "Examples using the SDI-12 Library.",
+    "description": "<ul><li><a href=\"a_wild_card_8ino-example.html\" class=\"m-doc\">Example A</a>:<ul><li>Gets sensor information from a single attached sensor and prints it to the serial port</li><li><a href=\"https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/a_wild_card\">GitHub</a></li></ul></li><li><a href=\"b_address_change_8ino-example.html\" class=\"m-doc\">Example B</a>:<ul><li>Allows you to change the address of your SDI-12 Sensor</li><li><a href=\"https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/b_address_change\">GitHub</a></li></ul></li><li><a href=\"c_check_all_addresses_8ino-example.html\" class=\"m-doc\">Example C</a>:<ul><li>Checks all addresses for active sensors, and prints their status to the serial port</li><li><a href=\"https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/c_check_all_addresses\">GitHub</a></li></ul></li><li><a href=\"d_simple_logger_8ino-example.html\" class=\"m-doc\">Example D</a>:<ul><li>Checks all addresses for active sensors, and logs data for each sensor every minute</li><li><a href=\"https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/d_simple_logger\">GitHub</a></li></ul></li><li>Example E:<ul><li>Demonstrates the ability to parse integers and floats from the buffer.</li><li><a href=\"https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/e_simple_parsing\">GitHub</a></li></ul></li><li><a href=\"f_basic_data_request_8ino-example.html\" class=\"m-doc\">Example F</a>:<ul><li>Issues a data request to a single specified sensor</li><li><a href=\"https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/f_basic_data_request\">GitHub</a></li></ul></li><li><a href=\"g_terminal_window_8ino-example.html\" class=\"m-doc\">Example G</a>:<ul><li>Demonstrates using the Arduino as a command terminal for SDI-12 sensors.</li><li><a href=\"https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/g_terminal_window\">GitHub</a></li></ul></li><li><a href=\"h__s_d_i-12_slave_implementation_8ino-example.html\" class=\"m-doc\">Example H</a>:<ul><li>Demonstrates using SDI-12 in slave mode</li><li><a href=\"https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/h_SDI-12_slave_implementation\">GitHub</a></li></ul></li><li><a href=\"i__s_d_i-12_interface_8ino-example.html\" class=\"m-doc\">Example I</a>:<ul><li>Shows code for an Arduino-based USB dongle to translate between SDI-12 and a PC</li><li><a href=\"https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/i_SDI-12_interface\">GitHub</a></li></ul></li><li><a href=\"j_external_pcint_library_8ino-example.html\" class=\"m-doc\">Example J</a>:<ul><li>Shows how to use an external PCInt library to call the interrupts for this library.</li><li><a href=\"https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/j_external_pcint_library\">GitHub</a></li></ul></li><li><a href=\"k_concurrent_logger_8ino-example.html\" class=\"m-doc\">Example K</a>:<ul><li>Shows how to request concurrent measurements</li><li><a href=\"https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/k_concurrent_logger\">GitHub</a></li></ul></li></ul>",
+    "sections": [],
+    "deprecated": null,
+    "since": null,
+    "example_navigation": null,
+    "footer_navigation": null,
+    "modules": [],
+    "dirs": [],
+    "files": [],
+    "namespaces": [],
+    "classes": [],
+    "base_classes": [],
+    "derived_classes": [],
+    "enums": [],
+    "typedefs": [],
+    "funcs": [],
+    "vars": [],
+    "defines": [],
+    "public_types": [],
+    "public_static_funcs": [],
+    "typeless_funcs": [],
+    "public_funcs": [],
+    "signals": [],
+    "public_slots": [],
+    "public_static_vars": [],
+    "public_vars": [],
+    "protected_types": [],
+    "protected_static_funcs": [],
+    "protected_funcs": [],
+    "protected_slots": [],
+    "protected_static_vars": [],
+    "protected_vars": [],
+    "private_funcs": [],
+    "private_slots": [],
+    "related": [],
+    "friend_funcs": [],
+    "groups": [],
+    "has_enum_details": false,
+    "has_typedef_details": false,
+    "has_func_details": false,
+    "has_var_details": false,
+    "has_define_details": false,
+    "breadcrumb": [
+      [
+        "Examples",
+        "examples_page.html"
+      ]
+    ],
+    "breadcrumbGroup": [
+      [
+        "Examples",
+        "examples_page.html"
+      ]
+    ]
+  }
+}

@@ -1,20 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="UTF-8" />
-  <title>Examples &raquo; i_SDI-12_interface.ino example | SDI-12 for Arduino</title>
+  <title>Examples &raquo; i_SDI-12_interface.ino example | SDI-12 for Arduino2.1.4</title>
   <link rel="stylesheet" href="m-EnviroDIY+documentation.compiled.css" />
+
+<style id="wp-emoji-styles-inline-css" type="text/css">
+  img.wp-smiley,
+  img.emoji {
+    display: inline !important;
+    border: none !important;
+    box-shadow: none !important;
+    height: 1em !important;
+    width: 1em !important;
+    margin: 0 0.07em !important;
+    vertical-align: -0.1em !important;
+    background: none !important;
+    padding: 0 !important;
+  }
+</style>
 <link
   rel="stylesheet"
   id="gp-parent-style-css"
-  href="https://www.envirodiy.org/wp-content/themes/socialize/style.css?ver=6.1.1"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/style.css?ver=6.5.4"
   type="text/css"
   media="all"
 />
 <link
   rel="stylesheet"
-  id="ghostpool-style-css"
-  href="https://www.envirodiy.org/wp-content/themes/socialize-child/style.css?ver=6.1.1"
+  id="redux-extendify-styles-css"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/framework/redux/assets/css/extendify-utilities.css?ver=4.4.11"
   type="text/css"
   media="all"
 />
@@ -124,31 +139,27 @@
 <link
   rel="stylesheet"
   id="fontawesome-css"
-  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=6.1.1"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=6.5.4"
   type="text/css"
   media="all"
 />
 <link
-  rel="stylesheet"
-  id="prettyphoto-css"
-  href="https://www.envirodiy.org/wp-content/plugins/js_composer/assets/lib/prettyphoto/css/prettyPhoto.min.css?ver=6.10.0"
-  type="text/css"
-  media="all"
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
 />
 <link
   rel="stylesheet"
-  id="gp-bp-css"
-  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/css/bp.css?ver=6.1.1"
-  type="text/css"
-  media="all"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+  media="print"
+  onload="this.media='all'"
 />
-<link
-  rel="stylesheet"
-  id="gp-bbp-css"
-  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/css/bbpress.css?ver=6.1.1"
-  type="text/css"
-  media="all"
-/>
+<noscript
+  ><link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+/></noscript>
+
 <style type="text/css" id="wp-custom-css">
   /* Print Styles */
   @media print {
@@ -162,12 +173,15 @@
       margin: 0 !important;
       padding: 0;
     }
+
     body:not(.gp-full-page-page-header) .gp-page-header.gp-has-text:before,
     body:not(.gp-full-page-page-header)
       .gp-page-header.gp-has-teaser-video.gp-has-text
       .gp-video-header:before {
       background-image: none !important;
     }
+    /* End print styles */
+
     #gp-main-header,
     #gp-small-header,
     #gp-header-area,
@@ -219,6 +233,7 @@
     img {
       page-break-inside: avoid;
       visibility: visible;
+      float: none;
     }
     blockquote,
     table,
@@ -231,7 +246,7 @@
       page-break-before: avoid;
     }
   }
-  /* End print styles */
+
   /*Gutenberg styles*/
   /*Buttons*/
   a.wp-block-button__link {
@@ -362,10 +377,17 @@
   span.woocommerce-Price-amount.amount {
     text-decoration: none !important;
   }
+  /* Hide additional information tab */
+  div.woocommerce-tabs {
+    display: none !important;
+  }
   /*End WooCommerce styles*/
   /*The Events Calendar*/
   #tribe-events-content a {
     color: #0579bd;
+  }
+  #tribe-events-content .wp-block-button__link {
+    color: #ffffff;
   }
   #gp-sidebar-right
     > div
@@ -451,6 +473,9 @@
   #gp-content p.last-updated {
     display: none;
   }
+  #gp-content ul {
+    margin: 0 0 0 20px !important;
+  }
 </style>
 <style id="socialize-dynamic-css" title="dynamic-css" class="redux-options-output">
   #footer-image img {
@@ -483,7 +508,6 @@
     font-style: normal;
     color: #000;
     font-size: 16px;
-    font-display: swap;
   }
   a {
     color: #0579bd;
@@ -497,7 +521,6 @@
     font-weight: 400;
     font-style: normal;
     font-size: 36px;
-    font-display: swap;
   }
   h2 {
     font-family: Roboto, Arial, Helvetica, sans-serif;
@@ -505,7 +528,6 @@
     font-weight: 400;
     font-style: normal;
     font-size: 28px;
-    font-display: swap;
   }
   h3,
   #tab-description h2,
@@ -519,7 +541,6 @@
     font-weight: 400;
     font-style: normal;
     font-size: 24px;
-    font-display: swap;
   }
   h4 {
     font-family: Roboto, Arial, Helvetica, sans-serif;
@@ -527,7 +548,6 @@
     font-weight: 400;
     font-style: normal;
     font-size: 20px;
-    font-display: swap;
   }
   h5 {
     font-family: Roboto, Arial, Helvetica, sans-serif;
@@ -535,7 +555,6 @@
     font-weight: 400;
     font-style: normal;
     font-size: 18px;
-    font-display: swap;
   }
   h6 {
     font-family: Roboto, Arial, Helvetica, sans-serif;
@@ -543,7 +562,6 @@
     font-weight: 400;
     font-style: normal;
     font-size: 16px;
-    font-display: swap;
   }
   .gp-entry-meta .gp-post-meta-row-1,
   .gp-homepage #gp-content .gp-vc-element-3,
@@ -577,7 +595,6 @@
     font-style: normal;
     color: #ababab;
     font-size: 16px;
-    font-display: swap;
   }
   #gp-primary-main-nav .menu > li:hover > a,
   #gp-primary-main-nav .menu > li > a {
@@ -600,7 +617,6 @@
     font-style: normal;
     color: #fff;
     font-size: 14px;
-    font-display: swap;
   }
   #gp-secondary-main-nav .menu > li:hover > a,
   #gp-secondary-main-nav .menu > li > a {
@@ -641,7 +657,6 @@
     font-style: normal;
     color: #000;
     font-size: 14px;
-    font-display: swap;
   }
   .gp-nav .menu > .gp-standard-menu > .sub-menu > li a {
     color: #000;
@@ -745,7 +760,6 @@
     font-style: normal;
     color: #fff;
     font-size: 80px;
-    font-display: swap;
   }
   .gp-page-header .gp-container {
     height: 250px;
@@ -759,7 +773,6 @@
     font-style: normal;
     color: #000;
     font-size: 40px;
-    font-display: swap;
   }
   .gp-subtitle {
     font-family: Roboto;
@@ -768,7 +781,6 @@
     font-style: normal;
     color: #0579bd;
     font-size: 20px;
-    font-display: swap;
   }
   #gp-post-links a,
   .gp-pagination-arrows a.prev,
@@ -811,7 +823,6 @@
     line-height: 24px;
     color: #fff;
     font-size: 14px;
-    font-display: swap;
   }
   .gp-author-info a {
     color: #b1b1b1;
@@ -840,19 +851,16 @@
     font-style: normal;
     color: #fff;
     font-size: 24px;
-    font-display: swap;
   }
   .gp-loop-title {
     line-height: 22px;
     font-weight: 400;
     font-size: 19px;
-    font-display: swap;
   }
   .gp-blog-large .gp-loop-title {
     line-height: 46px;
     font-weight: 200;
     font-size: 40px;
-    font-display: swap;
   }
   .gp-loop-title a,
   .bboss_search_item .entry-title a {
@@ -914,7 +922,6 @@
     font-style: normal;
     color: #000;
     font-size: 14px;
-    font-display: swap;
   }
   .widgettitle a,
   .widget-title a,
@@ -1157,7 +1164,6 @@
     font-style: normal;
     color: #fff;
     font-size: 16px;
-    font-display: swap;
   }
   .gp-footer-widget {
     font-family: Roboto;
@@ -1166,7 +1172,6 @@
     font-style: normal;
     color: #ffffff;
     font-size: 14px;
-    font-display: swap;
   }
   .gp-footer-widget a {
     color: #f9bd16;
@@ -1195,439 +1200,281 @@
   #gp-to-top {
     color: #ffffff;
   }
-  .woocommerce ul.products li.product .price,
-  .woocommerce div.product p.price,
-  .woocommerce div.product span.price {
-    color: #00bee9;
-  }
-  .woocommerce span.onsale {
-    background-color: #e93100;
-  }
-  #buddypress .activity-list .activity-content .activity-header,
-  #buddypress .activity-list .activity-content .comment-header,
-  #buddypress .activity-list .activity-header a,
-  #buddypress .activity-list div.activity-comments div.acomment-meta,
-  #buddypress .activity-list .acomment-meta a,
-  .widget.buddypress .item-title a,
-  .widget.buddypress div.item-options.gp-small-item-options:before,
-  .widget.buddypress div.item-options a,
-  #buddypress ul.item-list li div.item-title a,
-  #buddypress ul.item-list li h4 > a,
-  #buddypress ul.item-list li h5 > a,
-  #buddypress div#item-header div#item-meta {
-    color: #000000;
-  }
-  #buddypress .activity-list .activity-content .activity-inner {
-    color: #aaaaaa;
-  }
-  #buddypress .activity-list a.activity-time-since,
-  .widget_display_replies ul li a + div,
-  .widget_display_topics ul li a + div,
-  #buddypress .activity-list .acomment-meta a.activity-time-since,
-  #buddypress .activity-list div.activity-comments div.acomment-content,
-  .widget.buddypress div.item-meta,
-  #buddypress span.activity,
-  #buddypress ul.item-list li div.meta {
-    color: #545454;
-  }
-  .gp-theme #buddypress .activity-list div.activity-meta a.button,
-  .gp-theme #buddypress .activity .acomment-options a,
-  .gp-theme #buddypress .activity-list li.load-more a,
-  .gp-theme #buddypress .activity-list li.load-newest a,
-  .widget.buddypress div.item-options a.selected {
-    color: #26a9e0;
-  }
-  .gp-theme #buddypress .activity-list div.activity-meta a.button:hover,
-  .gp-theme #buddypress .activity .acomment-options a:hover,
-  .gp-theme #buddypress .activity-list li.load-more a:hover,
-  .gp-theme #buddypress .activity-list li.load-newest a:hover,
-  .widget.buddypress div.item-options a.selected:hover {
-    color: #000;
-  }
-  .gp-theme #buddypress ul.item-list li,
-  .gp-theme #buddypress div.activity-comments ul li:first-child,
-  .widget.buddypress #friends-list li,
-  .widget.buddypress #groups-list li,
-  .widget.buddypress #members-list li {
-    border-top: 1px solid #e0e0e0;
-    border-bottom: 1px solid #e0e0e0;
-  }
-  .gp-theme #buddypress div.item-list-tabs {
-    background-color: #353535;
-  }
-  .gp-theme #buddypress div.item-list-tabs ul li a span,
-  .gp-theme #buddypress div.item-list-tabs ul li a:hover span,
-  .gp-theme #buddypress div.item-list-tabs ul li.current a span,
-  .gp-theme #buddypress div.item-list-tabs ul li.selected a span {
-    color: #353535;
-  }
-  .gp-theme #buddypress div.item-list-tabs ul li a span {
-    background-color: #ffffff;
-  }
-  .gp-theme #buddypress div.item-list-tabs ul li a,
-  .gp-theme #buddypress #gp-bp-tabs-button,
-  .gp-theme #buddypress div.item-list-tabs ul li span {
-    color: #ffffff;
-  }
-  .gp-theme #buddypress div.item-list-tabs ul li.current a,
-  .gp-theme #buddypress div.item-list-tabs ul li.selected a,
-  .gp-theme #buddypress div.item-list-tabs ul li a:hover {
-    color: #b1b1b1;
-  }
-  .gp-theme #buddypress div.item-list-tabs ul li a:hover span,
-  .gp-theme #buddypress div.item-list-tabs ul li.current a span,
-  .gp-theme #buddypress div.item-list-tabs ul li.selected a span {
-    background: #b1b1b1;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul,
-  .widget.buddypress div.item-options.gp-small-item-options > a {
-    background-color: #f8f8f8;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a span,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a:hover span,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.current a span,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.selected a span {
-    color: #f8f8f8;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a span {
-    background-color: #000000;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a {
-    color: #000000;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.current a,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.selected a,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a:hover {
-    color: #26a9e0;
-  }
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li a:hover span,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.current a span,
-  .gp-theme #buddypress div.item-list-tabs#subnav ul li.selected a span {
-    background: #26a9e0;
-  }
-  #bbpress-forums
-    .gp-forum-home.bbp-forums
-    .bbp-has-subforums
-    .bbp-forum-info
-    > .bbp-forum-title,
-  #bbpress-forums .bbp-topics .bbp-header,
-  #bbpress-forums .bbp-replies .bbp-header,
-  #bbpress-forums .bbp-search-results .bbp-header {
-    background-color: #353535;
-  }
-  #bbpress-forums
-    .gp-forum-home.bbp-forums
-    .bbp-has-subforums
-    .bbp-forum-info
-    > .bbp-forum-title,
-  #bbpress-forums .bbp-topics .bbp-header,
-  #bbpress-forums .bbp-replies .bbp-header,
-  #bbpress-forums .bbp-search-results .bbp-header {
-    color: #ffffff;
-  }
-  #bbpress-forums .bbp-header div.bbp-reply-content a {
-    color: #ddd;
-  }
-  #bbpress-forums .bbp-header div.bbp-reply-content a:hover {
-    color: #fff;
-  }
-  #bbpress-forums .bbp-forums-list li.odd-forum-row,
-  #bbpress-forums div.odd,
-  #bbpress-forums ul.odd {
-    background-color: #f8f8f8;
-  }
-  #bbpress-forums .bbp-forums-list li.even-forum-row,
-  #bbpress-forums div.even,
-  #bbpress-forums ul.even {
-    background-color: #fff;
-  }
-  #bbpress-forums .gp-forum-home.bbp-forums .bbp-forum-info > .bbp-forum-title,
-  #bbpress-forums div.bbp-forum-header,
-  #bbpress-forums div.bbp-topic-header,
-  #bbpress-forums div.bbp-reply-header,
-  #bbpress-forums .bbp-forums-list,
-  #bbpress-forums li.bbp-body {
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #ddd;
-    border-left: 1px solid #ddd;
-    border-right: 1px solid #ddd;
-  }
-  #bbpress-forums .bbp-forums-list .bbp-forum .bbp-forum-link,
-  body.forum #bbpress-forums .bbp-forums .bbp-forum-info > .bbp-forum-title,
-  #bbpress-forums .bbp-topics .bbp-topic-permalink,
-  #bbpress-forums .gp-forum-home.bbp-forums .bbp-forum-info > .bbp-forum-title,
-  .gp-theme
-    #bbpress-forums
-    .gp-forum-shortcode
-    ul.forum:not(.status-category)
-    .bbp-forum-info
-    a {
-    color: #000000;
-  }
-  #bbpress-forums div.bbp-forum-author .bbp-author-role,
-  #bbpress-forums div.bbp-topic-author .bbp-author-role,
-  #bbpress-forums div.bbp-reply-author .bbp-author-role {
-    background-color: #92d050;
-  }
-  #bbpress-forums div.bbp-forum-author .bbp-author-role,
-  #bbpress-forums div.bbp-topic-author .bbp-author-role,
-  #bbpress-forums div.bbp-reply-author .bbp-author-role {
-    color: #ffffff;
-  }
 </style>
-    <style id="kadence-blocks-global-variables-inline-css" type="text/css">
-      :root {
-        --global-kb-font-size-sm: clamp(0.8rem, 0.73rem + 0.217vw, 0.9rem);
-        --global-kb-font-size-md: clamp(1.1rem, 0.995rem + 0.326vw, 1.25rem);
-        --global-kb-font-size-lg: clamp(1.75rem, 1.576rem + 0.543vw, 2rem);
-        --global-kb-font-size-xl: clamp(2.25rem, 1.728rem + 1.63vw, 3rem);
-        --global-kb-font-size-xxl: clamp(2.5rem, 1.456rem + 3.26vw, 4rem);
-        --global-kb-font-size-xxxl: clamp(2.75rem, 0.489rem + 7.065vw, 6rem);
-      }
-    </style>
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.1.1"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.1.1"
-      media="print"
-      onload="this.media='all'"
-    />
-    <noscript
-      ><link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.1.1"
-    /></noscript>
-<script
-  type="text/javascript"
-  src="https://www.envirodiy.org/wp-includes/js/jquery/jquery.min.js?ver=3.6.1"
-  id="jquery-core-js"
-></script>
-<script
-  type="text/javascript"
-  src="https://www.envirodiy.org/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.3.2"
-  id="jquery-migrate-js"
-></script>  <link rel="icon" href="SDI-12Text-Cropped.png" type="image/png" />
+  <link rel="icon" href="SDI-12Text-Cropped.png" type="image/png" />
   <link rel="prev" href="h__s_d_i-12_slave_implementation_8ino-example.html" />
   <link rel="next" href="j_external_pcint_library_8ino-example.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#cb4b16" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="clipboard.js"></script>
 </head>
 
-<body class="home-page bp-legacy home page-template page-template-homepage-template page-template-homepage-template-php page page-id-977 logged-in admin-bar no-customize-support theme-socialize woocommerce-no-js tribe-no-js page-template-socialize-child gp-theme gp-responsive gp-wide-layout gp-retina gp-normal-scrolling gp-no-back-to-top gp-relative-header gp-header-standard gp-cart-disabled gp-search-all gp-profile-disabled gp-small-header-all gp-standard-page-header gp-no-sidebar gp-homepage wpb-js-composer js-comp-ver-6.10.0 vc_responsive no-js">
+<body
+    class="theme-socialize page-template-socialize-child gp-theme gp-responsive gp-wide-layout gp-retina gp-normal-scrolling gp-no-back-to-top gp-relative-header gp-header-standard gp-cart-disabled gp-search-all gp-profile-disabled gp-small-header-all gp-standard-page-header gp-no-sidebar"
+>
 	<div id="gp-site-wrapper">
 
   <nav id="gp-mobile-nav">
     <div id="gp-mobile-nav-close-button"></div>
     <ul class="menu">
-        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
-            <a class="menu-link main-menu-link" href="class_s_d_i12.html">SDI12</a>
-          <ul class="sub-menu menu-odd menu-depth-1">
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="class_s_d_i12.html#data-line-states">Data Line States</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>
-              </li>
-          </ul>
-        </li>
-        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
-            <a class="menu-link main-menu-link" href="examples_page.html">Examples</a>
-          <ul class="sub-menu menu-odd menu-depth-1">
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="a_wild_card_8ino-example.html">Getting Sensor Information</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="b_address_change_8ino-example.html">Address Change</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="c_check_all_addresses_8ino-example.html">Checking all Addresses</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="d_simple_logger_8ino-example.html">Logging Data</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="e_simple_parsing_8ino-example.html">Parsing Data</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="f_basic_data_request_8ino-example.html">Simple Data Request</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="g_terminal_window_8ino-example.html">Terminal Emulator 1</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="h__s_d_i-12_slave_implementation_8ino-example.html">Slave Implementation</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="i__s_d_i-12_interface_8ino-example.html">Terminal Emulator 2</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="j_external_pcint_library_8ino-example.html">External Interrupts</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a href="k_concurrent_logger_8ino-example.html">Concurrent Measurements</a>
-              </li>
-          </ul>
-        </li>
-          <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-post_type menu-item-object-page">
-<a class="menu-link main-menu-link" href="annotated.html">Classes</a>          </li>
-        <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
-            <a class="menu-link main-menu-link" href="pages.html">Notes</a>
-          <ul class="sub-menu menu-odd menu-depth-1">
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>
-              </li>
-              <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                <a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>
-              </li>
-          </ul>
-        </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+      >
+<a href="class_s_d_i12.html" class="menu-link main-menu-link">SDI12</a>        <ul class="sub-menu menu-odd menu-depth-1">
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#data-line-states">Data Line States</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>          </li>
+        </ul>
+      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+      >
+<a href="examples_page.html" class="menu-link main-menu-link">Examples</a>        <ul class="sub-menu menu-odd menu-depth-1">
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="a_wild_card_8ino-example.html">Getting Sensor Information</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="b_address_change_8ino-example.html">Address Change</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="c_check_all_addresses_8ino-example.html">Checking all Addresses</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="d_simple_logger_8ino-example.html">Logging Data</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="e_simple_parsing_8ino-example.html">Parsing Data</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="f_basic_data_request_8ino-example.html">Simple Data Request</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="g_terminal_window_8ino-example.html">Terminal Emulator 1</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="h__s_d_i-12_slave_implementation_8ino-example.html">Slave Implementation</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="i__s_d_i-12_interface_8ino-example.html">Terminal Emulator 2</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="j_external_pcint_library_8ino-example.html">External Interrupts</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="k_concurrent_logger_8ino-example.html">Concurrent Measurements</a>          </li>
+        </ul>
+      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+      >
+<a href="annotated.html" class="menu-link main-menu-link">Classes</a>      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+      >
+<a href="pages.html" class="menu-link main-menu-link">Notes</a>        <ul class="sub-menu menu-odd menu-depth-1">
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>          </li>
+        </ul>
+      </li>
     </ul>
-  </nav><div id="gp-mobile-nav-bg"></div>
+  </nav> <!-- gp-mobile-nav -->
+  <div id="gp-mobile-nav-bg"></div>
 
   <div id="gp-page-wrapper">
 
     <header id="gp-main-header">
       <div class="gp-container">
         <div id="gp-logo">
-          <a href="index.html" title="SDI-12 for Arduino">
+          <a href="index.html" title="SDI-12 for Arduino 2.1.4">
             <img
               src="SDI-12Text.png"
-              alt="SDI-12 for Arduino"
-                  width="200"
-                  height="42"
+              alt="SDI-12 for Arduino 2.1.4"
+              width="200"
+              height="42"
               class="gp-desktop-logo"
             />
             <img
               src="SDI-12Text.png"
-              alt="SDI-12 for Arduino"
+              alt="SDI-12 for Arduino 2.1.4"
               width="264"
               height="55"
               class="gp-scrolling-logo"
             />
             <img
               src="SDI-12Text.png"
-              alt="SDI-12 for Arduino"
+              alt="SDI-12 for Arduino 2.1.4"
               width="132"
               height="28"
               class="gp-mobile-logo"
             />
           </a>
-        </div>
+        </div> <!-- gp-logo -->
 
         <a id="gp-mobile-nav-button"></a>
 
         <nav id="gp-main-nav" class="gp-nav">
           <nav id="gp-primary-main-nav">
-              <ul id="menu-main-menu-1" class="menu">
-                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
-                    <a class="menu-link main-menu-link" href="class_s_d_i12.html">SDI12</a>
-                  <ul class="sub-menu menu-odd menu-depth-1">
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="class_s_d_i12.html#data-line-states">Data Line States</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>
-                      </li>
-                  </ul>
-                </li>
-                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
-                    <a class="menu-link main-menu-link" href="examples_page.html">Examples</a>
-                  <ul class="sub-menu menu-odd menu-depth-1">
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="a_wild_card_8ino-example.html">Getting Sensor Information</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="b_address_change_8ino-example.html">Address Change</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="c_check_all_addresses_8ino-example.html">Checking all Addresses</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="d_simple_logger_8ino-example.html">Logging Data</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="e_simple_parsing_8ino-example.html">Parsing Data</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="f_basic_data_request_8ino-example.html">Simple Data Request</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="g_terminal_window_8ino-example.html">Terminal Emulator 1</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="h__s_d_i-12_slave_implementation_8ino-example.html">Slave Implementation</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="i__s_d_i-12_interface_8ino-example.html">Terminal Emulator 2</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="j_external_pcint_library_8ino-example.html">External Interrupts</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a href="k_concurrent_logger_8ino-example.html">Concurrent Measurements</a>
-                      </li>
-                  </ul>
-                </li>
-                  <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-post_type menu-item-object-page">
-<a class="menu-link main-menu-link" href="annotated.html">Classes</a>                  </li>
-                <li class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-param-custom menu-item-object-custom menu-item-has-children">
-                    <a class="menu-link main-menu-link" href="pages.html">Notes</a>
-                  <ul class="sub-menu menu-odd menu-depth-1">
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>
-                      </li>
-                      <li class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-param-post_type menu-item-object-page">
-                        <a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>
-                      </li>
-                  </ul>
-                </li>
-              </ul>
-          </nav>
+            <ul id="menu-main-menu-1" class="menu">
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+              >
+<a href="class_s_d_i12.html" class="menu-link main-menu-link" >SDI12</a>                <ul class="sub-menu menu-odd menu-depth-1">
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#data-line-states">Data Line States</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>                  </li>
+                </ul>
+              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+              >
+<a href="examples_page.html" class="menu-link main-menu-link" >Examples</a>                <ul class="sub-menu menu-odd menu-depth-1">
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="a_wild_card_8ino-example.html">Getting Sensor Information</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="b_address_change_8ino-example.html">Address Change</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="c_check_all_addresses_8ino-example.html">Checking all Addresses</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="d_simple_logger_8ino-example.html">Logging Data</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="e_simple_parsing_8ino-example.html">Parsing Data</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="f_basic_data_request_8ino-example.html">Simple Data Request</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="g_terminal_window_8ino-example.html">Terminal Emulator 1</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="h__s_d_i-12_slave_implementation_8ino-example.html">Slave Implementation</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="i__s_d_i-12_interface_8ino-example.html">Terminal Emulator 2</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="j_external_pcint_library_8ino-example.html">External Interrupts</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="k_concurrent_logger_8ino-example.html">Concurrent Measurements</a>                  </li>
+                </ul>
+              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+              >
+<a href="annotated.html"class="menu-link main-menu-link">Classes</a>              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+              >
+<a href="pages.html" class="menu-link main-menu-link" >Notes</a>                <ul class="sub-menu menu-odd menu-depth-1">
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav> <!-- gp-primary-main-nav -->
 
           <div id="gp-search">
             <div id="m-search-button" class="m-show-m" onclick="return showSearch()">
-            </div>
-					</div>
-
-
+            </div> <!-- gp-search-box -->
+          </div> <!-- gp-search -->
 
           <nav id="gp-secondary-main-nav"></nav>
-        </nav></div>
-    </header><header id="gp-small-header">
+        </nav> <!-- gp-main-nav -->
+      </div> <!-- gp-container -->
+    </header> <!-- gp-main-header -->
+
+    <header id="gp-small-header">
       <div class="gp-container">
         <div class="gp-left-triangle"></div>
         <div class="gp-right-triangle"></div>
@@ -1654,7 +1501,9 @@
 
         </nav>
       </div>
-    </header><div id="gp-fixed-header-padding"></div>
+    </header> <!-- gp-small-header -->
+
+    <div id="gp-fixed-header-padding"></div>
 
     <div class="m-doc-search" id="search">
       <a href="#!" onclick="return hideSearch()"></a>
@@ -1662,7 +1511,7 @@
         <div class="gp-container">
           <div style="background-color:#fff;padding:20px;">
             <div class="m-doc-search-header m-text m-small">
-              <div><span class="m-label m-default">Tab</span> / <span class="m-label m-default">T</span> to search, <span class="m-label m-default">Esc</span> to close</div>
+              <div><span class="m-label m-info">Tab</span> / <span class="m-label m-info">T</span> to search, <span class="m-label m-info">Esc</span> to close</div>
               <div id="search-symbolcount">&hellip;</div>
             </div>
             <div class="m-doc-search-content">
@@ -1697,30 +1546,33 @@
 
     <div id="gp-content-wrapper" class="gp-container">
       <div id="gp-inner-container">
+        <div id="gp-left-column">
           <div id="gp-content">
 
             <main>
               <article>
-                <div class="m-container m-container-inflatable">
-                  <div class="m-row">
-                    <div class="m-col-l-10 m-push-l-1">
+                <div class="breadcrumbs" typeof="BreadcrumbList" vocab="http://schema.org/">
           <span class="m-breadcrumb">
             <a href="index.html">
               SDI-12 for Arduino
             </a>  &gt; <wbr/>
           </span>
                     <span class="m-breadcrumb">
-          <a href="examples_page.html">Examples</a> &gt; <wbr/>
+          <a href="examples_page.html">
+            Examples
+          </a> &gt; <wbr/>
           </span>
           <span class="m-breadcrumb">
             i_SDI-12_interface.ino
           </span>
-
-        <header class="gp-entry-header">
-          <h1 class="gp-entry-title" itemprop="headline">
+                </div>
+                <header class="gp-entry-header">
+                  <h1 class="gp-entry-title" itemprop="headline">
           i_SDI-12_interface.ino <span class="m-thin">example</span>
-          </h1>
-        </header>
+
+
+                </h1>
+                </header>
         <div class="m-block m-default">
           <ul>
             <li><a href="#xample_i_page">Example I: SDI-12 PC Interface</a></li>
@@ -1728,248 +1580,263 @@
             <li><a href="#_SDI-12_interface_code">The Complete Example</a></li>
           </ul>
         </div>
-        <section id="xample_i_page"><h2>Example I: SDI-12 PC Interface</h2><p>Code for an Arduino-based USB dongle translates serial comm from PC to SDI-12 (electrical and timing)</p><ol><li>Allows user to communicate to SDI-12 devices from a serial terminal emulator (e.g. PuTTY).</li><li>Able to spy on an SDI-12 bus for troubleshooting comm between datalogger and sensors.</li><li>Can also be used as a hardware middleman for interfacing software to an SDI-12 sensor. For example, implementing an SDI-12 datalogger in Python on a PC. Use verbatim mode with feedback off in this case.</li></ol><p>Note: &quot;translation&quot; means timing and electrical interface. It does not ensure SDI-12 compliance of commands sent via it.</p></section><section id="_SDI-12_interface_pio"><h2>PlatformIO Configuration</h2><pre class="m-code"><span class="c1">; PlatformIO Project Configuration File</span>
-
-<span class="k">[platformio]</span>
-<span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">SDI-12 Library Example J:  Creating an SDI-12 Translator Dongle</span>
-<span class="na">src_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">.piolibdeps/Arduino-SDI-12_ID1486/examples/j_SDI-12_interface</span>
-
-<span class="k">[env:mayfly]</span>
-<span class="na">monitor_speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">115200</span>
-<span class="na">board</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mayfly</span>
-<span class="na">platform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">atmelavr</span>
-<span class="na">framework</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">arduino</span>
-<span class="na">lib_ldf_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">deep+</span>
-<span class="na">lib_ignore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">RTCZero</span>
-<span class="na">lib_deps</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="na">SDI-12</span></pre></section><section id="_SDI-12_interface_code"><h2>The Complete Example</h2><pre class="m-code"><span class="cm">/**</span>
-<span class="cm"> * @file h_SDI-12_slave_implementation.ino</span>
-<span class="cm"> * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)</span>
-<span class="cm"> *                          and the EnviroDIY Development Team</span>
-<span class="cm"> *            This example is published under the BSD-3 license.</span>
-<span class="cm"> * @date 2016</span>
-<span class="cm"> * @author D. Wasielewski</span>
-<span class="cm"> *</span>
-<span class="cm"> * @brief Example I:  SDI-12 PC Interface</span>
-<span class="cm"> *</span>
-<span class="cm"> *  Arduino-based USB dongle translates serial comm from PC to SDI-12 (electrical and</span>
-<span class="cm"> * timing)</span>
-<span class="cm"> *  1. Allows user to communicate to SDI-12 devices from a serial terminal emulator</span>
-<span class="cm"> * (e.g. PuTTY).</span>
-<span class="cm"> *  2. Able to spy on an SDI-12 bus for troubleshooting comm between datalogger and</span>
-<span class="cm"> * sensors.</span>
-<span class="cm"> *  3. Can also be used as a hardware middleman for interfacing software to an SDI-12</span>
-<span class="cm"> * sensor. For example, implementing an SDI-12 datalogger in Python on a PC.  Use</span>
-<span class="cm"> * verbatim mode with feedback off in this case.</span>
-<span class="cm"> *</span>
-<span class="cm"> *  Note: &quot;translation&quot; means timing and electrical interface.  It does not ensure</span>
-<span class="cm"> * SDI-12 compliance of commands sent via it.</span>
-<span class="cm"> *</span>
-<span class="cm"> * D. Wasielewski, 2016</span>
-<span class="cm"> * Builds upon work started by:</span>
-<span class="cm"> * https://github.com/jrzondagh/AgriApps-SDI-12-Arduino-Sensor</span>
-<span class="cm"> * https://github.com/Jorge-Mendes/Agro-Shield/tree/master/SDI-12ArduinoSensor</span>
-<span class="cm"> *</span>
-<span class="cm"> * Known issues:</span>
-<span class="cm"> *  - Backspace adds a &quot;backspace character&quot; into the serialMsgStr (which gets sent</span>
-<span class="cm"> *    out on the SDI-12 interface) instead of removing the previous char from it</span>
-<span class="cm"> *  - Suceptible to noise on the SDI-12 data line; consider hardware filtering or</span>
-<span class="cm"> *    software error-checking</span>
-<span class="cm"> */</span>
-
-<span class="cp">#define HELPTEXT                                                                    \</span>
-<span class="cp">  &quot;OPTIONS:\r\n&quot;                                                                    \</span>
-<span class="cp">  &quot;help   : Print this message\r\n&quot;                                                 \</span>
-<span class="cp">  &quot;mode s : SDI-12 command mode (uppercase and ! automatically corrected) &quot;         \</span>
-<span class="cp">  &quot;[default]\r\n&quot;                                                                   \</span>
-<span class="cp">  &quot;mode v : verbatim mode (text will be sent verbatim)\r\n&quot;                         \</span>
-<span class="cp">  &quot;fb on  : Enable feedback (characters visible while typing) [default]\r\n&quot;        \</span>
-<span class="cp">  &quot;fb off : Disable feedback (characters not visible while typing; may be desired &quot; \</span>
-<span class="cp">  &quot;for developers)\r\n&quot;                                                             \</span>
-<span class="cp">  &quot;(else) : send command to SDI-12 bus&quot;</span>
-
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SDI12.h&gt;</span>
-
-<span class="cp">#define SERIAL_BAUD 115200 </span><span class="cm">/*!&lt; The baud rate for the output serial port */</span>
-<span class="cp">#define DATA_PIN 7         </span><span class="cm">/*!&lt; The pin of the SDI-12 data bus */</span>
-<span class="cp">#define POWER_PIN 22       </span><span class="cm">/*!&lt; The sensor power pin (or -1 if not switching power) */</span>
-<span class="cp">#define SENSOR_ADDRESS 1</span>
-
-<span class="cm">/** Define the SDI-12 bus */</span>
-<span class="n">SDI12</span><span class="w"> </span><span class="nf">mySDI12</span><span class="p">(</span><span class="n">DATA_PIN</span><span class="p">);</span>
-
-<span class="kr">void</span><span class="w"> </span><span class="nb">setup</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">begin</span><span class="p">(</span><span class="n">SERIAL_BAUD</span><span class="p">);</span>
-<span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">Serial</span><span class="p">)</span>
-<span class="w">    </span><span class="p">;</span>
-
-<span class="w">  </span><span class="c1">// Power the sensors;</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">POWER_PIN</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Powering up sensors...&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="nf">pinMode</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span><span class="w"> </span><span class="kr">OUTPUT</span><span class="p">);</span>
-<span class="w">    </span><span class="nf">digitalWrite</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span><span class="w"> </span><span class="kr">HIGH</span><span class="p">);</span>
-<span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="c1">// Initiate serial connection to SDI-12 bus</span>
-<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">begin</span><span class="p">();</span>
-<span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
-<span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">forceListen</span><span class="p">();</span>
-
-<span class="w">  </span><span class="c1">// Print help text (may wish to comment out if used for communicating to software)</span>
-<span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">HELPTEXT</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="kr">void</span><span class="w"> </span><span class="nb">loop</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">String</span><span class="w">  </span><span class="n">serialMsgStr</span><span class="p">;</span>
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
-
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">String</span><span class="w">  </span><span class="n">sdiMsgStr</span><span class="p">;</span>
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
-
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
-<span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
-
-
-<span class="w">  </span><span class="c1">// -- READ SERIAL (PC COMMS) DATA --</span>
-<span class="w">  </span><span class="c1">// If serial data is available, read in a single byte and add it to</span>
-<span class="w">  </span><span class="c1">// a String on each iteration</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">Serial</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">inByte1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">inByte1</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\r&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">inByte1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">serialMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">inByte1</span><span class="p">;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="c1">// -- READ SDI-12 DATA --</span>
-<span class="w">  </span><span class="c1">// If SDI-12 data is available, keep reading until full message consumed</span>
-<span class="w">  </span><span class="c1">// (Normally I would prefer to allow the loop() to keep executing while the string</span>
-<span class="w">  </span><span class="c1">//  is being read in--as the serial example above--but SDI-12 depends on very precise</span>
-<span class="w">  </span><span class="c1">//  timing, so it is probably best to let it hold up loop() until the string is</span>
-<span class="w">  </span><span class="c1">//  complete)</span>
-<span class="w">  </span><span class="kr">int</span><span class="w"> </span><span class="n">avail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">();</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">avail</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
-<span class="w">  </span><span class="p">}</span><span class="w">  </span><span class="c1">// Buffer is full; clear</span>
-<span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">avail</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">avail</span><span class="p">;</span><span class="w"> </span><span class="n">a</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="kr">char</span><span class="w"> </span><span class="n">inByte2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">inByte2</span><span class="p">);</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
-<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;!&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">sdiMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span>
-<span class="w">        </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
-<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">sdiMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="kr">String</span><span class="p">(</span><span class="n">inByte2</span><span class="p">);</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-
-
-<span class="w">  </span><span class="c1">// Report completed SDI-12 messages back to serial interface</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sdiMsgReady</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">sdiMsgStr</span><span class="p">);</span>
-<span class="w">    </span><span class="c1">// Reset String for next SDI-12 message</span>
-<span class="w">    </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
-<span class="w">    </span><span class="n">sdiMsgStr</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="c1">// Send completed Serial message as SDI-12 command</span>
-<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">serialMsgReady</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
-<span class="w">    </span><span class="c1">// Check if the serial message is a known command to the SDI-12 interface program</span>
-<span class="w">    </span><span class="kr">String</span><span class="w"> </span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">serialMsgStr</span><span class="p">;</span>
-<span class="w">    </span><span class="n">lowerMsgStr</span><span class="p">.</span><span class="n">toLowerCase</span><span class="p">();</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;mode v&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Verbatim mode; exact text will be sent.  Enter </span><span class="se">\&quot;</span><span class="s">mode s</span><span class="se">\&quot;</span><span class="s"> for &quot;</span>
-<span class="w">                     </span><span class="s">&quot;SDI-12 command mode.&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;mode s&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;SDI-12 command mode; uppercase and ! suffix optional.  Enter &quot;</span>
-<span class="w">                     </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">mode v</span><span class="se">\&quot;</span><span class="s"> for verbatim mode.&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;help&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">HELPTEXT</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;fb off&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Feedback off; typed commands will not be visible.  Enter </span><span class="se">\&quot;</span><span class="s">fb &quot;</span>
-<span class="w">                     </span><span class="s">&quot;on</span><span class="se">\&quot;</span><span class="s"> to enable feedback.&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;fb on&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
-<span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Feedback on; typed commands will be visible.  Enter </span><span class="se">\&quot;</span><span class="s">fb off</span><span class="se">\&quot;</span><span class="s"> &quot;</span>
-<span class="w">                     </span><span class="s">&quot;to disable feedback.&quot;</span><span class="p">);</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="c1">// If not a known command to the SDI-12 interface program, send out on SDI-12 data</span>
-<span class="w">    </span><span class="c1">// pin</span>
-<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">verbatim</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">serialMsgStr</span><span class="p">);</span>
-<span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="w">        </span><span class="n">serialMsgStr</span><span class="p">.</span><span class="n">toUpperCase</span><span class="p">();</span>
-<span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">serialMsgStr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">);</span>
-<span class="w">      </span><span class="p">}</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">    </span><span class="c1">// Reset String for next serial message</span>
-<span class="w">    </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
-<span class="w">    </span><span class="n">serialMsgStr</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span></pre></section>
+        <section id="xample_i_page"><h2>Example I: SDI-12 PC Interface</h2><p>Code for an Arduino-based USB dongle translates serial comm from PC to SDI-12 (electrical and timing)</p><ol><li>Allows user to communicate to SDI-12 devices from a serial terminal emulator (e.g. PuTTY).</li><li>Able to spy on an SDI-12 bus for troubleshooting comm between datalogger and sensors.</li><li>Can also be used as a hardware middleman for interfacing software to an SDI-12 sensor. For example, implementing an SDI-12 datalogger in Python on a PC. Use verbatim mode with feedback off in this case.</li></ol><p>Note: &quot;translation&quot; means timing and electrical interface. It does not ensure SDI-12 compliance of commands sent via it.</p></section><section id="_SDI-12_interface_pio"><h2>PlatformIO Configuration</h2><div class="m-code-pygments-default"><div class="highlight"><div class="line"><a id="l-1" name="l-1"></a><span class="linenos"> 1</span><span class="c1">; PlatformIO Project Configuration File</span>
+</div><div class="line"><a id="l-2" name="l-2"></a><span class="linenos"> 2</span>
+</div><div class="line"><a id="l-3" name="l-3"></a><span class="linenos"> 3</span><span class="k">[platformio]</span>
+</div><div class="line"><a id="l-4" name="l-4"></a><span class="linenos"> 4</span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">SDI-12 Library Example J:  Creating an SDI-12 Translator Dongle</span>
+</div><div class="line"><a id="l-5" name="l-5"></a><span class="linenos"> 5</span><span class="na">src_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">.piolibdeps/Arduino-SDI-12_ID1486/examples/j_SDI-12_interface</span>
+</div><div class="line"><a id="l-6" name="l-6"></a><span class="linenos"> 6</span>
+</div><div class="line"><a id="l-7" name="l-7"></a><span class="linenos"> 7</span><span class="k">[env:mayfly]</span>
+</div><div class="line"><a id="l-8" name="l-8"></a><span class="linenos"> 8</span><span class="na">monitor_speed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">115200</span>
+</div><div class="line"><a id="l-9" name="l-9"></a><span class="linenos"> 9</span><span class="na">board</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">mayfly</span>
+</div><div class="line"><a id="l-10" name="l-10"></a><span class="linenos">10</span><span class="na">platform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">atmelavr</span>
+</div><div class="line"><a id="l-11" name="l-11"></a><span class="linenos">11</span><span class="na">framework</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">arduino</span>
+</div><div class="line"><a id="l-12" name="l-12"></a><span class="linenos">12</span><span class="na">lib_ldf_mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">deep+</span>
+</div><div class="line"><a id="l-13" name="l-13"></a><span class="linenos">13</span><span class="na">lib_ignore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">RTCZero</span>
+</div><div class="line"><a id="l-14" name="l-14"></a><span class="linenos">14</span><span class="na">lib_deps</span><span class="w"> </span><span class="o">=</span>
+</div><div class="line"><a id="l-15" name="l-15"></a><span class="linenos">15</span><span class="w">    </span><span class="na">SDI-12</span>
+</div></div></div></section><section id="_SDI-12_interface_code"><h2>The Complete Example</h2><div class="m-code-arduino"><div class="highlight"><div class="line"><a id="l-1" name="l-1"></a><span class="linenos">  1</span><span class="cm">/**</span>
+</div><div class="line"><a id="l-2" name="l-2"></a><span class="linenos">  2</span><span class="cm"> * @file h_SDI-12_slave_implementation.ino</span>
+</div><div class="line"><a id="l-3" name="l-3"></a><span class="linenos">  3</span><span class="cm"> * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)</span>
+</div><div class="line"><a id="l-4" name="l-4"></a><span class="linenos">  4</span><span class="cm"> *                          and the EnviroDIY Development Team</span>
+</div><div class="line"><a id="l-5" name="l-5"></a><span class="linenos">  5</span><span class="cm"> *            This example is published under the BSD-3 license.</span>
+</div><div class="line"><a id="l-6" name="l-6"></a><span class="linenos">  6</span><span class="cm"> * @date 2016</span>
+</div><div class="line"><a id="l-7" name="l-7"></a><span class="linenos">  7</span><span class="cm"> * @author D. Wasielewski</span>
+</div><div class="line"><a id="l-8" name="l-8"></a><span class="linenos">  8</span><span class="cm"> *</span>
+</div><div class="line"><a id="l-9" name="l-9"></a><span class="linenos">  9</span><span class="cm"> * @brief Example I:  SDI-12 PC Interface</span>
+</div><div class="line"><a id="l-10" name="l-10"></a><span class="linenos"> 10</span><span class="cm"> *</span>
+</div><div class="line"><a id="l-11" name="l-11"></a><span class="linenos"> 11</span><span class="cm"> *  Arduino-based USB dongle translates serial comm from PC to SDI-12 (electrical and</span>
+</div><div class="line"><a id="l-12" name="l-12"></a><span class="linenos"> 12</span><span class="cm"> * timing)</span>
+</div><div class="line"><a id="l-13" name="l-13"></a><span class="linenos"> 13</span><span class="cm"> *  1. Allows user to communicate to SDI-12 devices from a serial terminal emulator</span>
+</div><div class="line"><a id="l-14" name="l-14"></a><span class="linenos"> 14</span><span class="cm"> * (e.g. PuTTY).</span>
+</div><div class="line"><a id="l-15" name="l-15"></a><span class="linenos"> 15</span><span class="cm"> *  2. Able to spy on an SDI-12 bus for troubleshooting comm between datalogger and</span>
+</div><div class="line"><a id="l-16" name="l-16"></a><span class="linenos"> 16</span><span class="cm"> * sensors.</span>
+</div><div class="line"><a id="l-17" name="l-17"></a><span class="linenos"> 17</span><span class="cm"> *  3. Can also be used as a hardware middleman for interfacing software to an SDI-12</span>
+</div><div class="line"><a id="l-18" name="l-18"></a><span class="linenos"> 18</span><span class="cm"> * sensor. For example, implementing an SDI-12 datalogger in Python on a PC.  Use</span>
+</div><div class="line"><a id="l-19" name="l-19"></a><span class="linenos"> 19</span><span class="cm"> * verbatim mode with feedback off in this case.</span>
+</div><div class="line"><a id="l-20" name="l-20"></a><span class="linenos"> 20</span><span class="cm"> *</span>
+</div><div class="line"><a id="l-21" name="l-21"></a><span class="linenos"> 21</span><span class="cm"> *  Note: &quot;translation&quot; means timing and electrical interface.  It does not ensure</span>
+</div><div class="line"><a id="l-22" name="l-22"></a><span class="linenos"> 22</span><span class="cm"> * SDI-12 compliance of commands sent via it.</span>
+</div><div class="line"><a id="l-23" name="l-23"></a><span class="linenos"> 23</span><span class="cm"> *</span>
+</div><div class="line"><a id="l-24" name="l-24"></a><span class="linenos"> 24</span><span class="cm"> * D. Wasielewski, 2016</span>
+</div><div class="line"><a id="l-25" name="l-25"></a><span class="linenos"> 25</span><span class="cm"> * Builds upon work started by:</span>
+</div><div class="line"><a id="l-26" name="l-26"></a><span class="linenos"> 26</span><span class="cm"> * https://github.com/jrzondagh/AgriApps-SDI-12-Arduino-Sensor</span>
+</div><div class="line"><a id="l-27" name="l-27"></a><span class="linenos"> 27</span><span class="cm"> * https://github.com/Jorge-Mendes/Agro-Shield/tree/master/SDI-12ArduinoSensor</span>
+</div><div class="line"><a id="l-28" name="l-28"></a><span class="linenos"> 28</span><span class="cm"> *</span>
+</div><div class="line"><a id="l-29" name="l-29"></a><span class="linenos"> 29</span><span class="cm"> * Known issues:</span>
+</div><div class="line"><a id="l-30" name="l-30"></a><span class="linenos"> 30</span><span class="cm"> *  - Backspace adds a &quot;backspace character&quot; into the serialMsgStr (which gets sent</span>
+</div><div class="line"><a id="l-31" name="l-31"></a><span class="linenos"> 31</span><span class="cm"> *    out on the SDI-12 interface) instead of removing the previous char from it</span>
+</div><div class="line"><a id="l-32" name="l-32"></a><span class="linenos"> 32</span><span class="cm"> *  - Suceptible to noise on the SDI-12 data line; consider hardware filtering or</span>
+</div><div class="line"><a id="l-33" name="l-33"></a><span class="linenos"> 33</span><span class="cm"> *    software error-checking</span>
+</div><div class="line"><a id="l-34" name="l-34"></a><span class="linenos"> 34</span><span class="cm"> */</span>
+</div><div class="line"><a id="l-35" name="l-35"></a><span class="linenos"> 35</span>
+</div><div class="line"><a id="l-36" name="l-36"></a><span class="linenos"> 36</span><span class="cp">#define HELPTEXT                                                                    \</span>
+</div><div class="line"><a id="l-37" name="l-37"></a><span class="linenos"> 37</span><span class="cp">  &quot;OPTIONS:\r\n&quot;                                                                    \</span>
+</div><div class="line"><a id="l-38" name="l-38"></a><span class="linenos"> 38</span><span class="cp">  &quot;help   : Print this message\r\n&quot;                                                 \</span>
+</div><div class="line"><a id="l-39" name="l-39"></a><span class="linenos"> 39</span><span class="cp">  &quot;mode s : SDI-12 command mode (uppercase and ! automatically corrected) &quot;         \</span>
+</div><div class="line"><a id="l-40" name="l-40"></a><span class="linenos"> 40</span><span class="cp">  &quot;[default]\r\n&quot;                                                                   \</span>
+</div><div class="line"><a id="l-41" name="l-41"></a><span class="linenos"> 41</span><span class="cp">  &quot;mode v : verbatim mode (text will be sent verbatim)\r\n&quot;                         \</span>
+</div><div class="line"><a id="l-42" name="l-42"></a><span class="linenos"> 42</span><span class="cp">  &quot;fb on  : Enable feedback (characters visible while typing) [default]\r\n&quot;        \</span>
+</div><div class="line"><a id="l-43" name="l-43"></a><span class="linenos"> 43</span><span class="cp">  &quot;fb off : Disable feedback (characters not visible while typing; may be desired &quot; \</span>
+</div><div class="line"><a id="l-44" name="l-44"></a><span class="linenos"> 44</span><span class="cp">  &quot;for developers)\r\n&quot;                                                             \</span>
+</div><div class="line"><a id="l-45" name="l-45"></a><span class="linenos"> 45</span><span class="cp">  &quot;(else) : send command to SDI-12 bus&quot;</span>
+</div><div class="line"><a id="l-46" name="l-46"></a><span class="linenos"> 46</span>
+</div><div class="line"><a id="l-47" name="l-47"></a><span class="linenos"> 47</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SDI12.h&gt;</span>
+</div><div class="line"><a id="l-48" name="l-48"></a><span class="linenos"> 48</span>
+</div><div class="line"><a id="l-49" name="l-49"></a><span class="linenos"> 49</span><span class="cp">#define SERIAL_BAUD 115200 </span><span class="cm">/*!&lt; The baud rate for the output serial port */</span>
+</div><div class="line"><a id="l-50" name="l-50"></a><span class="linenos"> 50</span><span class="cp">#define DATA_PIN 7         </span><span class="cm">/*!&lt; The pin of the SDI-12 data bus */</span>
+</div><div class="line"><a id="l-51" name="l-51"></a><span class="linenos"> 51</span><span class="cp">#define POWER_PIN 22       </span><span class="cm">/*!&lt; The sensor power pin (or -1 if not switching power) */</span>
+</div><div class="line"><a id="l-52" name="l-52"></a><span class="linenos"> 52</span><span class="cp">#define SENSOR_ADDRESS 1</span>
+</div><div class="line"><a id="l-53" name="l-53"></a><span class="linenos"> 53</span>
+</div><div class="line"><a id="l-54" name="l-54"></a><span class="linenos"> 54</span><span class="cm">/** Define the SDI-12 bus */</span>
+</div><div class="line"><a id="l-55" name="l-55"></a><span class="linenos"> 55</span><span class="n">SDI12</span><span class="w"> </span><span class="nf">mySDI12</span><span class="p">(</span><span class="n">DATA_PIN</span><span class="p">);</span>
+</div><div class="line"><a id="l-56" name="l-56"></a><span class="linenos"> 56</span>
+</div><div class="line"><a id="l-57" name="l-57"></a><span class="linenos"> 57</span><span class="kr">void</span><span class="w"> </span><span class="nb">setup</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-58" name="l-58"></a><span class="linenos"> 58</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">begin</span><span class="p">(</span><span class="n">SERIAL_BAUD</span><span class="p">);</span>
+</div><div class="line"><a id="l-59" name="l-59"></a><span class="linenos"> 59</span><span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">Serial</span><span class="p">)</span>
+</div><div class="line"><a id="l-60" name="l-60"></a><span class="linenos"> 60</span><span class="w">    </span><span class="p">;</span>
+</div><div class="line"><a id="l-61" name="l-61"></a><span class="linenos"> 61</span>
+</div><div class="line"><a id="l-62" name="l-62"></a><span class="linenos"> 62</span><span class="w">  </span><span class="c1">// Power the sensors;</span>
+</div><div class="line"><a id="l-63" name="l-63"></a><span class="linenos"> 63</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">POWER_PIN</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-64" name="l-64"></a><span class="linenos"> 64</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Powering up sensors...&quot;</span><span class="p">);</span>
+</div><div class="line"><a id="l-65" name="l-65"></a><span class="linenos"> 65</span><span class="w">    </span><span class="nf">pinMode</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span><span class="w"> </span><span class="kr">OUTPUT</span><span class="p">);</span>
+</div><div class="line"><a id="l-66" name="l-66"></a><span class="linenos"> 66</span><span class="w">    </span><span class="nf">digitalWrite</span><span class="p">(</span><span class="n">POWER_PIN</span><span class="p">,</span><span class="w"> </span><span class="kr">HIGH</span><span class="p">);</span>
+</div><div class="line"><a id="l-67" name="l-67"></a><span class="linenos"> 67</span><span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+</div><div class="line"><a id="l-68" name="l-68"></a><span class="linenos"> 68</span><span class="w">  </span><span class="p">}</span>
+</div><div class="line"><a id="l-69" name="l-69"></a><span class="linenos"> 69</span>
+</div><div class="line"><a id="l-70" name="l-70"></a><span class="linenos"> 70</span><span class="w">  </span><span class="c1">// Initiate serial connection to SDI-12 bus</span>
+</div><div class="line"><a id="l-71" name="l-71"></a><span class="linenos"> 71</span><span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">begin</span><span class="p">();</span>
+</div><div class="line"><a id="l-72" name="l-72"></a><span class="linenos"> 72</span><span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span>
+</div><div class="line"><a id="l-73" name="l-73"></a><span class="linenos"> 73</span><span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">forceListen</span><span class="p">();</span>
+</div><div class="line"><a id="l-74" name="l-74"></a><span class="linenos"> 74</span>
+</div><div class="line"><a id="l-75" name="l-75"></a><span class="linenos"> 75</span><span class="w">  </span><span class="c1">// Print help text (may wish to comment out if used for communicating to software)</span>
+</div><div class="line"><a id="l-76" name="l-76"></a><span class="linenos"> 76</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">HELPTEXT</span><span class="p">);</span>
+</div><div class="line"><a id="l-77" name="l-77"></a><span class="linenos"> 77</span><span class="p">}</span>
+</div><div class="line"><a id="l-78" name="l-78"></a><span class="linenos"> 78</span>
+</div><div class="line"><a id="l-79" name="l-79"></a><span class="linenos"> 79</span><span class="kr">void</span><span class="w"> </span><span class="nb">loop</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-80" name="l-80"></a><span class="linenos"> 80</span><span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">String</span><span class="w">  </span><span class="n">serialMsgStr</span><span class="p">;</span>
+</div><div class="line"><a id="l-81" name="l-81"></a><span class="linenos"> 81</span><span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+</div><div class="line"><a id="l-82" name="l-82"></a><span class="linenos"> 82</span>
+</div><div class="line"><a id="l-83" name="l-83"></a><span class="linenos"> 83</span><span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">String</span><span class="w">  </span><span class="n">sdiMsgStr</span><span class="p">;</span>
+</div><div class="line"><a id="l-84" name="l-84"></a><span class="linenos"> 84</span><span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+</div><div class="line"><a id="l-85" name="l-85"></a><span class="linenos"> 85</span>
+</div><div class="line"><a id="l-86" name="l-86"></a><span class="linenos"> 86</span><span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+</div><div class="line"><a id="l-87" name="l-87"></a><span class="linenos"> 87</span><span class="w">  </span><span class="kr">static</span><span class="w"> </span><span class="kr">boolean</span><span class="w"> </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
+</div><div class="line"><a id="l-88" name="l-88"></a><span class="linenos"> 88</span>
+</div><div class="line"><a id="l-89" name="l-89"></a><span class="linenos"> 89</span>
+</div><div class="line"><a id="l-90" name="l-90"></a><span class="linenos"> 90</span><span class="w">  </span><span class="c1">// -- READ SERIAL (PC COMMS) DATA --</span>
+</div><div class="line"><a id="l-91" name="l-91"></a><span class="linenos"> 91</span><span class="w">  </span><span class="c1">// If serial data is available, read in a single byte and add it to</span>
+</div><div class="line"><a id="l-92" name="l-92"></a><span class="linenos"> 92</span><span class="w">  </span><span class="c1">// a String on each iteration</span>
+</div><div class="line"><a id="l-93" name="l-93"></a><span class="linenos"> 93</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nf">Serial</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-94" name="l-94"></a><span class="linenos"> 94</span><span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">inByte1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>
+</div><div class="line"><a id="l-95" name="l-95"></a><span class="linenos"> 95</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">feedback</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">inByte1</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+</div><div class="line"><a id="l-96" name="l-96"></a><span class="linenos"> 96</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\r&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">inByte1</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-97" name="l-97"></a><span class="linenos"> 97</span><span class="w">      </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
+</div><div class="line"><a id="l-98" name="l-98"></a><span class="linenos"> 98</span><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-99" name="l-99"></a><span class="linenos"> 99</span><span class="w">      </span><span class="n">serialMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">inByte1</span><span class="p">;</span>
+</div><div class="line"><a id="l-100" name="l-100"></a><span class="linenos">100</span><span class="w">    </span><span class="p">}</span>
+</div><div class="line"><a id="l-101" name="l-101"></a><span class="linenos">101</span><span class="w">  </span><span class="p">}</span>
+</div><div class="line"><a id="l-102" name="l-102"></a><span class="linenos">102</span>
+</div><div class="line"><a id="l-103" name="l-103"></a><span class="linenos">103</span><span class="w">  </span><span class="c1">// -- READ SDI-12 DATA --</span>
+</div><div class="line"><a id="l-104" name="l-104"></a><span class="linenos">104</span><span class="w">  </span><span class="c1">// If SDI-12 data is available, keep reading until full message consumed</span>
+</div><div class="line"><a id="l-105" name="l-105"></a><span class="linenos">105</span><span class="w">  </span><span class="c1">// (Normally I would prefer to allow the loop() to keep executing while the string</span>
+</div><div class="line"><a id="l-106" name="l-106"></a><span class="linenos">106</span><span class="w">  </span><span class="c1">//  is being read in--as the serial example above--but SDI-12 depends on very precise</span>
+</div><div class="line"><a id="l-107" name="l-107"></a><span class="linenos">107</span><span class="w">  </span><span class="c1">//  timing, so it is probably best to let it hold up loop() until the string is</span>
+</div><div class="line"><a id="l-108" name="l-108"></a><span class="linenos">108</span><span class="w">  </span><span class="c1">//  complete)</span>
+</div><div class="line"><a id="l-109" name="l-109"></a><span class="linenos">109</span><span class="w">  </span><span class="kr">int</span><span class="w"> </span><span class="n">avail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">();</span>
+</div><div class="line"><a id="l-110" name="l-110"></a><span class="linenos">110</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">avail</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-111" name="l-111"></a><span class="linenos">111</span><span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
+</div><div class="line"><a id="l-112" name="l-112"></a><span class="linenos">112</span><span class="w">  </span><span class="p">}</span><span class="w">  </span><span class="c1">// Buffer is full; clear</span>
+</div><div class="line"><a id="l-113" name="l-113"></a><span class="linenos">113</span><span class="w">  </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">avail</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-114" name="l-114"></a><span class="linenos">114</span><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">avail</span><span class="p">;</span><span class="w"> </span><span class="n">a</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-115" name="l-115"></a><span class="linenos">115</span><span class="w">      </span><span class="kr">char</span><span class="w"> </span><span class="n">inByte2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>
+</div><div class="line"><a id="l-116" name="l-116"></a><span class="linenos">116</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">inByte2</span><span class="p">);</span>
+</div><div class="line"><a id="l-117" name="l-117"></a><span class="linenos">117</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-118" name="l-118"></a><span class="linenos">118</span><span class="w">        </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
+</div><div class="line"><a id="l-119" name="l-119"></a><span class="linenos">119</span><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inByte2</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;!&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-120" name="l-120"></a><span class="linenos">120</span><span class="w">        </span><span class="n">sdiMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span>
+</div><div class="line"><a id="l-121" name="l-121"></a><span class="linenos">121</span><span class="w">        </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
+</div><div class="line"><a id="l-122" name="l-122"></a><span class="linenos">122</span><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-123" name="l-123"></a><span class="linenos">123</span><span class="w">        </span><span class="n">sdiMsgStr</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="kr">String</span><span class="p">(</span><span class="n">inByte2</span><span class="p">);</span>
+</div><div class="line"><a id="l-124" name="l-124"></a><span class="linenos">124</span><span class="w">      </span><span class="p">}</span>
+</div><div class="line"><a id="l-125" name="l-125"></a><span class="linenos">125</span><span class="w">    </span><span class="p">}</span>
+</div><div class="line"><a id="l-126" name="l-126"></a><span class="linenos">126</span><span class="w">  </span><span class="p">}</span>
+</div><div class="line"><a id="l-127" name="l-127"></a><span class="linenos">127</span>
+</div><div class="line"><a id="l-128" name="l-128"></a><span class="linenos">128</span>
+</div><div class="line"><a id="l-129" name="l-129"></a><span class="linenos">129</span><span class="w">  </span><span class="c1">// Report completed SDI-12 messages back to serial interface</span>
+</div><div class="line"><a id="l-130" name="l-130"></a><span class="linenos">130</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sdiMsgReady</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-131" name="l-131"></a><span class="linenos">131</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">sdiMsgStr</span><span class="p">);</span>
+</div><div class="line"><a id="l-132" name="l-132"></a><span class="linenos">132</span><span class="w">    </span><span class="c1">// Reset String for next SDI-12 message</span>
+</div><div class="line"><a id="l-133" name="l-133"></a><span class="linenos">133</span><span class="w">    </span><span class="n">sdiMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+</div><div class="line"><a id="l-134" name="l-134"></a><span class="linenos">134</span><span class="w">    </span><span class="n">sdiMsgStr</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
+</div><div class="line"><a id="l-135" name="l-135"></a><span class="linenos">135</span><span class="w">  </span><span class="p">}</span>
+</div><div class="line"><a id="l-136" name="l-136"></a><span class="linenos">136</span>
+</div><div class="line"><a id="l-137" name="l-137"></a><span class="linenos">137</span><span class="w">  </span><span class="c1">// Send completed Serial message as SDI-12 command</span>
+</div><div class="line"><a id="l-138" name="l-138"></a><span class="linenos">138</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">serialMsgReady</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-139" name="l-139"></a><span class="linenos">139</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
+</div><div class="line"><a id="l-140" name="l-140"></a><span class="linenos">140</span><span class="w">    </span><span class="c1">// Check if the serial message is a known command to the SDI-12 interface program</span>
+</div><div class="line"><a id="l-141" name="l-141"></a><span class="linenos">141</span><span class="w">    </span><span class="kr">String</span><span class="w"> </span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">serialMsgStr</span><span class="p">;</span>
+</div><div class="line"><a id="l-142" name="l-142"></a><span class="linenos">142</span><span class="w">    </span><span class="n">lowerMsgStr</span><span class="p">.</span><span class="n">toLowerCase</span><span class="p">();</span>
+</div><div class="line"><a id="l-143" name="l-143"></a><span class="linenos">143</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;mode v&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-144" name="l-144"></a><span class="linenos">144</span><span class="w">      </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
+</div><div class="line"><a id="l-145" name="l-145"></a><span class="linenos">145</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Verbatim mode; exact text will be sent.  Enter </span><span class="se">\&quot;</span><span class="s">mode s</span><span class="se">\&quot;</span><span class="s"> for &quot;</span>
+</div><div class="line"><a id="l-146" name="l-146"></a><span class="linenos">146</span><span class="w">                     </span><span class="s">&quot;SDI-12 command mode.&quot;</span><span class="p">);</span>
+</div><div class="line"><a id="l-147" name="l-147"></a><span class="linenos">147</span><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;mode s&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-148" name="l-148"></a><span class="linenos">148</span><span class="w">      </span><span class="n">verbatim</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+</div><div class="line"><a id="l-149" name="l-149"></a><span class="linenos">149</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;SDI-12 command mode; uppercase and ! suffix optional.  Enter &quot;</span>
+</div><div class="line"><a id="l-150" name="l-150"></a><span class="linenos">150</span><span class="w">                     </span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">mode v</span><span class="se">\&quot;</span><span class="s"> for verbatim mode.&quot;</span><span class="p">);</span>
+</div><div class="line"><a id="l-151" name="l-151"></a><span class="linenos">151</span><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;help&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-152" name="l-152"></a><span class="linenos">152</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">HELPTEXT</span><span class="p">);</span>
+</div><div class="line"><a id="l-153" name="l-153"></a><span class="linenos">153</span><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;fb off&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-154" name="l-154"></a><span class="linenos">154</span><span class="w">      </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+</div><div class="line"><a id="l-155" name="l-155"></a><span class="linenos">155</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Feedback off; typed commands will not be visible.  Enter </span><span class="se">\&quot;</span><span class="s">fb &quot;</span>
+</div><div class="line"><a id="l-156" name="l-156"></a><span class="linenos">156</span><span class="w">                     </span><span class="s">&quot;on</span><span class="se">\&quot;</span><span class="s"> to enable feedback.&quot;</span><span class="p">);</span>
+</div><div class="line"><a id="l-157" name="l-157"></a><span class="linenos">157</span><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lowerMsgStr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s">&quot;fb on&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-158" name="l-158"></a><span class="linenos">158</span><span class="w">      </span><span class="n">feedback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
+</div><div class="line"><a id="l-159" name="l-159"></a><span class="linenos">159</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Feedback on; typed commands will be visible.  Enter </span><span class="se">\&quot;</span><span class="s">fb off</span><span class="se">\&quot;</span><span class="s"> &quot;</span>
+</div><div class="line"><a id="l-160" name="l-160"></a><span class="linenos">160</span><span class="w">                     </span><span class="s">&quot;to disable feedback.&quot;</span><span class="p">);</span>
+</div><div class="line"><a id="l-161" name="l-161"></a><span class="linenos">161</span><span class="w">    </span><span class="p">}</span>
+</div><div class="line"><a id="l-162" name="l-162"></a><span class="linenos">162</span><span class="w">    </span><span class="c1">// If not a known command to the SDI-12 interface program, send out on SDI-12 data</span>
+</div><div class="line"><a id="l-163" name="l-163"></a><span class="linenos">163</span><span class="w">    </span><span class="c1">// pin</span>
+</div><div class="line"><a id="l-164" name="l-164"></a><span class="linenos">164</span><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-165" name="l-165"></a><span class="linenos">165</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">verbatim</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-166" name="l-166"></a><span class="linenos">166</span><span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">serialMsgStr</span><span class="p">);</span>
+</div><div class="line"><a id="l-167" name="l-167"></a><span class="linenos">167</span><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+</div><div class="line"><a id="l-168" name="l-168"></a><span class="linenos">168</span><span class="w">        </span><span class="n">serialMsgStr</span><span class="p">.</span><span class="n">toUpperCase</span><span class="p">();</span>
+</div><div class="line"><a id="l-169" name="l-169"></a><span class="linenos">169</span><span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">serialMsgStr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">);</span>
+</div><div class="line"><a id="l-170" name="l-170"></a><span class="linenos">170</span><span class="w">      </span><span class="p">}</span>
+</div><div class="line"><a id="l-171" name="l-171"></a><span class="linenos">171</span><span class="w">    </span><span class="p">}</span>
+</div><div class="line"><a id="l-172" name="l-172"></a><span class="linenos">172</span><span class="w">    </span><span class="c1">// Reset String for next serial message</span>
+</div><div class="line"><a id="l-173" name="l-173"></a><span class="linenos">173</span><span class="w">    </span><span class="n">serialMsgReady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
+</div><div class="line"><a id="l-174" name="l-174"></a><span class="linenos">174</span><span class="w">    </span><span class="n">serialMsgStr</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
+</div><div class="line"><a id="l-175" name="l-175"></a><span class="linenos">175</span><span class="w">  </span><span class="p">}</span>
+</div><div class="line"><a id="l-176" name="l-176"></a><span class="linenos">176</span><span class="p">}</span>
+</div></div></div></section>
         <div class="m-note m-dim m-thin m-text-center"><a href="h__s_d_i-12_slave_implementation_8ino-example.html" class="m-doc">&laquo; h_SDI-12_slave_implementation.ino</a> | <a href="examples_page.html" class="m-doc">Examples</a> | <a href="j_external_pcint_library_8ino-example.html" class="m-doc">j_external_pcint_library.ino &raquo;</a></div>
-
-                    </div>
-                  </div>
-                </div>
               </article>
             </main>
 
-          </div>      </div></div><div id="footer-image">
-          <div class="gp-container">
-            <img
-              src="https://www.envirodiy.org/wp-content/uploads/2016/05/EnviroDIY_LogoMaster_Square_V5_TwoTree_Trans_notext-e1462820115833.png"
-              width="99"
-              height="22"
-              alt=""
-            />
-          </div>
-        </div>
+          </div> <!-- gp-content -->
+        </div> <!-- gp-left-column -->
+      </div> <!-- gp-inner-container -->
+    </div> <!-- gp-content-wrapper -->
+
+    <div id="footer-image">
+      <div class="gp-container">
+        <img
+          src="https://www.envirodiy.org/wp-content/uploads/2016/05/EnviroDIY_LogoMaster_Square_V5_TwoTree_Trans_notext-e1462820115833.png"
+          width="99"
+          height="22"
+          alt=""
+        />
+      </div>
+    </div>
 
     <footer id="gp-footer">
       <div id="gp-copyright">
         <div class="gp-container">
           <div id="gp-copyright-text">
             <p>
-              <a href="http://www.stroudcenter.org/" target="_blank"
-                ><img
-                  style="float: left; margin-right: 20px;"
-                  src="https://www.envirodiy.org/wp-content/uploads/2017/01/stroud-white-white-165px.png"
-                  alt=""
-                  width="165"
-                  height="70" /></a
-              >EnviroDIY™ is a community for do-it-yourself ideas for
-              environmental science and monitoring. EnviroDIY is an
-              initiative of
-              <a href="http://www.stroudcenter.org/" target="_blank"
-                >Stroud™ Water Research Center</a
-              >, which seeks to advance knowledge and stewardship of
-              freshwater systems through global research, education, and
-              watershed restoration.
+              <a href="https://stroudcenter.org/" target="_blank"
+                >EnviroDIY™ is a community for do-it-yourself ideas for environmental
+                science and monitoring. EnviroDIY is an initiative of
+                <a
+                  style="text-decoration: underline"
+                  href="https://stroudcenter.org/"
+                  target="_blank"
+                  >Stroud Water Research Center</a
+                >, which advances knowledge and stewardship of freshwater systems through
+                global research, education, and watershed restoration.
+              </a>
             </p>
             <p>
               All content on EnviroDIY is licensed as Creative Commons
-              Attribution-ShareAlike 4.0 International (CC-BY-SA). Hardware
-              designs on this website are released under the CERN Open
-              Hardware License 1.2.
-              <a href="https://envirodiy.org/licenses/"
-                >Alternative licenses are available.</a
+              Attribution-ShareAlike 4.0 International (CC-BY-SA). Hardware designs on this
+              website are released under the CERN Open Hardware License 1.2.
+              <a style="text-decoration: underline" href="https://envirodiy.org/licenses/"
+                >See all licenses.</a
               >
-              <a href="https://envirodiy.org/terms/">Terms of Use</a> |
-              <a href="https://envirodiy.org/privacy/">Privacy Policy</a> |
-              <a href="https://envirodiy.org/cookies/">Cookie Policy</a> |
-              <a href="https://envirodiy.org/contact/">Contact</a>
+              <a style="text-decoration: underline" href="https://envirodiy.org/terms/"
+                >Terms of Use</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/privacy/"
+                >Privacy Policy</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/cookies/"
+                >Cookie Policy</a
+              >
+              |
+              <a
+                style="text-decoration: underline"
+                href="https://envirodiy.org/shop-policies/"
+                >Shop Policies</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/contact/"
+                >Contact</a
+              >
             </p>
             <p>
               Created with <a href="https://doxygen.org/">Doxygen</a> 1.9.1 and <a href="https://mcss.mosra.cz/">m.css</a>.
@@ -1981,69 +1848,8 @@
 
     <div class="gp-clear"></div>
 
-    </div></div><script
-  type="text/javascript"
-  src="https://www.envirodiy.org/wp-content/themes/socialize/lib/scripts/modernizr.js?ver=6.1.1"
-  id="modernizr-js"
-></script>
-<script
-  type="text/javascript"
-  src="https://www.envirodiy.org/wp-includes/js/imagesloaded.min.js?ver=4.1.4"
-  id="imagesloaded-js"
-></script>
-<script
-  type="text/javascript"
-  src="https://www.envirodiy.org/wp-content/themes/socialize/lib/scripts/selectivizr.min.js?ver=6.1.1"
-  id="selectivizr-js"
-></script>
-<script
-  type="text/javascript"
-  src="https://www.envirodiy.org/wp-content/themes/socialize/lib/scripts/placeholders.min.js?ver=6.1.1"
-  id="placeholder-js"
-></script>
-<script
-  type="text/javascript"
-  src="https://www.envirodiy.org/wp-content/themes/socialize/lib/scripts/jquery.ui.totop.min.js.js?ver=6.1.1"
-  id="jquery-totop-js"
-></script>
-<script
-  type="text/javascript"
-  src="https://www.envirodiy.org/wp-content/themes/socialize/lib/scripts/jquery.flexslider-min.js?ver=6.1.1"
-  id="jquery-flexslider-js"
-></script>
-<script type="text/javascript" id="ghostpool-custom-js-js-extra">
-  /* <![CDATA[ */
-  var ghostpool_script = {
-    lightbox: 'separate_images',
-    url: 'https:\/\/www.envirodiy.org\/',
-    related_items_in_view: '',
-  };
-  /* ]]> */
-</script>
-<script
-  type="text/javascript"
-  src="https://www.envirodiy.org/wp-content/themes/socialize/lib/scripts/jquery.stellar.min.js?ver=6.1.1"
-  id="jquery-stellar-js"
-></script>
+    </div> <!-- gp-site-wrapper -->
+  </div> <!-- gp-site-wrapper -->
 
-<script
-  type="text/javascript"
-  src="https://www.envirodiy.org/wp-content/themes/socialize/lib/scripts/custom.js?ver=6.1.1"
-  id="ghostpool-custom-js-js"
-></script>
-<script type="text/javascript" id="ghostpool-ajax-loop-js-extra">
-  /* <![CDATA[ */
-  var ghostpoolAjax = {
-    ajaxurl: 'https:\/\/www.envirodiy.org\/wp-admin\/admin-ajax.php',
-    ajaxnonce: 'e2424257d3',
-    querystring: '',
-  };
-  /* ]]> */
-</script>
-<script
-  type="text/javascript"
-  src="https://www.envirodiy.org/wp-content/themes/socialize/lib/scripts/ajax-loop.js?ver=6.1.1"
-  id="ghostpool-ajax-loop-js"
-></script>
 </body>
 </html>

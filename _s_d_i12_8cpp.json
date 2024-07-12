@@ -1,0 +1,68 @@
+{
+  "version": "1.9.1",
+  "compound": {
+    "kind": "file",
+    "id": "_s_d_i12_8cpp",
+    "name": "SDI12.cpp",
+    "url_base": "_s_d_i12_8cpp",
+    "url": "_s_d_i12_8cpp.html",
+    "include": null,
+    "has_template_details": false,
+    "templates": null,
+    "brief": "This file implements the main class for the SDI-12 implementation.",
+    "description": "<aside class=\"m-note m-default\"><h4>Copyright</h4><p>(c) 2013-2020 Stroud Water Research Center (SWRC) and the EnviroDIY Development Team</p></aside><aside class=\"m-note m-default\"><h4>Date</h4><p>August 2013</p></aside><aside class=\"m-note m-default\"><h4>Author</h4><p>Kevin M.Smith <a href=\"mailto:SDI12@ethosengineering.org\">SDI12@ethosengineering.org</a></p></aside><p>========================== Arduino SDI-12 ==================================</p><p>An Arduino library for SDI-12 communication with a wide variety of environmental sensors. This library provides a general software solution, without requiring any additional hardware.</p><p>======================== Attribution &amp; License =============================</p><p>Copyright (C) 2013 Stroud Water Research Center Available at <a href=\"https://github.com/EnviroDIY/Arduino-SDI-12\">https:/<wbr />/<wbr />github.com/<wbr />EnviroDIY/<wbr />Arduino-SDI-12</a></p><p>Authored initially in August 2013 by: Kevin M. Smith (<a href=\"http://ethosengineering.org\">http:/<wbr />/<wbr />ethosengineering.org</a>) Inquiries: <a href=\"mailto:SDI12@ethosengineering.org\">SDI12@ethosengineering.org</a></p><p>Modified 2017 by Manuel Jimenez Buendia to work with ARM based processors (Arduino Zero)</p><p>Maintenance and merging 2017 by Sara Damiano</p><p>based on the SoftwareSerial library (formerly NewSoftSerial), authored by: ladyada (<a href=\"http://ladyada.net\">http:/<wbr />/<wbr />ladyada.net</a>) Mikal Hart (<a href=\"http://www.arduiniana.org\">http:/<wbr />/<wbr />www.arduiniana.org</a>) Paul Stoffregen (<a href=\"http://www.pjrc.com\">http:/<wbr />/<wbr />www.pjrc.com</a>) Garrett Mace (<a href=\"http://www.macetech.com\">http:/<wbr />/<wbr />www.macetech.com</a>) Brett Hagman (<a href=\"http://www.roguerobotics.com/\">http:/<wbr />/<wbr />www.roguerobotics.com/<wbr /></a>)</p><p>This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.</p><p>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.</p><p>You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA</p>",
+    "sections": "",
+    "deprecated": null,
+    "since": null,
+    "example_navigation": null,
+    "footer_navigation": null,
+    "modules": [],
+    "dirs": [],
+    "files": [],
+    "namespaces": [],
+    "classes": [],
+    "base_classes": [],
+    "derived_classes": [],
+    "enums": [],
+    "typedefs": [],
+    "funcs": [],
+    "vars": [],
+    "defines": [],
+    "public_types": [],
+    "public_static_funcs": [],
+    "typeless_funcs": [],
+    "public_funcs": [],
+    "signals": [],
+    "public_slots": [],
+    "public_static_vars": [],
+    "public_vars": [],
+    "protected_types": [],
+    "protected_static_funcs": [],
+    "protected_funcs": [],
+    "protected_slots": [],
+    "protected_static_vars": [],
+    "protected_vars": [],
+    "private_funcs": [],
+    "private_slots": [],
+    "related": [],
+    "friend_funcs": [],
+    "groups": [],
+    "has_enum_details": false,
+    "has_typedef_details": false,
+    "has_func_details": false,
+    "has_var_details": false,
+    "has_define_details": false,
+    "breadcrumb": [
+      [
+        "SDI12.cpp",
+        "_s_d_i12_8cpp.html"
+      ]
+    ],
+    "breadcrumbGroup": [
+      [
+        "SDI12.cpp",
+        "_s_d_i12_8cpp.html"
+      ]
+    ]
+  }
+}

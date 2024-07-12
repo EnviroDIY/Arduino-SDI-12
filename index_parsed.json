@@ -1,0 +1,124 @@
+{
+  "version": "1.9.1",
+  "index": {
+    "symbols": [
+      {
+        "id": "class_s_d_i12",
+        "kind": "class",
+        "name": "SDI12",
+        "url": "class_s_d_i12.html",
+        "brief": "The main class for SDI 12 instances.",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false,
+        "is_final": false
+      },
+      {
+        "id": "class_s_d_i12_timer",
+        "kind": "class",
+        "name": "SDI12Timer",
+        "url": "class_s_d_i12_timer.html",
+        "brief": "The class used to define the processor timer for the SDI-12 serial emulation.",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false,
+        "is_final": false
+      }
+    ],
+    "files": [
+      {
+        "id": "_s_d_i12_8cpp",
+        "kind": "file",
+        "name": "SDI12.cpp",
+        "url": "_s_d_i12_8cpp.html",
+        "brief": "This file implements the main class for the SDI-12 implementation.",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      },
+      {
+        "id": "_s_d_i12_8h",
+        "kind": "file",
+        "name": "SDI12.h",
+        "url": "_s_d_i12_8h.html",
+        "brief": "This file contains the main class for the SDI-12 implementation.",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      },
+      {
+        "id": "_s_d_i12__boards_8cpp",
+        "kind": "file",
+        "name": "SDI12_boards.cpp",
+        "url": "_s_d_i12__boards_8cpp.html",
+        "brief": "This file implements the setting and unsetting of the proper prescalers for the timers for SDI-12.",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      },
+      {
+        "id": "_s_d_i12__boards_8h",
+        "kind": "file",
+        "name": "SDI12_boards.h",
+        "url": "_s_d_i12__boards_8h.html",
+        "brief": "This file defines the timing units needed for various Arduino boards.",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      }
+    ],
+    "pages": [
+      {
+        "id": "specifications",
+        "kind": "page",
+        "name": "Notes on SDI-12, Specification v1.4",
+        "url": "specifications.html",
+        "brief": "",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      },
+      {
+        "id": "rx_page",
+        "kind": "page",
+        "name": "Creating a Character - Stepping through the Rx ISR",
+        "url": "rx_page.html",
+        "brief": "",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      },
+      {
+        "id": "examples_page",
+        "kind": "page",
+        "name": "Examples",
+        "url": "examples_page.html",
+        "brief": "Examples using the SDI-12 Library.",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      },
+      {
+        "id": "interrupts_page",
+        "kind": "page",
+        "name": "Overview of Interrupts",
+        "url": "interrupts_page.html",
+        "brief": "",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      }
+    ],
+    "modules": []
+  }
+}
