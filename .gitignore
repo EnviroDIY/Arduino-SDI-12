@@ -163,3 +163,6 @@ output_*.log
 sync.ffs_db
 docs/Doxyfile.bak
 SDI12 Repo Token.txt
+boards/
+lib/
+variants/
