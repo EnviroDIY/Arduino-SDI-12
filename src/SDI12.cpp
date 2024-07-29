@@ -566,6 +566,9 @@ void SDI12::sendResponse(FlashString resp, bool addCRC) {
   setState(SDI12_LISTENING);  // return to listening state
 }
 
+/**
+ * @brief The polynomial to match the CRC with; set in the SDI-12 specifications
+ */
 #define POLY 0xa001
 
 uint16_t SDI12::calculateCRC(String& resp) {
@@ -577,7 +580,8 @@ uint16_t SDI12::calculateCRC(String& resp) {
     for (int j = 0; j < 8; j++) {  // count = 1 to 8
       if (crc & 0x0001) {          // if the least significant bit of the CRC is one
         crc >>= 1;                 // right shift the CRC one bit
-        crc ^= POLY;  // set CRC equal to the exclusive OR of POLY and itself
+        crc ^=
+          POLY;  // set CRC equal to the exclusive OR of the match polynomial and itself
       } else {
         crc >>= 1;  // right shift the CRC one bit
       }

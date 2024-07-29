@@ -929,6 +929,14 @@ class SDI12 : public Stream {
   /**
    * @brief Converts a numeric 16-bit CRC to an ASCII String.
    *
+   * From the SDI-12 Specifications:
+   *
+   *     The 16 bit CRC is encoded as three ASCII characters
+   *     using the following algorithm:
+   *         1st character = 0x40 OR (CRC shifted right 12 bits)
+   *         2nd character = 0x40 OR ((CRC shifted right 6 bits) AND 0x3F)
+   *         3rd character = 0x40 OR (CRC AND 0x3F)
+   *
    * @param crc The 16-bit CRC
    * @return *String* An ASCII string for the CRC
    */
@@ -955,9 +963,9 @@ class SDI12 : public Stream {
    * SDI-12 device itself, not as a recorder for another SDI-12 device.
    */
   void sendResponse(String& resp, bool addCRC = false);
-  /// @copydoc SDI12::sendResponse(String& resp)
+  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
   void sendResponse(const char* resp, bool addCRC = false);
-  /// @copydoc SDI12::sendResponse(String& resp)
+  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
   void sendResponse(FlashString resp, bool addCRC = false);
   ///@}
 
