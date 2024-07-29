@@ -1,5 +1,4 @@
-[//]: # ( @page example_b_page Example B: Changing the Address of your SDI-12 Sensor )
-# Example B: Changing the Address of your SDI-12 Sensor
+# Example B: Changing the Address of your SDI-12 Sensor<!-- {#example_b_page} -->
 
 Communication with an SDI-12 sensor depends on its 1-character alphanumeric address (1-9, A-Z, a-z).  A sensor can also be programmed with an address of 0, but that address cannot always be used to get measurements from the sensor.  This sketch enables you to find and change the address of your sensor.
 

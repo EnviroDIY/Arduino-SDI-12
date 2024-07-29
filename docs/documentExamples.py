@@ -110,10 +110,10 @@ for filename in read_mes:
 
                 # I'm using these comments to fence off content that is only intended for
                 # github mardown rendering
-                if "[//]: # ( Start GitHub Only )" in line:
+                if "[//]: # ( @cond GitHub )" in line:
                     print_me = False
 
-                if "[//]: # ( End GitHub Only )" in line:
+                if "[//]: # ( @endcond )" in line:
                     print_me = True
 
                 i += 1

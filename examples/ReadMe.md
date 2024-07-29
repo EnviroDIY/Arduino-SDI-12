@@ -1,9 +1,8 @@
-[//]: # ( @page examples_page Examples )
-# Examples using the SDI-12 Library
+# Examples using the SDI-12 Library<!-- {#examples_page} -->
 
 [//]: # ( @brief Examples using the SDI-12 Library )
 
-[//]: # ( Start GitHub Only )
+[//]: # ( @cond GitHub )
 - [Example A](@ref a_wild_card.ino):
   - Gets sensor information from a single attached sensor and prints it to the serial port
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/a_wild_card)
@@ -38,7 +37,7 @@
   -  Shows how to request concurrent measurements
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/k_concurrent_logger)
 
-[//]: # ( End GitHub Only )
+[//]: # ( @endcond )
 
 - [Example A](@ref a_wild_card.ino):
   - Gets sensor information from a single attached sensor and prints it to the serial port

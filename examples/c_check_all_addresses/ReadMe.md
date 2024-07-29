@@ -1,5 +1,4 @@
-[//]: # ( @page example_c_page Example C: Check all Addresses for Active Sensors and Print Status )
-# Example C: Check all Addresses for Active Sensors and Print Status
+# Example C: Check all Addresses for Active Sensors and Print Status<!-- {#example_c_page} -->
 
 This is a simple demonstration of the SDI-12 library for Arduino.
 

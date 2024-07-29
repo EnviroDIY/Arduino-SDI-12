@@ -1,5 +1,4 @@
-[//]: # ( @page example_j_page Example J: Using External Interrupts )
-# Example J: Using External Interrupts
+# Example J: Using External Interrupts<!-- {#example_j_page} -->
 
 This is identical to example D, except that instead of using internal definitions of pin change interrupt vectors, it depends on another library to define them for it.
 

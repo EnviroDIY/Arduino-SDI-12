@@ -1,5 +1,4 @@
-[//]: # ( @page example_e_page Example E: Check all Addresses for Active Sensors and Start Continuous Measurements )
-## Example E: Check all Addresses for Active Sensors and Start Continuous Measurements
+## Example E: Check all Addresses for Active Sensors and Start Continuous Measurements<!-- {#example_e_page} -->
 
 This is a simple demonstration of the SDI-12 library for Arduino.
 
