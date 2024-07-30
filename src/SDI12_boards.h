@@ -21,48 +21,12 @@ sensors. This library provides a general software solution, without requiring
 #if defined(ESP32) || defined(ESP8266)
 // On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
 #define ESPFAMILY_USE_INSTRUCTION_RAM IRAM_ATTR
-/** The interger type (size) of the timer return value */
-typedef uint32_t sdi12timer_t;
-
 #else
 #define ESPFAMILY_USE_INSTRUCTION_RAM
-/** The interger type (size) of the timer return value */
-typedef uint8_t sdi12timer_t;
 #endif
 
-/**
- * @brief The class used to define the processor timer for the SDI-12 serial emulation.
- */
-class SDI12Timer {
- public:
-  /**
-   * @brief Construct a new SDI12Timer
-   */
-  SDI12Timer();
-  /**
-   * @brief Set the processor timer prescaler such that the 10 bits of an SDI-12
-   * character are divided into the rollover time of the timer.
-   *
-   * @note  The ESP32 and ESP8266 are fast enough processors that they can take the
-   * time to read the core 'micros()' function still complete the other processing
-   * needed on the serial bits.  All of the other processors using the Arduino core also
-   * have the micros function, but the rest are not fast enough to waste the processor
-   * cycles to use the micros function and must manually configure the processor timer
-   * and use the faster assembly macros to read that processor timer directly.
-   */
-  void configSDI12TimerPrescale(void);
-  /**
-   * @brief Reset the processor timer prescaler to whatever it was prior to being
-   * adjusted for this library.
-   *
-   * @note The prescaler is *NOT* set back to initial values for SAMD boards!  On those
-   * processors, generic clock generator 4 will remain configured for SDI-12 until it is
-   * reset outside of this library.
-   */
-  void resetSDI12TimerPrescale(void);
 
 // Most 'standard' AVR boards
-//
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || \
   defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) ||  \
   defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__) ||   \
@@ -70,37 +34,300 @@ class SDI12Timer {
 
 /**
  * @brief A string description of the timer to use
- *
- * Timer/Counter2 (TC2) is a general purpose, single channel, 8-bit Timer/Counter
- * module.
- *
- * Features
- * - Single Channel Counter
- * - Clear Timer on Compare Match (Auto Reload)
- * - Glitch-free, Phase Correct Pulse Width Modulator (PWM)
- * - Frequency Generator
- * - 10-bit Clock Prescaler
- * - Overflow and Compare Match Interrupt Sources (TOV2, OCF2A, and OCF2B)
- * - Allows Clocking from External 32kHz Watch Crystal Independent of the I/O Clock
  */
-#define TIMER_IN_USE_STR "TCNT2"
+#define TIMER_IN_USE_STR "Timer2"
+
 /**
- * @brief The c macro name for the assembly timer to use
+ * @brief The interger type of the timer.
  *
- * The register used to access the timer/counter value is TCNT2
+ * Timer 2 is an 8-bit timer
  */
-#define TCNTX TCNT2  // Using Timer 2
+#define TIMER_INT_TYPE uint8_t
+#define TIMER_INT_SIZE 8
+
+/**
+ * @brief The function or macro used to read the clock timer value.
+ *
+ * The c macro name for the register used to access the timer/counter 2 value is TCNT2
+ */
+#define READTIME TCNT2
 
 #if F_CPU == 16000000L
 /**
  * @brief A string description of the prescaler in use.
  */
-#define PRESCALE_IN_USE_STR "1024"
+#define PRESCALE_IN_USE_STR "16MHz/1024=15.625kHz"
+/**
+ * @brief The number of clock ticks per second, after accounting for the prescaler.
+ *
+ * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
+ */
+#define TICKS_PER_SECOND 15624
+
+#elif F_CPU == 12000000L
+/**
+ * @brief A string description of the prescaler in use.
+ */
+#define PRESCALE_IN_USE_STR "12MHz/1024=11.7kHz"
+/**
+ * @brief The number of clock ticks per second, after accounting for the prescaler.
+ *
+ * 12MHz / 1024 prescaler = 11719 'ticks'/sec = 85 µs / 'tick'
+ */
+#define TICKS_PER_SECOND 11719
+
+#elif F_CPU == 8000000L
+/**
+ * @brief A string description of the prescaler in use.
+ */
+#define PRESCALE_IN_USE_STR "8MHz/256=31.25kHz"
+/**
+ * @brief The number of clock ticks per second, after accounting for the prescaler.
+ *
+ * 8MHz / 256 prescaler = 31250 'ticks'/sec = 32 µs / 'tick'
+ */
+#define TICKS_PER_SECOND 31250
+#endif
+
+
+// ATtiny boards (ie, adafruit trinket)
+#elif defined(__AVR_ATtiny25__) | defined(__AVR_ATtiny45__) | defined(__AVR_ATtiny85__)
+
+/**
+ * @brief A string description of the timer to use
+ */
+#define TIMER_IN_USE_STR "Timer1"
+/**
+ * @brief The interger type of the timer.
+ *
+ * Timer 1 is an 8-bit timer
+ */
+#define TIMER_INT_TYPE uint8_t
+/**
+ * @brief The number of clock ticks per second, after accounting for the prescaler.
+ */
+#define TIMER_INT_SIZE 8
+
+/**
+ * @brief The function or macro used to read the clock timer value.
+ *
+ * The c macro name for the register used to access the timer/counter 1 value is TCNT1
+ */
+#define READTIME TCNT2
+
+#if F_CPU == 16000000L
+/**
+ * @brief A string description of the prescaler in use.
+ */
+#define PRESCALE_IN_USE_STR "16MHz/1024=15.625kHz"
+/**
+ * @brief The number of clock ticks per second, after accounting for the prescaler.
+ *
+ * 16MHz / 1024 prescaler = 15625 'ticks'/sec = 15.625 kHz = 64 µs / 'tick'
+ */
+#define TICKS_PER_SECOND 15625
+
+#elif F_CPU == 8000000L
+#define PRESCALE_IN_USE_STR "8MHz/512=15.625kHz"
+/**
+ * @brief The number of clock ticks per second, after accounting for the prescaler.
+ *
+ * 8MHz / 512 prescaler = 15625 'ticks'/sec = 15.625 kHz = 64 µs / 'tick'
+ */
+#define TICKS_PER_SECOND 15625
+
+#endif
+
+
+// Arduino Leonardo & Yun and other 32U4 boards
+//
+#elif defined(ARDUINO_AVR_YUN) || defined(ARDUINO_AVR_LEONARDO) || \
+  defined(__AVR_ATmega32U4__)
+
+/**
+ * @brief A string description of the timer to use
+ */
+#define TIMER_IN_USE_STR "Timer4"
+
+/**
+ * @brief The interger type of the timer.
+ *
+ * Timer 4 is an 10-bit timer, but we're only using the lower 8 bits
+ */
+#define TIMER_INT_TYPE uint8_t
+#define TIMER_INT_SIZE 8
+/**
+ * @brief The function or macro used to read the clock timer value.
+ *
+ * The c macro name for the register used to access the timer/counter 4 value is TCNT4.
+ *
+ * @note We only utilize the low byte register, effectively using the 10-bit timer as an
+ * 8-bit timer.
+ */
+#define READTIME TCNT4
+
+#if F_CPU == 16000000L
+/**
+ * @brief A string description of the prescaler in use.
+ */
+#define PRESCALE_IN_USE_STR "16MHz/1024=15.625kHz"
+/**
+ * @brief The number of clock ticks per second, after accounting for the prescaler.
+ *
+ * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
+ */
+#define TICKS_PER_SECOND 15625
+
+#elif F_CPU == 8000000L
+/**
+ * @brief A string description of the prescaler in use.
+ */
+#define PRESCALE_IN_USE_STR "8MHz/512=15.625kHz"
+/**
+ * @brief The number of clock ticks per second, after accounting for the prescaler.
+ *
+ * 8MHz / 512 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
+ */
+#define TICKS_PER_SECOND 15625
+
+#endif
+
+
+// Arduino Zero other SAMD21 boards
+#elif defined(ARDUINO_SAMD_ZERO) || defined(__SAMD21G18A__) || \
+  defined(__SAMD21J18A__) || defined(__SAMD21E18A__)
+
+/**
+ * @brief A string description of the timer to use
+ *
+ * For SDI-12, we'll use generic clock generator 4
+ *
+ * The Adafruit Arduino core uses:
+ * - 0 as GENERIC_CLOCK_GENERATOR_MAIN (the main clock)
+ *
+ * For SDI-12, we'll use Timer Control 3
+ * The Adafruit Arduino core uses:
+ * - TC5 for Tone
+ * - TC4 for Servo
+ */
+#define TIMER_IN_USE_STR "GCLK4-TC3"
+
+/**
+ * @brief The interger type of the timer.
+ *
+ * We're using the timer in 16-bit mode
+ */
+#define TIMER_INT_TYPE uint16_t
+#define TIMER_INT_SIZE 16
+
+/**
+ * @brief The function or macro used to read the clock timer value.
+ *
+ * This signifies the register of timer/counter 3, the 16-bit count, the count value
+ */
+#define READTIME REG_TC3_COUNT16_COUNT
+
+/**
+ * @brief A string description of the prescaler in use.
+ */
+#define PRESCALE_IN_USE_STR "48MHz/5/16=600kHz"
+/**
+ * @brief The number of clock ticks per second, after accounting for the prescaler.
+ *
+ * Start with 48MHz "main" clock source (GCLK_GENCTRL_SRC_DFLL48M)
+ * 48MHz / 5x clock source divider (GCLK_GENDIV_DIV(5)) = 9.6MHz
+ * 9.6MHz / 16x prescaler (TC_CTRLA_PRESCALER_DIV16) = 600kHz - 600,000 'ticks'/sec
+ */
+#define TICKS_PER_SECOND 600000
+
+
+// SAMD51 and SAME51 boards
+#elif defined(__SAMD51__) || defined(__SAME51__)
+
+/**
+ * @brief A string description of the timer to use
+ *
+ * For SDI-12, we'll use generic clock generator 6
+ * For SDI-12, we'll use Timer Control 2
+ */
+#define TIMER_IN_USE_STR "GCLK6-TC2"
+
+/**
+ * @brief The interger type of the timer.
+ *
+ * We're using the timer in 16-bit mode
+ */
+#define TIMER_INT_TYPE uint16_t
+#define TIMER_INT_SIZE 16
+
+/**
+ * The clock generator number to use
+ */
+#define GENERIC_CLOCK_GENERATOR_SDI12 (6u)
+/**
+ * @brief The bit to check for synchornization
+ */
+#define GENERIC_CLOCK_GENERATOR_SDI12_SYNC GCLK_SYNCBUSY_GENCTRL6
+
+/**
+ * @brief The function or macro used to read the clock timer value.
+ *
+ * This signifies the register of timer/counter 2, the 16-bit count, the count value
+ */
+#define READTIME REG_TC2_COUNT16_COUNT
+
+/**
+ * @brief A string description of the prescaler in use.
+ */
+#define PRESCALE_IN_USE_STR "120MHz/25/8=600kHz"
+/**
+ * @brief The number of clock ticks per second, after accounting for the prescaler.
+ *
+ * Start with 120MHz "main" clock source (MAIN_CLOCK_SOURCE = GCLK_GENCTRL_SRC_DPLL0)
+ * 120MHz / 25x clock source divider (GCLK_GENDIV_DIV(25)) = 4.8MHz
+ * 4.8MHz / 8x prescaler (TC_CTRLA_PRESCALER_DIV16) = 600kHz - 600,000 'ticks'/sec
+ * = 1.66667 µs / 'tick' (1 sec/1200 bits) * (1 tick/1.66667 µs) = 500 ticks/bit
+ */
+#define TICKS_PER_SECOND 600000
+
+// Espressif ESP32/ESP8266 boards
+//
+#elif defined(ESP32) || defined(ESP8266)
+
+/**
+ * @brief A string description of the timer to use
+ */
+#define TIMER_IN_USE_STR "micros"
+
+/**
+ * @brief The interger type of the timer.
+ *
+ * Since we're using `micros()`, this is 32 bit
+ */
+#define TIMER_INT_TYPE uint32_t
+#define TIMER_INT_SIZE 32
+
+#define TICKS_PER_SECOND 1000000
+
+/**
+ * @brief The function or macro used to read the clock timer value.
+ *
+ * This signifies the register of timer/counter 2, the 16-bit count, the count value
+ */
+#define READTIME SDI12TimerRead
+
+// Unknown board
+#else
+#error "Please define your board timer and prescaler!"
+#endif
+
+
+#if TICKS_PER_SECOND == 15624 && TIMER_INT_SIZE == 8
 /**
  * @brief The number of "ticks" of the timer that occur within the timing of one bit at
  * the SDI-12 baud rate of 1200 bits/second.
  *
- * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
+ * 15624 'ticks'/sec = 64 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
  *
  * The 8-bit timer rolls over after 256 ticks, 19.66085 bits, or 16.38505 ms
@@ -115,23 +342,19 @@ class SDI12Timer {
  */
 #define BITS_PER_TICK_Q10 79
 /**
- * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
+ * @brief A "fudge factor" to get the Rx to work well. It mostly works to ensure that
  * uneven tick increments get rounded up.
  *
  * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
  */
 #define RX_WINDOW_FUDGE 2
 
-#elif F_CPU == 12000000L
-/**
- * @brief A string description of the prescaler in use.
- */
-#define PRESCALE_IN_USE_STR "1024"
+#elif TICKS_PER_SECOND == 11719 && TIMER_INT_SIZE == 8
 /**
  * @brief The number of "ticks" of the timer that occur within the timing of one bit at
  * the SDI-12 baud rate of 1200 bits/second.
  *
- * 12MHz / 1024 prescaler = 11719 'ticks'/sec = 85 µs / 'tick'
+ * 11719 'ticks'/sec = 85 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/85 µs) = 9.765625 ticks/bit
  *
  * The 8-bit timer rolls over after 256 ticks, 26.2144 bits, or 21.84487 ms
@@ -146,23 +369,20 @@ class SDI12Timer {
  */
 #define BITS_PER_TICK_Q10 105
 /**
- * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
+ * @brief A "fudge factor" to get the Rx to work well. It mostly works to ensure that
  * uneven tick increments get rounded up.
  *
  * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
  */
 #define RX_WINDOW_FUDGE 2
 
-#elif F_CPU == 8000000L
-/**
- * @brief A string description of the prescaler in use.
- */
-#define PRESCALE_IN_USE_STR "256"
+
+#elif TICKS_PER_SECOND == 31250 && TIMER_INT_SIZE == 8
 /**
  * @brief The number of "ticks" of the timer that occur within the timing of one bit at
  * the SDI-12 baud rate of 1200 bits/second.
  *
- * 8MHz / 256 prescaler = 31250 'ticks'/sec = 32 µs / 'tick'
+ * 31250 'ticks'/sec = 32 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/32 µs) = 26.04166667 ticks/bit
  *
  * The 8-bit timer rolls over after 256 ticks, 9.8304 bits, or 8.192 ms
@@ -178,344 +398,122 @@ class SDI12Timer {
  */
 #define BITS_PER_TICK_Q10 39
 /**
- * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
+ * @brief A "fudge factor" to get the Rx to work well. It mostly works to ensure that
  * uneven tick increments get rounded up.
  *
  * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
  */
 #define RX_WINDOW_FUDGE 10
 
-  // #define PRESCALE_IN_USE_STR "1024"
-  // #define TICKS_PER_BIT 6
-  //     // 8MHz / 1024 prescaler = 31250 'ticks'/sec = 128 µs / 'tick'
-  //     // (1 sec/1200 bits) * (1 tick/128 µs) = 6.5104166667 ticks/bit
-  // #define BITS_PER_TICK_Q10 157
-  //     // 1/(6.5104166667 ticks/bit) * 2^10 = 157.2864
-  // #define RX_WINDOW_FUDGE 5
 
-#endif
-
-
-// ATtiny boards (ie, adafruit trinket)
-//
-#elif defined(__AVR_ATtiny25__) | defined(__AVR_ATtiny45__) | defined(__AVR_ATtiny85__)
-
-/**
- * @brief A string description of the timer to use
- *
- * The Timer/Counter1 features a high resolution and a high accuracy usage with the
- * lower prescaling opportunities. It can also support two accurate, high speed, 8-bit
- * pulse width modulators using clock speeds up to 64MHz (or 32MHz in low speedmode).
- */
-#define TIMER_IN_USE_STR "TCNT1"
-/**
- * @brief The c macro name for the assembly timer to use
- *
- * The register used to access the timer/counter value is TCNT1.
- */
-#define TCNTX TCNT1  // Using Timer 1
-
-#if F_CPU == 16000000L
-/**
- * @brief A string description of the prescaler in use.
- */
-#define PRESCALE_IN_USE_STR "1024"
+#elif TICKS_PER_SECOND == 600000 && TIMER_INT_SIZE == 16
 /**
  * @brief The number of "ticks" of the timer that occur within the timing of one bit at
  * the SDI-12 baud rate of 1200 bits/second.
  *
- * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
- * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
+ * 600000 'ticks'/sec = 1.66667 µs / 'tick'
+ * (1 sec/1200 bits) * (1 tick/1.66667 µs) = 500 ticks/bit
  *
- * The 8-bit timer rolls over after 256 ticks, 19.66 bits, or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
+ * The 16-bit timer rolls over after 65536 ticks, 131.072 bits, or 109.22667 ms
+ * (65536 ticks/roll-over) * (1 bit/500 ticks) = 131.0724 bits
+ * (65536 ticks/roll-over) * (1 sec/600000 ticks) = 109.22667 milliseconds
  */
-#define TICKS_PER_BIT 13
+#define TICKS_PER_BIT 500
 /**
- * @brief The number of "ticks" of the timer per SDI-12 bit, shifted by 2^10.
- *
- * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
- */
-#define BITS_PER_TICK_Q10 79
-/**
- * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
+ * @brief A "fudge factor" to get the Rx to work well. It mostly works to ensure that
  * uneven tick increments get rounded up.
  *
  * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
  */
 #define RX_WINDOW_FUDGE 2
 
-#elif F_CPU == 8000000L
-#define PRESCALE_IN_USE_STR "512"
+#elif TICKS_PER_SECOND == 1000000 && TTIMER_INT_SIZE == 32
 /**
  * @brief The number of "ticks" of the timer that occur within the timing of one bit at
  * the SDI-12 baud rate of 1200 bits/second.
  *
- * 8MHz / 512 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
- * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
+ * Using `micros()` 1 "tick" is 1 µsec
+ * (1 sec/1200 bits) * (1 tick/1 µs) * (1000000 µsec/sec)= 833.33333 ticks/bit
  *
- * The 8-bit timer rolls over after 256 ticks, 19.66 bits, or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
+ * The 32-bit timer rolls over after 4294967296 ticks, or 4294.9673 seconds
  */
-#define TICKS_PER_BIT 13
+#define TICKS_PER_BIT 834
 /**
- * @brief The number of "ticks" of the timer per SDI-12 bit, shifted by 2^10.
- *
- * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
- */
-#define BITS_PER_TICK_Q10 79
-/**
- * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
- * uneven tick increments get rounded up.
- *
- * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
- */
-#define RX_WINDOW_FUDGE 5
-
-#endif
-
-
-// Arduino Leonardo & Yun and other 32U4 boards
-//
-#elif defined(ARDUINO_AVR_YUN) || defined(ARDUINO_AVR_LEONARDO) || \
-  defined(__AVR_ATmega32U4__)
-
-/**
- * @brief A string description of the timer to use
- *
- * Timer/Counter4 is a general purpose high speed Timer/Counter module, with three
- * independent Output Compare Units, and with enhanced PWM support.
- *
- * Features
- * - Up to 10-Bit Accuracy
- * - Three Independent Output Compare Units
- * - Clear Timer on Compare Match (Auto Reload)
- * - Glitch Free, Phase and Frequency Correct Pulse Width Modulator (PWM)
- * - Enhanced PWM mode: one optional additional accuracy bit without effect on output
- * frequency
- * - Variable PWM Period
- * - Independent Dead Time Generators for each PWM channels
- * - Synchronous update of PWM registers
- * - Five Independent Interrupt Sources (TOV4, OCF4A, OCF4B, OCF4D, FPF4)
- * - High Speed Asynchronous and Synchronous Clocking Modes
- * - Separate Prescaler Unit
- */
-#define TIMER_IN_USE_STR "TCNT4"
-/**
- * @brief The c macro name for the assembly timer to use
- *
- * The register used to access the low byte timer/counter value is TCNT4.
- * @note We only utilize the low byte register, effectively using the 10-bit timer as an
- * 8-bit timer.
- */
-#define TCNTX TCNT4  // Using Timer 4
-
-#if F_CPU == 16000000L
-/**
- * @brief A string description of the prescaler in use.
- */
-#define PRESCALE_IN_USE_STR "1024"
-/**
- * @brief The number of "ticks" of the timer that occur within the timing of one bit at
- * the SDI-12 baud rate of 1200 bits/second.
- *
- * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
- * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
- *
- * The first 8-bits of the 10-bit timer roll over after 256 ticks, 19.66 bits,
- * or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
- */
-#define TICKS_PER_BIT 13
-/**
- * @brief The number of "ticks" of the timer per SDI-12 bit, shifted by 2^10.
- *
- * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
- */
-#define BITS_PER_TICK_Q10 79
-/**
- * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
+ * @brief A "fudge factor" to get the Rx to work well. It mostly works to ensure that
  * uneven tick increments get rounded up.
  *
  * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
  */
 #define RX_WINDOW_FUDGE 2
 
-#elif F_CPU == 8000000L
-/**
- * @brief A string description of the prescaler in use.
- */
-#define PRESCALE_IN_USE_STR "512"
-/**
- * @brief The number of "ticks" of the timer that occur within the timing of one bit
- * at the SDI-12 baud rate of 1200 bits/second.
- *
- * 8MHz / 512 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
- * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
- *
- * The first 8-bits of the 10-bit timer roll over after 256 ticks, 19.66 bits,
- * or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
- */
-#define TICKS_PER_BIT 13
-/**
- * @brief The number of "ticks" of the timer per SDI-12 bit, shifted by 2^10.
- *
- * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
- */
-#define BITS_PER_TICK_Q10 79
-/**
- * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
- * uneven tick increments get rounded up.
- *
- * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
- */
-#define RX_WINDOW_FUDGE 5
-
+#else
+#error "Board timer is incorrectly configured!"
 #endif
 
 
-// Arduino Zero other SAMD21 boards
-//
-#elif defined(ARDUINO_SAMD_ZERO) || defined(ARDUINO_ARCH_SAMD) || \
-  defined(__SAMD21G18A__) || defined(__SAMD21J18A__) || defined(__SAMD21E18A__)
+/** The interger type (size) of the timer return value */
+typedef TIMER_INT_TYPE sdi12timer_t;
 
 /**
- * @brief A string description of the timer to use
- *
- * The Generic Clock controller GCLK provides nine Generic Clock Generators that can
- * provide a wide range of clock frequencies.
- *
- * Generators can be set to use different external and internal oscillators as source.
- * The clock of each Generator can be divided.  The outputs from the Generators are used
- * as sources for the Generic Clock Multiplexers, which provide the Generic Clock
- * (GCLK_PERIPHERAL) to the peripheral modules, as shown in Generic Clock Controller
- * Block Diagram.
- *
- * Features
- * - Provides Generic Clocks
- * - Wide frequency range
- * - Clock source for the generator can be changed on the fly
- *
- * The TC consists of a counter, a prescaler, compare/capture channels and control
- * logic. The counter can be set to count events, or it can be configured to count clock
- * pulses. The counter, together with the compare/capture channels, can be configured to
- * timestamp input events, allowing capture of frequency and pulse width. It can also
- * perform waveform generation, such as frequency generation and pulse-width modulation
- * (PWM).
- *
- * Features
- * - Selectable configuration
- *   – Up to five 16-bit Timer/Counters (TC) including one low-power TC, each
- * configurable as:
- *     - 8-bit TC with two compare/capture channels
- *     - 16-bit TC with two compare/capture channels
- *     - 32-bit TC with two compare/capture channels, by using two TCs
- * - Waveform generation
- *     – Frequency generation
- *     – Single-slope pulse-width modulation
- * - Input capture
- *     – Event capture
- *     – Frequency capture
- *     – Pulse-width capture
- * - One input event
- * - Interrupts/output events on:
- *     – Counter overflow/underflow
- *     – Compare match or capture
- * - Internal prescaler
- * - Can be used with DMA and to trigger DMA transactions
+ * @brief The class used to define the processor timer for the SDI-12 serial emulation.
  */
-#define TIMER_IN_USE_STR "GCLK4-TC3"
-/**
- * @brief The c macro name for the assembly timer to use
- *
- * This signifies the register of timer/counter 3, the 8-bit count, the count value
- */
-#define TCNTX REG_TC3_COUNT8_COUNT  // Using Timer 3 with generic clock 4
+class SDI12Timer {
+ public:
+  /**
+   * @brief Construct a new SDI12Timer
+   */
+  SDI12Timer();
 
-/**
- * @brief A string description of the prescaler in use.
- */
-#define PRESCALE_IN_USE_STR "3x1024"
-/**
- * @brief The number of "ticks" of the timer that occur within the timing of one bit at
- * the SDI-12 baud rate of 1200 bits/second.
- *
- * 48MHz / 3 pre-prescaler = 16MHz
- * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
- * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
- *
- * The 8-bit count rolls over after 256 ticks, 19.66 bits, or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
- */
-#define TICKS_PER_BIT 13
-/**
- * @brief The number of "ticks" of the timer per SDI-12 bit, shifted by 2^10.
- *
- * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
- */
-#define BITS_PER_TICK_Q10 79
-/**
- * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
- * uneven tick increments get rounded up.
- *
- * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
- */
-#define RX_WINDOW_FUDGE 2
+  /**
+   * @brief static method for getting a 16-bit value from the multiplication of 2 8-bit
+   * values
+   *
+   * @param x The first 8 bit integer
+   * @param y The second 8 bit integer
+   * @return The result of the multiplication, as a 16 bit integer.
+   */
+  static uint16_t mul8x8to16(uint8_t x, uint8_t y);
 
-// Espressif ESP32/ESP8266 boards
-//
-#elif defined(ESP32) || defined(ESP8266)
+  /**
+   * @brief static method for calculating the number of bit-times that have elapsed
+   * between interrupts.
+   *
+   * @param dt The current value of the timer
+   * @return The number of bit times that have passed at 1200 baud.
+   *
+   * Adds a rxWindowWidth fudge factor to the time difference to get the number of
+   * ticks, and then multiplies the fudged ticks by the number of bits per tick.  Uses
+   * the number of bits per tick shifted up by 2^10 and then shifts the result down by
+   * the same amount to compensate for the fact that the number of bits per tick is a
+   * decimal the timestamp is only an 8-bit integer.
+   *
+   * @see https://github.com/SlashDevin/NeoSWSerial/pull/13#issuecomment-315463522
+   */
+  static sdi12timer_t bitTimes(sdi12timer_t dt);
+
+  /**
+   * @brief Set the processor timer prescaler such that the 10 bits of an SDI-12
+   * character are divided into the rollover time of the timer.
+   */
+  void configSDI12TimerPrescale(void);
+  /**
+   * @brief Reset the processor timer prescaler to whatever it was prior to being
+   * adjusted for this library.
+   *
+   * @note The prescaler is *NOT* set back to initial values for SAMD boards!  On those
+   * processors.
+   */
+  void resetSDI12TimerPrescale(void);
+
+// if we're using the `micros()` function
+#if TICKS_PER_SECOND == 1000000 && TTIMER_INT_SIZE == 32
   /**
    * @brief Read the processor micros and right shift 6 bits (ie, divide by 64) to get a
    * 64µs tick.
    *
-   * @note  The ESP32 and ESP8266 are fast enough processors that they can take the time
-   * to read the core 'micros()' function still complete the other processing needed on
-   * the serial bits.  All of the other processors using the Arduino core also have the
-   * micros function, but the rest are not fast enough to waste the processor cycles to
-   * use the micros function and must use the faster assembly macros to read the
-   * processor timer directly.
-   *
    * @return **sdi12timer_t** The current processor micros
    */
   sdi12timer_t SDI12TimerRead(void);
-
-/**
- * @brief The number of "ticks" of the timer that occur within the timing of one bit
- * at the SDI-12 baud rate of 1200 bits/second.
- *
- * 48MHz / 3 pre-prescaler = 16MHz
- * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
- * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
- *
- * The 8-bit count rolls over after 256 ticks, 19.66 bits, or 16.38505 ms
- * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 microseconds
- */
-#define TICKS_PER_BIT 13
-/**
- * @brief The number of "ticks" of the timer per SDI-12 bit, shifted by 2^10.
- *
- * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
- */
-#define BITS_PER_TICK_Q10 79
-/**
- * @brief A "fudge factor" to get the Rx to work well.   It mostly works to ensure that
- * uneven tick increments get rounded up.
- *
- * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
- */
-#define RX_WINDOW_FUDGE 2
-
-// Unknown board
-#else
-#error "Please define your board timer and pins"
 #endif
 };
 

@@ -181,25 +181,7 @@ enum LookaheadMode {
   /** Only tabs, spaces, line feeds & carriage returns are skipped.*/
   SKIP_WHITESPACE
 };
-
-/**
- * @brief The function or macro used to read the clock timer value.
- *
- * @note  The ESP32 and ESP8266 are fast enough processors that they can take the
- * time to read the core 'micros()' function still complete the other processing needed
- * on the serial bits.  All of the other processors using the Arduino core also have the
- * micros function, but the rest are not fast enough to waste the processor cycles to
- * use the micros function and must use the faster assembly macros to read the
- * processor timer directly.
- */
-
-#define READTIME sdi12timer.SDI12TimerRead()
-#else
-/**
- * @brief The function or macro used to read the clock timer value.
- */
-#define READTIME TCNTX
-#endif  // defined(ESP32) || defined(ESP8266)
+#endif
 
 /**
  * @brief The main class for SDI 12 instances
@@ -240,15 +222,7 @@ class SDI12 : public Stream {
   /**
    * @brief the width of a single bit in "ticks" of the cpu clock.
    */
-  static const uint8_t txBitWidth;
-  /**
-   * @brief A fudge factor to make things work
-   */
-  static const uint8_t rxWindowWidth;
-  /**
-   * @brief The number of bits per tick, shifted by 2^10.
-   */
-  static const uint8_t bitsPerTick_Q10;
+  static const sdi12timer_t txBitWidth;
   /**
    * @brief A mask for the #rxState while waiting for a start bit; 0b11111111
    */
@@ -276,35 +250,6 @@ class SDI12 : public Stream {
    * @brief the value of the character being built
    */
   static uint8_t rxValue;
-
-  /**
-   * @brief static method for getting a 16-bit value from the multiplication of 2 8-bit
-   * values
-   *
-   * @param x The first 8 bit integer
-   * @param y The second 8 bit integer
-   * @return @m_span{m-type} uint16_t @m_endspan The result of the multiplication, as a
-   * 16 bit integer.
-   */
-  static uint16_t mul8x8to16(uint8_t x, uint8_t y);
-
-  /**
-   * @brief static method for calculating the number of bit-times that have elapsed
-   * given an 8-bit counter/timer timestamp.
-   *
-   * @param dt The current value of the 8-bit timer
-   * @return @m_span{m-type} uint16_t @m_endspan The number of bit times that have
-   * passed at 1200 baud.
-   *
-   * Adds a rxWindowWidth fudge factor to the time difference to get the number of
-   * ticks, and then multiplies the fudged ticks by the number of bits per tick.  Uses
-   * the number of bits per tick shifted up by 2^10 and then shifts the result down by
-   * the same amount to compensate for the fact that the number of bits per tick is a
-   * decimal the timestamp is only an 8-bit integer.
-   *
-   * @see https://github.com/SlashDevin/NeoSWSerial/pull/13#issuecomment-315463522
-   */
-  static uint16_t bitTimes(uint8_t dt);
   /**@}*/
 
 
@@ -380,7 +325,7 @@ class SDI12 : public Stream {
   /**
    * @brief Return the number of bytes available in the Rx buffer
    *
-   * @return @m_span{m-type} int @m_endspan The number of characters in the buffer
+   * @return The number of characters in the buffer
    *
    * available() is a public function that returns the number of characters available in
    * the Rx buffer.
@@ -424,7 +369,7 @@ class SDI12 : public Stream {
   /**
    * @brief Reveal next byte in the Rx buffer without consuming it.
    *
-   * @return @m_span{m-type} int @m_endspan The next byte in the character buffer.
+   * @return The next byte in the character buffer.
    *
    * peek() is a public function that allows the user to look at the character that is
    * at the head of the buffer. Unlike read() it does not consume the character (i.e.
@@ -442,7 +387,7 @@ class SDI12 : public Stream {
   /**
    * @brief Return next byte in the Rx buffer, consuming it
    *
-   * @return @m_span{m-type} int @m_endspan The next byte in the character buffer.
+   * @return The next byte in the character buffer.
    *
    * read() returns the character at the current head in the buffer after incrementing
    * the index of the buffer head. This action 'consumes' the character, meaning it can
@@ -468,7 +413,7 @@ class SDI12 : public Stream {
    * @param lookahead the mode to use to look ahead in the
    * stream, default is LookaheadMode::SKIP_ALL
    * @param ignore a character to ignore in the stream, default is '\\x01'
-   * @return @m_span{m-type} long @m_endspan The first valid integer in the stream
+   * @return The first valid integer in the stream
    *
    * @note This function _hides_ the Stream class function to allow a custom value to be
    * returned on timeout.  It cannot overwrite the Stream function because it is not
@@ -489,7 +434,7 @@ class SDI12 : public Stream {
    * @param lookahead the mode to use to look ahead in the
    * stream, default is LookaheadMode::SKIP_ALL
    * @param ignore a character to ignore in the stream, default is '\\x01'
-   * @return @m_span{m-type} long @m_endspan The first valid float in the stream
+   * @return The first valid float in the stream
    *
    * @note This function _hides_ the Stream class function to allow a custom value to be
    * returned on timeout.  It cannot overwrite the Stream function because it is not
@@ -506,7 +451,7 @@ class SDI12 : public Stream {
    * stream
    * @param detectDecimal True to accept a decimal point ('.') as part of a
    * number
-   * @return @m_span{m-type} int @m_endspan The next numeric digit in the stream
+   * @return The next numeric digit in the stream
    */
   int peekNextDigit(LookaheadMode lookahead, bool detectDecimal);
   /**@}*/
@@ -615,7 +560,7 @@ class SDI12 : public Stream {
   /**
    * @brief Get the data pin for the current SDI-12 instance
    *
-   * @return @m_span{m-type} int8_t @m_endspan the data pin number
+   * @return the data pin number
    */
   int8_t getDataPin();
   /**
@@ -662,7 +607,7 @@ class SDI12 : public Stream {
   /**
    * @brief Set this instance as the active SDI-12 instance
    *
-   * @return @m_span{m-type} bool @m_endspan True indicates that the current SDI-12
+   * @return True indicates that the current SDI-12
    * instance was not formerly the active one and now is.  False indicates that the
    * current SDI-12 instance *is already the active one* and the state was not changed.
    *
@@ -678,7 +623,7 @@ class SDI12 : public Stream {
   /**
    * @brief Check if this instance is active
    *
-   * @return @m_span{m-type} bool @m_endspan True indicates that the curren SDI-12
+   * @return True indicates that the curren SDI-12
    * instace is the active one.
    *
    * isActive() is a method for checking if the object is the active object.  Returns
@@ -766,7 +711,7 @@ class SDI12 : public Stream {
    * @brief Calculate the parity value for a character using even parity.
    *
    * @param v **uint8_t (char)** the character to calculate the parity of
-   * @return @m_span{m-type} uint8_t @m_endspan the input character with the 8th bit set
+   * @return the input character with the 8th bit set
    * to the even parity value for that character
    *
    * Sets up parity and interrupts for different processor types - that is, imports the
@@ -886,7 +831,7 @@ class SDI12 : public Stream {
    * @brief Write out a byte on the SDI-12 line
    *
    * @param byte The character to write
-   * @return @m_span{m-type} size_t @m_endspan The number of characters written
+   * @return The number of characters written
    *
    * Sets the state to transmitting, writes a character, and then sets the state back to
    * listening.  This function must be implemented as part of the Arduino Stream

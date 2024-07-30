@@ -66,11 +66,7 @@ const uint16_t SDI12::lineBreak_micros = (uint16_t)12300;
 const uint16_t SDI12::marking_micros = (uint16_t)8500;
 
 // the width of a single bit in "ticks" of the cpu clock.
-const uint8_t SDI12::txBitWidth = TICKS_PER_BIT;
-// A fudge factor to make things work
-const uint8_t SDI12::rxWindowWidth = RX_WINDOW_FUDGE;
-// The number of bits per tick, shifted by 2^10.
-const uint8_t SDI12::bitsPerTick_Q10 = BITS_PER_TICK_Q10;
+const sdi12timer_t SDI12::txBitWidth = TICKS_PER_BIT;
 // A mask waiting for a start bit; 0b11111111
 const uint8_t SDI12::WAITING_FOR_START_BIT = 0xFF;
 
@@ -78,14 +74,6 @@ uint16_t SDI12::prevBitTCNT;                      // previous RX transition in m
 uint8_t  SDI12::rxState = WAITING_FOR_START_BIT;  // 0: got start bit; >0: bits rcvd
 uint8_t  SDI12::rxMask;   // bit mask for building received character
 uint8_t  SDI12::rxValue;  // character being built
-
-uint16_t SDI12::mul8x8to16(uint8_t x, uint8_t y) {
-  return x * y;
-}
-
-uint16_t SDI12::bitTimes(uint8_t dt) {
-  return mul8x8to16(dt + rxWindowWidth, bitsPerTick_Q10) >> 10;
-}
 
 /* ================ Buffer Setup ====================================================*/
 uint8_t          SDI12::_rxBuffer[SDI12_BUFFER_SIZE];  // The Rx buffer
@@ -446,7 +434,7 @@ void SDI12::writeChar(uint8_t outChar) {
 
   // Hold the line for the rest of the start bit duration
 
-  while ((uint8_t)(READTIME - t0) < txBitWidth) {}
+  while ((sdi12timer_t)(READTIME - t0) < txBitWidth) {}
   t0 = READTIME;  // advance start time
 
   // repeat for all data bits until the last bit different from marking
@@ -458,7 +446,7 @@ void SDI12::writeChar(uint8_t outChar) {
       digitalWrite(_dataPin, HIGH);  // set the pin state to HIGH for 0's
     }
     // Hold the line for this bit duration
-    while ((uint8_t)(READTIME - t0) < txBitWidth) {}
+    while ((sdi12timer_t)(READTIME - t0) < txBitWidth) {}
     t0 = READTIME;  // start time
 
     outChar = outChar >> 1;  // shift character to expose the following bit
@@ -470,8 +458,8 @@ void SDI12::writeChar(uint8_t outChar) {
   interrupts();  // Re-enable universal interrupts as soon as critical timing is past
 
   // Hold the line low until the end of the 10th bit
-  uint8_t bitTimeRemaining = txBitWidth * (10 - lastHighBit);
-  while ((uint8_t)(READTIME - t0) < bitTimeRemaining) {}
+  sdi12timer_t bitTimeRemaining = txBitWidth * (10 - lastHighBit);
+  while ((sdi12timer_t)(READTIME - t0) < bitTimeRemaining) {}
 }
 
 // The typical write functionality for a stream object
@@ -698,7 +686,7 @@ void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::receiveISR() {
     // data, parity, or stop bit.
 
     // Check how many bit times have passed since the last change
-    uint16_t rxBits = bitTimes((uint8_t)(thisBitTCNT - prevBitTCNT));
+    uint16_t rxBits = SDI12Timer::bitTimes((uint8_t)(thisBitTCNT - prevBitTCNT));
     // Calculate how many *data+parity* bits should be left in the current character
     //      - Each character has a total of 10 bits, 1 start bit, 7 data bits, 1 parity
     // bit, and 1 stop bit
