@@ -453,9 +453,9 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   }
 }
 
-// Espressif ESP32/ESP8266 boards
-//
-#elif defined(ESP32) || defined(ESP8266)
+// Espressif ESP32/ESP8266 boards or other boards faster than 48MHz
+// WARNING: I haven't tested the minimum speed that this will work at!
+#elif defined(ESP32) || defined(ESP8266) || F_CPU >= 48000000L
 
 void SDI12Timer::configSDI12TimerPrescale(void) {}
 

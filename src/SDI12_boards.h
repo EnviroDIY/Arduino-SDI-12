@@ -60,9 +60,9 @@ sensors. This library provides a general software solution, without requiring
 /**
  * @brief The number of clock ticks per second, after accounting for the prescaler.
  *
- * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
+ * 16MHz / 1024 prescaler = 15625 'ticks'/sec = 64 µs / 'tick'
  */
-#define TICKS_PER_SECOND 15624
+#define TICKS_PER_SECOND 15625
 
 #elif F_CPU == 12000000L
 /**
@@ -72,7 +72,7 @@ sensors. This library provides a general software solution, without requiring
 /**
  * @brief The number of clock ticks per second, after accounting for the prescaler.
  *
- * 12MHz / 1024 prescaler = 11719 'ticks'/sec = 85 µs / 'tick'
+ * 12MHz / 1024 prescaler = 11719 'ticks'/sec = 85.33 µs / 'tick'
  */
 #define TICKS_PER_SECOND 11719
 
@@ -140,7 +140,6 @@ sensors. This library provides a general software solution, without requiring
 
 
 // Arduino Leonardo & Yun and other 32U4 boards
-//
 #elif defined(ARDUINO_AVR_YUN) || defined(ARDUINO_AVR_LEONARDO) || \
   defined(__AVR_ATmega32U4__)
 
@@ -174,7 +173,7 @@ sensors. This library provides a general software solution, without requiring
 /**
  * @brief The number of clock ticks per second, after accounting for the prescaler.
  *
- * 16MHz / 1024 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
+ * 16MHz / 1024 prescaler = 15625 'ticks'/sec = 64 µs / 'tick'
  */
 #define TICKS_PER_SECOND 15625
 
@@ -186,7 +185,7 @@ sensors. This library provides a general software solution, without requiring
 /**
  * @brief The number of clock ticks per second, after accounting for the prescaler.
  *
- * 8MHz / 512 prescaler = 15624 'ticks'/sec = 64 µs / 'tick'
+ * 8MHz / 512 prescaler = 15625 'ticks'/sec = 64 µs / 'tick'
  */
 #define TICKS_PER_SECOND 15625
 
@@ -290,9 +289,9 @@ sensors. This library provides a general software solution, without requiring
  */
 #define TICKS_PER_SECOND 600000
 
-// Espressif ESP32/ESP8266 boards
-//
-#elif defined(ESP32) || defined(ESP8266)
+// Espressif ESP32/ESP8266 boards or any boards faster than 48MHz not mentioned above
+// WARNING: I haven't tested the minimum speed that this will work at!
+#elif defined(ESP32) || defined(ESP8266) || F_CPU >= 48000000L
 
 /**
  * @brief A string description of the timer to use
@@ -314,7 +313,7 @@ sensors. This library provides a general software solution, without requiring
  *
  * This signifies the register of timer/counter 2, the 16-bit count, the count value
  */
-#define READTIME SDI12TimerRead
+#define READTIME sdi12timer.SDI12TimerRead()
 
 // Unknown board
 #else
@@ -322,17 +321,17 @@ sensors. This library provides a general software solution, without requiring
 #endif
 
 
-#if TICKS_PER_SECOND == 15624 && TIMER_INT_SIZE == 8
+#if TICKS_PER_SECOND == 15625 && TIMER_INT_SIZE == 8
 /**
  * @brief The number of "ticks" of the timer that occur within the timing of one bit at
  * the SDI-12 baud rate of 1200 bits/second.
  *
- * 15624 'ticks'/sec = 64 µs / 'tick'
+ * 15625 'ticks'/sec = 64 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
  *
  * The 8-bit timer rolls over after 256 ticks, 19.66085 bits, or 16.38505 ms
  * (256 ticks/roll-over) * (1 bit/13.0208 ticks) = 19.66085 bits
- * (256 ticks/roll-over) * (1 sec/15624 ticks) = 16.38505 milliseconds
+ * (256 ticks/roll-over) * (1 sec/15625 ticks) = 16.38505 milliseconds
  */
 #define TICKS_PER_BIT 13
 /**
@@ -427,7 +426,7 @@ sensors. This library provides a general software solution, without requiring
  */
 #define RX_WINDOW_FUDGE 2
 
-#elif TICKS_PER_SECOND == 1000000 && TTIMER_INT_SIZE == 32
+#elif TICKS_PER_SECOND == 1000000 && TIMER_INT_SIZE == 32
 /**
  * @brief The number of "ticks" of the timer that occur within the timing of one bit at
  * the SDI-12 baud rate of 1200 bits/second.
@@ -506,7 +505,7 @@ class SDI12Timer {
   void resetSDI12TimerPrescale(void);
 
 // if we're using the `micros()` function
-#if TICKS_PER_SECOND == 1000000 && TTIMER_INT_SIZE == 32
+#if TICKS_PER_SECOND == 1000000 && TIMER_INT_SIZE == 32
   /**
    * @brief Read the processor micros and right shift 6 bits (ie, divide by 64) to get a
    * 64µs tick.
