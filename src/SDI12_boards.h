@@ -230,15 +230,16 @@ sensors. This library provides a general software solution, without requiring
 /**
  * @brief A string description of the prescaler in use.
  */
-#define PRESCALE_IN_USE_STR "48MHz/5/16=600kHz"
+#define PRESCALE_IN_USE_STR "48MHz/6/16=500kHz"
 /**
  * @brief The number of clock ticks per second, after accounting for the prescaler.
  *
  * Start with 48MHz "main" clock source (GCLK_GENCTRL_SRC_DFLL48M)
- * 48MHz / 5x clock source divider (GCLK_GENDIV_DIV(5)) = 9.6MHz
- * 9.6MHz / 16x prescaler (TC_CTRLA_PRESCALER_DIV16) = 600kHz - 600,000 'ticks'/sec
+ * 48MHz / 6x clock source divider (GCLK_GENDIV_DIV(6)) = 8MHz
+ * 8MHz / 16x prescaler (TC_CTRLA_PRESCALER_DIV16) =  500kHz = 500,000 'ticks'/sec = 2
+ * µs / 'tick' (1 sec/1200 bits) * (1 tick/2 µs) = 416.66667 ticks/bit
  */
-#define TICKS_PER_SECOND 600000
+#define TICKS_PER_SECOND 500000
 
 
 // SAMD51 and SAME51 boards
@@ -272,36 +273,27 @@ sensors. This library provides a general software solution, without requiring
 #define TIMER_INT_SIZE 16
 
 /**
- * The clock generator number to use
- */
-#define GENERIC_CLOCK_GENERATOR_SDI12 (6u)
-/**
- * @brief The bit to check for synchornization
- */
-#define GENERIC_CLOCK_GENERATOR_SDI12_SYNC GCLK_SYNCBUSY_GENCTRL6
-
-/**
  * @brief The function or macro used to read the clock timer value.
  *
  * For the SAMD51, reading the timer is a multi-step process of first writing a read
  * sync bit, waiting, and then reading the register.  Because of the steps, we need a
  * function.
  */
-#define READTIME REG_TC2_COUNT16_COUNT
+#define READTIME sdi12timer.SDI12TimerRead()
 
 /**
  * @brief A string description of the prescaler in use.
  */
-#define PRESCALE_IN_USE_STR "120MHz/25/8=600kHz"
+#define PRESCALE_IN_USE_STR "120MHz/15/16=500kHz"
 /**
  * @brief The number of clock ticks per second, after accounting for the prescaler.
  *
  * Start with 120MHz "main" clock source (MAIN_CLOCK_SOURCE = GCLK_GENCTRL_SRC_DPLL0)
- * 120MHz / 25x clock source divider (GCLK_GENDIV_DIV(25)) = 4.8MHz
- * 4.8MHz / 8x prescaler (TC_CTRLA_PRESCALER_DIV16) = 600kHz - 600,000 'ticks'/sec
- * = 1.66667 µs / 'tick' (1 sec/1200 bits) * (1 tick/1.66667 µs) = 500 ticks/bit
+ * 120MHz / 15x clock source divider (GCLK_GENCTRL_DIV(15)) = 8MHz
+ * 8MHz / 16x prescaler (TC_CTRLA_PRESCALER_DIV16) = 500kHz = 500,000 'ticks'/sec = 2 µs
+ * / 'tick' (1 sec/1200 bits) * (1 tick/2 µs) = 416.66667 ticks/bit
  */
-#define TICKS_PER_SECOND 600000
+#define TICKS_PER_SECOND 500000
 
 // Espressif ESP32/ESP8266 boards or any boards faster than 48MHz not mentioned above
 
@@ -337,8 +329,6 @@ sensors. This library provides a general software solution, without requiring
 
 /**
  * @brief The function or macro used to read the clock timer value.
- *
- * This signifies the register of timer/counter 2, the 16-bit count, the count value
  */
 #define READTIME sdi12timer.SDI12TimerRead()
 
@@ -400,7 +390,7 @@ sensors. This library provides a general software solution, without requiring
  *
  * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
  */
-#define RX_WINDOW_FUDGE 2
+#define RX_WINDOW_FUDGE 1
 
 
 #elif TICKS_PER_SECOND == 31250 && TIMER_INT_SIZE == 8
@@ -432,26 +422,26 @@ sensors. This library provides a general software solution, without requiring
 #define RX_WINDOW_FUDGE 10
 
 
-#elif TICKS_PER_SECOND == 600000 && TIMER_INT_SIZE == 16
+#elif TICKS_PER_SECOND == 500000 && TIMER_INT_SIZE == 16
 /**
  * @brief The number of "ticks" of the timer that occur within the timing of one bit at
  * the SDI-12 baud rate of 1200 bits/second.
  *
- * 600000 'ticks'/sec = 1.66667 µs / 'tick'
- * (1 sec/1200 bits) * (1 tick/1.66667 µs) = 500 ticks/bit
+ * 500kHz = 500,000 'ticks'/sec = 2 µs / 'tick'
+ * (1 sec/1200 bits) * (1 tick/2 µs) = 416.66667 ticks/bit
  *
- * The 16-bit timer rolls over after 65536 ticks, 131.072 bits, or 109.22667 ms
- * (65536 ticks/roll-over) * (1 bit/500 ticks) = 131.0724 bits
- * (65536 ticks/roll-over) * (1 sec/600000 ticks) = 109.22667 milliseconds
+ * The 16-bit timer rolls over after 65536 ticks, 157.284 bits, or 131.07 ms
+ * (65536 ticks/roll-over) * (1 bit/416.66667 ticks) = 157.284 bits
+ * (65536 ticks/roll-over) * (1 sec/500000 ticks) = 131.07 milliseconds
  */
-#define TICKS_PER_BIT 500
+#define TICKS_PER_BIT 417
 /**
  * @brief A "fudge factor" to get the Rx to work well. It mostly works to ensure that
  * uneven tick increments get rounded up.
  *
  * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
  */
-#define RX_WINDOW_FUDGE 2
+#define RX_WINDOW_FUDGE 11
 
 #elif TICKS_PER_SECOND == 1000000 && TIMER_INT_SIZE == 32
 /**
@@ -470,7 +460,7 @@ sensors. This library provides a general software solution, without requiring
  *
  * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
  */
-#define RX_WINDOW_FUDGE 2
+#define RX_WINDOW_FUDGE 1
 
 #else
 #error "Board timer is incorrectly configured!"
