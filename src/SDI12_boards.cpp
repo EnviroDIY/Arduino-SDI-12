@@ -55,47 +55,30 @@ static uint8_t preSDI12_TCCR2A;
  */
 static uint8_t preSDI12_TCCR2B;
 
+sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
+  return TCNT2;
+}
+
+void SDI12Timer::configSDI12TimerPrescale(void) {
+  preSDI12_TCCR2A = TCCR2A;
+  preSDI12_TCCR2B = TCCR2B;
+
 #if F_CPU == 16000000L
-
-void SDI12Timer::configSDI12TimerPrescale(void) {
-  preSDI12_TCCR2A = TCCR2A;
-  preSDI12_TCCR2B = TCCR2B;
   TCCR2A = 0x00;  // TCCR2A = 0x00 = "normal" operation - Normal port operation, OC2A &
                   // OC2B disconnected
   TCCR2B = 0x07;  // TCCR2B = 0x07 = 0b00000111 - Clock Select bits 22, 21, & 20 on -
                   // prescaler set to CK/1024
-}
-
-void SDI12Timer::resetSDI12TimerPrescale(void) {
-  TCCR2A = preSDI12_TCCR2A;
-  TCCR2B = preSDI12_TCCR2B;
-}
-
 #elif F_CPU == 12000000L
-
-void SDI12Timer::configSDI12TimerPrescale(void) {
-  preSDI12_TCCR2A = TCCR2A;
-  preSDI12_TCCR2B = TCCR2B;
   TCCR2A = 0x00;  // TCCR2A = 0x00 = "normal" operation - Normal port operation, OC2A &
                   // OC2B disconnected
   TCCR2B = 0x07;  // TCCR2B = 0x07 = 0b00000111 - Clock Select bits 22, 21, & 20 on -
                   // prescaler set to CK/1024
-}
-
-void SDI12Timer::resetSDI12TimerPrescale(void) {
-  TCCR2A = preSDI12_TCCR2A;
-  TCCR2B = preSDI12_TCCR2B;
-}
-
 #elif F_CPU == 8000000L
-
-void SDI12Timer::configSDI12TimerPrescale(void) {
-  preSDI12_TCCR2A = TCCR2A;
-  preSDI12_TCCR2B = TCCR2B;
   TCCR2A = 0x00;  // TCCR2A = 0x00 = "normal" operation - Normal port operation, OC2A &
                   // OC2B disconnected
   TCCR2B = 0x06;  // TCCR2B = 0x06 = 0b00000110 - Clock Select bits 22 & 20 on -
                   // prescaler set to CK/256
+#endif
 }
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {
@@ -103,59 +86,37 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR2B = preSDI12_TCCR2B;
 }
 
-// void SDI12Timer::configSDI12TimerPrescale(void)
-// {
-//     preSDI12_TCCR2A = TCCR2A;
-//     preSDI12_TCCR2B = TCCR2B;
-//     TCCR2A = 0x00;  // TCCR2A = 0x00 = "normal" operation - Normal port operation,
-//     OC2A & OC2B disconnected TCCR2B = 0x07;  // TCCR2B = 0x07 = 0b00000111 - Clock
-//     Select bits 22, 21, & 20 on - prescaler set to CK/1024
-// }
-// void SDI12Timer::resetSDI12TimerPrescale(void)
-// {
-//     TCCR2A = preSDI12_TCCR2A;
-//     TCCR2B = preSDI12_TCCR2B;
-// }
-#endif
-
-
 // ATtiny boards (ie, adafruit trinket)
-//
 #elif defined(__AVR_ATtiny25__) | defined(__AVR_ATtiny45__) | defined(__AVR_ATtiny85__)
 
+sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
+  return TCNT1;
+}
 /**
  * @brief The value of timer control register 1A prior to being set for SDI-12.
  */
 static uint8_t preSDI12_TCCR1A;
 
+void SDI12Timer::configSDI12TimerPrescale(void) {
+  preSDI12_TCCR1A = TCCR1;
 #if F_CPU == 16000000L
-
-void SDI12Timer::configSDI12TimerPrescale(void) {
-  preSDI12_TCCR1A = TCCR1;
   TCCR1           = 0b00001011;  // Set the prescaler to 1024
-}
-
-void SDI12Timer::resetSDI12TimerPrescale(void) {
-  TCCR1 = preSDI12_TCCR1A;
-}
-
-
 #elif F_CPU == 8000000L
-
-void SDI12Timer::configSDI12TimerPrescale(void) {
-  preSDI12_TCCR1A = TCCR1;
-  TCCR1           = 0b00001010;  // Set the prescaler to 512
+  TCCR1 = 0b00001010;  // Set the prescaler to 512
+#endif
 }
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR1 = preSDI12_TCCR1A;
 }
-#endif
-
 
 // Arduino Leonardo & Yun and other 32U4 boards
 #elif defined(ARDUINO_AVR_YUN) || defined(ARDUINO_AVR_LEONARDO) || \
   defined(__AVR_ATmega32U4__)
+
+sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
+  return TCNT4;
+}
 
 /**
  * @brief The value of timer control register 4A prior to being set for SDI-12.
@@ -178,14 +139,13 @@ static uint8_t preSDI12_TCCR4D;
  */
 static uint8_t preSDI12_TCCR4E;
 
-#if F_CPU == 16000000L
-
 void SDI12Timer::configSDI12TimerPrescale(void) {
   preSDI12_TCCR4A = TCCR4A;
   preSDI12_TCCR4B = TCCR4B;
   preSDI12_TCCR4C = TCCR4C;
   preSDI12_TCCR4D = TCCR4D;
   preSDI12_TCCR4E = TCCR4E;
+#if F_CPU == 16000000L
   TCCR4A = 0x00;  // TCCR4A = 0x00 = "normal" operation - Normal port operation, OC4A &
                   // OC4B disconnected
   TCCR4B = 0x0B;  // TCCR4B = 0x0B = 0b00001011 - Clock Select bits 43, 41, & 40 on -
@@ -194,23 +154,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
                   // disconnected
   TCCR4D = 0x00;  // TCCR4D = 0x00 = No fault protection
   TCCR4E = 0x00;  // TCCR4E = 0x00 = No register locks or overrides
-}
-
-void SDI12Timer::resetSDI12TimerPrescale(void) {
-  TCCR4A = preSDI12_TCCR4A;
-  TCCR4B = preSDI12_TCCR4B;
-  TCCR4C = preSDI12_TCCR4C;
-  TCCR4D = preSDI12_TCCR4D;
-  TCCR4E = preSDI12_TCCR4E;
-}
-
 #elif F_CPU == 8000000L
-void SDI12Timer::configSDI12TimerPrescale(void) {
-  preSDI12_TCCR4A = TCCR4A;
-  preSDI12_TCCR4B = TCCR4B;
-  preSDI12_TCCR4C = TCCR4C;
-  preSDI12_TCCR4D = TCCR4D;
-  preSDI12_TCCR4E = TCCR4E;
   TCCR4A = 0x00;  // TCCR4A = 0x00 = "normal" operation - Normal port operation, OC4A &
                   // OC4B disconnected
   TCCR4B = 0x0A;  // TCCR4B = 0x0A = 0b00001010 - Clock Select bits 43 & 41 on -
@@ -219,6 +163,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
                   // disconnected
   TCCR4D = 0x00;  // TCCR4D = 0x00 = No fault protection
   TCCR4E = 0x00;  // TCCR4E = 0x00 = No register locks or overrides
+#endif
 }
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {
@@ -228,8 +173,6 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR4D = preSDI12_TCCR4D;
   TCCR4E = preSDI12_TCCR4E;
 }
-#endif
-
 
 // Arduino Zero other SAMD21 boards
 #elif defined(ARDUINO_SAMD_ZERO) || defined(__SAMD21G18A__) || \
