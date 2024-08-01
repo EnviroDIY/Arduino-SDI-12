@@ -657,7 +657,7 @@ void loop() {
       }
       min_wait = 800;
       // min_wait = max(10, min_wait / 2);
-      max_wait = max(1000L, max_wait + 1000L);
+      max_wait = max((uint32_t)1000, max_wait + (uint32_t)1000);
       Serial.print("minimum expected wait for all sensors: ");
       Serial.println(min_wait);
       Serial.print("maximum expected wait for all sensors: ");

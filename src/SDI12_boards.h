@@ -223,6 +223,7 @@ sensors. This library provides a general software solution, without requiring
  * @brief The function or macro used to read the clock timer value.
  *
  * This signifies the register of timer/counter 3, the 16-bit count, the count value
+ * This is equivalent to TC3->COUNT16.COUNT.reg
  */
 #define READTIME REG_TC3_COUNT16_COUNT
 
@@ -247,7 +248,18 @@ sensors. This library provides a general software solution, without requiring
  * @brief A string description of the timer to use
  *
  * For SDI-12, we'll use generic clock generator 6
+ * The Adafruit Arduino core uses:
+ * - 0 as GENERIC_CLOCK_GENERATOR_MAIN
+ * - 1 as GENERIC_CLOCK_GENERATOR_48M
+ * - 2 as GENERIC_CLOCK_GENERATOR_100M
+ * - 3 as GENERIC_CLOCK_GENERATOR_XOSC32K
+ * - 4 as GENERIC_CLOCK_GENERATOR_12M
+ *
  * For SDI-12, we'll use Timer Control 2
+ * The Adafruit Arduino core uses:
+ * - TC0 as primary for Tone (any other timer could be used, depending on the pin)
+ * - TC1 for Servo (any other timer could be used, depending on the pin)
+
  */
 #define TIMER_IN_USE_STR "GCLK6-TC2"
 
@@ -271,7 +283,9 @@ sensors. This library provides a general software solution, without requiring
 /**
  * @brief The function or macro used to read the clock timer value.
  *
- * This signifies the register of timer/counter 2, the 16-bit count, the count value
+ * For the SAMD51, reading the timer is a multi-step process of first writing a read
+ * sync bit, waiting, and then reading the register.  Because of the steps, we need a
+ * function.
  */
 #define READTIME REG_TC2_COUNT16_COUNT
 
@@ -290,7 +304,20 @@ sensors. This library provides a general software solution, without requiring
 #define TICKS_PER_SECOND 600000
 
 // Espressif ESP32/ESP8266 boards or any boards faster than 48MHz not mentioned above
-// WARNING: I haven't tested the minimum speed that this will work at!
+
+// From calculations using https://github.com/SRGDamia1/avrcycle, the micros() function
+// takes 60 (!!) clock cycles. We're going to blindly assume that the micros() function
+// takes up about the same number of clock cycles for all Arduino boards.  This is
+// probably a huge assumption, but go with it. If we're going to use micros() for
+// timing, lets set a minimum usable CPU speed of the micros() function being accurate
+// to 1µs. That means we need to get 60 ticks/1µs or 60MHz. Ehh.. Maybe we'll be
+// generous and try it down to 48MHz.
+// TODO: Test 48MHz
+
+// I know from testing, that we *cannot* use micros on a board 8MHz AVR board, but that
+// it does work on a 80MHz Espressif8266.
+
+// WARNING: I haven't actullay tested the minimum speed that this will work at!
 #elif defined(ESP32) || defined(ESP8266) || F_CPU >= 48000000L
 
 /**
@@ -503,17 +530,12 @@ class SDI12Timer {
    * processors.
    */
   void resetSDI12TimerPrescale(void);
-
-// if we're using the `micros()` function
-#if TICKS_PER_SECOND == 1000000 && TIMER_INT_SIZE == 32
   /**
-   * @brief Read the processor micros and right shift 6 bits (ie, divide by 64) to get a
-   * 64µs tick.
+   * @brief A function to read the timer value, where a multi-step function is needed.
    *
-   * @return **sdi12timer_t** The current processor micros
+   * @return **sdi12timer_t** The current timer value
    */
   sdi12timer_t SDI12TimerRead(void);
-#endif
 };
 
 #endif  // SRC_SDI12_BOARDS_H_

@@ -3,48 +3,72 @@
 This library listens for pin level changes and then use a timer to calculate how many databits have been sent since the last change and to convert that to a character.
 The speed of the timer is dependent on the speed of the processor and "dividers" and "prescalers" used to slow the effective clock.
 Unfortunately, the "ticks" of the processor clock aren't perfectly aligned with the times of the level changes from the SDI-12 device.
-With the clocks not perfectly aligned, we can't know exactly the time that a bit started or ended, just the time of the closest tick.
+With the clocks not perfectly aligned, we can't know exactly the time that a bit started or ended, just the time of the last readable tick.
 This means we need to do some averaging and "fudging" to align the two.
 
 @See @page rx_page for more information on how a character is created.
 
 SDI-12 Communicates at 1200 baud (bits/s) and sends each character using 10 bits (7E1).
- - 1 bit = 0.83333 ms
- - 1 character = 8.33333 ms
+
+- Character Times:
+  - 1 bit = 0.83333 ms (?? tolerance ??)
+  - 1 character = 8.33333 ms
+  - maximum marking between character stop (LOW) and next character start (HIGH) = 1.66ms (**no tolerance**)
+    - This is equivalent to 2 bits!
+
+- Break and Marking Times
+  - maximum sensor wake time (between a break and start bit) = 100ms ± 0.4ms
+  - minimum marking (LOW) return-to-sleep time = 100ms ± 0.4ms
+  - recorder break (HIGH) between commands =  >12ms ± 0.4ms (ie, >12.5ms)
+  - maximum recorder marking (LOW) before a start bit (HIGH) = >8.33ms ± 0.4ms (ie, >8.73ms)
+  - maximum time before relinquishing line control after stop bit = 7.5ms ± 0.4ms
+  - maximum marking (LOW) before a new waking break (HIGH) must be issued = 87ms ± 0.4ms
+    - A break is also required when switching between sensors
+
+- Retry Times
+  - There are two retry "loops" - an "inner" loop of retries without breaks between and an "outer" loop of retries with breaks in between
+  - Inner Retries (*without* breaks between)
+    - Response window before a retry = 16.67ms - 87ms (< 87ms = time before a break is required)
+    - A minimum of 3 "inner" retries are required.
+    - At least one of the "inner" retries must start >100ms after the falling edge (end) of the break that started the innter retry loop.
+  - Outer Retries (*with* breaks between)
+    - Outer retries are used after >112.5ms of inner retries have been attempted
+    - A minimum of 3 "outer" retries are required.
 
 When setting up our timers, the goal is to be able to have as many ticks as possible for each bit.
 The more ticks we have, the better job we can do with the needed averaging and fudging.
+With <10 ticks/bit, we probably won't be accurate enough to be functional.
 But, we also need to make sure that the clock timer doesn't roll over before the end of the 8.33ms required for each character.
 When acting as a recording device, it would be even better if the timer could last until the end of a 112.5ms retry timer before rolling over.
+There is no benefit to the timer lasting longer than 112.5ms before rolling over.
 
-Using a 16 bit counter, the counter rolls after 65535 ticks.
- - Going for the maximum retry time, 112.5ms / 65536 ticks = 1.71661376953125 µsec/tick (582.54222 kHz) = 485.25767 ticks/bit
-   - This is *plenty* of ticks per bit!  With a 16-bit timer, there's no reason to not use this whole period.
-   - For an 8MHz board, this is a 14x pre-scaler
-   - For a 12MHz board, this is a 21x pre-scaler
-   - For a 16MHz board, this is a 27x pre-scaler
-   - For a 20MHz board, this is a 35x pre-scaler
-   - Prescalers generally work in powers of 2, so 1024/512/256/128/64/8/4/2
-   - Because we have to catch the full character, we need to round UP the prescaler number to give us more ticks than required.
-     - For a 8, 12, 16, or 20 Mhz board, this means a 64x pre-scaler
-     - For the faster SAMD-boards, we have more options with divisors and prescalers
- - Going for the minimum 8.33ms per character, 8.33ms / 65536 ticks = 0.127105712890625 µsec/tick (7.86747 MHz) = 6553.6 ticks/bit
-   - This is overkill.
+Each timer has finite options for pre-scaling, often in powers of 2.
+To catch all the bits we need, when selecting the prescaler, we must round **UP** to the next closest available prescaler number (round **DOWN** the Hz) to give us more ticks than required.
+
+Using a 16 bit counter, the counter rolls after 65536 ticks.
+
+- Going for the maximum retry time, 112.5ms / 65536 ticks
+  - 1.71661376953125 µsec/tick, 582.54222 kHz
+  - 485.25767 ticks/bit
+  - This is *plenty* of ticks per bit!  With a 16-bit timer, there's no reason to not use this whole period.
+- Going for the minimum 8.33ms per character, 8.33ms / 65536 ticks
+  - 0.127105712890625 µsec/tick, 7.86747 MHz
+  - 6553.6 ticks/bit
+  - This is overkill.
+
+- Conclusion: With a 16-bit timer, select the smallest prescaler possible that keeps the speed *below* 582 kHz
 
 If we only have an 8 bit timer, the counter rolls after 256 ticks.
- - Going for the maximum retry time, 112.5ms / 256 ticks = 1.89554 ticks/bit
-   -  0.439453125 msec/tick, 2.275 kHz
-   - This is no where near enough bits / tick for accuracy, so it is not possible to keep a timer running for the 112.5 ms retry with a 8-bit timer.
- - Going for the minimum 8.33ms per character, 8.33ms / 256 ticks = 25.6 ticks/bit
-   - 0.0325390625 msec/tick, 30.73229 kHz
-   - For an 8MHz board, this is a 260x pre-scaler
-   - For a 12MHz board, this is a 390x pre-scaler
-   - For a 16MHz board, this is a 520x pre-scaler
-   - For a 20MHz board, this is a 651x pre-scaler
-   - Prescalers generally work in powers of 2, so 1024/512/256/128/64/8/4/2
-   - Because we have to catch the full character, we need to round UP the prescaler number to give us more ticks than required.
-     - For a 8MHz or 12MHz board, this means a 512x pre-scaler
-     - For a 16MHz or 20MHz board, this is a 1024x pre-scaler
+
+- Going for the maximum retry time, 112.5ms / 256 ticks
+  - 0.439453125 msec/tick, 2.275 kHz
+  - 1.89554 ticks/bit
+  - This is no where near enough bits / tick for accuracy, so it is not possible to keep a timer running for the 112.5 ms retry with a 8-bit timer.
+- Going for the minimum 8.33ms per character, 8.33ms / 256 ticks = 25.6 ticks/bit
+  - 0.0325390625 msec/tick, 30.73229 kHz
+  - 25.6 ticks/bit
+
+- Conclusion: With a 8-bit timer, select the smallest prescaler possible that keeps the speed *below* 30 kHz
 
 # Supported Processors and Timers
 
@@ -242,8 +266,8 @@ The Adafruit Arduino core uses:
 For SDI-12, we'll use Timer Control 2
 
 The Adafruit Arduino core uses:
-- TC0 for Tone
-- TC1 for Servo
+- TC0 for Tone (though any other timer may be used, if another pin is selected)
+- TC1 for Servo (though any other timer may be used, if another pin is selected)
 
 ## Other Boards
 

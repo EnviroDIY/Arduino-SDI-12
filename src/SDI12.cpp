@@ -252,7 +252,6 @@ void SDI12::end() {
   setState(SDI12_DISABLED);
   _activeObject = nullptr;
   // Set the timer prescalers back to original values
-  // NOTE:  This does NOT reset SAMD board pre-scalers!
   sdi12timer.resetSDI12TimerPrescale();
 }
 
@@ -389,7 +388,8 @@ void SDI12::forceListen() {
 }
 
 /* ================ Waking Up and Talking To Sensors ================================*/
-// this function wakes up the entire sensor bus
+// this function wakes up the entire sensor bus by sending a 12ms break followed by 8.33
+// ms of marking
 void SDI12::wakeSensors(int8_t extraWakeTime) {
   setState(SDI12_TRANSMITTING);
   // Universal interrupts can be on while the break and marking happen because
@@ -407,7 +407,27 @@ void SDI12::writeChar(uint8_t outChar) {
   uint8_t currentTxBitNum = 0;  // first bit is start bit
   uint8_t bitValue        = 1;  // start bit is HIGH (inverse parity...)
 
-  noInterrupts();  // _ALL_ interrupts disabled so timing can't be shifted
+  // The tolerance on all SDI-12 commands is 0.40ms = 400µs. But... that's for between
+  // commands, and we don't know how accurate all sensors are, so we probably don't want
+  // to be off by more than 1/10 of that between bits.
+
+  // Let's assume an interrupt routine can take up 1000 clock cycles. I don't know if
+  // that's reasonable, but per
+  // https://forum.arduino.cc/t/how-many-clock-cycles-does-digitalread-write-take/467153
+  // a single digitalWrite function takes up 50 clock cycles so 20x that seems like a
+  // safe buffer. Our own SDI-12 receive ISR takes up roughly 617 clock cycles on a
+  // Mayfly. [Calculated using a modified version of
+  // https://github.com/SRGDamia1/avrcycles.] For the a 1000 clock cycle interrupt
+  // to not shift timing by more than 400µs the clock must have more than 40,000,000
+  // cycles in one second (40MHz). For any board slower than 40MHz, we'll, disable _ALL_
+  // interrupts during sending so timing can't be shifted. For faster boards, we
+  // can probably safely leave interrupts on. Disabling interrupts can screw up build-in
+  // functions like micros(), millis() and any real-time clocks, so we don't want to
+  // disable them if we don't really have to.
+
+#if F_CPU < 40000000UL
+  noInterrupts();  // _ALL_ interrupts disabled
+#endif
 
   sdi12timer_t t0 = READTIME;  // start time
 
@@ -417,12 +437,18 @@ void SDI12::writeChar(uint8_t outChar) {
             // this gives us 833µs to calculate parity and position of last high bit
   currentTxBitNum++;
 
+  // Calculate parity, while writing the start bit
+  // This takes about 24 clock cycles on an AVR board (at 8MHz, that's 3µsec)
+
   uint8_t parityBit = parity_even_bit(outChar);  // Calculate the parity bit
   outChar |= (parityBit << 7);  // Add parity bit to the outgoing character
 
   // Calculate the position of the last bit that is a 0/HIGH (ie, HIGH, not marking)
   // That bit will be the last time-critical bit.  All bits after that can be
   // sent with interrupts enabled.
+  // This calculation should also finish while writing the start bit
+  // This takes at least 10+13 clock cycles, and up to 10+(13*9)= 127 clock cycles (at
+  // 8MHz, that's 15.875µsec)
 
   uint8_t lastHighBit =
     9;  // The position of the last bit that is a 0 (ie, HIGH, not marking)
@@ -433,6 +459,8 @@ void SDI12::writeChar(uint8_t outChar) {
   }
 
   // Hold the line for the rest of the start bit duration
+  // We've used up roughly 150 clock cycles messing with parity, but a bit is 833µs, so
+  // we've got time.
 
   while ((sdi12timer_t)(READTIME - t0) < txBitWidth) {}
   t0 = READTIME;  // advance start time
@@ -447,7 +475,7 @@ void SDI12::writeChar(uint8_t outChar) {
     }
     // Hold the line for this bit duration
     while ((sdi12timer_t)(READTIME - t0) < txBitWidth) {}
-    t0 = READTIME;  // start time
+    t0 = READTIME;  // advance start time
 
     outChar = outChar >> 1;  // shift character to expose the following bit
   }

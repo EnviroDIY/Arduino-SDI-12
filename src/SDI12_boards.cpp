@@ -41,7 +41,6 @@ sdi12timer_t SDI12Timer::bitTimes(sdi12timer_t dt) {
 
 
 // Most 'standard' AVR boards
-//
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || \
   defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) ||  \
   defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__) ||   \
@@ -155,7 +154,6 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 
 
 // Arduino Leonardo & Yun and other 32U4 boards
-//
 #elif defined(ARDUINO_AVR_YUN) || defined(ARDUINO_AVR_LEONARDO) || \
   defined(__AVR_ATmega32U4__)
 
@@ -234,7 +232,6 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 
 
 // Arduino Zero other SAMD21 boards
-//
 #elif defined(ARDUINO_SAMD_ZERO) || defined(__SAMD21G18A__) || \
   defined(__SAMD21J18A__) || defined(__SAMD21E18A__)
 
@@ -367,29 +364,39 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
      // configured to output to a dedicated GCLK_IOn pin. If GENCTRLn.OE is zero, this
      // bit has no effect and the generator will only be running if a peripheral
      // requires the clock.
+     // (0x1U << 13) = ~0b00000000000000000010000000000000 =
+     //                 0b11111111111111111101111111111111
      // For SDI-12, we do *not* run in standby
      ~GCLK_GENCTRL_DIVSEL &  // Bit 12 – DIVSEL Divide Selection
      // ^^ This bit determines how the division factor of the clock source of the
      // Generator will be calculated from DIV. If the clock source should not be
      // divided, DIVSEL must be 0 and the GENCTRLn.DIV value must be either 0 or 1.
+     // (0x1U << 12) = ~0b00000000000000000001000000000000
+     //                 0b11111111111111111110111111111111
      // For SDI-12, we set this to 0 to divide by the value in the Division Factor bits
      // (ie, 512)
      ~GCLK_GENCTRL_OE) |  // Bit 11 – OE Output Enable
     // ^^ This bit is used to output the Generator clock output to the corresponding pin
     // (GCLK_IO[7..0]), as long as GCLK_IOn is not defined as the Generator source in
     // the GENCTRLn.SRC bit field.
+    // (0x1U << 11) = ~0b00000000000000000000100000000000
+    //                 0b11111111111111111111011111111111
     // For SDI-12, we don't need to enable output
     // GCLK_GENCTRL_OOV |  // Bit 10 – OOV Output Off Value
     // ^^ This bit is used to control the clock output value on pin (GCLK_IO[7..0]) when
     // the Generator is turned off or the OE bit is zero, as long as GCLK_IOn is not
     // defined as the Generator source in the GENCTRLn.SRC bit field.
+    // (0x1U << 10) = ~0b00000000000000000000010000000000
+    //                 0b11111111111111111111101111111111
     // For SDI-12, we don't need to enable output or have an output value
     (GCLK_GENCTRL_IDC |    // Bit 9 = Improve Duty Cycle
                            // ^^ This bit is used to improve the duty cycle of the
                            // Generator output to 50/50 for odd division factors. For
                            // SDI-12, set the generator output clock duty cycle to 50/50
+                           // (0x1U << 9) = 0b00000000000000000000001000000000
      GCLK_GENCTRL_GENEN |  // Bit 8 Generator Enable
      // ^^ This bit is used to enable and disable the Generator.
+     // (0x1U << 8) = ~0b00000000000000000000000100000000
      // Enable the generator!
      // Bits 7:4 are reserved
      GCLK_GENCTRL_SRC(
