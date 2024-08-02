@@ -305,8 +305,7 @@ sensors. This library provides a general software solution, without requiring
  *
  * Start with 48MHz "main" clock source (GCLK_GENCTRL_SRC_DFLL48M)
  * 48MHz / 6x clock source divider (GCLK_GENDIV_DIV(6)) = 8MHz
- * 8MHz / 16x prescaler (TC_CTRLA_PRESCALER_DIV16) =  500kHz = 500,000 'ticks'/sec = 2
- * µs / 'tick' (1 sec/1200 bits) * (1 tick/2 µs) = 416.66667 ticks/bit
+ * 8MHz / 16x prescaler (TC_CTRLA_PRESCALER_DIV16) =  500kHz = 500,000 'ticks'/sec
  */
 #define TICKS_PER_SECOND 500000
 
@@ -332,7 +331,6 @@ sensors. This library provides a general software solution, without requiring
 
  */
 #define TIMER_IN_USE_STR "GCLK6-TC2"
-
 /**
  * @brief The interger type of the timer.
  *

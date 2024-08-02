@@ -560,7 +560,7 @@ class SDI12 : public Stream {
   /**
    * @brief Get the data pin for the current SDI-12 instance
    *
-   * @return the data pin number
+   * @return The data pin number
    */
   int8_t getDataPin();
   /**
@@ -711,7 +711,7 @@ class SDI12 : public Stream {
    * @brief Calculate the parity value for a character using even parity.
    *
    * @param v **uint8_t (char)** the character to calculate the parity of
-   * @return the input character with the 8th bit set
+   * @return The input character with the 8th bit set
    * to the even parity value for that character
    *
    * Sets up parity and interrupts for different processor types - that is, imports the
