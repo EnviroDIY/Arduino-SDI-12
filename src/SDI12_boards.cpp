@@ -145,25 +145,19 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   preSDI12_TCCR4C = TCCR4C;
   preSDI12_TCCR4D = TCCR4D;
   preSDI12_TCCR4E = TCCR4E;
-#if F_CPU == 16000000L
   TCCR4A = 0x00;  // TCCR4A = 0x00 = "normal" operation - Normal port operation, OC4A &
                   // OC4B disconnected
+#if F_CPU == 16000000L
   TCCR4B = 0x0B;  // TCCR4B = 0x0B = 0b00001011 - Clock Select bits 43, 41, & 40 on -
                   // prescaler set to CK/1024
-  TCCR4C = 0x00;  // TCCR4C = 0x00 = "normal" operation - Normal port operation, OC4D0
-                  // disconnected
-  TCCR4D = 0x00;  // TCCR4D = 0x00 = No fault protection
-  TCCR4E = 0x00;  // TCCR4E = 0x00 = No register locks or overrides
 #elif F_CPU == 8000000L
-  TCCR4A = 0x00;  // TCCR4A = 0x00 = "normal" operation - Normal port operation, OC4A &
-                  // OC4B disconnected
   TCCR4B = 0x0A;  // TCCR4B = 0x0A = 0b00001010 - Clock Select bits 43 & 41 on -
                   // prescaler set to CK/512
+#endif
   TCCR4C = 0x00;  // TCCR4C = 0x00 = "normal" operation - Normal port operation, OC4D0
                   // disconnected
   TCCR4D = 0x00;  // TCCR4D = 0x00 = No fault protection
   TCCR4E = 0x00;  // TCCR4E = 0x00 = No register locks or overrides
-#endif
 }
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {
@@ -216,6 +210,10 @@ static uint32_t preSDI12_REG_GCLK_GENCTRL;
  * This is an 32-bit register located at 0x40000C00 + 0x2
  */
 static uint8_t preSDI12_REG_GCLK_CLKCTRL;
+
+sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
+  return REG_TC3_COUNT8_COUNT;
+}
 
 void SDI12Timer::configSDI12TimerPrescale(void) {
   // read control register values prior to changes
@@ -343,6 +341,28 @@ static uint32_t preSDI12_REG_GCLK_GENCTRL;
  * @see docs/SAMD51PeripheralClocks.dox for a list of the peripheral channel numbers.
  */
 static uint32_t preSDI12_REG_GCLK_PCHCTRL;
+
+sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
+  // Note from datasheet: Prior to any read access, this register must be synchronized
+  // by user by writing the according TC Command value to the Control B Set register
+  // (CTRLBSET.CMD=READSYNC)
+  // see:
+  // https://onlinedocs.microchip.com/oxy/GUID-F5813793-E016-46F5-A9E2-718D8BCED496-en-US-13/GUID-5033DFD7-EB2D-4870-AE98-D40CADB0531E.html
+
+  // Code taken from Microchip article on how to read the tiemr value
+  // https://microchip.my.site.com/s/article/SAM-D5x-E5x--Reading-TC-TCC-COUNT-register
+
+
+  // write READSYNC command to the Control B Set register
+  SDI12_TC->COUNT16.CTRLBSET.reg = TC_CTRLBSET_CMD_READSYNC;
+
+  // wait for the CMD bits in CTRLBSET to be cleared, meaning the CMD has been executed
+  while (SDI12_TC->COUNT16.CTRLBSET.reg & TC_CTRLBSET_CMD_READSYNC)
+    ;
+
+  // read the COUNT register
+  return SDI12_TC->COUNT16.COUNT.reg;
+}
 
 void SDI12Timer::configSDI12TimerPrescale(void) {
   // read the values of the registers prior to making changes
@@ -493,28 +513,6 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   // fully software reset the control register for SDI-12 Timer Controller and then
   // disable it
   resetTC(SDI12_TC);
-}
-
-sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
-  // Note from datasheet: Prior to any read access, this register must be synchronized
-  // by user by writing the according TC Command value to the Control B Set register
-  // (CTRLBSET.CMD=READSYNC)
-  // see:
-  // https://onlinedocs.microchip.com/oxy/GUID-F5813793-E016-46F5-A9E2-718D8BCED496-en-US-13/GUID-5033DFD7-EB2D-4870-AE98-D40CADB0531E.html
-
-  // Code taken from Microchip article on how to read the tiemr value
-  // https://microchip.my.site.com/s/article/SAM-D5x-E5x--Reading-TC-TCC-COUNT-register
-
-
-  // write READSYNC command to the Control B Set register
-  SDI12_TC->COUNT16.CTRLBSET.reg = TC_CTRLBSET_CMD_READSYNC;
-
-  // wait for the CMD bits in CTRLBSET to be cleared, meaning the CMD has been executed
-  while (SDI12_TC->COUNT16.CTRLBSET.reg & TC_CTRLBSET_CMD_READSYNC)
-    ;
-
-  // read the COUNT register
-  return SDI12_TC->COUNT16.COUNT.reg;
 }
 
 // Espressif ESP32/ESP8266 boards or other boards faster than 48MHz
