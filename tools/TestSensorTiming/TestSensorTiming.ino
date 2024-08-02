@@ -45,7 +45,7 @@ int32_t wake_delay  = min_wake_delay;
 
 int32_t total_meas_time = 0;
 int32_t total_meas_made = 0;
-int32_t max_meas_time   = 0;
+uint32_t max_meas_time   = 0;
 
 struct startMeasurementResult {  // Structure declaration
   String  returned_address;
@@ -430,7 +430,7 @@ void setup() {
 
   // Power the sensors;
   if (powerPin >= 0 && !testPowerOff) {
-    Serial.println("Powering up sensors, wait...");
+    Serial.println("Powering up sensors, wait 30s...");
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
     delay(30000L);
@@ -443,7 +443,7 @@ void loop() {
   while (got_good_results && checks_at_time < 25) {
     Serial.print("Repeat attempt ");
     Serial.print(checks_at_time);
-    Serial.print(" with warm-up time of ");
+    Serial.print(" with power on warm-up time of ");
     Serial.println(power_delay);
 
     // Power down the sensors;
@@ -499,7 +499,7 @@ void loop() {
     }
   }
 
-  // if we got a good result 25 at this warm-up, keep testing how long the
+  // if we got a good result 25x at this warm-up, keep testing how long the
   // measurements take
   while (got_good_results) {
     uint32_t this_meas_time = takeMeasurement(sensorAddress, true, "", false);
