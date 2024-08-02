@@ -13,14 +13,19 @@ uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port *
 int8_t   dataPin       = 7;      /*!< The pin of the SDI-12 data bus */
 char     sensorAddress = '0';    /*!< The address of the SDI-12 sensor */
 int8_t   powerPin      = 22; /*!< The sensor power pin (or -1 if not switching power) */
-uint32_t wake_delay    = 100; /*!< Extra time needed for the sensor to wake (0-100ms) */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(dataPin);
 
 /** Define some testing specs */
-bool    testPowerOff    = true;
-int32_t min_power_delay = 4900L;      /*!< The min time to test wake after power on. */
+
+/** Error codes, if returned */
+int8_t error_result_number = 7;
+float  no_error_value      = 0;
+
+/** Testing turning off power */
+bool    testPowerOff          = false;
+int32_t min_power_delay       = 100L; /*!< The min time to test wake after power on. */
 int32_t max_power_delay = 180000L;    /*!< The max time to test wake after power on. */
 int32_t increment_power_delay = 100L; /*!< The time to lengthen waits between reps. */
 int32_t power_off_time        = 60000L; /*!< The time to power off between tests. */
@@ -28,8 +33,15 @@ int32_t power_off_time        = 60000L; /*!< The time to power off between tests
  * the real world! Some sensors take longer to warm up if they've been off for a while.
  */
 
+/** Testing the length of the break */
+bool    testBreak      = true;
+int32_t min_wake_delay = 0;   /*!< The min time to test wake after a line break. */
+int32_t max_wake_delay = 100; /*!< The max time to test wake (should be <=100). */
+int32_t increment_wake = 5;   /*!< The time to lengthen waits between reps. */
+
 /** set some initial values */
 int32_t power_delay = min_power_delay;
+int32_t wake_delay  = min_wake_delay;
 
 int32_t total_meas_time = 0;
 int32_t total_meas_made = 0;
@@ -178,12 +190,14 @@ bool getResults(char address, int resultsExpected, bool verify_crc = false,
           resultsReceived++;
         }
         // check for a failure error code at the end
-        if (resultsReceived == 5 && result != 0.0) {
-          gotResults      = false;
-          resultsReceived = 0;
-          if (printCommands) {
-            Serial.print("Got a failure code of ");
-            Serial.println(String(result, strnlen(dec_pl, max_sdi_digits) - 1));
+        if (error_result_number >= 1) {
+          if (resultsReceived == error_result_number && result != no_error_value) {
+            gotResults      = false;
+            resultsReceived = 0;
+            if (printCommands) {
+              Serial.print("Got a failure code of ");
+              Serial.println(String(result, strnlen(dec_pl, max_sdi_digits) - 1));
+            }
           }
         }
 
@@ -357,6 +371,49 @@ bool checkActive(char address, int8_t numPings = 3, bool printCommands = true) {
   }
   mySDI12.clearBuffer();
   return false;
+}
+
+/**
+ * @brief gets identification information from a sensor, and prints it to the serial
+ * port
+ *
+ * @param i a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
+ */
+bool printInfo(char i, bool printCommands = true) {
+  String command = "";
+  command += (char)i;
+  command += "I!";
+  mySDI12.sendCommand(command, wake_delay);
+  if (printCommands) {
+    Serial.print(">>>");
+    Serial.println(command);
+  }
+  delay(100);
+
+  String sdiResponse = mySDI12.readStringUntil('\n');
+  sdiResponse.trim();
+  // allccccccccmmmmmmvvvxxx...xx<CR><LF>
+  if (printCommands) {
+    Serial.print("<<<");
+    Serial.println(sdiResponse);
+  }
+
+  Serial.print("Address: ");
+  Serial.print(sdiResponse.substring(0, 1));  // address
+  Serial.print(", SDI-12 Version: ");
+  Serial.print(sdiResponse.substring(1, 3).toFloat() / 10);  // SDI-12 version number
+  Serial.print(", Vendor ID: ");
+  Serial.print(sdiResponse.substring(3, 11));  // vendor id
+  Serial.print(", Sensor Model: ");
+  Serial.print(sdiResponse.substring(11, 17));  // sensor model
+  Serial.print(", Sensor Version: ");
+  Serial.print(sdiResponse.substring(17, 20));  // sensor version
+  Serial.print(", Sensor ID: ");
+  Serial.print(sdiResponse.substring(20));  // sensor id
+  Serial.println();
+
+  if (sdiResponse.length() < 3) { return false; };
+  return true;
 }
 
 void setup() {
