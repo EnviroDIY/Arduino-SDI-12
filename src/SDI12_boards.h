@@ -113,7 +113,7 @@ sensors. This library provides a general software solution, without requiring
  *
  * The c macro name for the register used to access the timer/counter 1 value is TCNT1
  */
-#define READTIME TCNT2
+#define READTIME TCNT1  // Using Timer 1
 
 #if F_CPU == 16000000L
 /**

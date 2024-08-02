@@ -425,7 +425,7 @@ void SDI12::writeChar(uint8_t outChar) {
   // functions like micros(), millis() and any real-time clocks, so we don't want to
   // disable them if we don't really have to.
 
-#if F_CPU < 40000000UL
+#if F_CPU < 48000000UL
   noInterrupts();  // _ALL_ interrupts disabled
 #endif
 

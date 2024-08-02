@@ -181,7 +181,7 @@ enum LookaheadMode {
   /** Only tabs, spaces, line feeds & carriage returns are skipped.*/
   SKIP_WHITESPACE
 };
-#endif
+#endif  // defined(ESP32) || defined(ESP8266)
 
 /**
  * @brief The main class for SDI 12 instances
