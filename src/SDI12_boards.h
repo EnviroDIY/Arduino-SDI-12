@@ -505,7 +505,7 @@ class SDI12Timer {
    *
    * @see https://github.com/SlashDevin/NeoSWSerial/pull/13#issuecomment-315463522
    */
-  static sdi12timer_t bitTimes(sdi12timer_t dt);
+  static uint16_t bitTimes(sdi12timer_t dt);
 
   /**
    * @brief Set the processor timer prescaler such that the 10 bits of an SDI-12

@@ -24,16 +24,16 @@ uint16_t SDI12Timer::mul8x8to16(uint8_t x, uint8_t y) {
 
 // Using an 8-bit timer, we need to do fanciness to get proper 16 bit results
 #if TIMER_INT_SIZE == 8
-sdi12timer_t SDI12Timer::bitTimes(sdi12timer_t dt) {
+uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
   // multiply the time delta in ticks by the bits per tick
   return mul8x8to16(dt + RX_WINDOW_FUDGE, BITS_PER_TICK_Q10) >> 10;
 }
 
 // But nothing fancy for bigger timers
 #elif TIMER_INT_SIZE == 16 || TIMER_INT_SIZE == 32
-sdi12timer_t SDI12Timer::bitTimes(sdi12timer_t dt) {
+uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
   // divide the number of ticks by the ticks per bit
-  return (sdi12timer_t)((dt + (sdi12timer_t)RX_WINDOW_FUDGE) / (sdi12timer_t)TICKS_PER_BIT);
+  return (uint16_t)((dt + (sdi12timer_t)RX_WINDOW_FUDGE) / (sdi12timer_t)TICKS_PER_BIT);
 }
 #else
 #error "Board timer is incorrectly configured!"
@@ -62,7 +62,6 @@ sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
 void SDI12Timer::configSDI12TimerPrescale(void) {
   preSDI12_TCCR2A = TCCR2A;
   preSDI12_TCCR2B = TCCR2B;
-
 #if F_CPU == 16000000L
   TCCR2A = 0x00;  // TCCR2A = 0x00 = "normal" operation - Normal port operation, OC2A &
                   // OC2B disconnected
@@ -92,6 +91,7 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
   return TCNT1;
 }
+
 /**
  * @brief The value of timer control register 1A prior to being set for SDI-12.
  */
