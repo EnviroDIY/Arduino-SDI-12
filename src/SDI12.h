@@ -162,6 +162,36 @@ typedef const __FlashStringHelper* FlashString;
 #define SDI12_BUFFER_SIZE 81
 #endif
 
+#ifndef SDI12_YIELD_MS
+/**
+ * @brief The time to delay, in milliseconds, to allow the buffer to fill before
+ * returning the value from the buffer.
+ *
+ * This may be needed for faster processors to account for the slow baud rate of SDI-12.
+ * Without this, the available() function may return 0 while we're in the middle of
+ * reading a character.
+ *
+ * There are 8.33 ms/character, so we delay by 8ms for fast processors to allow one
+ * character to finish.
+ */
+#if F_CPU >= 48000000L
+#define SDI12_YIELD_MS 8
+#else
+#define SDI12_YIELD_MS 0
+#endif
+#endif
+
+#ifndef SDI12_YIELD
+/**
+ * @brief A delay function to allow the buffer to fill before returning the value from
+ * the buffer.
+ *
+ * This may be needed for faster processors to account for the slow baud rate of SDI-12.
+ */
+#define SDI12_YIELD() \
+  { delay(SDI12_YIELD_MS); }
+#endif
+
 #if defined(ESP32) || defined(ESP8266)
 /**
  * @brief This enumeration provides the lookahead options for parseInt(), parseFloat().

@@ -522,14 +522,14 @@ sensors. This library provides a general software solution, without requiring
  * (65536 ticks/roll-over) * (1 bit/416.66667 ticks) = 157.284 bits
  * (65536 ticks/roll-over) * (1 sec/500000 ticks) = 131.07 milliseconds
  */
-#define TICKS_PER_BIT 417
+#define TICKS_PER_BIT 416
 /**
  * @brief A "fudge factor" to get the Rx to work well. It mostly works to ensure that
  * uneven tick increments get rounded up.
  *
  * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
  */
-#define RX_WINDOW_FUDGE 11
+#define RX_WINDOW_FUDGE 30
 
 #elif TICKS_PER_SECOND == 1000000 && TIMER_INT_SIZE == 32
 /**
