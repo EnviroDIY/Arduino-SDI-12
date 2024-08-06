@@ -359,7 +359,7 @@ void SDI12::setState(SDI12_STATES state) {
         pinMode(_dataPin, INPUT);   // Turn off the pull-up resistor
         pinMode(_dataPin, OUTPUT);  // Pin mode = output
         setPinInterrupts(false);    // Interrupts disabled on data pin
-#ifdef SDI12_CHECK_PARITY;
+#ifdef SDI12_CHECK_PARITY
         _parityFailure = false;  // reset the parity failure flag
 #endif
         break;
@@ -795,12 +795,12 @@ void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::receiveISR() {
     // If this was the 8th or more bit then the character and parity are complete.
     // The stop bit may still be outstanding
     if (rxState > 7) {
-#ifdef SDI12_CHECK_PARITY;
+#ifdef SDI12_CHECK_PARITY
       uint8_t rxParity = bitRead(rxValue, 7);  // pull out the parity bit
 #endif
       rxValue &= 0x7F;        // Throw away the parity bit (and with 0b01111111)
       charToBuffer(rxValue);  // Put the finished character into the buffer
-#ifdef SDI12_CHECK_PARITY;
+#ifdef SDI12_CHECK_PARITY
       uint8_t checkParity =
         parity_even_bit(rxValue);  // Calculate the parity bit from character w/o parity
       if (rxParity != checkParity) { _parityFailure = true; }
@@ -810,7 +810,7 @@ void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::receiveISR() {
       // character (but have gotten all the data bits) then this should be a
       // stop bit and we can start looking for a new start bit.
       if ((pinLevel == LOW) || !nextCharStarted) {
-        rxState = WAITING_FOR_START_BIT;  // DISABLE STOP BIT TIMER
+        rxState = WAITING_FOR_START_BIT;  // reset the rx state, stop waiting for stop bit
       } else {
         // If we just switched to HIGH, or we've exceeded the total number of
         // bits in a character, then the character must have ended with 1's/LOW,

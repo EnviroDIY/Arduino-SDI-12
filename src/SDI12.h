@@ -274,6 +274,18 @@ class SDI12 : public Stream {
    *
    * - if 0: indicates that we got a start bit
    * - if >0: indicates the number of bits received
+   *
+   * 0 - got start bit
+   * 1 - got data bit 0
+   * 2 - got data bit 1
+   * 3 - got data bit 2
+   * 4 - got data bit 3
+   * 5 - got data bit 4
+   * 6 - got data bit 5
+   * 7 - got data bit 6
+   * 8 - got data bit 7 (parity)
+   * 9 - got stop bit
+   * 255 - waiting for next start bit
    */
   static uint8_t rxState;
   /**
@@ -606,7 +618,7 @@ class SDI12 : public Stream {
    * @param dataPin  The data pin's digital pin number
    */
   void setDataPin(int8_t dataPin);
-#ifdef SDI12_CHECK_PARITY;
+#ifdef SDI12_CHECK_PARITY
   bool _parityFailure;
 #endif
   /**@}*/
