@@ -15,16 +15,60 @@ char     sensorAddress = '0';    /*!< The address of the SDI-12 sensor */
 int8_t   powerPin      = 22; /*!< The sensor power pin (or -1 if not switching power) */
 
 /** Define the SDI-12 bus */
-SDI12   mySDI12(dataPin);
-int32_t min_wake_delay  = 0;      /*!< The min time to test wake after a line break. */
-int32_t increment_wake  = 5;      /*!< The time to lengthen waits between reps. */
-int32_t max_wake_delay  = 100;    /*!< The max time to test wake (should be <=100). */
-int32_t min_power_delay = 100L;   /*!< The min time to test wake after power on. */
-int32_t increment_power = 100;    /*!< The time to lengthen waits between reps. */
-int32_t max_power_delay = 10000L; /*!< The max time to test wake after power on. */
+SDI12 mySDI12(dataPin);
 
+/** Define some testing specs */
+
+/** Error codes, if returned */
+int8_t error_result_number = 7;
+float  no_error_value      = 0;
+
+/** Testing turning off power */
+int32_t min_power_delay = 100L;   /*!< The min time to test wake after power on. */
+int32_t max_power_delay = 10000L; /*!< The max time to test wake after power on. */
+int32_t increment_power = 100;    /*!< The time to lengthen waits between reps. */
+
+/** Testing the length of the break */
+int32_t min_wake_delay = 0;   /*!< The min time to test wake after a line break. */
+int32_t max_wake_delay = 100; /*!< The max time to test wake (should be <=100). */
+int32_t increment_wake = 5;   /*!< The time to lengthen waits between reps. */
+
+/** set some initial values */
 int32_t power_delay = min_power_delay;
 int32_t wake_delay  = min_wake_delay;
+
+// this checks for activity at a particular address
+// expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
+bool checkActive(char address, int8_t numPings = 3, bool printCommands = false) {
+  String command = "";
+  command += (char)address;  // sends basic 'acknowledge' command [address][!]
+  command += "!";
+
+  for (int j = 0; j < numPings; j++) {  // goes through three rapid contact attempts
+    if (printCommands) {
+      Serial.print(">>>");
+      Serial.println(command);
+    }
+    mySDI12.sendCommand(command, wake_delay);
+
+    // the sensor should just return its address
+    String sdiResponse = mySDI12.readStringUntil('\n');
+    sdiResponse.trim();
+    if (printCommands) {
+      Serial.print("<<<");
+      Serial.println(sdiResponse);
+    }
+    mySDI12.clearBuffer();
+
+    // check the address, return false if it's incorrect
+    String returned_address = sdiResponse.substring(0, 1);
+    char   ret_addr_array[2];
+    returned_address.toCharArray(ret_addr_array, sizeof(ret_addr_array));
+    if (returned_address == String(address)) { return true; }
+  }
+  mySDI12.clearBuffer();
+  return false;
+}
 
 /**
  * @brief gets identification information from a sensor, and prints it to the serial
@@ -69,39 +113,6 @@ bool printInfo(char i, bool printCommands = true) {
   return true;
 }
 
-// this checks for activity at a particular address
-// expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-bool checkActive(char address, int8_t numPings = 3, bool printCommands = false) {
-  String command = "";
-  command += (char)address;  // sends basic 'acknowledge' command [address][!]
-  command += "!";
-
-  for (int j = 0; j < numPings; j++) {  // goes through three rapid contact attempts
-    if (printCommands) {
-      Serial.print(">>>");
-      Serial.println(command);
-    }
-    mySDI12.sendCommand(command, wake_delay);
-
-    // the sensor should just return its address
-    String sdiResponse = mySDI12.readStringUntil('\n');
-    sdiResponse.trim();
-    if (printCommands) {
-      Serial.print("<<<");
-      Serial.println(sdiResponse);
-    }
-    mySDI12.clearBuffer();
-
-    // check the address, return false if it's incorrect
-    String returned_address = sdiResponse.substring(0, 1);
-    char   ret_addr_array[2];
-    returned_address.toCharArray(ret_addr_array, sizeof(ret_addr_array));
-    if (returned_address == String(address)) { return true; }
-  }
-  mySDI12.clearBuffer();
-  return false;
-}
-
 void setup() {
   Serial.begin(serialBaud);
   while (!Serial)
@@ -131,6 +142,7 @@ void loop() {
       pinMode(powerPin, OUTPUT);
       digitalWrite(powerPin, HIGH);
       delay(power_delay);
+      mySDI12.clearBuffer();
     }
 
     if (checkActive(sensorAddress, 1, true)) {

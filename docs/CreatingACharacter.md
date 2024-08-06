@@ -205,7 +205,7 @@ void SDI12::receiveISR() {
     // data, parity, or stop bit.
 
     // Check how many bit times have passed since the last change
-    uint16-t rxBits = bitTimes((uint8-t)(thisBitTCNT - prevBitTCNT));
+    uint16-t rxBits = bitTimes((uint8_t)(thisBitTCNT - prevBitTCNT));
     // Calculate how many *data+parity* bits should be left in the current character
     //      - Each character has a total of 10 bits, 1 start bit, 7 data bits, 1 parity
     // bit, and 1 stop bit
