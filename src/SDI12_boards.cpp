@@ -512,7 +512,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {}
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {}
 
-sdi12timer_t ESPFAMILY_USE_INSTRUCTION_RAM SDI12Timer::SDI12TimerRead(void) {
+sdi12timer_t ISR_MEM_ACCESS SDI12Timer::SDI12TimerRead(void) {
   return ((sdi12timer_t)(micros()));
 }
 

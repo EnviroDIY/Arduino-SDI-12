@@ -687,19 +687,19 @@ bool SDI12::verifyCRC(String& respWithCRC) {
 /* ================ Interrupt Service Routine =======================================*/
 
 // 7.1 - Passes off responsibility for the interrupt to the active object.
-void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::handleInterrupt() {
+void ISR_MEM_ACCESS SDI12::handleInterrupt() {
   if (_activeObject) _activeObject->receiveISR();
 }
 
 // 7.2 - Creates a blank slate of bits for an incoming character
-void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::startChar() {
+void ISR_MEM_ACCESS SDI12::startChar() {
   rxState = 0;     // got a start bit
   rxMask  = 0x01;  // 0b00000001, bit mask, lsb first
   rxValue = 0x00;  // 0b00000000, RX character to be, a blank slate
 }  // startChar
 
 // 7.3 - The actual interrupt service routine
-void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::receiveISR() {
+void ISR_MEM_ACCESS SDI12::receiveISR() {
   sdi12timer_t thisBitTCNT =
     READTIME;  // time of this data transition (plus ISR latency)
 
