@@ -172,8 +172,6 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 #elif defined(ARDUINO_SAMD_ZERO) || defined(__SAMD21G18A__) || \
   defined(__SAMD21J18A__) || defined(__SAMD21E18A__)
 
-#define SDI12_TC TC3
-
 /// Fully reset the TC to factory settings and disable it
 static inline void resetTC(Tc* TCx) {
   // Disable TCx
@@ -294,15 +292,6 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 
 // SAMD51 and SAME51 boards
 #elif defined(__SAMD51__) || defined(__SAME51__)
-
-/// The clock generator number to use
-#define GENERIC_CLOCK_GENERATOR_SDI12 (6u)
-/// The bit to check for synchronization
-#define GCLK_SYNCBUSY_SDI12 GCLK_SYNCBUSY_GENCTRL6
-/// The timer controller to use
-#define SDI12_TC TC2
-// The peripheral index within the generic clock for the selected timer controller
-#define SDI12_TC_GCLK_ID TC2_GCLK_ID
 
 /// Fully reset the TC to factory settings and disable it
 static inline void resetTC(Tc* TCx) {
@@ -485,8 +474,8 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
 
   // configure the control register for the timer control
   uint32_t postSDI12_REG_TC_CTRLA =
-    ~TC_CTRLA_CAPTEN0 &          // Disable capture for channel 0
-    ~TC_CTRLA_CAPTEN1 &          // Disable capture for channel 1
+    ~TC_CTRLA_CAPTEN0 &          // Disable capture for channel 0 (use for compare)
+    ~TC_CTRLA_CAPTEN1 &          // Disable capture for channel 1 (use for compare)
     ~TC_CTRLA_RUNSTDBY &         // Disable run on standby
     (TC_CTRLA_PRESCALER_DIV16 |  // Set prescaler to 16
      TCC_CTRLA_PRESCSYNC_GCLK |  // Reload or reset the counter on next generic clock

@@ -287,6 +287,9 @@ sensors. This library provides a general software solution, without requiring
  */
 #define TIMER_INT_TYPE uint16_t
 #define TIMER_INT_SIZE 16
+
+#define SDI12_TC TC3
+
 /**
  * @brief The function or macro used to read the clock timer value.
  *
@@ -338,6 +341,21 @@ sensors. This library provides a general software solution, without requiring
  */
 #define TIMER_INT_TYPE uint16_t
 #define TIMER_INT_SIZE 16
+
+/// The clock generator number to use
+#define GENERIC_CLOCK_GENERATOR_SDI12 (6u)
+/// The bit to check for synchronization
+#define GCLK_SYNCBUSY_SDI12 GCLK_SYNCBUSY_GENCTRL6
+/// The timer controller to use
+#define SDI12_TC TC2
+/// The interupt request number for the SDI-12 stop bit compare interrupt
+#define SDI12_TC_IRQn TC2_IRQn
+/// The interupt handler for the SDI-12 stop bit compare interrupt
+#define SDI12_STOP_HANDLER TC2_Handler
+/// The timer capture/compare channel to use
+#define SDI12_TC_CHANNEL 0
+// The peripheral index within the generic clock for the selected timer controller
+#define SDI12_TC_GCLK_ID TC2_GCLK_ID
 
 /**
  * @brief The function or macro used to read the clock timer value.
