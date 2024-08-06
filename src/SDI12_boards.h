@@ -348,12 +348,6 @@ sensors. This library provides a general software solution, without requiring
 #define GCLK_SYNCBUSY_SDI12 GCLK_SYNCBUSY_GENCTRL6
 /// The timer controller to use
 #define SDI12_TC TC2
-/// The interupt request number for the SDI-12 stop bit compare interrupt
-#define SDI12_TC_IRQn TC2_IRQn
-/// The interupt handler for the SDI-12 stop bit compare interrupt
-#define SDI12_STOP_HANDLER TC2_Handler
-/// The timer capture/compare channel to use
-#define SDI12_TC_CHANNEL 0
 // The peripheral index within the generic clock for the selected timer controller
 #define SDI12_TC_GCLK_ID TC2_GCLK_ID
 
