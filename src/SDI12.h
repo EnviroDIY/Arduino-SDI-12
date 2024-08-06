@@ -138,6 +138,13 @@ typedef const __FlashStringHelper* FlashString;
 /// a char not found in a valid ASCII numeric field
 #define NO_IGNORE_CHAR '\x01'
 
+#ifndef SDI12_IGNORE_PARITY
+/**
+ * @brief Check the value of the parity bit on reception
+ */
+#define SDI12_CHECK_PARITY
+#endif
+
 #ifndef SDI12_WAKE_DELAY
 /**
  * @brief The amount of additional time in milliseconds that the sensor takes to wake
@@ -599,6 +606,9 @@ class SDI12 : public Stream {
    * @param dataPin  The data pin's digital pin number
    */
   void setDataPin(int8_t dataPin);
+#ifdef SDI12_CHECK_PARITY;
+  bool _parityFailure;
+#endif
   /**@}*/
 
 

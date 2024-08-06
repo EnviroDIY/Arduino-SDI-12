@@ -359,6 +359,9 @@ void SDI12::setState(SDI12_STATES state) {
         pinMode(_dataPin, INPUT);   // Turn off the pull-up resistor
         pinMode(_dataPin, OUTPUT);  // Pin mode = output
         setPinInterrupts(false);    // Interrupts disabled on data pin
+#ifdef SDI12_CHECK_PARITY;
+        _parityFailure = false;  // reset the parity failure flag
+#endif
         break;
       }
     case SDI12_LISTENING:
@@ -790,10 +793,18 @@ void ESPFAMILY_USE_INSTRUCTION_RAM SDI12::receiveISR() {
     }
 
     // If this was the 8th or more bit then the character and parity are complete.
+    // The stop bit may still be outstanding
     if (rxState > 7) {
+#ifdef SDI12_CHECK_PARITY;
+      uint8_t rxParity = bitRead(rxValue, 7);  // pull out the parity bit
+#endif
       rxValue &= 0x7F;        // Throw away the parity bit (and with 0b01111111)
       charToBuffer(rxValue);  // Put the finished character into the buffer
-
+#ifdef SDI12_CHECK_PARITY;
+      uint8_t checkParity =
+        parity_even_bit(rxValue);  // Calculate the parity bit from character w/o parity
+      if (rxParity != checkParity) { _parityFailure = true; }
+#endif
 
       // if this is LOW, or we haven't exceeded the number of bits in a
       // character (but have gotten all the data bits) then this should be a
