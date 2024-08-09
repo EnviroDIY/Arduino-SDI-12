@@ -1,5 +1,5 @@
 /**
- * @file d_simple_logger.ino
+ * @example{lineno} d_simple_logger.ino
  * @copyright Stroud Water Research Center
  * @license This example is published under the BSD-3 license.
  * @author Kevin M.Smith <SDI12@ethosengineering.org>

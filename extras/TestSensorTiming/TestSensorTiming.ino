@@ -1,5 +1,5 @@
 /**
- * @file TestWarmUp.ino
+ * @example{lineno} TestSensorTiming.ino
  * @copyright Stroud Water Research Center
  * @license This example is published under the BSD-3 license.
  * @author Sara Damiano <sdamiano@stroudcenter.org>
@@ -378,6 +378,7 @@ bool checkActive(char address, int8_t numPings = 3, bool printCommands = true) {
  * port
  *
  * @param i a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
+ * @param printCommands true to print the raw output and input from the command
  */
 bool printInfo(char i, bool printCommands = true) {
   String command = "";

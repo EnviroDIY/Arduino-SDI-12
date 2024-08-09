@@ -93,20 +93,6 @@ For **each bit time that passed**, we apply the `rxMask` to the `rxValue`.
 #### A LOW/1 Bit<!-- {#rx_mask_low} -->
 
 - if the data bit received is LOW (1) we do an `|=` (bitwise OR) between the `rxMask` and the `rxValue`
-[//]: # ( @dot )
-
-digraph xor {
-  graph[rankdir=BT];
-  node[shape=record];
-
-  rxValue[label="{ {<rxValue>rxValue|<rxValue7>0|<rxValue6>0|<rxValue5>0|<rxValue4>0|<rxValue3>0|<rxValue2>0|<rxValue1>0|<rxValue0>1} }"];
-  maskState[label=" {<rxMask>rxMask|<rxState>rxState}|{<rxMask7>0|<rxState7>0}|{<rxMask6>0|<rxState6>0}|{<rxMask5>0|<rxState5>0}|{<rxMask4>0|<rxState4>0}|{<rxMask3>0|<rxState3>0}|{<rxMask2>0|<rxState2>0}|{<rxMask1>0|<rxState1>0}|{<rxMask0>0|<rxState0>0}"];
-
-  maskState:rxMask0 -> rxValue:rxValue0[label="bit-wise or (|=) puts the one \nfrom the rxMask into the rxValue"];
-}
-
-[//]: # ( @enddot )
-
 
 ```
     rxValue: |     0   0   0   0   0   0   0   1
@@ -119,20 +105,6 @@ digraph xor {
 
 - if the data bit received is HIGH (0) we do nothing
 
-
-[//]: # ( @dot )
-
-digraph xor {
-  graph[rankdir=BT];
-  node[shape=record];
-
-  rxValue[label="{ {<rxValue>rxValue|<rxValue7>0|<rxValue6>0|<rxValue5>0|<rxValue4>0|<rxValue3>0|<rxValue2>0|<rxValue1>0|<rxValue0>1} }"];
-  maskState[label=" {<rxMask>rxMask|<rxState>rxState}|{<rxMask7>0|<rxState7>0}|{<rxMask6>0|<rxState6>0}|{<rxMask5>0|<rxState5>0}|{<rxMask4>0|<rxState4>0}|{<rxMask3>0|<rxState3>0}|{<rxMask2>0|<rxState2>0}|{<rxMask1>0|<rxState1>0}|{<rxMask0>0|<rxState0>0}"];
-
-  maskState:rxMask0 -> rxValue:rxValue0[label="nothing happens",arrowhead="obox"];
-}
-
-[//]: # ( @enddot )
 ```
     rxValue: |     0   0   0   0   0   0   0   0
 -------------|---------------------------------x- nothing happens

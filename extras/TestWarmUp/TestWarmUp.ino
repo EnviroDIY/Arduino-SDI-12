@@ -1,5 +1,5 @@
 /**
- * @file TestWarmUp.ino
+ * @example{lineno} TestWarmUp.ino
  * @copyright Stroud Water Research Center
  * @license This example is published under the BSD-3 license.
  * @author Sara Damiano <sdamiano@stroudcenter.org>

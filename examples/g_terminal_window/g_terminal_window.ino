@@ -1,10 +1,10 @@
 /**
- * @file g_terminal_window.ino
+ * @example{lineno} g_terminal_window.ino
  * @copyright Stroud Water Research Center
  * @license This example is published under the BSD-3 license.
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
- * @author Ruben Kertesz <github@emnet.net> or @rinnamon on twitter
+ * @author Ruben Kertesz <github@emnet.net> or \@rinnamon on twitter
  * @date 2016
  *
  * @brief Example G: Using the Arduino as a Command Terminal for SDI-12 Sensors

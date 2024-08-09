@@ -16,6 +16,8 @@ jobs:
       boards_to_build: 'mayfly,uno,megaatmega2560,leonardo,zeroUSB,arduino_nano_esp32,feather328p,feather32u4,adafruit_feather_m0,adafruit_feather_m4,adafruit_grandcentral_m4,huzzah,featheresp32,nodemcu,nodemcuv2,esp32dev,esp32-c3-devkitm-1,esp32-s3-devkitm-1'
       examples_to_build: 'examples/a_wild_card,examples/b_address_change,examples/c_check_all_addresses,examples/d_simple_logger,examples/e_continuous_measurement,examples/f_basic_data_request,examples/g_terminal_window,examples/h_SDI-12_slave_implementation,examples/i_SDI-12_interface,examples/k_concurrent_logger,examples/l_verify_crc'
     secrets: inherit
+
+
   build_ext_ints:
     name: Build the External Interrupt Example
     runs-on: ubuntu-latest

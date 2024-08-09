@@ -1,5 +1,40 @@
 # Bits and Ticks
 
+[//]: # ( @tableofcontents )
+
+[//]: # ( @cond GitHub )
+
+- [Bits and Ticks](#bits-and-ticks)
+  - [SDI-12 Timing Rules](#sdi-12-timing-rules)
+  - [Ideal Timer Settings](#ideal-timer-settings)
+  - [AVR Boards](#avr-boards)
+    - [Available Timers on AVR Boards](#available-timers-on-avr-boards)
+      - [ATmega AVR Available Timers](#atmega-avr-available-timers)
+      - [ATtiny AVR Available Timers](#attiny-avr-available-timers)
+      - [ATmegaXU AVR Available Timers](#atmegaxu-avr-available-timers)
+    - [Timers Used by Arduino AVR Core](#timers-used-by-arduino-avr-core)
+    - [Selected AVR Timers for SDI-12](#selected-avr-timers-for-sdi-12)
+      - [ATmega AVR Selected Timers](#atmega-avr-selected-timers)
+      - [ATtiny AVR Selected Timers](#attiny-avr-selected-timers)
+      - [ATmegaXU Selected Timers](#atmegaxu-selected-timers)
+  - [SAMD Boards](#samd-boards)
+    - [SAMD21](#samd21)
+      - [Available Clocks and Timers on SAMD21 Boards](#available-clocks-and-timers-on-samd21-boards)
+        - [SAMD21 Generic Clock Generators](#samd21-generic-clock-generators)
+        - [SAMD21 Timer Controllers](#samd21-timer-controllers)
+      - [Timers Used by Arduino SAMD21 Core](#timers-used-by-arduino-samd21-core)
+      - [Selected SAMD21 Timers for SDI-12](#selected-samd21-timers-for-sdi-12)
+    - [SAMD51/SAME51](#samd51same51)
+      - [Available Clocks and Timers on SAMD51 Boards](#available-clocks-and-timers-on-samd51-boards)
+        - [SAMD51 Generic Clock Generators](#samd51-generic-clock-generators)
+        - [SAMD51 Timer Controllers](#samd51-timer-controllers)
+      - [Timers Used by Arduino SAMD51 Core](#timers-used-by-arduino-samd51-core)
+      - [Selected SAMD51 Timers for SDI-12](#selected-samd51-timers-for-sdi-12)
+  - [Other Boards](#other-boards)
+
+
+[//]: # ( @endcond )
+
 This library listens for pin level changes and then use a timer to calculate how many databits have been sent since the last change and to convert that to a character.
 The speed of the timer is dependent on the speed of the processor and "dividers" and "prescalers" used to slow the effective clock.
 Unfortunately, the "ticks" of the processor clock aren't perfectly aligned with the times of the level changes from the SDI-12 device.
@@ -74,14 +109,15 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 
 - Conclusion: With a 8-bit timer, select the smallest prescaler possible that keeps the speed *below* 30 kHz
 
-# Supported Processors and Timers
-
 ## AVR Boards
 
 ### Available Timers on AVR Boards
 
-#### ATmega164A/PA/324A/PA/644A/PA/1284/P
+#### ATmega AVR Available Timers
 
+[ATmega164A/PA/324A/PA/644A/PA/1284/P](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8272-8-bit-AVR-microcontroller-ATmega164A_PA-324A_PA-644A_PA-1284_P_datasheet.pdf)
+
+>
 > - Up to 20MIPS throughput at 20MHz
 >   - Most Arduino boards are run at 16 or 8 MHz with a few at 12 MHz
 > - Two 8-bit Timer/Counters with Separate Prescalers and Compare Modes
@@ -93,8 +129,9 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 >   - Prescalers available at 8/64/256/1024 on Timers 1 and 3
 >   - Timer 3 is only available on the 1284p
 
-#### ATmega640/V-1280/V-1281/V-2560/V-2561/V
+[ATmega640/V-1280/V-1281/V-2560/V-2561/V](https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf)
 
+>
 > - Up to 16 MIPS Throughput at 16MHz
 > – Two 8-bit Timer/Counters with Separate Prescaler and Compare Mode
 >   - Timers 0 and 2
@@ -104,8 +141,11 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 >   - Timers 1, 3, 4, and 5
 >   - Prescalers available at 8/64/256/1024 on Timer 1, 3, 4, and 5
 
-#### ATtiny25/V / ATtiny45/V / ATtiny85/V
+#### ATtiny AVR Available Timers
 
+[ATtiny25/V / ATtiny45/V / ATtiny85/V](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2586-AVR-8-bit-Microcontroller-ATtiny25-ATtiny45-ATtiny85_Datasheet.pdf)
+
+>
 > - Up to 20MIPS throughput at 20MHz
 >   - Most Arduino boards are run at 16 or 8 MHz with a few at 12 MHz
 > – One 8-bit Timer/Counter with Prescaler and Two PWM Channels
@@ -115,8 +155,11 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 >   - Timer 1
 >   - Prescalers available at 64/128/256/512/1024/2048/4096/8192/16384
 
-#### ATmega16U4/ATmega32U4
+#### ATmegaXU AVR Available Timers
 
+[ATmega16U4/ATmega32U4](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7766-8-bit-AVR-ATmega16U4-32U4_Datasheet.pdf)
+
+>
 > – Up to 16 MIPS Throughput at 16MHz
 > – One 8-bit Timer/Counter with Separate Prescaler and Compare Mode
 >   - Timer 0
@@ -127,9 +170,9 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 > – One 10-bit High-Speed Timer/Counter with PLL (64MHz) and Compare Mode
 >   - Timer 4
 >   - Prescalers available at 2/4/8/16/32/64/128/256/512/1024/2048/8192/169384 on Timer 4
->
-[!NOTE]
-There is no Timer 2 on the 16U4 or the 32U4
+
+> [!NOTE]
+> There is no Timer 2 on the 16U4 or the 32U4
 
 ### Timers Used by Arduino AVR Core
 
@@ -155,15 +198,16 @@ There is no Timer 2 on the 16U4 or the 32U4
   - Optional for [Tone](https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Tone.cpp) on some boards
   - Optional for [Servo](https://github.com/arduino-libraries/Servo) on some boards
 
-#### Selected Timers for SDI-12
+### Selected AVR Timers for SDI-12
 
-#### ATmega164A/PA/324A/PA/644A/PA/1284/P and ATmega640/V-1280/V-1281/V-2560/V-2561/V
+#### ATmega AVR Selected Timers
 
-For simplicity, we use Timer/Counter 2 on most AVR boards.
+For simplicity, we use Timer/Counter 2 for both ATmega164A/PA/324A/PA/644A/PA/1284/P and ATmega640/V-1280/V-1281/V-2560/V-2561/V series boards.
 
+>
 > Timer/Counter2 (TC2) is a general purpose, single channel, 8-bit Timer/Counter module.
 >
-> Features
+> **Features of Timer/Counter 2**
 >
 > - Single Channel Counter
 > - Clear Timer on Compare Match (Auto Reload)
@@ -173,20 +217,23 @@ For simplicity, we use Timer/Counter 2 on most AVR boards.
 > - Overflow and Compare Match Interrupt Sources (TOV2, OCF2A, and OCF2B)
 > - Allows Clocking from External 32kHz Watch Crystal Independent of the I/O Clock
 
-#### ATtiny25/V / ATtiny45/V / ATtiny85/V
+#### ATtiny AVR Selected Timers
 
-On the ATTiny boards, we use Timer/Counter 1
+On the ATTiny series (ATtiny25/V / ATtiny45/V / ATtiny85/V) boards, we use Timer/Counter 1
 
+>
 > The Timer/Counter1 features a high resolution and a high accuracy usage with the lower prescaling opportunities.
 > It can also support two accurate, high speed, 8-bit pulse width modulators using clock speeds up to 64MHz (or 32MHz in low speedmode).
 
-#### ATmega16U4/ATmega32U4
+#### ATmegaXU Selected Timers
 
 On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
 
+>
 > Timer/Counter4 is a general purpose high speed Timer/Counter module, with three independent Output Compare Units, and with enhanced PWM support.
 >
-> Features
+> **Features of Timer/Counter 4**
+>
 > - Up to 10-Bit Accuracy
 > - Three Independent Output Compare Units
 > - Clear Timer on Compare Match (Auto Reload)
@@ -199,8 +246,8 @@ On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
 > - High Speed Asynchronous and Synchronous Clocking Modes
 > - Separate Prescaler Unit
 
-[!NOTE]
-We only utilize the low byte register of Timer 4, effectively using the 10-bit timer as an 8-bit timer.
+> [!NOTE]
+> We only utilize the low byte register of Timer 4, effectively using the 10-bit timer as an 8-bit timer.
 
 ## SAMD Boards
 
@@ -208,27 +255,29 @@ We only utilize the low byte register of Timer 4, effectively using the 10-bit t
 
 #### Available Clocks and Timers on SAMD21 Boards
 
-##### Generic Clock Generators
+##### SAMD21 Generic Clock Generators
 
+>
 > The Generic Clock controller GCLK provides nine Generic Clock Generators that can provide a wide range of clock frequencies.
 > Generators can be set to use different external and internal oscillators as source.
 > The clock of each Generator can be divided.
 > The outputs from the Generators are used as sources for the Generic Clock Multiplexers, which provide the Generic Clock (GCLK_PERIPHERAL) to the peripheral modules, as shown in Generic Clock Controller Block Diagram.
 >
-> Features
+> **Features of the Generic Clock Generator**
 >
 > - Provides Generic Clocks
 > - Wide frequency range
 > - Clock source for the generator can be changed on the fly
 
-##### Timer Controllers
+##### SAMD21 Timer Controllers
 
+>
 > The TC consists of a counter, a prescaler, compare/capture channels and control logic.
 > The counter can be set to count events, or it can be configured to count clock pulses.
 > The counter, together with the compare/capture channels, can be configured to timestamp input events, allowing capture of frequency and pulse width.
 > It can also perform waveform generation, such as frequency generation and pulse-width modulation (PWM).
 >
-> Features
+> **Features of the Timer Controller**
 >
 > - Selectable configuration
 >   – Up to five 16-bit Timer/Counters (TC) including one low-power TC, each configurable as:
@@ -255,12 +304,13 @@ The Adafruit Arduino core uses:
 
 - 0 as GENERIC_CLOCK_GENERATOR_MAIN (the main clock)
 
+
 The Adafruit Arduino core uses:
 
 - TC5 for Tone
 - TC4 for Servo
 
-#### Selected Timers for SDI-12
+#### Selected SAMD21 Timers for SDI-12
 
 For SDI-12, we'll use Generic Clock Generator 4 and Timer Controller 3
 
@@ -268,8 +318,9 @@ For SDI-12, we'll use Generic Clock Generator 4 and Timer Controller 3
 
 #### Available Clocks and Timers on SAMD51 Boards
 
-##### Generic Clock Generators
+##### SAMD51 Generic Clock Generators
 
+>
 > Depending on the application, peripherals may require specific clock frequencies to operate correctly.
 > The Generic Clock controller (GCLK) features 12 Generic Clock Generators [11:0] that can provide a wide range of clock frequencies.
 >
@@ -280,15 +331,16 @@ For SDI-12, we'll use Generic Clock Generator 4 and Timer Controller 3
 >
 > NOTE: The Generator 0 is always the direct source of the GCLK_MAIN signal.
 >
-> Features
+> **Features of the Generic Clock Generators**
 >
 > - Provides a device-defined, configurable number of Peripheral Channel clocks
 > - Wide frequency range
 >   - Various clock sources
 >   - Embedded dividers
 
-##### Timer Controllers
+##### SAMD51 Timer Controllers
 
+>
 > There are up to eight TC peripheral instances.
 >
 > Each TC consists of a counter, a prescaler, compare/capture channels and control logic.
@@ -297,10 +349,10 @@ For SDI-12, we'll use Generic Clock Generator 4 and Timer Controller 3
 >
 > A TC can also perform waveform generation, such as frequency generation and pulse-width modulation.
 >
-> Features
+> **Features of the Timer Controllers**
 >
 > - Selectable configuration
->   -  8-, 16- or 32-bit TC operation, with compare/capture channels
+>   - 8-, 16- or 32-bit TC operation, with compare/capture channels
 > - 2 compare/capture channels (CC) with:
 >   - Double buffered timer period setting (in 8-bit mode only)
 >   - Double buffered compare channel
@@ -331,12 +383,13 @@ The Adafruit Arduino core uses:
 - 4 as GENERIC_CLOCK_GENERATOR_12M (12MHz clock for DAC, sourced from GCLK_GENCTRL_SRC_DPLL0)
 - 5 as GENERIC_CLOCK_GENERATOR_1M (??, sourced from  CLK_GENCTRL_SRC_DPLL0)
 
+
 The Adafruit Arduino core uses:
 
 - TC0 for Tone (though any other timer may be used, if another pin is selected)
 - TC1 for Servo (though any other timer may be used, if another pin is selected)
 
-#### Selected Timers for SDI-12
+#### Selected SAMD51 Timers for SDI-12
 
 For SDI-12, we'll use Generic Clock Generator 6 and Timer Controller 2
 
@@ -354,10 +407,10 @@ That will allow Rensas AVR processors to attempt SDI-12.
 
 I know from testing, that we *cannot* use micros on a board 8MHz AVR board, but that it does work on a 80MHz Espressif8266.
 
-[!WARNING]
-I haven't actually tested the minimum speed that this will work at!
+> [!WARNING]
+> I haven't actually tested the minimum speed that this will work at!
 
-@TODO: Test 48MHz
+@todo: Test 48MHz
 
 Both the ESP8266 and ESP32 are definitely fast enough that this works.
 

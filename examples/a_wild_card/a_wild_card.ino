@@ -1,6 +1,5 @@
-
 /**
- * @file a_wild_card.ino
+ * @example{lineno} a_wild_card.ino
  * @copyright Stroud Water Research Center
  * @license This example is published under the BSD-3 license.
  * @author Kevin M.Smith <SDI12@ethosengineering.org>

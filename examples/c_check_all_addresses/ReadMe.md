@@ -10,8 +10,8 @@ To address a sensor, please see Example B: b_address_change.ino
 
 [//]: # ( @section c_check_all_addresses_pio PlatformIO Configuration )
 
-[//]: # ( @example{lineno} c_check_all_addresses.ino @m_examplenavigation{examples_page,} @m_footernavigation )
-
 [//]: # ( @include{lineno} c_check_all_addresses/platformio.ini )
 
 [//]: # ( @section c_check_all_addresses_code The Complete Example )
+
+[//]: # ( @include{lineno} c_check_all_addresses/c_check_all_addresses.ino )
