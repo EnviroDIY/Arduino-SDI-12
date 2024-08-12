@@ -256,10 +256,12 @@ getResultsResult getResults(char address, int resultsExpected, bool verify_crc =
           Serial.print(", Raw value: ");
           Serial.print(float_buffer);
           dec_pl = strchr(float_buffer, '.');
-          // Serial.print(", Len after decimal: ");
-          // Serial.print(strnlen(dec_pl, max_sdi_digits));
+          size_t len_post_dec = 0;
+          if (dec_pl != nullptr) { len_post_dec = strnlen(dec_pl, max_sdi_digits) - 1; }
+          Serial.print(", Len after decimal: ");
+          Serial.print(len_post_dec);
           Serial.print(", Parsed value: ");
-          Serial.println(String(result, strnlen(dec_pl, max_sdi_digits) - 1));
+          Serial.println(String(result, len_post_dec));
         }
         // add how many results we have
         if (result != -9999) {
