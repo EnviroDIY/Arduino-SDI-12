@@ -268,7 +268,7 @@ class SDI12 : public Stream {
   /**
    * @brief Stores the time of the previous RX transition in micros
    */
-  static uint16_t prevBitTCNT;
+  static sdi12timer_t prevBitTCNT;
   /**
    * @brief Tracks how many bits are accounted for on an incoming character.
    *

@@ -70,10 +70,10 @@ const sdi12timer_t SDI12::txBitWidth = TICKS_PER_BIT;
 // A mask waiting for a start bit; 0b11111111
 const uint8_t SDI12::WAITING_FOR_START_BIT = 0xFF;
 
-uint16_t SDI12::prevBitTCNT;                      // previous RX transition in micros
-uint8_t  SDI12::rxState = WAITING_FOR_START_BIT;  // 0: got start bit; >0: bits rcvd
-uint8_t  SDI12::rxMask;   // bit mask for building received character
-uint8_t  SDI12::rxValue;  // character being built
+sdi12timer_t SDI12::prevBitTCNT;  // previous RX transition in micros
+uint8_t      SDI12::rxState = WAITING_FOR_START_BIT;  // 0: got start bit; >0: bits rcvd
+uint8_t      SDI12::rxMask;   // bit mask for building received character
+uint8_t      SDI12::rxValue;  // character being built
 
 /* ================ Buffer Setup ====================================================*/
 uint8_t          SDI12::_rxBuffer[SDI12_BUFFER_SIZE];  // The Rx buffer
@@ -238,6 +238,11 @@ SDI12::~SDI12() {
 
 // Begin
 void SDI12::begin() {
+#if defined(ESP32) || defined(ESP8266)
+  // Add and remove a fake interrupt to avoid errors with gpio_install_isr_service
+  attachInterrupt(digitalPinToInterrupt(_dataPin), nullptr, CHANGE);
+  detachInterrupt(digitalPinToInterrupt(_dataPin));
+#endif
   // setState(SDI12_HOLDING);
   setActive();
   // Set up the prescaler as needed for timers
@@ -489,7 +494,9 @@ void SDI12::writeChar(uint8_t outChar) {
   // Set the line low for the all remaining 1's and the stop bit
   digitalWrite(_dataPin, LOW);
 
+#if F_CPU < 48000000UL
   interrupts();  // Re-enable universal interrupts as soon as critical timing is past
+#endif
 
   // Hold the line low until the end of the 10th bit
   sdi12timer_t bitTimeRemaining = txBitWidth * (10 - lastHighBit);
