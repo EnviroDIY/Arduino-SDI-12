@@ -15,7 +15,11 @@
 #endif
 
 /* connection information */
+#if F_CPU > 48000000L
+uint32_t serialBaud = 921600; /*!< The baud rate for the output serial port */
+#else
 uint32_t serialBaud = 115200;         /*!< The baud rate for the output serial port */
+#endif
 int8_t   dataPin    = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin =
   SDI12_POWER_PIN; /*!< The sensor power pin (or -1 if not switching power) */
