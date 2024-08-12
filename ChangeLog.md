@@ -12,10 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Added python version to GitHub actions (for PlatformIO)
+- Switched to reusable workflows for GitHub actions
+- Consolidated timer prescaler math
 
 ### Added
 
+- Added support for SAMD51 processors using dedicated timers
+- Allowing (_**without testing**_) processors over 48MHz to use `micros()` function
+
 ### Removed
+
+- Offloaded some internal header file documentation to markdown files
 
 ### Fixed
 
