@@ -8,11 +8,20 @@
 
 #include <SDI12.h>
 
+#ifndef SDI12_DATA_PIN
+#define SDI12_DATA_PIN 7
+#endif
+#ifndef SDI12_POWER_PIN
+#define SDI12_POWER_PIN 22
+#endif
+
 /* connection information */
-uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port */
-int8_t   dataPin       = 7;      /*!< The pin of the SDI-12 data bus */
-char     sensorAddress = '0';    /*!< The address of the SDI-12 sensor */
-int8_t   powerPin      = 22; /*!< The sensor power pin (or -1 if not switching power) */
+uint32_t serialBaud = 115200;         /*!< The baud rate for the output serial port */
+int8_t   dataPin    = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin =
+  SDI12_POWER_PIN;          /*!< The sensor power pin (or -1 if not switching power) */
+uint32_t wake_delay    = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
+char     sensorAddress = '0'; /*!< The address of the SDI-12 sensor */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(dataPin);
@@ -43,8 +52,8 @@ int32_t increment_wake = 5;   /*!< The time to lengthen waits between reps. */
 int32_t power_delay = min_power_delay;
 int32_t wake_delay  = min_wake_delay;
 
-int32_t total_meas_time = 0;
-int32_t total_meas_made = 0;
+int32_t  total_meas_time = 0;
+int32_t  total_meas_made = 0;
 uint32_t max_meas_time   = 0;
 
 struct startMeasurementResult {  // Structure declaration
@@ -53,8 +62,17 @@ struct startMeasurementResult {  // Structure declaration
   int     numberResults;
 };
 
-bool getResults(char address, int resultsExpected, bool verify_crc = false,
-                bool printCommands = true) {
+struct getResultsResult {  // Structure declaration
+  uint8_t resultsReceived;
+  uint8_t maxDataCommand;
+  bool    addressMatch;
+  bool    crcMatch;
+  bool    errorCode;
+  bool    success;
+};
+
+getResultsResult getResults(char address, int resultsExpected, bool verify_crc = false,
+                            bool printCommands = true) {
   uint8_t resultsReceived = 0;
   uint8_t cmd_number      = 0;
   // The maximum number of characters that can be returned in the <values> part of the
@@ -65,6 +83,19 @@ bool getResults(char address, int resultsExpected, bool verify_crc = false,
   int max_sdi_response = 76;
   // max chars in a unsigned 64 bit number
   int max_sdi_digits = 21;
+
+  String compiled_response = "";
+
+  bool success = true;
+
+  // Create the return struct
+  getResultsResult return_result;
+  return_result.resultsReceived = 0;
+  return_result.maxDataCommand  = 0;
+  return_result.addressMatch    = true;
+  return_result.crcMatch        = true;
+  return_result.errorCode       = false;
+  return_result.success         = true;
 
   while (resultsReceived < resultsExpected && cmd_number <= 9) {
     String command = "";
@@ -88,6 +119,7 @@ bool getResults(char address, int resultsExpected, bool verify_crc = false,
 
     size_t data_bytes_read = bytes_read - 1;  // subtract one for the /r before the /n
     String sdiResponse     = String(resp_buffer);
+    compiled_response += sdiResponse;
     sdiResponse.trim();
     if (printCommands) {
       Serial.print("<<<");
@@ -109,7 +141,7 @@ bool getResults(char address, int resultsExpected, bool verify_crc = false,
     }
     mySDI12.clearBuffer();
 
-    // check the address, return if it's incorrect
+    // check the address, break if it's incorrect
     char returned_address = resp_buffer[0];
     if (returned_address != address) {
       if (printCommands) {
@@ -120,10 +152,12 @@ bool getResults(char address, int resultsExpected, bool verify_crc = false,
         Serial.println(String(returned_address));
         Serial.println(String(resp_buffer));
       }
-      return false;
+      success                    = false;
+      return_result.addressMatch = false;
+      break;
     }
 
-    // check the crc, return if it's incorrect
+    // check the crc, break if it's incorrect
     if (verify_crc) {
       bool crcMatch   = mySDI12.verifyCRC(sdiResponse);
       data_bytes_read = data_bytes_read - 3;
@@ -131,7 +165,9 @@ bool getResults(char address, int resultsExpected, bool verify_crc = false,
         if (printCommands) { Serial.println("CRC valid"); }
       } else {
         if (printCommands) { Serial.println("CRC check failed!"); }
-        return false;
+        return_result.crcMatch = false;
+        success                = false;
+        break;
       }
     }
 
@@ -192,8 +228,8 @@ bool getResults(char address, int resultsExpected, bool verify_crc = false,
         // check for a failure error code at the end
         if (error_result_number >= 1) {
           if (resultsReceived == error_result_number && result != no_error_value) {
-            gotResults      = false;
-            resultsReceived = 0;
+            success                 = false;
+            return_result.errorCode = true;
             if (printCommands) {
               Serial.print("Got a failure code of ");
               Serial.println(String(result, strnlen(dec_pl, max_sdi_digits) - 1));
@@ -237,8 +273,11 @@ bool getResults(char address, int resultsExpected, bool verify_crc = false,
     Serial.println(resultsReceived == resultsExpected ? "success." : "failure.");
   }
 
-  bool success = resultsReceived == resultsExpected;
-  return success;
+  success &= resultsReceived == resultsExpected;
+  return_result.resultsReceived = resultsReceived;
+  return_result.maxDataCommand  = cmd_number;
+  return_result.success         = success;
+  return return_result;
 }
 
 startMeasurementResult startMeasurement(char address, bool is_concurrent = false,
@@ -333,7 +372,8 @@ uint32_t takeMeasurement(char address, bool request_crc = false, String meas_typ
   }
 
   // if we got results, return the measurement time, else -1
-  if (getResults(address, startResult.numberResults, request_crc, printCommands)) {
+  if (getResults(address, startResult.numberResults, request_crc, printCommands)
+        .success) {
     return measTime;
   }
 
@@ -422,7 +462,9 @@ void setup() {
   while (!Serial)
     ;
 
-  Serial.println("Opening SDI-12 bus...");
+  Serial.print("Opening SDI-12 bus on pin ");
+  Serial.print(String(dataPin));
+  Serial.println("...");
   mySDI12.begin();
   delay(500);  // allow things to settle
 
@@ -431,10 +473,15 @@ void setup() {
 
   // Power the sensors;
   if (powerPin >= 0 && !testPowerOff) {
-    Serial.println("Powering up sensors, wait 30s...");
+    Serial.println("Powering up sensors with pin ");
+    Serial.print(String(powerPin));
+    Serial.println(", wait 30s...");
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
     delay(30000L);
+  } else {
+    Serial.println("Wait 5s...");
+    delay(5000L);
   }
 }
 
