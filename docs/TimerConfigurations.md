@@ -1,10 +1,10 @@
-# Bits and Ticks
+# Timer Configurations
 
 [//]: # ( @tableofcontents )
 
 [//]: # ( @cond GitHub )
 
-- [Bits and Ticks](#bits-and-ticks)
+- [Timer Configurations](#timer-configurations)
   - [SDI-12 Timing Rules](#sdi-12-timing-rules)
   - [Ideal Timer Settings](#ideal-timer-settings)
   - [AVR Boards](#avr-boards)

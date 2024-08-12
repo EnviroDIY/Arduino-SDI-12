@@ -105,7 +105,7 @@ The known compatibile pins for common variants are shown below:
 
 - 0, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69)
 
-**AtMega32u4 / Arduino Leonardo or Adafruit Feather:**
+**AtMega32u4 / Arduino Leonardo or Adafruit Feather 32u4:**
 
 - 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
 
