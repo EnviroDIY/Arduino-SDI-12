@@ -817,7 +817,8 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
       // character (but have gotten all the data bits) then this should be a
       // stop bit and we can start looking for a new start bit.
       if ((pinLevel == LOW) || !nextCharStarted) {
-        rxState = WAITING_FOR_START_BIT;  // reset the rx state, stop waiting for stop bit
+        rxState =
+          WAITING_FOR_START_BIT;  // reset the rx state, stop waiting for stop bit
       } else {
         // If we just switched to HIGH, or we've exceeded the total number of
         // bits in a character, then the character must have ended with 1's/LOW,
