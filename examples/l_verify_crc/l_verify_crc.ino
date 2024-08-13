@@ -1,17 +1,13 @@
 /**
- * @file f_basic_data_request.ino
+ * @example{lineno} l_verify_crc.ino
  * @copyright Stroud Water Research Center
  * @license This example is published under the BSD-3 license.
- * @author Ruben Kertesz <github@emnet.net> or @rinnamon on twitter
+ * @author Ruben Kertesz <github@emnet.net> or \@rinnamon on twitter
  * @date 2/10/2016
  *
- * @brief Example F: Basic Data Request to a Single Sensor
+ * @brief Example L: Verify CRC
  *
- * This is a very basic (stripped down) example where the user initiates a measurement
- * and receives the results to a terminal window without typing numerous commands into
- * the terminal.
- *
- * Edited by Ruben Kertesz for ISCO Nile 502 2/10/2016
+ * This example initiates a measurement anc checks the CRC on the returns.
  */
 
 #include <SDI12.h>
@@ -105,7 +101,7 @@ void loop() {
 
   // listen for measurement to finish
   unsigned long timerStart = millis();
-  while ((millis() - timerStart) < (meas_time_s + 1) * 1000) {
+  while ((millis() - timerStart) < (static_cast<uint32_t>(meas_time_s) + 1) * 1000) {
     if (mySDI12.available())  // sensor can interrupt us to let us know it is done early
     {
       unsigned long measTime = millis() - timerStart;

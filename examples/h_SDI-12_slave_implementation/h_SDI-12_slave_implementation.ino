@@ -1,5 +1,5 @@
 /**
- * @file h_SDI-12_slave_implementation.ino
+ * @example{lineno} h_SDI-12_slave_implementation.ino
  * @copyright Stroud Water Research Center
  * @license This example is published under the BSD-3 license.
  * @date 2016

@@ -6,8 +6,8 @@ This is a very basic (stripped down) example where the user initiates a measurem
 
 [//]: # ( @section f_basic_data_request_pio PlatformIO Configuration )
 
-[//]: # ( @example{lineno} f_basic_data_request.ino @m_examplenavigation{examples_page,} @m_footernavigation )
-
 [//]: # ( @include{lineno} f_basic_data_request/platformio.ini )
 
 [//]: # ( @section f_basic_data_request_code The Complete Example )
+
+[//]: # ( @include{lineno} f_basic_data_request/f_basic_data_request.ino )

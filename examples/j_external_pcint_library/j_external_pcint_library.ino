@@ -1,5 +1,5 @@
 /**
- * @file j_external_pcint_library.ino
+ * @example{lineno} j_external_pcint_library.ino
  * @copyright Stroud Water Research Center
  * @license This example is published under the BSD-3 license.
  * @author Kevin M.Smith <SDI12@ethosengineering.org>

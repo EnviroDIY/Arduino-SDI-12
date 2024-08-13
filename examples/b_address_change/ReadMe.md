@@ -18,8 +18,8 @@ If you are using a Meter Group Hydros 21 CTD sensor, change the channel to 1 in 
 
 [//]: # ( @section b_address_change_pio PlatformIO Configuration )
 
-[//]: # ( @example{lineno} b_address_change.ino @m_examplenavigation{examples_page,} @m_footernavigation )
-
 [//]: # ( @include{lineno} b_address_change/platformio.ini )
 
 [//]: # ( @section b_address_change_code The Complete Example )
+
+[//]: # ( @include{lineno} b_address_change/b_address_change.ino )

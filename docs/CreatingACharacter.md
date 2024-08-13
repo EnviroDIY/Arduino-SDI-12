@@ -59,22 +59,22 @@ And lets remind ourselves of the static variables we're using to store states:
 The `rxState`, `rxMask`, and `rxValue` all work together to form a character.
 When we're waiting for a start bit `rxValue` is empty, `rxMask` has only the bottom bit set, and `rxState` is set to WAITING-FOR-START-BIT:
 
-```
-    rxValue: |     0   0   0   0   0   0   0   0
--------------|-----------------------------------
-     rxMask: |     0   0   0   0   0   0   0   1
-    rxState: |     1   1   1   1   1   1   1   1
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   0 |
+| -------- | ----------------------------- |
+| rxMask:  | 0   0   0   0   0   0   0   1 |
+| rxState: | 1   1   1   1   1   1   1   1 |
 ```
 
 ### The Start of a Character<!-- {#rx_mask_start} -->
 
 After we get a start bit, the `startChar()` function creates a blank slate for the new character, so our values are:
 
-```
-    rxValue: |     0   0   0   0   0   0   0   0
--------------|-----------------------------------
-     rxMask: |     0   0   0   0   0   0   0   1
-    rxState: |     0   0   0   0   0   0   0   0
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   0 |
+| -------- | ----------------------------- |
+| rxMask:  | 0   0   0   0   0   0   0   1 |
+| rxState: | 0   0   0   0   0   0   0   0 |
 ```
 
 ### The Interrupt Fires<!-- {#rx_mask_fire} -->
@@ -93,51 +93,23 @@ For **each bit time that passed**, we apply the `rxMask` to the `rxValue`.
 #### A LOW/1 Bit<!-- {#rx_mask_low} -->
 
 - if the data bit received is LOW (1) we do an `|=` (bitwise OR) between the `rxMask` and the `rxValue`
-[//]: # ( @dot )
 
-digraph xor {
-  graph[rankdir=BT];
-  node[shape=record];
-
-  rxValue[label="{ {<rxValue>rxValue|<rxValue7>0|<rxValue6>0|<rxValue5>0|<rxValue4>0|<rxValue3>0|<rxValue2>0|<rxValue1>0|<rxValue0>1} }"];
-  maskState[label=" {<rxMask>rxMask|<rxState>rxState}|{<rxMask7>0|<rxState7>0}|{<rxMask6>0|<rxState6>0}|{<rxMask5>0|<rxState5>0}|{<rxMask4>0|<rxState4>0}|{<rxMask3>0|<rxState3>0}|{<rxMask2>0|<rxState2>0}|{<rxMask1>0|<rxState1>0}|{<rxMask0>0|<rxState0>0}"];
-
-  maskState:rxMask0 -> rxValue:rxValue0[label="bit-wise or (|=) puts the one \nfrom the rxMask into the rxValue"];
-}
-
-[//]: # ( @enddot )
-
-
-```
-    rxValue: |     0   0   0   0   0   0   0   1
--------------|---------------------------------^- bit-wise or puts the one
-     rxMask: |     0   0   0   0   0   0   0   1      from the rxMask into
-    rxState: |     0   0   0   0   0   0   0   0      the rxValue
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   1 |
+| -------- | ----------------------------- |^- bit-wise or puts the one
+|  rxMask: | 0   0   0   0   0   0   0   1 |   from the rxMask into
+| rxState: | 0   0   0   0   0   0   0   0 |   the rxValue
 ```
 
 #### A HIGH/0 Bit<!-- {#rx_mask_high} -->
 
 - if the data bit received is HIGH (0) we do nothing
 
-
-[//]: # ( @dot )
-
-digraph xor {
-  graph[rankdir=BT];
-  node[shape=record];
-
-  rxValue[label="{ {<rxValue>rxValue|<rxValue7>0|<rxValue6>0|<rxValue5>0|<rxValue4>0|<rxValue3>0|<rxValue2>0|<rxValue1>0|<rxValue0>1} }"];
-  maskState[label=" {<rxMask>rxMask|<rxState>rxState}|{<rxMask7>0|<rxState7>0}|{<rxMask6>0|<rxState6>0}|{<rxMask5>0|<rxState5>0}|{<rxMask4>0|<rxState4>0}|{<rxMask3>0|<rxState3>0}|{<rxMask2>0|<rxState2>0}|{<rxMask1>0|<rxState1>0}|{<rxMask0>0|<rxState0>0}"];
-
-  maskState:rxMask0 -> rxValue:rxValue0[label="nothing happens",arrowhead="obox"];
-}
-
-[//]: # ( @enddot )
-```
-    rxValue: |     0   0   0   0   0   0   0   0
--------------|---------------------------------x- nothing happens
-     rxMask: |     0   0   0   0   0   0   0   1
-    rxState: |     0   0   0   0   0   0   0   0
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   0 |
+| -------- | ----------------------------- |x- nothing happens
+|  rxMask: | 0   0   0   0   0   0   0   1 |
+| rxState: | 0   0   0   0   0   0   0   0 |
 ```
 
 #### Shifting Up<!-- {#rx_mask_shift} -->
@@ -148,13 +120,13 @@ The top bit falls off.
   - we always add a 0 on the `rxMask` and the `rxValue`
   - the values of the second bit of the `rxValue` (?) depends on what we did in the step above
 
-```
-    rxValue: |     0        <--- | 0   0   0   0   0   0   ?   0 <--- add a zero
--------------|-------------------|---------------------------|---
-     rxMask: |     0        <--- | 0   0   0   0   0   0   1   0 <--- add a zero
-    rxState: |     0        <--- | 0   0   0   0   0   0   0   1 <--- add a one
--------------|-------------------|---------------------------|---
-             | falls off the top |                           | added to the bottom
+```unparsed
+| rxValue:          | 0        <---       | 0   0   0   0   0   0   ?   0 <--- add a zero |
+| ----------------- | ------------------- | --------------------------------------------- |
+| rxMask:           | 0        <---       | 0   0   0   0   0   0   1   0 <--- add a zero |
+| rxState:          | 0        <---       | 0   0   0   0   0   0   0   1 <--- add a one  |
+| ----------------- | ------------------- | --------------------------------------------- |
+| ----------------- | ^ falls off the top | ------- added to the bottom ^                 |
 ```
 
 ### A Finished Character<!-- {#rx_mask_fin} -->
@@ -164,11 +136,11 @@ The `rxMask`  will have the one in the top bit.
 And the rxState will be filled - which just happens to be the value of `WAITING-FOR-START-BIT` for the next character.
 
 
-```
-    rxValue: |     ?   ?   ?   ?   ?   ?   ?   ?
--------------|-----------------------------------
-     rxMask: |     1   0   0   0   0   0   0   0
-    rxState: |     1   1   1   1   1   1   1   1
+```unparsed
+| rxValue: | ?   ?   ?   ?   ?   ?   ?   ? |
+| -------- | ----------------------------- |
+| rxMask:  | 1   0   0   0   0   0   0   0 |
+| rxState: | 1   1   1   1   1   1   1   1 |
 ```
 
 ## The Full Interrupt Function<!-- {#rx_fxn} -->
@@ -205,7 +177,7 @@ void SDI12::receiveISR() {
     // data, parity, or stop bit.
 
     // Check how many bit times have passed since the last change
-    uint16-t rxBits = bitTimes((uint8-t)(thisBitTCNT - prevBitTCNT));
+    uint16-t rxBits = bitTimes(static_cast<sditimer_t>(thisBitTCNT - prevBitTCNT));
     // Calculate how many *data+parity* bits should be left in the current character
     //      - Each character has a total of 10 bits, 1 start bit, 7 data bits, 1 parity
     // bit, and 1 stop bit

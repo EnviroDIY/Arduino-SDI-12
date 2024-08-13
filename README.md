@@ -21,7 +21,8 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
 
 ### Renaming Notice<!-- {#mainpage_rename} -->
 
-**As of version 2.0.0 this library was renamed from "Arduino-SDI-12" to simply "SDI-12" to comply with requirements for inclusion in the Arduino.cc's IDE and Library Manager.**
+> [!IMPORTANT]
+> **As of version 2.0.0 this library was renamed from "Arduino-SDI-12" to simply "SDI-12" to comply with requirements for inclusion in the Arduino.cc's IDE and Library Manager.**
 
 [//]: # ( @tableofcontents )
 
@@ -35,9 +36,9 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
   - [Origins and Inherited Limitations](#origins-and-inherited-limitations)
   - [Compatibility Considerations](#compatibility-considerations)
   - [Variants and Branches](#variants-and-branches)
-      - [EnviroDIY\_SDI12](#envirodiy_sdi12)
-      - [EnviroDIY\_SDI12\_PCINT3](#envirodiy_sdi12_pcint3)
-      - [EnviroDIY\_SDI12\_ExtInts](#envirodiy_sdi12_extints)
+    - [EnviroDIY\_SDI12](#envirodiy_sdi12)
+    - [EnviroDIY\_SDI12\_PCINT3](#envirodiy_sdi12_pcint3)
+    - [EnviroDIY\_SDI12\_ExtInts](#envirodiy_sdi12_extints)
   - [Contribute](#contribute)
   - [License](#license)
   - [Credits](#credits)
@@ -105,7 +106,7 @@ The known compatibile pins for common variants are shown below:
 
 - 0, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69)
 
-**AtMega32u4 / Arduino Leonardo or Adafruit Feather:**
+**AtMega32u4 / Arduino Leonardo or Adafruit Feather 32u4:**
 
 - 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
 
@@ -129,12 +130,12 @@ As we've described, the default "master" branch of this library will conflict wi
 To allow simultaneous use of SDI-12 and SoftwareSerial, we have created additional variants of these libraries that we maintain as separate branches of this repository.
 For background information, my be helpful to read our [Overview of Interrupts](https://github.com/EnviroDIY/Arduino-SDI-12/wiki/2b.-Overview-of-Interrupts) wiki page or this [Arduino Pin Change Interrupts article](https://thewanderingengineer.com/2014/08/11/arduino-pin-change-interrupts/).
 
-#### EnviroDIY_SDI12<!-- {#mainpage_master} -->
+### EnviroDIY_SDI12<!-- {#mainpage_master} -->
 
 EnviroDIY_SDI12 is the default master branch of this repository.
 It controls and monopolizes all pin change interrupt vectors, and can therefore have conflicts with any variant of SoftwareSerial and other libraries that use interrupts.
 
-#### EnviroDIY_SDI12_PCINT3<!-- {#mainpage_pcint3} -->
+### EnviroDIY_SDI12_PCINT3<!-- {#mainpage_pcint3} -->
 
 EnviroDIY_SDI12_PCINT3 is in the Mayfly branch of this repository, and was historically was called "SDI12_mod".
 It's been cropped to only control interrupt vector 3, or PCINT3 (D), which on the Mayfly (or Sodaq Mbili) corresponds to Pins D0-D7.
@@ -142,7 +143,7 @@ It is designed to be compatible with [EnviroDIY_SoftwareSerial_PCINT12](https://
 Note that different AtMega1284p boards have a different mapping from the physical PIN numbers to the listed digital PIN numbers that are printed on the board.
 One of the most helpful lists of pins and interrupts vectors is in the the [Pin/Port Bestiary wiki page for the Enable Interrupt library](https://github.com/GreyGnome/EnableInterrupt/wiki/Usage#PIN__PORT_BESTIARY).
 
-#### EnviroDIY_SDI12_ExtInts<!-- {#mainpage_extints} -->
+### EnviroDIY_SDI12_ExtInts<!-- {#mainpage_extints} -->
 
 EnviroDIY_SDI12_ExtInts is the ExtInt branch of this repository.
 It doesn't control any of the interrupts, but instead relies on an external interrupt management library (like [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt)) to assign the SDI-12 receive data function to the right pin.

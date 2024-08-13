@@ -6,8 +6,8 @@ This can be much faster than waiting for each sensor when you have multiple sens
 
 [//]: # ( @section k_concurrent_logger_pio PlatformIO Configuration )
 
-[//]: # ( @example{lineno} k_concurrent_logger.ino @m_examplenavigation{examples_page,} @m_footernavigation )
-
 [//]: # ( @include{lineno} k_concurrent_logger/platformio.ini )
 
 [//]: # ( @section k_concurrent_logger_code The Complete Example )
+
+[//]: # ( @include{lineno} k_concurrent_logger/k_concurrent_logger.ino )

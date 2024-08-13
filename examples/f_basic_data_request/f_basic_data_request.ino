@@ -1,8 +1,8 @@
 /**
- * @file f_basic_data_request.ino
+ * @example{lineno} f_basic_data_request.ino
  * @copyright Stroud Water Research Center
  * @license This example is published under the BSD-3 license.
- * @author Ruben Kertesz <github@emnet.net> or @rinnamon on twitter
+ * @author Ruben Kertesz <github@emnet.net> or \@rinnamon on twitter
  * @date 2/10/2016
  *
  * @brief Example F: Basic Data Request to a Single Sensor
@@ -50,9 +50,8 @@ void loop() {
   do {  // wait for a response from the serial terminal to do anything
     delay(30);
   } while (!Serial.available());
-  char nogo =
-    Serial.read();  // simply hit enter in the terminal window or press send and the
-                    // characters get discarded but now the rest of the loop continues
+  Serial.read();  // simply hit enter in the terminal window or press send and the
+                  // characters get discarded but now the rest of the loop continues
 
   // first command to take a measurement
   myCommand = String(sensorAddress) + "M!";
