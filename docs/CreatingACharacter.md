@@ -59,22 +59,22 @@ And lets remind ourselves of the static variables we're using to store states:
 The `rxState`, `rxMask`, and `rxValue` all work together to form a character.
 When we're waiting for a start bit `rxValue` is empty, `rxMask` has only the bottom bit set, and `rxState` is set to WAITING-FOR-START-BIT:
 
-```
-    rxValue: |     0   0   0   0   0   0   0   0
--------------|-----------------------------------
-     rxMask: |     0   0   0   0   0   0   0   1
-    rxState: |     1   1   1   1   1   1   1   1
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   0 |
+| -------- | ----------------------------- |
+| rxMask:  | 0   0   0   0   0   0   0   1 |
+| rxState: | 1   1   1   1   1   1   1   1 |
 ```
 
 ### The Start of a Character<!-- {#rx_mask_start} -->
 
 After we get a start bit, the `startChar()` function creates a blank slate for the new character, so our values are:
 
-```
-    rxValue: |     0   0   0   0   0   0   0   0
--------------|-----------------------------------
-     rxMask: |     0   0   0   0   0   0   0   1
-    rxState: |     0   0   0   0   0   0   0   0
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   0 |
+| -------- | ----------------------------- |
+| rxMask:  | 0   0   0   0   0   0   0   1 |
+| rxState: | 0   0   0   0   0   0   0   0 |
 ```
 
 ### The Interrupt Fires<!-- {#rx_mask_fire} -->
@@ -94,22 +94,22 @@ For **each bit time that passed**, we apply the `rxMask` to the `rxValue`.
 
 - if the data bit received is LOW (1) we do an `|=` (bitwise OR) between the `rxMask` and the `rxValue`
 
-```
-    rxValue: |     0   0   0   0   0   0   0   1
--------------|---------------------------------^- bit-wise or puts the one
-     rxMask: |     0   0   0   0   0   0   0   1      from the rxMask into
-    rxState: |     0   0   0   0   0   0   0   0      the rxValue
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   1 |
+| -------- | ----------------------------- |^- bit-wise or puts the one
+|  rxMask: | 0   0   0   0   0   0   0   1 |   from the rxMask into
+| rxState: | 0   0   0   0   0   0   0   0 |   the rxValue
 ```
 
 #### A HIGH/0 Bit<!-- {#rx_mask_high} -->
 
 - if the data bit received is HIGH (0) we do nothing
 
-```
-    rxValue: |     0   0   0   0   0   0   0   0
--------------|---------------------------------x- nothing happens
-     rxMask: |     0   0   0   0   0   0   0   1
-    rxState: |     0   0   0   0   0   0   0   0
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   0 |
+| -------- | ----------------------------- |x- nothing happens
+|  rxMask: | 0   0   0   0   0   0   0   1 |
+| rxState: | 0   0   0   0   0   0   0   0 |
 ```
 
 #### Shifting Up<!-- {#rx_mask_shift} -->
@@ -120,13 +120,13 @@ The top bit falls off.
   - we always add a 0 on the `rxMask` and the `rxValue`
   - the values of the second bit of the `rxValue` (?) depends on what we did in the step above
 
-```
-    rxValue: |     0        <--- | 0   0   0   0   0   0   ?   0 <--- add a zero
--------------|-------------------|---------------------------|---
-     rxMask: |     0        <--- | 0   0   0   0   0   0   1   0 <--- add a zero
-    rxState: |     0        <--- | 0   0   0   0   0   0   0   1 <--- add a one
--------------|-------------------|---------------------------|---
-             | falls off the top |                           | added to the bottom
+```unparsed
+| rxValue:          | 0        <---       | 0   0   0   0   0   0   ?   0 <--- add a zero |
+| ----------------- | ------------------- | --------------------------------------------- |
+| rxMask:           | 0        <---       | 0   0   0   0   0   0   1   0 <--- add a zero |
+| rxState:          | 0        <---       | 0   0   0   0   0   0   0   1 <--- add a one  |
+| ----------------- | ------------------- | --------------------------------------------- |
+| ----------------- | ^ falls off the top | ------- added to the bottom ^                 |
 ```
 
 ### A Finished Character<!-- {#rx_mask_fin} -->
@@ -136,11 +136,11 @@ The `rxMask`  will have the one in the top bit.
 And the rxState will be filled - which just happens to be the value of `WAITING-FOR-START-BIT` for the next character.
 
 
-```
-    rxValue: |     ?   ?   ?   ?   ?   ?   ?   ?
--------------|-----------------------------------
-     rxMask: |     1   0   0   0   0   0   0   0
-    rxState: |     1   1   1   1   1   1   1   1
+```unparsed
+| rxValue: | ?   ?   ?   ?   ?   ?   ?   ? |
+| -------- | ----------------------------- |
+| rxMask:  | 1   0   0   0   0   0   0   0 |
+| rxState: | 1   1   1   1   1   1   1   1 |
 ```
 
 ## The Full Interrupt Function<!-- {#rx_fxn} -->

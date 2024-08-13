@@ -21,7 +21,8 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
 
 ### Renaming Notice<!-- {#mainpage_rename} -->
 
-**As of version 2.0.0 this library was renamed from "Arduino-SDI-12" to simply "SDI-12" to comply with requirements for inclusion in the Arduino.cc's IDE and Library Manager.**
+> [!IMPORTANT]
+> **As of version 2.0.0 this library was renamed from "Arduino-SDI-12" to simply "SDI-12" to comply with requirements for inclusion in the Arduino.cc's IDE and Library Manager.**
 
 [//]: # ( @tableofcontents )
 

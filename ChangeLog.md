@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Offloaded some internal header file documentation to markdown files
 - Consolidated redundant `READTIME` and `TCNTX` macros, removing `TCNTX`
-- Removed documation @m_span commands
+- Removed documation m_span commands
 
 ### Fixed
 

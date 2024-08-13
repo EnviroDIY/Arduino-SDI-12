@@ -944,8 +944,8 @@ class SDI12 : public Stream {
    * of the content of the message.
    *
    * @param respWithCRC The full SDI-12 message, including the CRC at the end.
-   * @return *true* The CRC matches and the message is valid
-   * @return *false* The CRC doesn't match; the conversation should be retried.
+   * @return True if the CRC matches and the message is valid, false if the CRC doesn't
+   * match and the message could be retried.
    */
   bool verifyCRC(String& respWithCRC);
 
