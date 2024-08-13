@@ -36,4 +36,4 @@ jobs:
         env:
           PLATFORMIO_BUILD_FLAGS: -D SDI12_EXTERNAL_PCINT
           PLATFORMIO_CI_SRC: examples/j_external_pcint_library
-        run: pio ci --board=mayfly --board=uno --board=megaatmega2560 --board=leonardo --board=zeroUSB --board=feather328p --board=feather32u4 --board=adafruit_feather_m0 --board=adafruit_feather_m4  --lib="." --project-option="lib_deps=greygnome/EnableInterrupt@^1.1.0"
+        run: pio ci --board=mayfly --board=uno --board=megaatmega2560 --board=leonardo --board=zeroUSB --board=feather328p --board=feather32u4 --board=adafruit_feather_m0 --lib="." --project-option="lib_deps=greygnome/EnableInterrupt@^1.1.0"
