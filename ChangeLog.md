@@ -14,17 +14,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added python version to GitHub actions (for PlatformIO)
 - Switched to reusable workflows for GitHub actions
 - Consolidated timer prescaler math
+- Moved bitTimes and mul8x8to16 functions to the timers files
+- Replace c-style casts with c++ style casts
+- Do not disable interrupts during Tx for processors over 48MHz
+- Cast all timer values and math to the proper type for the processor timer being read
+  - SAMD21 boards now use the full 16-bits of the timer rather than only the first 8-bits.
+  - AVR xU4 boards (ie, 32u4/Leonardo) still use the 10-bit timer as an 8-bit timer.
+- Shortened name of espressif ISR access macro from `ESPFAMILY_USE_INSTRUCTION_RAM` to `ISR_MEM_ACCESS`
+  - This does not change any functionality of the macro, just the name.
+- Moved defines to the top of the SDI12_boards.h file
+- Renamed the "tools" directory to "extras" in compliance with Arduino library standards.
 
 ### Added
 
 - Added support for SAMD51 processors using dedicated timers
+- Added parity checking on character reception
+  - This can be disabled by defining the macro `SDI12_IGNORE_PARITY`
 - Allowing (_**without testing**_) processors over 48MHz to use `micros()` function
+- Added a 'yield' function within stream functions to allow the buffer to fill
+  - The yield time can be modified using the macro `SDI12_YIELD_MS`
 
 ### Removed
 
 - Offloaded some internal header file documentation to markdown files
+- Consolidated redundant `READTIME` and `TCNTX` macros, removing `TCNTX`
+- Removed documation @m_span commands
 
 ### Fixed
+
+- Added an extra addition/removal of interrupts for espressif boards in the `begin` function to properly initialize the interrupts and avoid a later error with the `gpio_install_isr_service`.
 
 ***
 
