@@ -101,7 +101,7 @@ void loop() {
 
   // listen for measurement to finish
   unsigned long timerStart = millis();
-  while ((millis() - timerStart) < (meas_time_s + 1) * 1000) {
+  while ((millis() - timerStart) < (static_cast<uint32_t>(meas_time_s) + 1) * 1000) {
     if (mySDI12.available())  // sensor can interrupt us to let us know it is done early
     {
       unsigned long measTime = millis() - timerStart;

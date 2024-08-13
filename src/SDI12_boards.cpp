@@ -33,7 +33,8 @@ uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
 #elif TIMER_INT_SIZE == 16 || TIMER_INT_SIZE == 32
 uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
   // divide the number of ticks by the ticks per bit
-  return (uint16_t)((dt + (sdi12timer_t)RX_WINDOW_FUDGE) / (sdi12timer_t)TICKS_PER_BIT);
+  return static_cast<uint16_t>((dt + static_cast<sdi12timer_t>(RX_WINDOW_FUDGE)) /
+                               static_cast<sdi12timer_t>(TICKS_PER_BIT));
 }
 #else
 #error "Board timer is incorrectly configured!"
@@ -513,7 +514,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {}
 void SDI12Timer::resetSDI12TimerPrescale(void) {}
 
 sdi12timer_t ISR_MEM_ACCESS SDI12Timer::SDI12TimerRead(void) {
-  return ((sdi12timer_t)(micros()));
+  return (static_cast<sdi12timer_t>(micros()));
 }
 
 // Unknown board

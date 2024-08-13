@@ -33,8 +33,8 @@ int8_t error_result_number = 7;
 float  no_error_value      = 0;
 
 /** Testing turning off power */
-bool    testPowerOff          = false;
-int32_t min_power_delay       = 100L; /*!< The min time to test wake after power on. */
+bool    testPowerOff    = false;
+int32_t min_power_delay = 100L;       /*!< The min time to test wake after power on. */
 int32_t max_power_delay = 180000L;    /*!< The max time to test wake after power on. */
 int32_t increment_power_delay = 100L; /*!< The time to lengthen waits between reps. */
 int32_t power_off_time        = 60000L; /*!< The time to power off between tests. */
@@ -214,7 +214,7 @@ getResultsResult getResults(char address, int resultsExpected, bool verify_crc =
           Serial.print(resultsReceived);
           Serial.print(", Raw value: ");
           Serial.print(float_buffer);
-          dec_pl = strchr(float_buffer, '.');
+          dec_pl              = strchr(float_buffer, '.');
           size_t len_post_dec = 0;
           if (dec_pl != nullptr) { len_post_dec = strnlen(dec_pl, max_sdi_digits) - 1; }
           Serial.print(", Len after decimal: ");
@@ -358,7 +358,8 @@ uint32_t takeMeasurement(char address, bool request_crc = false, String meas_typ
   uint32_t timerStart = millis();
   uint32_t measTime   = -1;
   // wait up to 1 second longer than the specified return time
-  while ((millis() - timerStart) < ((uint32_t)startResult.meas_time_s + 1) * 1000) {
+  while ((millis() - timerStart) <
+         (static_cast<uint32_t>(startResult.meas_time_s) + 1) * 1000) {
     if (mySDI12.available()) {
       break;
     }  // sensor can interrupt us to let us know it is done early
@@ -520,7 +521,7 @@ void loop() {
     // checkActive(sensorAddress, true);
 
     uint32_t this_meas_time   = takeMeasurement(sensorAddress, true, "", true);
-    bool     this_result_good = this_meas_time != (uint32_t)-1;
+    bool     this_result_good = this_meas_time != static_cast<uint32_t>(-1);
 
     if (this_result_good) {
       total_meas_time += this_meas_time;
@@ -553,7 +554,7 @@ void loop() {
   // measurements take
   while (got_good_results) {
     uint32_t this_meas_time = takeMeasurement(sensorAddress, true, "", false);
-    if (this_meas_time != (uint32_t)-1) {
+    if (this_meas_time != static_cast<uint32_t>(-1)) {
       total_meas_time += this_meas_time;
       total_meas_made++;
       if (this_meas_time > max_meas_time) { max_meas_time = this_meas_time; }

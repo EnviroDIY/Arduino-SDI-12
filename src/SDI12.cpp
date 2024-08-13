@@ -59,11 +59,11 @@ SDI12Timer SDI12::sdi12timer;
 
 // The size of a bit in microseconds
 // 1200 baud = 1200 bits/second ~ 833.333 µs/bit
-const uint16_t SDI12::bitWidth_micros = (uint16_t)833;
+const uint16_t SDI12::bitWidth_micros = static_cast<uint16_t>(833);
 // The required "break" before sending commands, >= 12ms
-const uint16_t SDI12::lineBreak_micros = (uint16_t)12300;
+const uint16_t SDI12::lineBreak_micros = static_cast<uint16_t>(12300);
 // The required mark before a command or response, >= 8.33ms
-const uint16_t SDI12::marking_micros = (uint16_t)8500;
+const uint16_t SDI12::marking_micros = static_cast<uint16_t>(8500);
 
 // the width of a single bit in "ticks" of the cpu clock.
 const sdi12timer_t SDI12::txBitWidth = TICKS_PER_BIT;
@@ -473,7 +473,7 @@ void SDI12::writeChar(uint8_t outChar) {
   // We've used up roughly 150 clock cycles messing with parity, but a bit is 833µs, so
   // we've got time.
 
-  while ((sdi12timer_t)(READTIME - t0) < txBitWidth) {}
+  while (static_cast<sdi12timer_t>(READTIME - t0) < txBitWidth) {}
   t0 = READTIME;  // advance start time
 
   // repeat for all data bits until the last bit different from marking
@@ -485,7 +485,7 @@ void SDI12::writeChar(uint8_t outChar) {
       digitalWrite(_dataPin, HIGH);  // set the pin state to HIGH for 0's
     }
     // Hold the line for this bit duration
-    while ((sdi12timer_t)(READTIME - t0) < txBitWidth) {}
+    while (static_cast<sdi12timer_t>(READTIME - t0) < txBitWidth) {}
     t0 = READTIME;  // advance start time
 
     outChar = outChar >> 1;  // shift character to expose the following bit
@@ -500,7 +500,7 @@ void SDI12::writeChar(uint8_t outChar) {
 
   // Hold the line low until the end of the 10th bit
   sdi12timer_t bitTimeRemaining = txBitWidth * (10 - lastHighBit);
-  while ((sdi12timer_t)(READTIME - t0) < bitTimeRemaining) {}
+  while (static_cast<sdi12timer_t>(READTIME - t0) < bitTimeRemaining) {}
 }
 
 // The typical write functionality for a stream object
@@ -604,8 +604,8 @@ uint16_t SDI12::calculateCRC(String& resp) {
   uint16_t crc = 0;
 
   for (uint16_t i = 0; i < resp.length(); i++) {
-    crc ^= (uint16_t)
-      resp[i];  // Set the CRC equal to the exclusive OR of the character and itself
+    crc ^= static_cast<uint16_t>(
+      resp[i]);  // Set the CRC equal to the exclusive OR of the character and itself
     for (int j = 0; j < 8; j++) {  // count = 1 to 8
       if (crc & 0x0001) {          // if the least significant bit of the CRC is one
         crc >>= 1;                 // right shift the CRC one bit
@@ -623,8 +623,8 @@ uint16_t SDI12::calculateCRC(const char* resp) {
   uint16_t crc = 0;
 
   for (size_t i = 0; i < strlen(resp); i++) {
-    crc ^= (uint16_t)
-      resp[i];  // Set the CRC equal to the exclusive OR of the character and itself
+    crc ^= static_cast<uint16_t>(
+      resp[i]);  // Set the CRC equal to the exclusive OR of the character and itself
     for (int j = 0; j < 8; j++) {  // count = 1 to 8
       if (crc & 0x0001) {          // if the least significant bit of the CRC is one
         crc >>= 1;                 // right shift the CRC one bit
@@ -643,12 +643,12 @@ uint16_t SDI12::calculateCRC(FlashString resp) {
 
   for (size_t i = 0; i < strlen_P((PGM_P)resp); i++) {
     responsechar = (char)pgm_read_byte((const char*)resp + i);
-    crc ^= (uint16_t)responsechar;  // Set the CRC equal to the exclusive OR of the
-                                    // character and itself
-    for (int j = 0; j < 8; j++) {   // count = 1 to 8
-      if (crc & 0x0001) {           // if the least significant bit of the CRC is one
-        crc >>= 1;                  // right shift the CRC one bit
-        crc ^= POLY;  // set CRC equal to the exclusive OR of POLY and itself
+    crc ^= static_cast<uint16_t>(responsechar);  // Set the CRC equal to the exclusive
+                                                 // OR of the character and itself
+    for (int j = 0; j < 8; j++) {                // count = 1 to 8
+      if (crc & 0x0001) {  // if the least significant bit of the CRC is one
+        crc >>= 1;         // right shift the CRC one bit
+        crc ^= POLY;       // set CRC equal to the exclusive OR of POLY and itself
       } else {
         crc >>= 1;  // right shift the CRC one bit
       }

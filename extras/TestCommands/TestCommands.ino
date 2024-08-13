@@ -18,10 +18,10 @@
 #if F_CPU > 48000000L
 uint32_t serialBaud = 921600; /*!< The baud rate for the output serial port */
 #else
-uint32_t serialBaud = 115200;         /*!< The baud rate for the output serial port */
+uint32_t serialBaud = 115200; /*!< The baud rate for the output serial port */
 #endif
-int8_t   dataPin    = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
-int8_t   powerPin =
+int8_t dataPin = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
+int8_t powerPin =
   SDI12_POWER_PIN; /*!< The sensor power pin (or -1 if not switching power) */
 uint32_t     wake_delay = 10; /*!< Extra time needed for the sensor to wake (0-100ms) */
 const int8_t firstAddress =
@@ -255,7 +255,7 @@ getResultsResult getResults(char address, int resultsExpected, bool verify_crc =
           Serial.print(resultsReceived);
           Serial.print(", Raw value: ");
           Serial.print(float_buffer);
-          dec_pl = strchr(float_buffer, '.');
+          dec_pl              = strchr(float_buffer, '.');
           size_t len_post_dec = 0;
           if (dec_pl != nullptr) { len_post_dec = strnlen(dec_pl, max_sdi_digits) - 1; }
           Serial.print(", Len after decimal: ");
@@ -450,7 +450,7 @@ int startConcurrentMeasurement(char address, bool request_crc = false,
 
   uint8_t sensorNum =
     charToDec(address);  // e.g. convert '0' to 0, 'a' to 10, 'Z' to 61.
-  meas_time_ms[sensorNum]  = ((uint32_t)(startResult.meas_time_s)) * 1000;
+  meas_time_ms[sensorNum]  = (static_cast<uint32_t>(startResult.meas_time_s)) * 1000;
   millisStarted[sensorNum] = millis();
   if (startResult.meas_time_s == 0) {
     millisReady[sensorNum] = millis();
@@ -474,7 +474,8 @@ uint32_t takeMeasurement(char address, bool request_crc = false, String meas_typ
   uint32_t timerStart = millis();
   uint32_t measTime   = -1;
   // wait up to 1 second longer than the specified return time
-  while ((millis() - timerStart) < ((uint32_t)startResult.meas_time_s + 1) * 1000) {
+  while ((millis() - timerStart) <
+         (static_cast<uint32_t>(startResult.meas_time_s) + 1) * 1000) {
     if (mySDI12.available()) {
       break;
     }  // sensor can interrupt us to let us know it is done early
@@ -714,8 +715,9 @@ void loop() {
         }
       }
       // min_wait = 800;
-      min_wait = max((uint32_t)10, min_wait / 2);
-      max_wait = max((uint32_t)1000, max_wait + (uint32_t)2000);
+      min_wait = max(static_cast<uint32_t>(10), min_wait / 2);
+      max_wait = max(static_cast<uint32_t>(1000),
+                     max_wait + static_cast<uint32_t>(2000));
       Serial.print("minimum expected wait for all sensors: ");
       Serial.println(min_wait);
       Serial.print("maximum expected wait for all sensors: ");
