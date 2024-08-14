@@ -37,6 +37,7 @@ int    state         = 0;
 #define WAIT 0
 #define INITIATE_CONCURRENT 1
 #define INITIATE_MEASUREMENT 2
+#define PROCESS_COMMAND 3                         
 
 // Create object by which to communicate with the SDI-12 bus on SDIPIN
 SDI12 slaveSDI12(dataPin);
@@ -195,6 +196,7 @@ void loop() {
       // Character '!' indicates the end of an SDI-12 command; if the current
       // character is '!', stop listening and respond to the command
       if (charReceived == '!') {
+        state = PROCESS_COMMAND;                  
         // Command string is completed; do something with it
         parseSdi12Cmd(commandReceived, dValues);
         // Clear command string to reset for next command
@@ -245,6 +247,10 @@ void loop() {
       state = WAIT;
       slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
                                  // message AGAIN
+      break;
+    case PROCESS_COMMAND:
+      state = WAIT;
+      slaveSDI12.forceListen();                         
       break;
   }
 }
