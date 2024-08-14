@@ -37,7 +37,7 @@ int    state         = 0;
 #define WAIT 0
 #define INITIATE_CONCURRENT 1
 #define INITIATE_MEASUREMENT 2
-#define PROCESS_COMMAND 3                         
+#define PROCESS_COMMAND 3
 
 // Create object by which to communicate with the SDI-12 bus on SDIPIN
 SDI12 slaveSDI12(dataPin);
@@ -196,7 +196,7 @@ void loop() {
       // Character '!' indicates the end of an SDI-12 command; if the current
       // character is '!', stop listening and respond to the command
       if (charReceived == '!') {
-        state = PROCESS_COMMAND;                  
+        state = PROCESS_COMMAND;
         // Command string is completed; do something with it
         parseSdi12Cmd(commandReceived, dValues);
         // Clear command string to reset for next command
@@ -220,37 +220,46 @@ void loop() {
   // For aM! and aC! commands, parseSdi12Cmd will modify "state" to indicate that
   // a measurement should be taken
   switch (state) {
-    case WAIT: break;
+    case WAIT:
+      {
+        break;
+      }
     case INITIATE_CONCURRENT:
-      // Do whatever the sensor is supposed to do here
-      // For this example, we will just create arbitrary "simulated" sensor data
-      // NOTE: Your application might have a different data type (e.g. int) and
-      //       number of values to report!
-      pollSensor(measurementValues);
-      // Populate the "dValues" String array with the values in SDI-12 format
-      formatOutputSDI(measurementValues, dValues, 75);
-      state = WAIT;
-      slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
-                                 // message AGAIN
-      break;
+      {
+        // Do whatever the sensor is supposed to do here
+        // For this example, we will just create arbitrary "simulated" sensor data
+        // NOTE: Your application might have a different data type (e.g. int) and
+        //       number of values to report!
+        pollSensor(measurementValues);
+        // Populate the "dValues" String array with the values in SDI-12 format
+        formatOutputSDI(measurementValues, dValues, 75);
+        state = WAIT;
+        slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
+                                   // message AGAIN
+        break;
+      }
     case INITIATE_MEASUREMENT:
-      // Do whatever the sensor is supposed to do here
-      // For this example, we will just create arbitrary "simulated" sensor data
-      // NOTE: Your application might have a different data type (e.g. int) and
-      //       number of values to report!
-      pollSensor(measurementValues);
-      // Populate the "dValues" String array with the values in SDI-12 format
-      formatOutputSDI(measurementValues, dValues, 35);
-      // For aM!, Send "service request" (<address><CR><LF>) when data is ready
-      String fullResponse = String(sensorAddress) + "\r\n";
-      slaveSDI12.sendResponse(fullResponse);
-      state = WAIT;
-      slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
-                                 // message AGAIN
-      break;
+      {
+        // Do whatever the sensor is supposed to do here
+        // For this example, we will just create arbitrary "simulated" sensor data
+        // NOTE: Your application might have a different data type (e.g. int) and
+        //       number of values to report!
+        pollSensor(measurementValues);
+        // Populate the "dValues" String array with the values in SDI-12 format
+        formatOutputSDI(measurementValues, dValues, 35);
+        // For aM!, Send "service request" (<address><CR><LF>) when data is ready
+        String fullResponse = String(sensorAddress) + "\r\n";
+        slaveSDI12.sendResponse(fullResponse);
+        state = WAIT;
+        slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
+                                   // message AGAIN
+        break;
+      }
     case PROCESS_COMMAND:
-      state = WAIT;
-      slaveSDI12.forceListen();                         
-      break;
+      {
+        state = WAIT;
+        slaveSDI12.forceListen();
+        break;
+      }
   }
 }
