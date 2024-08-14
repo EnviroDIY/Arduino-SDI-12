@@ -1,8 +1,7 @@
 /**
- * @file h_SDI-12_slave_implementation.ino
- * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
- *                          and the EnviroDIY Development Team
- *            This example is published under the BSD-3 license.
+ * @example{lineno} h_SDI-12_slave_implementation.ino
+ * @copyright Stroud Water Research Center
+ * @license This example is published under the BSD-3 license.
  * @date 2016
  * @author D. Wasielewski
  *
@@ -30,18 +29,18 @@
 
 #include <SDI12.h>
 
-#define DATA_PIN 7   /*!< The pin of the SDI-12 data bus */
-#define POWER_PIN 22 /*!< The sensor power pin (or -1 if not switching power) */
-
-char sensorAddress = '5';
-int  state         = 0;
+int8_t dataPin       = 7;   /*!< The pin of the SDI-12 data bus */
+int8_t powerPin      = 22;  /*!< The sensor power pin (or -1 if not switching power) */
+char   sensorAddress = '5'; /*!< The address of the SDI-12 sensor */
+int    state         = 0;
 
 #define WAIT 0
 #define INITIATE_CONCURRENT 1
 #define INITIATE_MEASUREMENT 2
+#define PROCESS_COMMAND 3
 
 // Create object by which to communicate with the SDI-12 bus on SDIPIN
-SDI12 slaveSDI12(DATA_PIN);
+SDI12 slaveSDI12(dataPin);
 
 void pollSensor(float* measurementValues) {
   measurementValues[0] = 1.111111;
@@ -137,8 +136,9 @@ void parseSdi12Cmd(String command, String* dValues) {
     }
   }
 
-  // Issue the response speficied in the switch-case structure above.
-  slaveSDI12.sendResponse(String(sensorAddress) + responseStr + "\r\n");
+  // Issue the response specified in the switch-case structure above.
+  String fullResponse = String(sensorAddress) + responseStr + "\r\n";
+  slaveSDI12.sendResponse(fullResponse);
 }
 
 void formatOutputSDI(float* measurementValues, String* dValues, unsigned int maxChar) {
@@ -196,6 +196,7 @@ void loop() {
       // Character '!' indicates the end of an SDI-12 command; if the current
       // character is '!', stop listening and respond to the command
       if (charReceived == '!') {
+        state = PROCESS_COMMAND;
         // Command string is completed; do something with it
         parseSdi12Cmd(commandReceived, dValues);
         // Clear command string to reset for next command
@@ -219,32 +220,46 @@ void loop() {
   // For aM! and aC! commands, parseSdi12Cmd will modify "state" to indicate that
   // a measurement should be taken
   switch (state) {
-    case WAIT: break;
+    case WAIT:
+      {
+        break;
+      }
     case INITIATE_CONCURRENT:
-      // Do whatever the sensor is supposed to do here
-      // For this example, we will just create arbitrary "simulated" sensor data
-      // NOTE: Your application might have a different data type (e.g. int) and
-      //       number of values to report!
-      pollSensor(measurementValues);
-      // Populate the "dValues" String array with the values in SDI-12 format
-      formatOutputSDI(measurementValues, dValues, 75);
-      state = WAIT;
-      slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
-                                 // message AGAIN
-      break;
+      {
+        // Do whatever the sensor is supposed to do here
+        // For this example, we will just create arbitrary "simulated" sensor data
+        // NOTE: Your application might have a different data type (e.g. int) and
+        //       number of values to report!
+        pollSensor(measurementValues);
+        // Populate the "dValues" String array with the values in SDI-12 format
+        formatOutputSDI(measurementValues, dValues, 75);
+        state = WAIT;
+        slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
+                                   // message AGAIN
+        break;
+      }
     case INITIATE_MEASUREMENT:
-      // Do whatever the sensor is supposed to do here
-      // For this example, we will just create arbitrary "simulated" sensor data
-      // NOTE: Your application might have a different data type (e.g. int) and
-      //       number of values to report!
-      pollSensor(measurementValues);
-      // Populate the "dValues" String array with the values in SDI-12 format
-      formatOutputSDI(measurementValues, dValues, 35);
-      // For aM!, Send "service request" (<address><CR><LF>) when data is ready
-      slaveSDI12.sendResponse(String(sensorAddress) + "\r\n");
-      state = WAIT;
-      slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
-                                 // message AGAIN
-      break;
+      {
+        // Do whatever the sensor is supposed to do here
+        // For this example, we will just create arbitrary "simulated" sensor data
+        // NOTE: Your application might have a different data type (e.g. int) and
+        //       number of values to report!
+        pollSensor(measurementValues);
+        // Populate the "dValues" String array with the values in SDI-12 format
+        formatOutputSDI(measurementValues, dValues, 35);
+        // For aM!, Send "service request" (<address><CR><LF>) when data is ready
+        String fullResponse = String(sensorAddress) + "\r\n";
+        slaveSDI12.sendResponse(fullResponse);
+        state = WAIT;
+        slaveSDI12.forceListen();  // sets SDI-12 pin as input to prepare for incoming
+                                   // message AGAIN
+        break;
+      }
+    case PROCESS_COMMAND:
+      {
+        state = WAIT;
+        slaveSDI12.forceListen();
+        break;
+      }
   }
 }

@@ -51,4 +51,6 @@
 #ifndef SRC_SDI12_H_
 #define SRC_SDI12_H_
 
+#include "SDI12_ExtInts.h"
+
 #endif  // SRC_SDI12_H_

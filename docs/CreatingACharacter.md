@@ -1,16 +1,16 @@
-[//]: # ( @page rx_page Creating a Character - Stepping through the Rx ISR )
-# Creating a Character - Stepping through the Rx ISR
+# Creating a Character - Stepping through the Rx ISR<!-- {#rx_page} -->
 
 [//]: # ( @tableofcontents )
 
-[//]: # ( Start GitHub Only )
+[//]: # ( @cond GitHub )
+
 - [Creating a Character - Stepping through the Rx ISR](#creating-a-character---stepping-through-the-rx-isr)
   - [How a Character Looks in SDI-12](#how-a-character-looks-in-sdi-12)
   - [Static Variables we Need](#static-variables-we-need)
   - [Following the Mask](#following-the-mask)
     - [Waiting for a Start Bit](#waiting-for-a-start-bit)
     - [The Start of a Character](#the-start-of-a-character)
-    - [The Interrupt Fires!](#the-interrupt-fires)
+    - [The Interrupt Fires](#the-interrupt-fires)
     - [Bit by Bit](#bit-by-bit)
       - [A LOW/1 Bit](#a-low1-bit)
       - [A HIGH/0 Bit](#a-high0-bit)
@@ -18,7 +18,7 @@
     - [A Finished Character](#a-finished-character)
   - [The Full Interrupt Function](#the-full-interrupt-function)
 
-[//]: # ( End GitHub Only )
+[//]: # ( @endcond )
 
 Here we'll walk step-by-step through how the SDI-12 library (and NeoSWSerial) create a character from the ISR.
 Unlike SoftwareSerial which listens for a start bit and then halts all program and other ISR execution until the end of the character, this library grabs the time of the interrupt, does some quick math, and lets the processor move on.
@@ -28,10 +28,10 @@ For a person, that 8.33ms is trivial, but for even a "slow" 8MHz processor, that
 
 So, let's look at what's happening.
 
-[//]: # ( @section rx_specs How a Character Looks in SDI-12 )
-## How a Character Looks in SDI-12
+## How a Character Looks in SDI-12<!-- {#rx_specs} -->
 
 First we need to keep in mind the specifications of SDI-12:
+
 - We use *inverse logic* that means a "1" bit is at LOW level and a "0" bit is HIGH level.
 - characters are sent as 10 bits
   - 1 start bit, which is always a 0/HIGH
@@ -39,10 +39,10 @@ First we need to keep in mind the specifications of SDI-12:
   - 1 parity bit
   - 1 stop bit, which is always 1/LOW
 
-[//]: # ( @section rx_vars Static Variables we Need )
-## Static Variables we Need
+## Static Variables we Need<!-- {#rx_vars} -->
 
 And lets remind ourselves of the static variables we're using to store states:
+
 - `prevBitTCNT` stores the time of the previous RX transition in micros
 - `rxState` tracks how many bits are accounted for on an incoming character.
   - if 0: indicates that we got a start bit
@@ -52,80 +52,67 @@ And lets remind ourselves of the static variables we're using to store states:
   - The mask has a single bit set, in the place of the active bit based on the rxState
 - `rxValue` is the value of the character being built
 
-[//]: # ( @section rx_mask Following the Mask )
-## Following the Mask
+## Following the Mask<!-- {#rx_mask} -->
 
-[//]: # ( @subsection rx_mask_wait Waiting for a Start Bit )
-### Waiting for a Start Bit
+### Waiting for a Start Bit<!-- {#rx_mask_wait} -->
 
 The `rxState`, `rxMask`, and `rxValue` all work together to form a character.
 When we're waiting for a start bit `rxValue` is empty, `rxMask` has only the bottom bit set, and `rxState` is set to WAITING-FOR-START-BIT:
 
-```
-    rxValue: |     0   0   0   0   0   0   0   0
--------------|-----------------------------------
-     rxMask: |     0   0   0   0   0   0   0   1
-    rxState: |     1   1   1   1   1   1   1   1
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   0 |
+| -------- | ----------------------------- |
+| rxMask:  | 0   0   0   0   0   0   0   1 |
+| rxState: | 1   1   1   1   1   1   1   1 |
 ```
 
-
-[//]: # ( @subsection rx_mask_start The Start of a Character )
-### The Start of a Character
+### The Start of a Character<!-- {#rx_mask_start} -->
 
 After we get a start bit, the `startChar()` function creates a blank slate for the new character, so our values are:
 
-```
-    rxValue: |     0   0   0   0   0   0   0   0
--------------|-----------------------------------
-     rxMask: |     0   0   0   0   0   0   0   1
-    rxState: |     0   0   0   0   0   0   0   0
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   0 |
+| -------- | ----------------------------- |
+| rxMask:  | 0   0   0   0   0   0   0   1 |
+| rxState: | 0   0   0   0   0   0   0   0 |
 ```
 
-
-[//]: # ( @subsection rx_mask_fire The Interrupt Fires! )
-### The Interrupt Fires!
+### The Interrupt Fires<!-- {#rx_mask_fire} -->
 
 When an interrupts is received, we use capture the time if the interrupt in `thisBitTCNT`.
 Then we subtract `prevBitTCNT` from `thisBitTCNT` and use the `bitTimes()` function to calculate how many bit-times have passed between this interrupt and the previous one.
 (There's also a fudge factor in this calculation we call the [rxWindowWidth](https://github.com/SlashDevin/NeoSWSerial/pull/13#issuecomment-315463522).)
 
-
-[//]: # ( @subsection rx_mask_bit Bit by Bit )
-### Bit by Bit
+### Bit by Bit<!-- {#rx_mask_bit} -->
 
 For **each bit time that passed**, we apply the `rxMask` to the `rxValue`.
+
 - Keep in mind multiple bit times can pass between interrupts - this happens any time there are two (or more) high or low bits in a row.
 - We also leave time for the (high) start and (low) stop bit, but do anything with the `rxState`, `rxMask`, or `rxValue` for those bits.
 
-
-[//]: # ( @subsubsection rx_mask_low A LOW/1 Bit )
-#### A LOW/1 Bit
+#### A LOW/1 Bit<!-- {#rx_mask_low} -->
 
 - if the data bit received is LOW (1) we do an `|=` (bitwise OR) between the `rxMask` and the `rxValue`
 
-```
-    rxValue: |     0   0   0   0   0   0   0   1
--------------|---------------------------------^- bit-wise or puts the one
-     rxMask: |     0   0   0   0   0   0   0   1      from the rxMask into
-    rxState: |     0   0   0   0   0   0   0   0      the rxValue
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   1 |
+| -------- | ----------------------------- |^- bit-wise or puts the one
+|  rxMask: | 0   0   0   0   0   0   0   1 |   from the rxMask into
+| rxState: | 0   0   0   0   0   0   0   0 |   the rxValue
 ```
 
-
-[//]: # ( @subsubsection rx_mask_high A HIGH/0 Bit )
-#### A HIGH/0 Bit
+#### A HIGH/0 Bit<!-- {#rx_mask_high} -->
 
 - if the data bit received is HIGH (0) we do nothing
 
-```
-    rxValue: |     0   0   0   0   0   0   0   0
--------------|---------------------------------x- nothing happens
-     rxMask: |     0   0   0   0   0   0   0   1
-    rxState: |     0   0   0   0   0   0   0   0
+```unparsed
+| rxValue: | 0   0   0   0   0   0   0   0 |
+| -------- | ----------------------------- |x- nothing happens
+|  rxMask: | 0   0   0   0   0   0   0   1 |
+| rxState: | 0   0   0   0   0   0   0   0 |
 ```
 
-
-[//]: # ( @subsubsection rx_mask_shift Shifting Up )
-#### Shifting Up
+#### Shifting Up<!-- {#rx_mask_shift} -->
 
 - *After* applying the mask, we push everything over one bit to the left.
 The top bit falls off.
@@ -133,33 +120,30 @@ The top bit falls off.
   - we always add a 0 on the `rxMask` and the `rxValue`
   - the values of the second bit of the `rxValue` (?) depends on what we did in the step above
 
-```
-    rxValue: |     0        <--- | 0   0   0   0   0   0   ?   0 <--- add a zero
--------------|-------------------|---------------------------|---
-     rxMask: |     0        <--- | 0   0   0   0   0   0   1   0 <--- add a zero
-    rxState: |     0        <--- | 0   0   0   0   0   0   0   1 <--- add a one
--------------|-------------------|---------------------------|---
-             | falls off the top |                           | added to the bottom
+```unparsed
+| rxValue:          | 0        <---       | 0   0   0   0   0   0   ?   0 <--- add a zero |
+| ----------------- | ------------------- | --------------------------------------------- |
+| rxMask:           | 0        <---       | 0   0   0   0   0   0   1   0 <--- add a zero |
+| rxState:          | 0        <---       | 0   0   0   0   0   0   0   1 <--- add a one  |
+| ----------------- | ------------------- | --------------------------------------------- |
+| ----------------- | ^ falls off the top | ------- added to the bottom ^                 |
 ```
 
-
-[//]: # ( @subsection rx_mask_fin A Finished Character )
-### A Finished Character
+### A Finished Character<!-- {#rx_mask_fin} -->
 
 After 8 bit times have passed, we should have a fully formed character with 8 bits of data (7 of the character + 1 parity).
 The `rxMask`  will have the one in the top bit.
 And the rxState will be filled - which just happens to be the value of `WAITING-FOR-START-BIT` for the next character.
 
-```
-    rxValue: |     ?   ?   ?   ?   ?   ?   ?   ?
--------------|-----------------------------------
-     rxMask: |     1   0   0   0   0   0   0   0
-    rxState: |     1   1   1   1   1   1   1   1
+
+```unparsed
+| rxValue: | ?   ?   ?   ?   ?   ?   ?   ? |
+| -------- | ----------------------------- |
+| rxMask:  | 1   0   0   0   0   0   0   0 |
+| rxState: | 1   1   1   1   1   1   1   1 |
 ```
 
-
-[//]: # ( @section rx_fxn The Full Interrupt Function )
-## The Full Interrupt Function
+## The Full Interrupt Function<!-- {#rx_fxn} -->
 
 Understanding how the masking creates the character, you should now be able to follow the full interrupt function below.
 
@@ -193,7 +177,7 @@ void SDI12::receiveISR() {
     // data, parity, or stop bit.
 
     // Check how many bit times have passed since the last change
-    uint16-t rxBits = bitTimes((uint8-t)(thisBitTCNT - prevBitTCNT));
+    uint16-t rxBits = bitTimes(static_cast<sditimer_t>(thisBitTCNT - prevBitTCNT));
     // Calculate how many *data+parity* bits should be left in the current character
     //      - Each character has a total of 10 bits, 1 start bit, 7 data bits, 1 parity
     // bit, and 1 stop bit

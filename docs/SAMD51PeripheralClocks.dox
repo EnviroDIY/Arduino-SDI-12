@@ -1,0 +1,84 @@
+  // -- DPLL (Digital Phase Locked Loop)
+  // OSCCTRL_GCLK_ID_DFLL48      0        // Index of Generic Clock for DFLL48
+  // OSCCTRL_GCLK_ID_FDPLL0      1        // Index of Generic Clock for DPLL0
+  // OSCCTRL_GCLK_ID_FDPLL1      2        // Index of Generic Clock for DPLL1
+  // OSCCTRL_GCLK_ID_FDPLL032K   3        // Index of Generic Clock for DPLL0 32K
+  // OSCCTRL_GCLK_ID_FDPLL132K   3        // Index of Generic Clock for DPLL1 32K
+  // -- EIC (External Interrupt Control)
+  // EIC_GCLK_ID                 4
+  // -- FREQM (Frequency Meter)
+  // FREQM_GCLK_ID_MSR           5
+  // 6 seems to be unused, though it's USB on the SAMD21
+  // -- SERCOM's 0-1
+  // SERCOM0_GCLK_ID_CORE        7
+  // SERCOM0_GCLK_ID_SLOW        3
+  // SERCOM1_GCLK_ID_CORE        8
+  // SERCOM1_GCLK_ID_SLOW        3
+  // Timer Control 0-1
+  // TC0_GCLK_ID                 9
+  // TC1_GCLK_ID                 9
+  // -- USB
+  // USB_GCLK_ID                 10
+  // -- EVSYS (Event System)
+  // EVSYS_GCLK_ID_0             11
+  // EVSYS_GCLK_ID_1             12
+  // EVSYS_GCLK_ID_2             13
+  // EVSYS_GCLK_ID_3             14
+  // EVSYS_GCLK_ID_4             15
+  // EVSYS_GCLK_ID_5             16
+  // EVSYS_GCLK_ID_6             17
+  // EVSYS_GCLK_ID_7             18
+  // EVSYS_GCLK_ID_8             19
+  // EVSYS_GCLK_ID_9             20
+  // EVSYS_GCLK_ID_10            21
+  // EVSYS_GCLK_ID_11            22
+  // -- SERCOM's 2-3
+  // SERCOM2_GCLK_ID_CORE        23
+  // SERCOM2_GCLK_ID_SLOW        3
+  // SERCOM3_GCLK_ID_CORE        24
+  // SERCOM3_GCLK_ID_SLOW        3
+  // -- TCC (Timer/Counter for Control) 0-1; TC (Timer/Counter) 2-3
+  // TCC0_GCLK_ID                25
+  // TCC1_GCLK_ID                25
+  // TC2_GCLK_ID                 26
+  // TC3_GCLK_ID                 26
+  // -- CAN (Control Area Network) 0-1
+  // CAN0_GCLK_ID                27
+  // CAN1_GCLK_ID                28 // NOTE: Incorrectly set to 36 in UF2 bootloader??
+  // -- TCC (Timer/Counter for Control) 2-3; TC (Timer/Counter) 4-5
+  // TCC2_GCLK_ID                29
+  // TCC3_GCLK_ID                29
+  // TC4_GCLK_ID                 30
+  // TC5_GCLK_ID                 30
+  // -- PDEC (Position Decoder)
+  // PDEC_GCLK_ID                31
+  // -- AC (Analog Input Comparitor)
+  // AC_GCLK_ID                  32
+  // -- CCL (Configurable Custom Logic)
+  // CCL_GCLK_ID                 33
+  // -- SERCOM's 4-7
+  // SERCOM4_GCLK_ID_CORE        34
+  // SERCOM4_GCLK_ID_SLOW        3
+  // SERCOM5_GCLK_ID_CORE        35
+  // SERCOM5_GCLK_ID_SLOW        3
+  // SERCOM6_GCLK_ID_CORE        36
+  // SERCOM6_GCLK_ID_SLOW        3
+  // SERCOM7_GCLK_ID_CORE        37
+  // SERCOM7_GCLK_ID_SLOW        3
+  // -- TCC (Timer/Counter for Control) 4; TC (Timer/Counter) 6-7
+  // TCC4_GCLK_ID                38
+  // TC6_GCLK_ID                 39
+  // TC7_GCLK_ID                 39
+  // -- ADC (Analog to Digital Converter)
+  // ADC0_GCLK_ID                40
+  // ADC1_GCLK_ID                41
+  // -- DAC (Digital to Analog Converter)
+  // DAC_GCLK_ID                 42
+  // -- I2S (Sound)
+  // I2S_GCLK_ID_0               43
+  // I2S_GCLK_ID_1               44
+  // -- SDHC (SD Card)
+  // SDHC0_GCLK_ID               45
+  // SDHC0_GCLK_ID_SLOW          3
+  // SDHC1_GCLK_ID               46
+  // SDHC1_GCLK_ID_SLOW          3

@@ -3,88 +3,37 @@ name: Build Examples
 # Triggers the workflow on push or pull request events
 on: [push, pull_request]
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, 'ci skip')"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-    strategy:
-      matrix:
-        example:
-          [
-            examples/a_wild_card/,
-            examples/b_address_change/,
-            examples/c_check_all_addresses/,
-            examples/d_simple_logger/,
-            examples/e_continuous_measurement/,
-            examples/f_basic_data_request/,
-            examples/g_terminal_window/,
-            examples/h_SDI-12_slave_implementation/,
-            examples/i_SDI-12_interface/,
-            examples/j_external_pcint_library/,
-            examples/k_concurrent_logger/,
-          ]
+jobs:
+  build_examples:
+    name: Build standard examples with PlatformIO and the Arduino CLI
+    if: ${{ ! contains(github.event.head_commit.message, 'ci skip') }}
+    uses: EnviroDIY/workflows/.github/workflows/build_examples.yaml@main
+    with:
+      boards_to_build: 'mayfly,uno,megaatmega2560,leonardo,zeroUSB,arduino_nano_esp32,feather328p,feather32u4,adafruit_feather_m0,adafruit_feather_m4,huzzah,featheresp32,esp32-c3-devkitm-1,esp32-s3-devkitm-1'
+      examples_to_build: 'examples/a_wild_card,examples/b_address_change,examples/c_check_all_addresses,examples/d_simple_logger,examples/e_continuous_measurement,examples/f_basic_data_request,examples/g_terminal_window,examples/h_SDI-12_slave_implementation,examples/i_SDI-12_interface,examples/k_concurrent_logger,examples/l_verify_crc'
+    secrets: inherit
+
+
+  build_ext_ints:
+    name: Build the External Interrupt Example
+    runs-on: ubuntu-latest
+    if: ${{ ! contains(github.event.head_commit.message, 'ci skip') }}
+    env:
+      PLATFORMIO_BUILD_CACHE_DIR: ~/.platformio/caches
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Set variables
-        run: |
-          if [[ -z "${GITHUB_HEAD_REF}" ]]; then
-            echo "::debug::Push to commit ${GITHUB_SHA}"
-            echo "LIBRARY_INSTALL_SOURCE=https://github.com/${GITHUB_REPOSITORY}.git#${GITHUB_SHA}" >> $GITHUB_ENV
-          else
-            echo "::debug::Pull Request from the ${GITHUB_HEAD_REF} branch"
-            echo "LIBRARY_INSTALL_SOURCE=https://github.com/${GITHUB_REPOSITORY}.git#${GITHUB_HEAD_REF}" >> $GITHUB_ENV
-          fi
+      - name: Setup PlatformIO
+        uses: EnviroDIY/setup-platformio-action@v1.0.2
 
-      - name: Restore or Cache pip
-        uses: actions/cache@v3.0.4
-        with:
-          path: ~/.cache/pip
-          # if requirements.txt hasn't changed, then it will be a "cache hit" and pip will be restored
-          # if requirements.txt HAS changed, it will be a "cache miss" and a new cache of pip will be created if the job completes successfully
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: ${{ runner.os }}-pip-
-
-      - name: Restore or Cache PlatformIO and Libraries
-        uses: actions/cache@v3.0.4
-        with:
-          path: ~/.platformio
-          # if nothing in the lock files has changed, then it will be a "cache hit" and pip will be restored
-          # otherwise, it will be a "cache miss" and a new cache of libraries will be created if the job completes successfully
-          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      # This should be pulled from cache, if there's not a new version
-      - name: Install PlatformIO
-        run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade platformio
-
-      - name: Run PlatformIO
-        if:  matrix.example != 'examples/j_external_pcint_library/'
+      - name: Build PlatformIO examples
         env:
-          PLATFORMIO_CI_SRC: ${{ matrix.example }}
-        run: |
-          echo "${{ env.LIBRARY_INSTALL_SOURCE }}"
-          pio lib --global install ${{ env.LIBRARY_INSTALL_SOURCE }}
-          pio lib --global install EnableInterrupt
-          platformio ci --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560 --board=huzzah --board=featheresp32
-          pio lib --global uninstall SDI-12
-
-      - name: Run PlatformIO
-        if: matrix.example == 'examples/j_external_pcint_library/'
-        env:
-          PLATFORMIO_CI_SRC: ${{ matrix.example }}
-          PLATFORMIO_BUILD_FLAGS: -DSDI12_EXTERNAL_PCINT
-        run: |
-          echo "${{ env.LIBRARY_INSTALL_SOURCE }}"
-          pio lib --global install ${{ env.LIBRARY_INSTALL_SOURCE }}
-          pio lib --global install EnableInterrupt
-          platformio ci --board=mayfly --board=feather32u4 --board=adafruit_feather_m0 --board=uno --board=megaatmega2560
-          pio lib --global uninstall SDI-12
+          PLATFORMIO_BUILD_FLAGS: -D SDI12_EXTERNAL_PCINT
+          PLATFORMIO_CI_SRC: examples/j_external_pcint_library
+        run: pio ci --board=mayfly --board=uno --board=megaatmega2560 --board=leonardo --board=zeroUSB --board=feather328p --board=feather32u4 --board=adafruit_feather_m0 --lib="." --project-option="lib_deps=greygnome/EnableInterrupt@^1.1.0"

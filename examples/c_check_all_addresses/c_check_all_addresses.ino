@@ -1,8 +1,7 @@
 /**
- * @file c_check_all_addresses.ino
- * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
- *                          and the EnviroDIY Development Team
- *            This example is published under the BSD-3 license.
+ * @example{lineno} c_check_all_addresses.ino
+ * @copyright Stroud Water Research Center
+ * @license This example is published under the BSD-3 license.
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
  *
@@ -22,10 +21,10 @@
 
 #include <SDI12.h>
 
-#define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
-#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
-#define FirstPin 5         /*! change to lowest pin number on your board */
-#define LastPin 24         /*! change to highest pin number on your board */
+uint32_t serialBaud = 115200; /*!< The baud rate for the output serial port */
+int8_t   powerPin   = 22; /*!< The sensor power pin (or -1 if not switching power) */
+#define FirstPin 5        /*! change to lowest pin number on your board */
+#define LastPin 24        /*! change to highest pin number on your board */
 
 /**
  * @brief gets identification information from a sensor, and prints it to the serial
@@ -85,19 +84,19 @@ void scanAddressSpace(SDI12 sdi) {
 }
 
 void setup() {
-  Serial.begin(SERIAL_BAUD);
+  Serial.begin(serialBaud);
   Serial.println("//\n// Start Search for SDI-12 Devices \n// -----------------------");
 
   // Power the sensors;
-  if (POWER_PIN > 0) {
+  if (powerPin >= 0) {
     Serial.println("Powering up sensors...");
-    pinMode(POWER_PIN, OUTPUT);
-    digitalWrite(POWER_PIN, HIGH);
+    pinMode(powerPin, OUTPUT);
+    digitalWrite(powerPin, HIGH);
     delay(200);
   }
 
   for (uint8_t pin = FirstPin; pin <= LastPin; pin++) {
-    if (pin != POWER_PIN) {
+    if (pin != powerPin) {
       pinMode(pin, INPUT);
       SDI12 mySDI12(pin);
       mySDI12.begin();
@@ -112,7 +111,7 @@ void setup() {
   Serial.println("\n//\n// End Search for SDI-12 Devices \n// ---------------------");
 
   // Cut power
-  digitalWrite(POWER_PIN, LOW);
+  digitalWrite(powerPin, LOW);
 }
 
 void loop() {}
