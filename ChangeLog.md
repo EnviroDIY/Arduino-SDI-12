@@ -24,9 +24,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - This does not change any functionality of the macro, just the name.
 - Moved defines to the top of the SDI12_boards.h file
 - Renamed the "tools" directory to "extras" in compliance with Arduino library standards.
+- Updated copyright and license texts
+- SAMD boards now *partially* revert clock and prescaler settings when an SDI-12 instance is ended.
+  - Prescalers are reset to factory settings, the clock divisor is not reset
 
 ### Added
 
+- Added CRC checking
 - Added support for SAMD51 processors using dedicated timers
 - Added parity checking on character reception
   - This can be disabled by defining the macro `SDI12_IGNORE_PARITY`
