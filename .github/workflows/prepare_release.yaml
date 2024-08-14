@@ -7,68 +7,43 @@ on:
       - 'VERSION' # Push events when the VERSION file changes
   workflow_dispatch:
 
-name: Prepare a new release
+name: Create a New Release
 
 env:
   PLATFORMIO_AUTH_TOKEN: ${{ secrets.PLATFORMIO_AUTH_TOKEN }}
 
 jobs:
+  wait_for_checks:
+    if: ${{ github.event_name != 'workflow_dispatch' }}
+    strategy:
+      matrix:
+        req_workflow:
+          [
+            verify_library_structure.yaml,
+            build_examples.yaml,
+            build_documentation.yaml,
+          ]
+    name: Wait for Checks to complete
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait on Workflow
+        uses: ArcticLampyrid/action-wait-for-workflow@v1.2.0
+        with:
+          workflow: ${{ matrix.req_workflow }}
+          sha: ${{ github.sha || github.event.pull_request.head.sha || github.event.pull_request.head.ref }} # optional
+          allowed-conclusions: |
+            success
+            cancelled
+            skipped
+
   release:
     name: Prepare a new release
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set variables
-        run: |
-          echo "::debug::Get the current version number"
-          VER=$(cat VERSION)
-          echo "VERSION=$VER" >> $GITHUB_ENV
-
-      - name: Restore or Cache pip
-        uses: actions/cache@v4.0.2
-        with:
-          path: ~/.cache/pip
-          # if requirements.txt hasn't changed, then it will be a "cache hit" and pip will be restored
-          # if requirements.txt HAS changed, it will be a "cache miss" and a new cache of pip will be created if the job completes successfully
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: ${{ runner.os }}-pip-
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      # This should be pulled from cache, if there's not a new version
-      - name: Install PlatformIO
-        run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade platformio
-
-      - name: Get notes
-        id: generate_notes
-        uses: anmarkoulis/commitizen-changelog-reader@master
-        with:
-          # NOTE:  Need to add the refs/tags to work with the generate notes action
-          tag_name: ${{ format('refs/tags/{0}', env.VERSION) }}
-          changelog: ChangeLog.md
-
-      # Create a new release
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ env.VERSION }}
-          release_name: ${{ env.VERSION }}
-          draft: false
-          prerelease: false
-          body: ${{join(fromJson(steps.generate_notes.outputs.notes).notes, '')}}
-
-      # Publish the new release to the pio package manager
-      - name: Publish release to PIO
-        id: publish-pio
-        run: pio package publish
+    needs: [wait_for_checks]
+    if: |
+      always() &&
+      (needs.wait_for_checks.result == 'success' || needs.wait_for_checks.result == 'skipped')
+    uses: EnviroDIY/workflows/.github/workflows/prepare_release.yaml@main
+    secrets: inherit
+    with:
+      library-manager: 'update'
+      library-compliance: 'strict'

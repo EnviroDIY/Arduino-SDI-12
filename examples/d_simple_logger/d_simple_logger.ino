@@ -1,8 +1,7 @@
 /**
- * @file d_simple_logger.ino
- * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
- *                          and the EnviroDIY Development Team
- *            This example is published under the BSD-3 license.
+ * @example{lineno} d_simple_logger.ino
+ * @copyright Stroud Water Research Center
+ * @license This example is published under the BSD-3 license.
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
  *
@@ -26,13 +25,15 @@
 
 #include <SDI12.h>
 
-#define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
-#define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
-#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
-#define WAKE_DELAY 0       /*!< Extra time needed for the sensor to wake (0-100ms) */
+uint32_t serialBaud   = 115200; /*!< The baud rate for the output serial port */
+int8_t   dataPin      = 7;      /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin     = 22; /*!< The sensor power pin (or -1 if not switching power) */
+uint32_t wake_delay   = 0;  /*!< Extra time needed for the sensor to wake (0-100ms) */
+int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
+int8_t   lastAddress = 62; /* The last address in the address space to check (62='z') */
 
 /** Define the SDI-12 bus */
-SDI12 mySDI12(DATA_PIN);
+SDI12 mySDI12(dataPin);
 
 // keeps track of active addresses
 bool isActive[64] = {
@@ -80,7 +81,7 @@ void printInfo(char i) {
   String command = "";
   command += (char)i;
   command += "I!";
-  mySDI12.sendCommand(command, WAKE_DELAY);
+  mySDI12.sendCommand(command, wake_delay);
   delay(100);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
@@ -111,7 +112,7 @@ bool getResults(char i, int resultsExpected) {
     command += "D";
     command += cmd_number;
     command += "!";  // SDI-12 command to get data [address][D][dataOption][!]
-    mySDI12.sendCommand(command, WAKE_DELAY);
+    mySDI12.sendCommand(command, wake_delay);
 
     uint32_t start = millis();
     while (mySDI12.available() < 3 && (millis() - start) < 1500) {}
@@ -148,7 +149,7 @@ bool takeMeasurement(char i, String meas_type = "") {
   command += "M";
   command += meas_type;
   command += "!";  // SDI-12 measurement command format  [address]['M'][!]
-  mySDI12.sendCommand(command, WAKE_DELAY);
+  mySDI12.sendCommand(command, wake_delay);
   delay(100);
 
   Serial.print(command);
@@ -201,7 +202,7 @@ boolean checkActive(char i) {
   myCommand += "!";
 
   for (int j = 0; j < 3; j++) {  // goes through three rapid contact attempts
-    mySDI12.sendCommand(myCommand, WAKE_DELAY);
+    mySDI12.sendCommand(myCommand, wake_delay);
     delay(100);
     if (mySDI12.available()) {  // If we here anything, assume we have an active sensor
       mySDI12.clearBuffer();
@@ -213,7 +214,7 @@ boolean checkActive(char i) {
 }
 
 void setup() {
-  Serial.begin(SERIAL_BAUD);
+  Serial.begin(serialBaud);
   while (!Serial)
     ;
 
@@ -225,10 +226,10 @@ void setup() {
   Serial.println(mySDI12.TIMEOUT);
 
   // Power the sensors;
-  if (POWER_PIN > 0) {
+  if (powerPin >= 0) {
     Serial.println("Powering up sensors, wait...");
-    pinMode(POWER_PIN, OUTPUT);
-    digitalWrite(POWER_PIN, HIGH);
+    pinMode(powerPin, OUTPUT);
+    digitalWrite(powerPin, HIGH);
     delay(15000L);
     // delay(200);
   }
@@ -238,7 +239,7 @@ void setup() {
   Serial.println("Sensor Address, Protocol Version, Sensor Vendor, Sensor Model, "
                  "Sensor Version, Sensor ID");
 
-  for (byte i = 0; i < 62; i++) {
+  for (byte i = firstAddress; i < lastAddress; i++) {
     char addr = decToChar(i);
     if (checkActive(addr)) {
       numSensors++;
@@ -268,7 +269,7 @@ void loop() {
   String commands[] = {"", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
   for (uint8_t a = 0; a < 1; a++) {
     // measure one at a time
-    for (byte i = 0; i < 62; i++) {
+    for (byte i = firstAddress; i < lastAddress; i++) {
       char addr = decToChar(i);
       if (isActive[i]) {
         // Serial.print(millis() / 1000);

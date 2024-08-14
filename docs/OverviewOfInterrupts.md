@@ -1,9 +1,9 @@
-[//]: # ( @page interrupts_page Overview of Interrupts )
-# Overview of Interrupts
+# Overview of Interrupts<!-- {#interrupts_page} -->
 
 [//]: # ( @tableofcontents )
 
-[//]: # ( Start GitHub Only )
+[//]: # ( @cond GitHub )
+
 - [Overview of Interrupts](#overview-of-interrupts)
   - [What is an Interrupt?](#what-is-an-interrupt)
   - [Directly Controlling Interrupts on an AVR Board](#directly-controlling-interrupts-on-an-avr-board)
@@ -11,10 +11,10 @@
     - [Enabling an Interrupt](#enabling-an-interrupt)
     - [Disabling an Interrupt](#disabling-an-interrupt)
 
-[//]: # ( End GitHub Only )
+[//]: # ( @endcond )
 
-[//]: # ( @section interrupts_what What is an Interrupt? )
-## What is an Interrupt?
+## What is an Interrupt?<!-- {#interrupts_what} -->
+
 An interrupt is a signal that causes the microcontroller to halt execution of the program, and perform a subroutine known as an interrupt handler or Interrupt Service Routine (ISR).
 After the ISR, program execution continues where it left off.
 This allows the microcontroller to efficiently handle a time-sensitive function such as receiving a burst of data on one of its pins, by not forcing the microcontroller to wait for the data.
@@ -27,35 +27,36 @@ Obviously, we don't want the processor to be halting operation every time any pi
 For Atmel SAMD or Espressif processors the processor has dedicated control registers for each pin and the Arduino core provides us with a handy "attachInterrupt" function to use to tie our ISR to that pin.
 For AVR processors, like the Arduino Uno or the EnviroDIY Mayfly, we have to use a get a bit fancier to control the interrupts.
 
-[//]: # ( @section interrupts_avr Directly Controlling Interrupts on an AVR Board )
-## Directly Controlling Interrupts on an AVR Board
+## Directly Controlling Interrupts on an AVR Board<!-- {#interrupts_avr} -->
 
-[//]: # ( @subsection interrupts_vocab Some Vocabulary )
-### Some Vocabulary:
+### Some Vocabulary:<!-- {#interrupts_vocab} -->
 
 **Registers**: small 1-byte (8-bit) stores of memory directly accessible by processor
 PCMSK0, PCMSK1, PCMSK2, PCMSK3
 
-**PCICRx**: a register where the three least significant bits enable or disable pin change interrupts on a range of pins
+`PCICRx`: a register where the three least significant bits enable or disable pin change interrupts on a range of pins
+
 - i.e. {0,0,0,0,0,PCIE2,PCIE1,PCIE0}, where PCIE2 maps to PCMSK2, PCIE1 maps to PCMSK1, and PCIE0 maps to PCMSK0.
 
-**PCMSKx**: a register that stores the state (enabled/disabled) of pin change interrupts on a single pin
+`PCMSKx`: a register that stores the state (enabled/disabled) of pin change interrupts on a single pin
+
 - Each bit stores a 1 (enabled) or 0 (disabled).
 
 On an Arduino Uno:
+
 - There is on PCICR register controlling three ranges of pins
 - There are three mask registers (PCMSK0, PCMSK1, and PCMSK2) controlling individual pins.
 - Looking at one mask register, PCMSK0:
-    - the 8 bits represent: PCMSK0 {PCINT7, PCINT6, PCINT5, PCINT4, PCINT3, PCINT2, PCINT1, PCINT0}
-    - these map to:         PCMSK0 {XTAL2,  XTAL1,  Pin 13, Pin 12, Pin 11, Pin 10, Pin 9,  Pin 8}
+  - the 8 bits represent: PCMSK0 {PCINT7, PCINT6, PCINT5, PCINT4, PCINT3, PCINT2, PCINT1, PCINT0}
+  - these map to:         PCMSK0 {XTAL2,  XTAL1,  Pin 13, Pin 12, Pin 11, Pin 10, Pin 9,  Pin 8}
 
-**noInterrupts()**: a function to globally disable interrupts (of all types)
+`noInterrupts()`: a function to globally disable interrupts (of all types)
 
-**interrupts()**: a function to globally enable interrupts (of all types)
+`interrupts()`: a function to globally enable interrupts (of all types)
+
 - interrupts will only occur if the requisite registers are set (e.g. PCMSK and PCICR).
 
-[//]: # ( @subsection interrupts_enable Enabling an Interrupt )
-### Enabling an Interrupt
+### Enabling an Interrupt<!-- {#interrupts_enable} -->
 
 Initially, no interrupts are enabled, so PCMSK0 looks like: `{00000000}`.
 If we were to use pin 9 as the data pin, we would set the bit in the pin 9 position to 1, like so: `{00000010}`.
@@ -92,15 +93,15 @@ Or equivalently:  `(1<<1)`, we get: `{00000010}`.
 To use the mask to set the bit of interest we use the bitwise or operator `|`.
 We will use the compact `|=` notation which does the operation and then stores the result back into the left hand side.
 
-
 So the operation:
 
 ```cpp
 *digitalPinToPCMSK(_dataPin) |= (1<<digitalPinToPCMSKbit(9));
 ```
+
 Accomplishes:
 
-```
+```unparsed
     (1<<digitalPinToPCMSKbit(9))              {00000010}
 
     PCMSK0                               |    {00000000}
@@ -110,11 +111,9 @@ Accomplishes:
                                               {00000010}
 ```
 
-
 We must also enable the global control for the interrupt. This is done in a similar fashion:
 
 `*digitalPinToPCICR(_dataPin) |= (1<<digitalPinToPCICRbit(_dataPin));`
-
 
 Now let's assume that part of your Arduino sketch outside of SDI-12 had set a pin change interrupt on pin 13.
 Pin 9 and pin 13 are on the same PCMSK in the case of the Arduino Uno.
@@ -125,7 +124,7 @@ This time before we set the bit for pin nine,
 
 So now:
 
-```
+```unparsed
     (1<<digitalPinToPCMSKbit(9))              {00000010}
 
     PCMSK0                               |    {00100000}
@@ -137,13 +136,11 @@ So now:
 
 By using a bitmask and bitwise operation, we have successfully enabled pin 9 without effecting the state of pin 13.
 
-
-[//]: # ( @subsection interrupts_disable Disabling an Interrupt )
-### Disabling an Interrupt
+### Disabling an Interrupt<!-- {#interrupts_disable} -->
 
 When the we would like to put the SDI-12 object in the DISABLED state, (e.g. the destructor is called), we need to make sure the bit corresponding to the data pin is unset.
 
-Let us consider again the case of where an interrupt has been enabled on pin 13: {00100010}.
+Let us consider again the case of where an interrupt has been enabled on pin 13: `{00100010}`.
 We want to be sure not to disturb this interrupt when disabling the interrupt on pin 9.
 
 We will make use of similar macros, but this time we will use an inverted bit mask and the AND operation.
@@ -156,7 +153,7 @@ The inversion symbol `~` modifies the result to `{11111101}`
 
 So to finish our example:
 
-```
+```unparsed
     ~(1<<digitalPinToPCMSKbit(9))             {11111101}
 
     PCMSK0                               &    {00100010}
@@ -169,16 +166,16 @@ So to finish our example:
 So only the interrupt on pin 13 remains set.
 As a matter of book keeping, if we unset the last bit in the PCMSK, we ought to also unset the respective bit in the PCICR.
 
-    `!(*digitalPinToPCMSK(9)`
+`!(*digitalPinToPCMSK(9)`
 
-        will evaluate TRUE if PCMSK {00000000}
-
-        will evaluate FALSE if PCMSK != {00000000}
+- will evaluate TRUE if PCMSK == `{00000000}`
+- will evaluate FALSE if PCMSK != `{00000000}`
 
 In this case, pin 13 is set, so the expression would be FALSE.
 If we go back to the original case without pin 13, the expression after disabling pin 9 would evaluate to TRUE.
 
 Therefore if we evaluate to TRUE, we should tidy up:
+
 ```cpp
 if(!*digitalPinToPCMSK(_dataPin)){
       *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));

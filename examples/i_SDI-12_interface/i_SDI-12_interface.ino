@@ -1,8 +1,7 @@
 /**
- * @file h_SDI-12_slave_implementation.ino
- * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
- *                          and the EnviroDIY Development Team
- *            This example is published under the BSD-3 license.
+ * @example{lineno} i_SDI-12_interface.ino
+ * @copyright Stroud Water Research Center
+ * @license This example is published under the BSD-3 license.
  * @date 2016
  * @author D. Wasielewski
  *
@@ -46,24 +45,25 @@
 
 #include <SDI12.h>
 
-#define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
-#define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
-#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
-#define SENSOR_ADDRESS 1
+/* connection information */
+uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port */
+int8_t   dataPin       = 7;      /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin      = 22; /*!< The sensor power pin (or -1 if not switching power) */
+char     sensorAddress = '1'; /*!< The address of the SDI-12 sensor */
 
 /** Define the SDI-12 bus */
-SDI12 mySDI12(DATA_PIN);
+SDI12 mySDI12(dataPin);
 
 void setup() {
-  Serial.begin(SERIAL_BAUD);
+  Serial.begin(serialBaud);
   while (!Serial)
     ;
 
   // Power the sensors;
-  if (POWER_PIN > 0) {
+  if (powerPin >= 0) {
     Serial.println("Powering up sensors...");
-    pinMode(POWER_PIN, OUTPUT);
-    digitalWrite(POWER_PIN, HIGH);
+    pinMode(powerPin, OUTPUT);
+    digitalWrite(powerPin, HIGH);
     delay(200);
   }
 
@@ -166,7 +166,8 @@ void loop() {
         mySDI12.sendCommand(serialMsgStr);
       } else {
         serialMsgStr.toUpperCase();
-        mySDI12.sendCommand(serialMsgStr + "!");
+        String fullCommand = serialMsgStr + "!";
+        mySDI12.sendCommand(fullCommand);
       }
     }
     // Reset String for next serial message

@@ -1,9 +1,7 @@
-
 /**
- * @file a_wild_card.ino
- * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
- *                          and the EnviroDIY Development Team
- *            This example is published under the BSD-3 license.
+ * @example{lineno} a_wild_card.ino
+ * @copyright Stroud Water Research Center
+ * @license This example is published under the BSD-3 license.
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
  *
@@ -17,12 +15,12 @@
 
 #include <SDI12.h>
 
-#define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
-#define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
-#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
+uint32_t serialBaud = 115200; /*!< The baud rate for the output serial port */
+int8_t   dataPin    = 7;      /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin   = 22; /*!< The sensor power pin (or -1 if not switching power) */
 
 /** Define the SDI-12 bus */
-SDI12 mySDI12(DATA_PIN);
+SDI12 mySDI12(dataPin);
 
 /**
   '?' is a wildcard character which asks any and all sensors to respond
@@ -32,7 +30,7 @@ SDI12 mySDI12(DATA_PIN);
 String myCommand = "?I!";
 
 void setup() {
-  Serial.begin(SERIAL_BAUD);
+  Serial.begin(serialBaud);
   while (!Serial)
     ;
 
@@ -41,10 +39,10 @@ void setup() {
   delay(500);  // allow things to settle
 
   // Power the sensors;
-  if (POWER_PIN > 0) {
+  if (powerPin >= 0) {
     Serial.println("Powering up sensors...");
-    pinMode(POWER_PIN, OUTPUT);
-    digitalWrite(POWER_PIN, HIGH);
+    pinMode(powerPin, OUTPUT);
+    digitalWrite(powerPin, HIGH);
     delay(200);
   }
 }

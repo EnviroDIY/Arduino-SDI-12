@@ -1,5 +1,4 @@
-[//]: # ( @page example_e_page Example E: Check all Addresses for Active Sensors and Start Continuous Measurements )
-## Example E: Check all Addresses for Active Sensors and Start Continuous Measurements
+## Example E: Check all Addresses for Active Sensors and Start Continuous Measurements<!-- {#example_e_page} -->
 
 This is a simple demonstration of the SDI-12 library for Arduino.
 
@@ -16,3 +15,5 @@ To address a sensor, please see Example B: b_address_change.ino
 [//]: # ( @include{lineno} e_continuous_measurement/platformio.ini )
 
 [//]: # ( @section e_continuous_measurement_code The Complete Example )
+
+[//]: # ( @include{lineno} e_continuous_measurement/e_continuous_measurement.ino )

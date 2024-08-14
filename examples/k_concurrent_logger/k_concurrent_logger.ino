@@ -1,8 +1,7 @@
 /**
- * @file k_concurrent_logger.ino
- * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
- *                          and the EnviroDIY Development Team
- *            This example is published under the BSD-3 license.
+ * @example{lineno} k_concurrent_logger.ino
+ * @copyright Stroud Water Research Center
+ * @license This example is published under the BSD-3 license.
  * @author Sara Geleskie Damiano <sdamiano@stroudcenter.org>
  *
  * @brief Example K:  Concurrent Measurements
@@ -16,37 +15,33 @@
 
 #include <SDI12.h>
 
-#define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
-#define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
-#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
+/* connection information */
+uint32_t serialBaud   = 115200; /*!< The baud rate for the output serial port */
+int8_t   dataPin      = 7;      /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin     = 22; /*!< The sensor power pin (or -1 if not switching power) */
+int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
+int8_t   lastAddress = 62; /* The last address in the address space to check (62='z') */
 
 /** Define the SDI-12 bus */
-SDI12 mySDI12(DATA_PIN);
+SDI12 mySDI12(dataPin);
 
 // keeps track of active addresses
-bool isActive[64] = {
-  0,
-};
+bool isActive[64];
 
 // keeps track of the wait time for each active addresses
-uint8_t meas_time_ms[64] = {
-  0,
-};
+uint8_t meas_time_ms[64];
 
 // keeps track of the time each sensor was started
-uint32_t millisStarted[64] = {
-  0,
-};
+uint32_t millisStarted[64];
 
 // keeps track of the time each sensor will be ready
-uint32_t millisReady[64] = {
-  0,
-};
+uint32_t millisReady[64];
 
 // keeps track of the number of results expected
-uint8_t returnedResults[64] = {
-  0,
-};
+uint8_t expectedResults[64];
+
+// keeps track of the number of results returned
+uint8_t returnedResults[64];
 
 uint8_t numSensors = 0;
 
@@ -79,44 +74,13 @@ char decToChar(byte i) {
     return i;
 }
 
-/**
- * @brief gets identification information from a sensor, and prints it to the serial
- * port
- *
- * @param i a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
- */
-void printInfo(char i) {
-  String command = "";
-  command += (char)i;
-  command += "I!";
-  mySDI12.sendCommand(command);
-  delay(100);
-
-  String sdiResponse = mySDI12.readStringUntil('\n');
-  sdiResponse.trim();
-  // allccccccccmmmmmmvvvxxx...xx<CR><LF>
-  Serial.print(sdiResponse.substring(0, 1));  // address
-  Serial.print(", ");
-  Serial.print(sdiResponse.substring(1, 3).toFloat() / 10);  // SDI-12 version number
-  Serial.print(", ");
-  Serial.print(sdiResponse.substring(3, 11));  // vendor id
-  Serial.print(", ");
-  Serial.print(sdiResponse.substring(11, 17));  // sensor model
-  Serial.print(", ");
-  Serial.print(sdiResponse.substring(17, 20));  // sensor version
-  Serial.print(", ");
-  Serial.print(sdiResponse.substring(20));  // sensor id
-  Serial.print(", ");
-}
-
-bool getResults(char i, int resultsExpected) {
+bool getResults(char address, int resultsExpected) {
   uint8_t resultsReceived = 0;
   uint8_t cmd_number      = 0;
   while (resultsReceived < resultsExpected && cmd_number <= 9) {
     String command = "";
-    // in this example we will only take the 'DO' measurement
-    command = "";
-    command += i;
+    command        = "";
+    command += address;
     command += "D";
     command += cmd_number;
     command += "!";  // SDI-12 command to get data [address][D][dataOption][!]
@@ -146,7 +110,7 @@ bool getResults(char i, int resultsExpected) {
     cmd_number++;
   }
   mySDI12.clearBuffer();
-
+  returnedResults[charToDec(address)] = resultsReceived;
   return resultsReceived == resultsExpected;
 }
 
@@ -179,7 +143,7 @@ int startConcurrentMeasurement(char i, String meas_type = "") {
   } else {
     millisReady[sensorNum] = millis() + wait * 1000;
   }
-  returnedResults[sensorNum] = numResults;
+  expectedResults[sensorNum] = numResults;
 
   return numResults;
 }
@@ -204,8 +168,40 @@ boolean checkActive(char i) {
   return false;
 }
 
+/**
+ * @brief gets identification information from a sensor, and prints it to the serial
+ * port
+ *
+ * @param i a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
+ * @param printCommands true to print the raw output and input from the command
+ */
+void printInfo(char i) {
+  String command = "";
+  command += (char)i;
+  command += "I!";
+  mySDI12.sendCommand(command);
+  delay(100);
+
+  String sdiResponse = mySDI12.readStringUntil('\n');
+  sdiResponse.trim();
+  // allccccccccmmmmmmvvvxxx...xx<CR><LF>
+  Serial.print("Address: ");
+  Serial.print(sdiResponse.substring(0, 1));  // address
+  Serial.print(", SDI-12 Version: ");
+  Serial.print(sdiResponse.substring(1, 3).toFloat() / 10);  // SDI-12 version number
+  Serial.print(", Vendor ID: ");
+  Serial.print(sdiResponse.substring(3, 11));  // vendor id
+  Serial.print(", Sensor Model: ");
+  Serial.print(sdiResponse.substring(11, 17));  // sensor model
+  Serial.print(", Sensor Version: ");
+  Serial.print(sdiResponse.substring(17, 20));  // sensor version
+  Serial.print(", Sensor ID: ");
+  Serial.print(sdiResponse.substring(20));  // sensor id
+  Serial.println();
+}
+
 void setup() {
-  Serial.begin(SERIAL_BAUD);
+  Serial.begin(serialBaud);
   while (!Serial)
     ;
 
@@ -217,11 +213,11 @@ void setup() {
   Serial.println(mySDI12.TIMEOUT);
 
   // Power the sensors;
-  if (POWER_PIN > 0) {
-    Serial.println("Powering up sensors...");
-    pinMode(POWER_PIN, OUTPUT);
-    digitalWrite(POWER_PIN, HIGH);
-    delay(200);
+  if (powerPin >= 0) {
+    Serial.println("Powering up sensors, wait...");
+    pinMode(powerPin, OUTPUT);
+    digitalWrite(powerPin, HIGH);
+    delay(10000L);
   }
 
   // Quickly Scan the Address Space
@@ -229,7 +225,7 @@ void setup() {
   Serial.println("Protocol Version, Sensor Address, Sensor Vendor, Sensor Model, "
                  "Sensor Version, Sensor ID");
 
-  for (byte i = 0; i < 62; i++) {
+  for (int8_t i = firstAddress; i <= lastAddress; i++) {
     char addr = decToChar(i);
     if (checkActive(addr)) {
       numSensors++;
@@ -255,31 +251,28 @@ void setup() {
 
 void loop() {
   // start all sensors measuring concurrently
-  for (byte i = 0; i < 62; i++) {
+  for (int8_t i = firstAddress; i <= lastAddress; i++) {
     char addr = decToChar(i);
     if (isActive[i]) { startConcurrentMeasurement(addr); }
   }
 
   // get all readings
   uint8_t numReadingsRecorded = 0;
-  while (numReadingsRecorded < numSensors) {
-    for (byte i = 0; i < 62; i++) {
+  do {
+    for (int8_t i = firstAddress; i <= lastAddress; i++) {
       char addr = decToChar(i);
-      if (isActive[i]) {
-        if (millis() > millisReady[i]) {
-          if (returnedResults[i] > 0) {
-            Serial.print(millis() / 1000);
-            Serial.print(", ");
-            Serial.print(addr);
-            Serial.print(", ");
-            getResults(addr, returnedResults[i]);
-            Serial.println();
-          }
-          numReadingsRecorded++;
-        }
+      if (isActive[i] && millis() > millisReady[i] && expectedResults[i] > 0 &&
+          (returnedResults[i] < expectedResults[i])) {
+        Serial.print(millis() / 1000);
+        Serial.print(", ");
+        Serial.print(addr);
+        Serial.print(", ");
+        getResults(addr, expectedResults[i]);
+        numReadingsRecorded++;
+        Serial.println();
       }
     }
-  }
+  } while (numReadingsRecorded < numSensors);
 
   delay(10000);  // wait ten seconds between measurement attempts.
 }

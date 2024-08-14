@@ -1,5 +1,4 @@
-[//]: # ( @page example_d_page Example D: Check all Addresses for Active Sensors and Log Data )
-## Example D: Check all Addresses for Active Sensors and Log Data
+## Example D: Check all Addresses for Active Sensors and Log Data<!-- {#example_d_page} -->
 
 This is a simple demonstration of the SDI-12 library for Arduino.
 
@@ -16,3 +15,5 @@ To address a sensor, please see Example B: b_address_change.ino
 [//]: # ( @include{lineno} d_simple_logger/platformio.ini )
 
 [//]: # ( @section d_simple_logger_code The Complete Example )
+
+[//]: # ( @include{lineno} d_simple_logger/d_simple_logger.ino )

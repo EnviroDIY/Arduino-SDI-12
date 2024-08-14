@@ -1,5 +1,4 @@
-[//]: # ( @page example_c_page Example C: Check all Addresses for Active Sensors and Print Status )
-# Example C: Check all Addresses for Active Sensors and Print Status
+# Example C: Check all Addresses for Active Sensors and Print Status<!-- {#example_c_page} -->
 
 This is a simple demonstration of the SDI-12 library for Arduino.
 
@@ -14,3 +13,5 @@ To address a sensor, please see Example B: b_address_change.ino
 [//]: # ( @include{lineno} c_check_all_addresses/platformio.ini )
 
 [//]: # ( @section c_check_all_addresses_code The Complete Example )
+
+[//]: # ( @include{lineno} c_check_all_addresses/c_check_all_addresses.ino )

@@ -1,8 +1,7 @@
 /**
- * @file d_simple_logger.ino
- * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
- *                          and the EnviroDIY Development Team
- *            This example is published under the BSD-3 license.
+ * @example{lineno} e_continuous_measurement.ino
+ * @copyright Stroud Water Research Center
+ * @license This example is published under the BSD-3 license.
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
  *
@@ -16,12 +15,14 @@
 
 #include <SDI12.h>
 
-#define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
-#define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
-#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
+uint32_t serialBaud   = 115200; /*!< The baud rate for the output serial port */
+int8_t   dataPin      = 7;      /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin     = 22; /*!< The sensor power pin (or -1 if not switching power) */
+int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
+int8_t   lastAddress = 62; /* The last address in the address space to check (62='z') */
 
 /** Define the SDI-12 bus */
-SDI12 mySDI12(DATA_PIN);
+SDI12 mySDI12(dataPin);
 
 // keeps track of active addresses
 bool isActive[64] = {
@@ -151,7 +152,7 @@ boolean checkActive(char i) {
 }
 
 void setup() {
-  Serial.begin(SERIAL_BAUD);
+  Serial.begin(serialBaud);
   while (!Serial)
     ;
 
@@ -163,11 +164,11 @@ void setup() {
   Serial.println(mySDI12.TIMEOUT);
 
   // Power the sensors;
-  if (POWER_PIN > 0) {
-    Serial.println("Powering up sensors...");
-    pinMode(POWER_PIN, OUTPUT);
-    digitalWrite(POWER_PIN, HIGH);
-    delay(200);
+  if (powerPin >= 0) {
+    Serial.println("Powering up sensors, wait...");
+    pinMode(powerPin, OUTPUT);
+    digitalWrite(powerPin, HIGH);
+    delay(10000L);
   }
 
   // Quickly Scan the Address Space
@@ -175,7 +176,7 @@ void setup() {
   Serial.println("Sensor Address, Protocol Version, Sensor Vendor, Sensor Model, "
                  "Sensor Version, Sensor ID");
 
-  for (byte i = 0; i < 62; i++) {
+  for (byte i = firstAddress; i < lastAddress; i++) {
     char addr = decToChar(i);
     if (checkActive(addr)) {
       numSensors++;
@@ -203,7 +204,7 @@ void setup() {
 
 void loop() {
   // measure one at a time
-  for (byte i = 0; i < 62; i++) {
+  for (byte i = firstAddress; i < lastAddress; i++) {
     char addr = decToChar(i);
     if (isActive[i]) {
       // Serial.print(millis() / 1000);

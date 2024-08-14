@@ -1,5 +1,4 @@
-[//]: # ( @page example_b_page Example B: Changing the Address of your SDI-12 Sensor )
-# Example B: Changing the Address of your SDI-12 Sensor
+# Example B: Changing the Address of your SDI-12 Sensor<!-- {#example_b_page} -->
 
 Communication with an SDI-12 sensor depends on its 1-character alphanumeric address (1-9, A-Z, a-z).  A sensor can also be programmed with an address of 0, but that address cannot always be used to get measurements from the sensor.  This sketch enables you to find and change the address of your sensor.
 
@@ -7,9 +6,9 @@ First, physically connect your SDI-12 sensor to your device.  Some helpful hits 
 
 Once your sensor is physically connected to your board, download this library and open this sketch.
 
-Scroll to line 54 of the sketch (`#define DATA_PIN 7`).  Change the `7` to the pin number that your sensor is attached to.
+Scroll to line 54 of the sketch (`int8_t dataPin = 7;`).  Change the `7` to the pin number that your sensor is attached to.
 
-Set the pin to provide power to your sensor in line 55 (`#define POWER_PIN 22`).  If your sensor is continuously powered, set the power pin to -1.
+Set the pin to provide power to your sensor in line 55 (`int8_t powerPin = 22;`).  If your sensor is continuously powered, set the power pin to -1.
 
 Upload the sketch to your board.  After the upload finishes, open up the serial port monitor at a baud rate of 115200 on line 53.
 
@@ -22,3 +21,5 @@ If you are using a Meter Group Hydros 21 CTD sensor, change the channel to 1 in 
 [//]: # ( @include{lineno} b_address_change/platformio.ini )
 
 [//]: # ( @section b_address_change_code The Complete Example )
+
+[//]: # ( @include{lineno} b_address_change/b_address_change.ino )
