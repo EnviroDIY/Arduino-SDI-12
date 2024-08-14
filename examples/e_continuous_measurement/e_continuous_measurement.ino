@@ -12,7 +12,9 @@
  * It discovers the address of all sensors active on a single bus and takes continuous
  * measurements from them.
  */
-
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && not defined(SDI12_INTERNAL_PCINT)
+#include <EnableInterrupt.h>
+#endif
 #include <SDI12.h>
 
 #ifndef SDI12_DATA_PIN

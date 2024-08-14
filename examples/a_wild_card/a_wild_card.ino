@@ -12,7 +12,9 @@
  * It requests information about the attached sensor, including its address and
  * manufacturer info.
  */
-
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && not defined(SDI12_INTERNAL_PCINT)
+#include <EnableInterrupt.h>
+#endif
 #include <SDI12.h>
 
 #ifndef SDI12_DATA_PIN

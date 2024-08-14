@@ -22,7 +22,9 @@
  *
  * To address a sensor, please see Example B: b_address_change.ino
  */
-
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && not defined(SDI12_INTERNAL_PCINT)
+#include <EnableInterrupt.h>
+#endif
 #include <SDI12.h>
 
 #ifndef SDI12_DATA_PIN
