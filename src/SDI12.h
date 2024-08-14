@@ -230,6 +230,18 @@ enum LookaheadMode {
 #endif  // NEED_LOOKAHEAD_ENUM
 #undef NEED_LOOKAHEAD_ENUM
 
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && not defined(SDI12_INTERNAL_PCINT)
+// Unless we're forcing use of internal interrupts, use EnableInterrupt for AVR boards
+#define LIBCALL_ENABLEINTERRUPT  // To prevent compiler/linker crashes
+#include <EnableInterrupt.h>     // To handle external and pin change interrupts
+
+#elif not defined(__AVR__) && not defined(ARDUINO_ARCH_AVR)
+// For compatibility with non AVR boards, we need these macros
+#define enableInterrupt(pin, userFunc, mode) \
+  attachInterrupt(digitalPinToInterrupt(pin), userFunc, mode)
+#define disableInterrupt(pin) detachInterrupt(digitalPinToInterrupt(pin))
+#endif
+
 /**
  * @brief Enumerated type to reference the type of supported binary data types
  * for binary measurements
