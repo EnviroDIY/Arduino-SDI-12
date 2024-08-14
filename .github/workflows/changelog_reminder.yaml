@@ -1,0 +1,18 @@
+on: pull_request
+name: Changelog Reminder
+jobs:
+  remind:
+    name: Changelog Reminder
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal token
+
+      - name: Changelog Reminder
+        uses: peterjgrainger/action-changelog-reminder@v1.3.0
+        with:
+          changelog_regex: '/CHANGELOG\/.*\/*.md/i'
+          customPrMessage: 'Please add your changes to the change log!'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

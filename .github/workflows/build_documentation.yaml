@@ -1,0 +1,39 @@
+name: Check, Build, and Publish Documentation
+
+on:
+  # Triggers the workflow on push or pull request events
+  push:
+  pull_request:
+  # Trigger when a release is created
+  # NOTE: This will only trigger if the release is created from the UI or with a personal access token
+  release:
+    types:
+      - published
+  # Trigger with the release workflow finishes
+  workflow_run:
+    workflows: ['Create a New Release']
+    types: [completed]
+    branches: [master]
+  # Also give a manual trigger
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish Documentation to GitHub Pages'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  doc_build:
+    if: ${{ (! contains(github.event.head_commit.message, 'ci skip')) && (github.event_name != 'workflow_run' || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')) }}
+    name: Build documentation
+    uses: EnviroDIY/workflows/.github/workflows/build_documentation.yaml@main
+    with:
+      use_graphviz: false
+      publish: ${{ (github.event_name == 'release' && github.event.action == 'published') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')  || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true')}}
+      rebuild_cache_number: 1
+    secrets: inherit

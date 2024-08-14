@@ -1,8 +1,7 @@
 /**
- * @file b_address_change.ino
- * @copyright (c) 2013-2020 Stroud Water Research Center (SWRC)
- *                          and the EnviroDIY Development Team
- *            This example is published under the BSD-3 license.
+ * @example{lineno} b_address_change.ino
+ * @copyright Stroud Water Research Center
+ * @license This example is published under the BSD-3 license.
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
  *
@@ -14,16 +13,46 @@
 
 #include <SDI12_PCINT3.h>
 
-#define SERIAL_BAUD 115200 /*!< The baud rate for the output serial port */
-#define DATA_PIN 7         /*!< The pin of the SDI-12 data bus */
-#define POWER_PIN 22       /*!< The sensor power pin (or -1 if not switching power) */
+uint32_t serialBaud = 57600;  /*!< The baud rate for the output serial port */
+int8_t   dataPin    = 7;      /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin   = 22; /*!< The sensor power pin (or -1 if not switching power) */
+uint32_t wake_delay = 0;  /*!< Extra time needed for the sensor to wake (0-100ms) */
 
 /** Define the SDI-12 bus */
-SDI12 mySDI12(DATA_PIN);
+SDI12 mySDI12(dataPin);
 
 String myCommand  = "";   // empty to start
 char   oldAddress = '!';  // invalid address as placeholder
 
+/**
+ * @brief gets identification information from a sensor, and prints it to the serial
+ * port
+ *
+ * @param i a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
+ */
+void printInfo(char i) {
+  String command = "";
+  command += (char)i;
+  command += "I!";
+  mySDI12.sendCommand(command, wake_delay);
+  delay(100);
+
+  String sdiResponse = mySDI12.readStringUntil('\n');
+  sdiResponse.trim();
+  // allccccccccmmmmmmvvvxxx...xx<CR><LF>
+  Serial.print(sdiResponse.substring(0, 1));  // address
+  Serial.print(", ");
+  Serial.print(sdiResponse.substring(1, 3).toFloat() / 10);  // SDI-12 version number
+  Serial.print(", ");
+  Serial.print(sdiResponse.substring(3, 11));  // vendor id
+  Serial.print(", ");
+  Serial.print(sdiResponse.substring(11, 17));  // sensor model
+  Serial.print(", ");
+  Serial.print(sdiResponse.substring(17, 20));  // sensor version
+  Serial.print(", ");
+  Serial.print(sdiResponse.substring(20));  // sensor id
+  Serial.print(", ");
+}
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
@@ -36,8 +65,8 @@ boolean checkActive(byte i) {  // this checks for activity at a particular addre
   myCommand += "!";
 
   for (int j = 0; j < 3; j++) {  // goes through three rapid contact attempts
-    mySDI12.sendCommand(myCommand);
-    delay(30);
+    mySDI12.sendCommand(myCommand, wake_delay);
+    delay(100);
     if (mySDI12.available()) {  // If we here anything, assume we have an active sensor
       Serial.println("Occupied");
       mySDI12.clearBuffer();
@@ -50,9 +79,8 @@ boolean checkActive(byte i) {  // this checks for activity at a particular addre
   return false;
 }
 
-
 void setup() {
-  Serial.begin(SERIAL_BAUD);
+  Serial.begin(serialBaud);
   while (!Serial)
     ;
 
@@ -60,12 +88,15 @@ void setup() {
   mySDI12.begin();
   delay(500);  // allow things to settle
 
+  Serial.println("Timeout value: ");
+  Serial.println(mySDI12.TIMEOUT);
+
   // Power the sensors;
-  if (POWER_PIN > 0) {
-    Serial.println("Powering up sensors...");
-    pinMode(POWER_PIN, OUTPUT);
-    digitalWrite(POWER_PIN, HIGH);
-    delay(200);
+  if (powerPin >= 0) {
+    Serial.println("Powering up sensors, wait 30s...");
+    pinMode(powerPin, OUTPUT);
+    digitalWrite(powerPin, HIGH);
+    delay(30000L);
   }
 }
 
@@ -77,6 +108,7 @@ void loop() {
     if (checkActive(i)) {
       found      = true;
       oldAddress = i;
+      printInfo(i);
     }
   }
 
@@ -85,6 +117,7 @@ void loop() {
     if (checkActive(i)) {
       found      = true;
       oldAddress = i;
+      printInfo(i);
     }
   }
 
@@ -93,6 +126,7 @@ void loop() {
     if (checkActive(i)) {
       found      = true;
       oldAddress = i;
+      printInfo(i);
     }
   }
 
@@ -100,6 +134,8 @@ void loop() {
     Serial.println(
       "No sensor detected. Check physical connections.");  // couldn't find a sensor.
                                                            // check connections..
+    while (1)                                              // die
+      ;
   } else {
     Serial.print("Sensor active at address ");  // found a sensor!
     Serial.print(oldAddress);
