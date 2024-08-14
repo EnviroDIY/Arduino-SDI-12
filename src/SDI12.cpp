@@ -314,14 +314,7 @@ uint8_t SDI12::parity_even_bit(uint8_t v) {
 
 // a helper function to switch pin interrupts on or off
 void SDI12::setPinInterrupts(bool enable) {
-#if defined(ARDUINO_ARCH_SAMD) || defined(ESP32) || defined(ESP8266)
-  // Merely need to attach the interrupt function to the pin
-  if (enable) attachInterrupt(digitalPinToInterrupt(_dataPin), handleInterrupt, CHANGE);
-  // Merely need to detach the interrupt function from the pin
-  else
-    detachInterrupt(digitalPinToInterrupt(_dataPin));
-
-#elif defined(__AVR__) && not defined(SDI12_EXTERNAL_PCINT)
+#if defined(__AVR__) && not defined(SDI12_EXTERNAL_PCINT)
   if (enable) {
     // Enable interrupts on the register with the pin of interest
     *digitalPinToPCICR(_dataPin) |= (1 << digitalPinToPCICRbit(_dataPin));
@@ -339,12 +332,20 @@ void SDI12::setPinInterrupts(bool enable) {
     }
     // We don't detach the function from the interrupt for AVR processors
   }
-#else
+  // if using AVR with external interrupts, do nothing
+#elif defined(__AVR__)
   if (enable) {
     return;
   } else {
     return;
   }
+// for other boards (SAMD/Espressif/??) use the attachInterrupt function
+#else
+  // Merely need to attach the interrupt function to the pin
+  if (enable) attachInterrupt(digitalPinToInterrupt(_dataPin), handleInterrupt, CHANGE);
+  // Merely need to detach the interrupt function from the pin
+  else
+    detachInterrupt(digitalPinToInterrupt(_dataPin));
 #endif
 }
 
