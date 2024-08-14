@@ -8,6 +8,20 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [Unreleased]
+
+### Changed
+
+- **BREAKING** Made [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) a required dependency for AVR boards.
+
+### Added
+
+### Removed
+
+### Fixed
+
+***
+
 ## [2.5.2]
 
 ### Changed
