@@ -1,19 +1,7 @@
 {
-  "version": "1.9.1",
+  "version": "1.12.0",
   "index": {
     "symbols": [
-      {
-        "id": "class_s_d_i12",
-        "kind": "class",
-        "name": "SDI12",
-        "url": "class_s_d_i12.html",
-        "brief": "The main class for SDI 12 instances.",
-        "children": [],
-        "deprecated": null,
-        "since": null,
-        "has_nestable_children": false,
-        "is_final": false
-      },
       {
         "id": "class_s_d_i12_timer",
         "kind": "class",
@@ -29,45 +17,57 @@
     ],
     "files": [
       {
-        "id": "_s_d_i12_8cpp",
-        "kind": "file",
-        "name": "SDI12.cpp",
-        "url": "_s_d_i12_8cpp.html",
-        "brief": "This file implements the main class for the SDI-12 implementation.",
-        "children": [],
-        "deprecated": null,
-        "since": null,
-        "has_nestable_children": false
-      },
-      {
-        "id": "_s_d_i12_8h",
-        "kind": "file",
-        "name": "SDI12.h",
-        "url": "_s_d_i12_8h.html",
-        "brief": "This file contains the main class for the SDI-12 implementation.",
-        "children": [],
-        "deprecated": null,
-        "since": null,
-        "has_nestable_children": false
-      },
-      {
-        "id": "_s_d_i12__boards_8cpp",
-        "kind": "file",
-        "name": "SDI12_boards.cpp",
-        "url": "_s_d_i12__boards_8cpp.html",
-        "brief": "This file implements the setting and unsetting of the proper prescalers for the timers for SDI-12.",
-        "children": [],
-        "deprecated": null,
-        "since": null,
-        "has_nestable_children": false
-      },
-      {
-        "id": "_s_d_i12__boards_8h",
-        "kind": "file",
-        "name": "SDI12_boards.h",
-        "url": "_s_d_i12__boards_8h.html",
-        "brief": "This file defines the timing units needed for various Arduino boards.",
-        "children": [],
+        "id": "dir_68267d1309a1af8e8297ef4c3efbcdba",
+        "kind": "dir",
+        "name": "src",
+        "url": "dir_68267d1309a1af8e8297ef4c3efbcdba.html",
+        "brief": "Contains the source code for the SDI-12 library.",
+        "children": [
+          {
+            "id": "_s_d_i12_8cpp",
+            "kind": "file",
+            "name": "SDI12.cpp",
+            "url": "_s_d_i12_8cpp.html",
+            "brief": "This file implements the main class for the SDI-12 implementation.",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "_s_d_i12_8h",
+            "kind": "file",
+            "name": "SDI12.h",
+            "url": "_s_d_i12_8h.html",
+            "brief": "This file contains the main class for the SDI-12 implementation.",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "_s_d_i12__boards_8cpp",
+            "kind": "file",
+            "name": "SDI12_boards.cpp",
+            "url": "_s_d_i12__boards_8cpp.html",
+            "brief": "This file implements the setting and unsetting of the proper prescalers for the timers for SDI-12.",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "_s_d_i12__boards_8h",
+            "kind": "file",
+            "name": "SDI12_boards.h",
+            "url": "_s_d_i12__boards_8h.html",
+            "brief": "This file defines the timing units needed for various Arduino boards.",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          }
+        ],
         "deprecated": null,
         "since": null,
         "has_nestable_children": false
@@ -75,10 +75,10 @@
     ],
     "pages": [
       {
-        "id": "specifications",
+        "id": "change_log",
         "kind": "page",
-        "name": "Notes on SDI-12, Specification v1.4",
-        "url": "specifications.html",
+        "name": "ChangeLog",
+        "url": "change_log.html",
         "brief": "",
         "children": [],
         "deprecated": null,
@@ -97,21 +97,198 @@
         "has_nestable_children": false
       },
       {
-        "id": "examples_page",
+        "id": "interrupts_page",
         "kind": "page",
-        "name": "Examples",
-        "url": "examples_page.html",
-        "brief": "Examples using the SDI-12 Library.",
+        "name": "Overview of Interrupts",
+        "url": "interrupts_page.html",
+        "brief": "",
         "children": [],
         "deprecated": null,
         "since": null,
         "has_nestable_children": false
       },
       {
-        "id": "interrupts_page",
+        "id": "timer_configurations_timer-configurations",
         "kind": "page",
-        "name": "Overview of Interrupts",
-        "url": "interrupts_page.html",
+        "name": "Timer Configurations",
+        "url": "timer_configurations_timer-configurations.html",
+        "brief": "",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      },
+      {
+        "id": "examples_page",
+        "kind": "page",
+        "name": "Examples using the SDI-12 Library",
+        "url": "examples_page.html",
+        "brief": "",
+        "children": [
+          {
+            "id": "example_a_page",
+            "kind": "page",
+            "name": "Example A: Using the Wildcard - Getting Single Sensor Information",
+            "url": "example_a_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "example_b_page",
+            "kind": "page",
+            "name": "Example B: Changing the Address of your SDI-12 Sensor",
+            "url": "example_b_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "example_c_page",
+            "kind": "page",
+            "name": "Example C: Check all Addresses for Active Sensors and Print Status",
+            "url": "example_c_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "example_d_page",
+            "kind": "page",
+            "name": "Example D: Check all Addresses for Active Sensors and Log Data",
+            "url": "example_d_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "example_e_page",
+            "kind": "page",
+            "name": "Example E: Check all Addresses for Active Sensors and Start Continuous Measurements",
+            "url": "example_e_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "example_f_page",
+            "kind": "page",
+            "name": "Example F: Basic Data Request to a Single Sensor",
+            "url": "example_f_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "example_g_page",
+            "kind": "page",
+            "name": "Example G: Using the Arduino as a Command Terminal for SDI-12 Sensors",
+            "url": "example_g_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "example_h_page",
+            "kind": "page",
+            "name": "Example H: Using SDI-12 in Slave Mode",
+            "url": "example_h_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "example_i_page",
+            "kind": "page",
+            "name": "Example I:  SDI-12 PC Interface",
+            "url": "example_i_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "example_j_page",
+            "kind": "page",
+            "name": "Example J: Using External Interrupts",
+            "url": "example_j_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "example_k_page",
+            "kind": "page",
+            "name": "Example K: Concurrent Measurements",
+            "url": "example_k_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "example_l_page",
+            "kind": "page",
+            "name": "Example L:  Verifying CRC Values",
+            "url": "example_l_page.html",
+            "brief": "",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          }
+        ],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      },
+      {
+        "id": "license",
+        "kind": "page",
+        "name": "LICENSE",
+        "url": "license.html",
+        "brief": "",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      },
+      {
+        "id": "specifications",
+        "kind": "page",
+        "name": "Notes on SDI-12, Specification v1.4",
+        "url": "specifications.html",
+        "brief": "",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
+      },
+      {
+        "id": "todo",
+        "kind": "page",
+        "name": "Todo List",
+        "url": "todo.html",
         "brief": "",
         "children": [],
         "deprecated": null,

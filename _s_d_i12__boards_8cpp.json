@@ -1,5 +1,5 @@
 {
-  "version": "1.9.1",
+  "version": "1.12.0",
   "compound": {
     "kind": "file",
     "id": "_s_d_i12__boards_8cpp",
@@ -10,7 +10,7 @@
     "has_template_details": false,
     "templates": null,
     "brief": "This file implements the setting and unsetting of the proper prescalers for the timers for SDI-12.",
-    "description": "<aside class=\"m-note m-default\"><h4>Copyright</h4><p>(c) 2013-2020 Stroud Water Research Center (SWRC) and the EnviroDIY Development Team</p></aside><aside class=\"m-note m-default\"><h4>Author</h4><p>Sara Geleskie Damiano (<a href=\"mailto:sdamiano@stroudcenter.org\">sdamiano@stroudcenter.org</a>)</p></aside>",
+    "description": "<aside class=\"m-note m-default\"><h4>Copyright</h4><p>Stroud Water Research Center</p></aside><aside class=\"m-note m-default\"><h4>License</h4><p>This library is published under the BSD-3 license.</p></aside><aside class=\"m-note m-default\"><h4>Author</h4><p>Sara Geleskie Damiano (<a href=\"mailto:sdamiano@stroudcenter.org\">sdamiano@stroudcenter.org</a>)</p></aside>",
     "sections": "",
     "deprecated": null,
     "since": null,
@@ -90,6 +90,10 @@
     "has_var_details": false,
     "has_define_details": false,
     "breadcrumb": [
+      [
+        "src",
+        "dir_68267d1309a1af8e8297ef4c3efbcdba.html"
+      ],
       [
         "SDI12_boards.cpp",
         "_s_d_i12__boards_8cpp.html"

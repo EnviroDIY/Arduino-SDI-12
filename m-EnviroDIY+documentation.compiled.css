@@ -1,4 +1,4 @@
-/* Generated using `./postprocess.py m-EnviroDIY.css m-documentation.css -o m-EnviroDIY+documentation.compiled.css`. Do not edit. */
+/* Generated using `./postprocess.py m-EnviroDIY.css m-documentation.css -o /home/runner/work/Arduino-SDI-12/Arduino-SDI-12/code_docs/m.css/css/EnviroDIY/m-EnviroDIY+documentation.compiled.css`. Do not edit. */
 
 /*
     This file is part of m.css.
@@ -751,6 +751,9 @@ blockquote {
   padding: 1rem;
   border-left-style: solid;
   border-left-width: 0.25rem;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 14px !important;
+  line-height: normal !important;
 }
 hr {
   width: 75%;

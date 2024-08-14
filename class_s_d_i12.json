@@ -1,5 +1,5 @@
 {
-  "version": "1.9.1",
+  "version": "1.12.0",
   "compound": {
     "kind": "class",
     "id": "class_s_d_i12",
@@ -7,7 +7,7 @@
     "url_base": "class_s_d_i12",
     "url": "class_s_d_i12.html",
     "include": [
-      "&lt;SDI12.h&gt;",
+      "&lt;src/SDI12.h&gt;",
       "_s_d_i12_8h.html"
     ],
     "has_template_details": false,
@@ -124,11 +124,11 @@
             "typedef",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "aa54b1ba739e3fb6f87cfaa246d172247",
+              "id": "a9d1d99b2fc9f04eb860134101dfed936",
               "include": null,
               "has_details": false,
               "is_using": false,
-              "type": "enum <a href=\"class_s_d_i12.html#ac01684807c6e726786a4468ef5d00175\" class=\"m-doc\">SDI12::<wbr />SDI12_STATES</a>",
+              "type": "enum SDI12::SDI12_STATES",
               "args": "",
               "name": "SDI12_STATES",
               "brief": "The various SDI-12 line states.",
@@ -334,58 +334,16 @@
             "var",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "a527c05688fc54eea8f4faae3f8543ba3",
+              "id": "a7a1cbc4f67aa25183884a96c1729c03c",
               "include": null,
               "has_details": false,
-              "type": "const uint8_t",
+              "type": "const <a href=\"_s_d_i12__boards_8h.html#ab4bb1ac90b8fb685621951664af46a2a\" class=\"m-doc\">sdi12timer_<wbr />t</a>",
               "is_constexpr": false,
               "is_static": true,
               "is_protected": false,
               "is_private": true,
               "name": "txBitWidth",
               "brief": "the width of a single bit in &quot;ticks&quot; of the cpu clock.",
-              "description": "",
-              "deprecated": null,
-              "since": null,
-              "has_template_details": false,
-              "templates": null
-            }
-          ],
-          [
-            "var",
-            {
-              "base_url": "class_s_d_i12.html",
-              "id": "ae06dc3256512e7fdd398cfefbd3ed6b0",
-              "include": null,
-              "has_details": false,
-              "type": "const uint8_t",
-              "is_constexpr": false,
-              "is_static": true,
-              "is_protected": false,
-              "is_private": true,
-              "name": "rxWindowWidth",
-              "brief": "A fudge factor to make things work.",
-              "description": "",
-              "deprecated": null,
-              "since": null,
-              "has_template_details": false,
-              "templates": null
-            }
-          ],
-          [
-            "var",
-            {
-              "base_url": "class_s_d_i12.html",
-              "id": "a01e914f0b7d1e993d4c99ddb68d00557",
-              "include": null,
-              "has_details": false,
-              "type": "const uint8_t",
-              "is_constexpr": false,
-              "is_static": true,
-              "is_protected": false,
-              "is_private": true,
-              "name": "bitsPerTick_Q10",
-              "brief": "The number of bits per tick, shifted by 2^10.",
               "description": "",
               "deprecated": null,
               "since": null,
@@ -406,7 +364,7 @@
               "is_protected": false,
               "is_private": true,
               "name": "WAITING_FOR_START_BIT",
-              "brief": "A mask for the <a href=\"class_s_d_i12.html#afc41ba83e116964cd32424fa01916d96\" class=\"m-doc\">rxState</a> while waiting for a start bit; 0b11111111.",
+              "brief": "A mask for the rxState while waiting for a start bit; 0b11111111.",
               "description": "",
               "deprecated": null,
               "since": null,
@@ -418,10 +376,10 @@
             "var",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "ac568c972269e3105012111199c7372c3",
+              "id": "a1ecd45bafd93912a52faad1e2dec4bdc",
               "include": null,
               "has_details": false,
-              "type": "uint16_t",
+              "type": "<a href=\"_s_d_i12__boards_8h.html#ab4bb1ac90b8fb685621951664af46a2a\" class=\"m-doc\">sdi12timer_<wbr />t</a>",
               "is_constexpr": false,
               "is_static": true,
               "is_protected": false,
@@ -449,7 +407,7 @@
               "is_private": true,
               "name": "rxState",
               "brief": "Tracks how many bits are accounted for on an incoming character.",
-              "description": "<ul><li>if 0: indicates that we got a start bit</li><li>if &gt;0: indicates the number of bits received</li></ul>",
+              "description": "<ul><li>if 0: indicates that we got a start bit</li><li>if &gt;0: indicates the number of bits received</li></ul><p>0 - got start bit 1 - got data bit 0 2 - got data bit 1 3 - got data bit 2 4 - got data bit 3 5 - got data bit 4 6 - got data bit 5 7 - got data bit 6 8 - got data bit 7 (parity) 9 - got stop bit 255 - waiting for next start bit</p>",
               "deprecated": null,
               "since": null,
               "has_template_details": false,
@@ -470,7 +428,7 @@
               "is_private": true,
               "name": "rxMask",
               "brief": "a bit mask for building a received character",
-              "description": "<p>The mask has a single bit set, in the place of the active bit based on the <a href=\"class_s_d_i12.html#afc41ba83e116964cd32424fa01916d96\" class=\"m-doc\">rxState</a>.</p>",
+              "description": "<p>The mask has a single bit set, in the place of the active bit based on the rxState.</p>",
               "deprecated": null,
               "since": null,
               "has_template_details": false,
@@ -509,7 +467,7 @@
             "var",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "a943b898257ae4a0ad9ae981d623b8769",
+              "id": "a420e1f678802064fc3c7dd5a42ef9452",
               "include": null,
               "has_details": true,
               "type": "uint8_t",
@@ -533,7 +491,7 @@
               "id": "a6efdb270846bb19acee02cdbdfba7afd",
               "include": null,
               "has_details": false,
-              "type": "uint8_t",
+              "type": "volatile uint8_t",
               "is_constexpr": false,
               "is_static": true,
               "is_protected": false,
@@ -554,7 +512,7 @@
               "id": "a6930573c792df875b43ca5b56c423648",
               "include": null,
               "has_details": false,
-              "type": "uint8_t",
+              "type": "volatile uint8_t",
               "is_constexpr": false,
               "is_static": true,
               "is_protected": false,
@@ -632,6 +590,27 @@
               "name": "TIMEOUT",
               "brief": "The value to return if a parse or read times out with no return from the sensor.",
               "description": "<p>The timeout return for an Arduino stream object when no character is available in the Rx buffer is &quot;0.&quot; For enviromental sensors (the typical SDI-12 users) 0 is a common result value. To better distinguish between a timeout because of no sensor response and a true zero return, the timeout should be set to some value that is NOT a possible return from that sensor. If the timeout is not set, -9999 is used.</p>",
+              "deprecated": null,
+              "since": null,
+              "has_template_details": false,
+              "templates": null
+            }
+          ],
+          [
+            "var",
+            {
+              "base_url": "class_s_d_i12.html",
+              "id": "aa402d55fb98b82106fb555c45bd18e6a",
+              "include": null,
+              "has_details": false,
+              "type": "bool",
+              "is_constexpr": false,
+              "is_static": false,
+              "is_protected": false,
+              "is_private": false,
+              "name": "_parityFailure",
+              "brief": "reference to the data pin",
+              "description": "",
               "deprecated": null,
               "since": null,
               "has_template_details": false,
@@ -813,7 +792,7 @@
               "type": "void",
               "name": "begin",
               "brief": "Set the SDI12::_datapin and begin the SDI-12 object.",
-              "description": "<p>This is called to begin the functionality of the SDI-12 object. It sets the object as the active object, sets the stream timeout to 150ms to match SDI-12 specs, sets the timeout return value to <a href=\"class_s_d_i12.html#a648545c61fd53e5073b4b480ad60edbc\" class=\"m-doc\">SDI12::<wbr />TIMEOUT</a>, and configures the timer prescaler. If the SDI-12 instance is created using the empty constuctor, this must be used to set the data pin.</p>",
+              "description": "<p>This is called to begin the functionality of the SDI-12 object. It sets the object as the active object, sets the stream timeout to 150ms to match SDI-12 specs, sets the timeout return value to <a href=\"class_s_d_i12.html#a648545c61fd53e5073b4b480ad60edbc\" class=\"m-doc\">SDI12::<wbr />TIMEOUT</a>, and configures the timer prescaler.    If the SDI-12 instance is created using the empty constuctor, this must be used to set the data pin.</p>",
               "return_value": null,
               "return_values": [],
               "exceptions": [],
@@ -949,7 +928,7 @@
               "name": "getDataPin",
               "brief": "Get the data pin for the current SDI-12 instance.",
               "description": "",
-              "return_value": "<span class=\"m-type\">int8_t</span> the data pin number",
+              "return_value": "The data pin number",
               "return_values": [],
               "exceptions": [],
               "deprecated": null,
@@ -1030,7 +1009,7 @@
       {
         "name": "Reading from the SDI-12 Buffer",
         "id": "reading-from-the-sdi-12-buffer",
-        "description": "<p>These functions are for reading incoming data stored in the SDI-12 buffer.</p><p><a name=\"reading_buffer\"></a></p><aside class=\"m-note m-default\"><h4>See also</h4><p><a href=\"class_s_d_i12.html#buffer-setup\">Buffer Setup</a></p></aside><aside class=\"m-note m-info\"><h4>Note</h4><p>peakNextDigit(), <a href=\"class_s_d_i12.html#a1e245f90dfc2c79595707d791ec42214\" class=\"m-doc\">parseInt()</a> and <a href=\"class_s_d_i12.html#a3e5b1d2ac041ed4a796d9ffb94523f18\" class=\"m-doc\">parseFloat()</a> are fully implemented in the parent Stream class but we don&#x27;t want to them use as they are inherited. Although they are not virtual and cannot be overridden, recreating them here hides the stream default versions to allow for a custom timeout return value. The default value for the Stream class is to return 0. This makes distinguishing timeouts from true zero readings impossible. Therefore the default value has been set to -9999 in the being function. The value returned by a timeout (<a href=\"class_s_d_i12.html#a648545c61fd53e5073b4b480ad60edbc\" class=\"m-doc\">SDI12::<wbr />TIMEOUT</a>) is a public variable and can be changed dynamically within a program by calling <code>mySDI12.TIMEOUT = (int) newValue</code> or using <a href=\"class_s_d_i12.html#ae042fba505d7c36e31020648e6c532dc\" class=\"m-doc\">SDI12::<wbr />setTimeoutValue(int16_t value)</a>.</p></aside>",
+        "description": "<p>These functions are for reading incoming data stored in the SDI-12 buffer.</p><p><a name=\"reading_buffer\"></a></p><aside class=\"m-note m-default\"><h4>See also</h4><p><a href=\"class_s_d_i12.html#buffer-setup\">Buffer Setup</a></p></aside><aside class=\"m-note m-info\"><h4>Note</h4><p>peakNextDigit(), <a href=\"class_s_d_i12.html#a7a225c6677fc45173f689eb51aaf41f4\" class=\"m-doc\">parseInt()</a> and <a href=\"class_s_d_i12.html#a313084baca70512debe3c52f0f5f239e\" class=\"m-doc\">parseFloat()</a> are fully implemented in the parent <a href=\"class_stream.html\" class=\"m-doc\">Stream</a> class but we don&#x27;t want to them use as they are inherited. Although they are not virtual and cannot be overridden, recreating them here hides the stream default versions to allow for a custom timeout return value. The default value for the <a href=\"class_stream.html\" class=\"m-doc\">Stream</a> class is to return 0. This makes distinguishing timeouts from true zero readings impossible. Therefore the default value has been set to -9999 in the being function. The value returned by a timeout (<a href=\"class_s_d_i12.html#a648545c61fd53e5073b4b480ad60edbc\" class=\"m-doc\">SDI12::<wbr />TIMEOUT</a>) is a public variable and can be changed dynamically within a program by calling <code>mySDI12.TIMEOUT = (int) newValue</code> or using <a href=\"class_s_d_i12.html#ae042fba505d7c36e31020648e6c532dc\" class=\"m-doc\">SDI12::<wbr />setTimeoutValue(int16_t value)</a>.</p></aside>",
         "members": [
           [
             "func",
@@ -1043,7 +1022,7 @@
               "name": "available",
               "brief": "Return the number of bytes available in the Rx buffer.",
               "description": "<p><a href=\"class_s_d_i12.html#a1b35cfdeb2358dfeac079cfa52839b2d\" class=\"m-doc\">available()</a> is a public function that returns the number of characters available in the Rx buffer.</p><p>To understand how: <code>_rxBufferTail + SDI12_BUFFER_SIZE - _rxBufferHead) % SDI12_BUFFER_SIZE;</code> accomplishes this task, we will use a few examples.</p><p>To start take the buffer below that has <code>SDI12_BUFFER_SIZE = 10</code>. The message &quot;abc&quot; has been wrapped around (circular buffer).</p><div class=\"m-code-arduino\"><div class=\"highlight\"><div class=\"line\"><a id=\"l-1\" name=\"l-1\"></a><span class=\"linenos\">1</span><span class=\"n\">_rxBufferTail</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"w\"> </span><span class=\"c1\">// points to the &#39;-&#39; after c</span>\n</div><div class=\"line\"><a id=\"l-2\" name=\"l-2\"></a><span class=\"linenos\">2</span><span class=\"n\">_rxBufferHead</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"mi\">8</span><span class=\"w\"> </span><span class=\"c1\">// points to &#39;a&#39;</span>\n</div></div></div><p>[ c ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ a ] [ b ]</p><p>The number of available characters is (1 + 10 - 8) % 10 = 3</p><p>The &#x27;&#x27; or modulo operator finds the remainder of division of one number by another. In integer arithmetic 3 / 10 = 0, but has a remainder of 3. We can only get the remainder by using the the modulo &#x27;&#x27;. 3 % 10 = 3. This next case demonstrates more clearly why the modulo is used.</p><div class=\"m-code-arduino\"><div class=\"highlight\"><div class=\"line\"><a id=\"l-1\" name=\"l-1\"></a><span class=\"linenos\">1</span><span class=\"n\">_rxBufferTail</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"mi\">4</span><span class=\"w\"> </span><span class=\"c1\">// points to the &#39;-&#39; after c</span>\n</div><div class=\"line\"><a id=\"l-2\" name=\"l-2\"></a><span class=\"linenos\">2</span><span class=\"n\">_rxBufferHead</span><span class=\"w\"> </span><span class=\"o\">=</span><span class=\"w\"> </span><span class=\"mi\">1</span><span class=\"w\"> </span><span class=\"c1\">// points to &#39;a&#39;</span>\n</div></div></div><p>[ a ] [ b ] [ c ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ] [ - ]</p><p>The number of available characters is (4 + 10 - 1) % 10 = 3</p><p>If we did not use the modulo we would get either ( 4 + 10 - 1 ) = 13 characters or ( 4 + 10 - 1 ) / 10 = 1 character. Obviously neither is correct.</p><p>If there has been a buffer overflow, <a href=\"class_s_d_i12.html#a1b35cfdeb2358dfeac079cfa52839b2d\" class=\"m-doc\">available()</a> will return -1.</p>",
-              "return_value": "<span class=\"m-type\">int</span> The number of characters in the buffer",
+              "return_value": "The number of characters in the buffer",
               "return_values": [],
               "exceptions": [],
               "deprecated": null,
@@ -1082,7 +1061,7 @@
               "name": "peek",
               "brief": "Reveal next byte in the Rx buffer without consuming it.",
               "description": "<p><a href=\"class_s_d_i12.html#a882820fe039a037eb0a30a8202c29ce1\" class=\"m-doc\">peek()</a> is a public function that allows the user to look at the character that is at the head of the buffer. Unlike <a href=\"class_s_d_i12.html#add1c9fb00af32e07a161511f39ba069c\" class=\"m-doc\">read()</a> it does not consume the character (i.e. the index addressed by _rxBufferHead is not changed). <a href=\"class_s_d_i12.html#a882820fe039a037eb0a30a8202c29ce1\" class=\"m-doc\">peek()</a> returns -1 if there are no characters to show.</p>",
-              "return_value": "<span class=\"m-type\">int</span> The next byte in the character buffer.",
+              "return_value": "The next byte in the character buffer.",
               "return_values": [],
               "exceptions": [],
               "deprecated": null,
@@ -1160,7 +1139,7 @@
               "name": "read",
               "brief": "Return next byte in the Rx buffer, consuming it.",
               "description": "<p><a href=\"class_s_d_i12.html#add1c9fb00af32e07a161511f39ba069c\" class=\"m-doc\">read()</a> returns the character at the current head in the buffer after incrementing the index of the buffer head. This action &#x27;consumes&#x27; the character, meaning it can not be read from the buffer again. If you would rather see the character, but leave the index to head intact, you should use <a href=\"class_s_d_i12.html#a882820fe039a037eb0a30a8202c29ce1\" class=\"m-doc\">peek()</a>;</p>",
-              "return_value": "<span class=\"m-type\">int</span> The next byte in the character buffer.",
+              "return_value": "The next byte in the character buffer.",
               "return_values": [],
               "exceptions": [],
               "deprecated": null,
@@ -1231,14 +1210,14 @@
             "func",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "a1e245f90dfc2c79595707d791ec42214",
+              "id": "a7a225c6677fc45173f689eb51aaf41f4",
               "include": null,
               "has_details": true,
               "type": "long",
               "name": "parseInt",
               "brief": "Return the first valid (long) integer value from the current position.",
-              "description": "<p>The value of lookahead determines how parseInt looks ahead in the stream. See LookaheadMode enumeration at the top of the file. Lookahead is terminated by the first character that is not a valid part of an integer. Once parsing commences, &#x27;ignore&#x27; will be skipped in the stream.</p><aside class=\"m-note m-info\"><h4>Note</h4><p>This function <em>hides</em> the Stream class function to allow a custom value to be returned on timeout. It cannot overwrite the Stream function because it is not virtual.</p></aside><aside class=\"m-note m-default\"><h4>See also</h4><p><a href=\"_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49\" class=\"m-doc\">SDI12::<wbr />LookaheadMode</a></p></aside>",
-              "return_value": "<span class=\"m-type\">long</span> The first valid integer in the stream",
+              "description": "<p>The value of lookahead determines how parseInt looks ahead in the stream. See LookaheadMode enumeration at the top of the file. Lookahead is terminated by the first character that is not a valid part of an integer. Once parsing commences, &#x27;ignore&#x27; will be skipped in the stream.</p><aside class=\"m-note m-info\"><h4>Note</h4><p>This function <em>hides</em> the <a href=\"class_stream.html\" class=\"m-doc\">Stream</a> class function to allow a custom value to be returned on timeout. It cannot overwrite the <a href=\"class_stream.html\" class=\"m-doc\">Stream</a> function because it is not virtual.</p></aside><aside class=\"m-note m-default\"><h4>See also</h4><p><a href=\"_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49\" class=\"m-doc\">SDI12::<wbr />LookaheadMode</a></p></aside>",
+              "return_value": "The first valid integer in the stream",
               "return_values": [],
               "exceptions": [],
               "deprecated": null,
@@ -1276,7 +1255,7 @@
                   "name": "ignore",
                   "type": "char",
                   "type_name": "char ignore",
-                  "default": "<a href=\"_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921\" class=\"m-doc\">NO_<wbr />IGNORE_<wbr />CHAR</a>",
+                  "default": "&#x27;\\x01&#x27;",
                   "description": "a character to ignore in the stream, default is &#x27;\\x01&#x27;",
                   "direction": ""
                 }
@@ -1287,14 +1266,14 @@
             "func",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "a3e5b1d2ac041ed4a796d9ffb94523f18",
+              "id": "a313084baca70512debe3c52f0f5f239e",
               "include": null,
               "has_details": true,
               "type": "float",
               "name": "parseFloat",
               "brief": "Return the first valid float value from the current position.",
-              "description": "<p>The value of lookahead determines how parseInt looks ahead in the stream. See LookaheadMode enumeration at the top of the file. Lookahead is terminated by the first character that is not a valid part of an integer. Once parsing commences, &#x27;ignore&#x27; will be skipped in the stream.</p><aside class=\"m-note m-info\"><h4>Note</h4><p>This function <em>hides</em> the Stream class function to allow a custom value to be returned on timeout. It cannot overwrite the Stream function because it is not virtual.</p></aside><aside class=\"m-note m-default\"><h4>See also</h4><p><a href=\"_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49\" class=\"m-doc\">SDI12::<wbr />LookaheadMode</a></p></aside>",
-              "return_value": "<span class=\"m-type\">long</span> The first valid float in the stream",
+              "description": "<p>The value of lookahead determines how parseInt looks ahead in the stream. See LookaheadMode enumeration at the top of the file. Lookahead is terminated by the first character that is not a valid part of an integer. Once parsing commences, &#x27;ignore&#x27; will be skipped in the stream.</p><aside class=\"m-note m-info\"><h4>Note</h4><p>This function <em>hides</em> the <a href=\"class_stream.html\" class=\"m-doc\">Stream</a> class function to allow a custom value to be returned on timeout. It cannot overwrite the <a href=\"class_stream.html\" class=\"m-doc\">Stream</a> function because it is not virtual.</p></aside><aside class=\"m-note m-default\"><h4>See also</h4><p><a href=\"_s_d_i12_8h.html#ab2c5d00ddee50ff8d5d68cd2d7a7fa49\" class=\"m-doc\">SDI12::<wbr />LookaheadMode</a></p></aside>",
+              "return_value": "The first valid float in the stream",
               "return_values": [],
               "exceptions": [],
               "deprecated": null,
@@ -1332,7 +1311,7 @@
                   "name": "ignore",
                   "type": "char",
                   "type_name": "char ignore",
-                  "default": "<a href=\"_s_d_i12_8h.html#ab362c458819bb9ea1b99a764444c4921\" class=\"m-doc\">NO_<wbr />IGNORE_<wbr />CHAR</a>",
+                  "default": "&#x27;\\x01&#x27;",
                   "description": "a character to ignore in the stream, default is &#x27;\\x01&#x27;",
                   "direction": ""
                 }
@@ -1350,7 +1329,7 @@
               "name": "peekNextDigit",
               "brief": "Return the next numeric digit in the stream or -1 if timeout.",
               "description": "",
-              "return_value": "<span class=\"m-type\">int</span> The next numeric digit in the stream",
+              "return_value": "The next numeric digit in the stream",
               "return_values": [],
               "exceptions": [],
               "deprecated": null,
@@ -1413,7 +1392,7 @@
               "name": "setActive",
               "brief": "Set this instance as the active SDI-12 instance.",
               "description": "<p>A method for setting the current object as the active object; returns TRUE if the object was not formerly the active object and now is.</p><ul><li>Promoting an inactive to the active instance will start it in the SDI12_HOLDING state and return TRUE.</li><li>Otherwise, if the object is currently the active instance, it will remain unchanged and return FALSE.</li></ul>",
-              "return_value": "<span class=\"m-type\">bool</span> True indicates that the current SDI-12 instance was not formerly the active one and now is. False indicates that the current SDI-12 instance <em>is already the active one</em> and the state was not changed.",
+              "return_value": "True indicates that the current SDI-12 instance was not formerly the active one and now is. False indicates that the current SDI-12 instance <em>is already the active one</em> and the state was not changed.",
               "return_values": [],
               "exceptions": [],
               "deprecated": null,
@@ -1452,7 +1431,7 @@
               "name": "isActive",
               "brief": "Check if this instance is active.",
               "description": "<p><a href=\"class_s_d_i12.html#a771650620377ebbf31fc27a9dd803f71\" class=\"m-doc\">isActive()</a> is a method for checking if the object is the active object. Returns true if the object is currently the active object, false otherwise.</p>",
-              "return_value": "<span class=\"m-type\">bool</span> True indicates that the curren SDI-12 instace is the active one.",
+              "return_value": "True indicates that the curren SDI-12 instace is the active one.",
               "return_values": [],
               "exceptions": [],
               "deprecated": null,
@@ -1497,8 +1476,8 @@
               "type": "size_t",
               "name": "write",
               "brief": "Write out a byte on the SDI-12 line.",
-              "description": "<p>Sets the state to transmitting, writes a character, and then sets the state back to listening. This function must be implemented as part of the Arduino Stream instance, but is <em>NOT</em> intenteded to be used for SDI-12 objects. Instead, use the <a href=\"class_s_d_i12.html#ac8b534fb074efd66d09d044b807bb270\" class=\"m-doc\">SDI12::<wbr />sendCommand()</a> or <a href=\"class_s_d_i12.html#a348ece4b0d89bd3d6a687c85013b50a0\" class=\"m-doc\">SDI12::<wbr />sendResponse()</a> functions.</p>",
-              "return_value": "<span class=\"m-type\">size_t</span> The number of characters written",
+              "description": "<p>Sets the state to transmitting, writes a character, and then sets the state back to listening. This function must be implemented as part of the Arduino <a href=\"class_stream.html\" class=\"m-doc\">Stream</a> instance, but is <em>NOT</em> intenteded to be used for SDI-12 objects. Instead, use the <a href=\"class_s_d_i12.html#a22dc3cfa696028e766909406e82c37cf\" class=\"m-doc\">SDI12::<wbr />sendCommand()</a> or <a href=\"class_s_d_i12.html#a63690622e1ee57d78bd6ea5ef20960c0\" class=\"m-doc\">SDI12::<wbr />sendResponse()</a> functions.</p>",
+              "return_value": "The number of characters written",
               "return_values": [],
               "exceptions": [],
               "deprecated": null,
@@ -1539,7 +1518,7 @@
             "func",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "ac8b534fb074efd66d09d044b807bb270",
+              "id": "a22dc3cfa696028e766909406e82c37cf",
               "include": null,
               "has_details": true,
               "type": "void",
@@ -1584,7 +1563,7 @@
                   "name": "extraWakeTime",
                   "type": "int8_t",
                   "type_name": "int8_t extraWakeTime",
-                  "default": "<a href=\"_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908\" class=\"m-doc\">SDI12_<wbr />WAKE_<wbr />DELAY</a>",
+                  "default": "0",
                   "description": "The amount of additional time in milliseconds that the sensor takes to wake before being ready to receive a command. Default is 0ms - meaning the sensor is ready for a command by the end of the 12ms break. Per protocol, the wake time must be less than 100 ms.",
                   "direction": ""
                 }
@@ -1595,7 +1574,7 @@
             "func",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "ac7454e06f4706b44cebc5b9848846df6",
+              "id": "aa2bb79df6de815c697c09960096fdd4d",
               "include": null,
               "has_details": true,
               "type": "void",
@@ -1640,7 +1619,7 @@
                   "name": "extraWakeTime",
                   "type": "int8_t",
                   "type_name": "int8_t extraWakeTime",
-                  "default": "<a href=\"_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908\" class=\"m-doc\">SDI12_<wbr />WAKE_<wbr />DELAY</a>",
+                  "default": "0",
                   "description": "The amount of additional time in milliseconds that the sensor takes to wake before being ready to receive a command. Default is 0ms - meaning the sensor is ready for a command by the end of the 12ms break. Per protocol, the wake time must be less than 100 ms.",
                   "direction": ""
                 }
@@ -1651,7 +1630,7 @@
             "func",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "ae3f90d981509507a24136f3fc0e1d53f",
+              "id": "aa77162643acf6e4d966c4304b9136307",
               "include": null,
               "has_details": true,
               "type": "void",
@@ -1696,7 +1675,7 @@
                   "name": "extraWakeTime",
                   "type": "int8_t",
                   "type_name": "int8_t extraWakeTime",
-                  "default": "<a href=\"_s_d_i12_8h.html#adf7ac65ee62c8bab1bf3ba6baf41a908\" class=\"m-doc\">SDI12_<wbr />WAKE_<wbr />DELAY</a>",
+                  "default": "0",
                   "description": "The amount of additional time in milliseconds that the sensor takes to wake before being ready to receive a command. Default is 0ms - meaning the sensor is ready for a command by the end of the 12ms break. Per protocol, the wake time must be less than 100 ms.",
                   "direction": ""
                 }
@@ -1707,7 +1686,247 @@
             "func",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "a348ece4b0d89bd3d6a687c85013b50a0",
+              "id": "ae1d4db968a3f0c35012476a1b2ea534b",
+              "include": null,
+              "has_details": true,
+              "type": "uint16_t",
+              "name": "calculateCRC",
+              "brief": "Calculates the 16-bit Cyclic Redundancy Check (CRC) for an SDI-12 message.",
+              "description": "",
+              "return_value": "The calculated CRC",
+              "return_values": [],
+              "exceptions": [],
+              "deprecated": null,
+              "since": null,
+              "is_constexpr": false,
+              "is_consteval": false,
+              "is_explicit": false,
+              "is_virtual": false,
+              "prefix": "",
+              "is_defaulted": false,
+              "is_deleted": false,
+              "is_pure_virtual": false,
+              "is_final": false,
+              "is_override": false,
+              "is_noexcept": false,
+              "is_conditional_noexcept": false,
+              "suffix": "",
+              "is_protected": false,
+              "is_private": false,
+              "is_signal": false,
+              "is_slot": false,
+              "has_template_details": false,
+              "templates": null,
+              "has_param_details": true,
+              "params": [
+                {
+                  "name": "resp",
+                  "type": "String&amp;",
+                  "type_name": "String&amp; resp",
+                  "default": null,
+                  "description": "The message to calculate the CRC for.",
+                  "direction": ""
+                }
+              ]
+            }
+          ],
+          [
+            "func",
+            {
+              "base_url": "class_s_d_i12.html",
+              "id": "a4867482c7088d4d87692f8d816f6f26a",
+              "include": null,
+              "has_details": true,
+              "type": "uint16_t",
+              "name": "calculateCRC",
+              "brief": "Calculates the 16-bit Cyclic Redundancy Check (CRC) for an SDI-12 message.",
+              "description": "",
+              "return_value": "The calculated CRC",
+              "return_values": [],
+              "exceptions": [],
+              "deprecated": null,
+              "since": null,
+              "is_constexpr": false,
+              "is_consteval": false,
+              "is_explicit": false,
+              "is_virtual": false,
+              "prefix": "",
+              "is_defaulted": false,
+              "is_deleted": false,
+              "is_pure_virtual": false,
+              "is_final": false,
+              "is_override": false,
+              "is_noexcept": false,
+              "is_conditional_noexcept": false,
+              "suffix": "",
+              "is_protected": false,
+              "is_private": false,
+              "is_signal": false,
+              "is_slot": false,
+              "has_template_details": false,
+              "templates": null,
+              "has_param_details": true,
+              "params": [
+                {
+                  "name": "resp",
+                  "type": "const char*",
+                  "type_name": "const char* resp",
+                  "default": null,
+                  "description": "The message to calculate the CRC for.",
+                  "direction": ""
+                }
+              ]
+            }
+          ],
+          [
+            "func",
+            {
+              "base_url": "class_s_d_i12.html",
+              "id": "a2fd85d726c24a24141fd28da1ce400de",
+              "include": null,
+              "has_details": true,
+              "type": "uint16_t",
+              "name": "calculateCRC",
+              "brief": "Calculates the 16-bit Cyclic Redundancy Check (CRC) for an SDI-12 message.",
+              "description": "",
+              "return_value": "The calculated CRC",
+              "return_values": [],
+              "exceptions": [],
+              "deprecated": null,
+              "since": null,
+              "is_constexpr": false,
+              "is_consteval": false,
+              "is_explicit": false,
+              "is_virtual": false,
+              "prefix": "",
+              "is_defaulted": false,
+              "is_deleted": false,
+              "is_pure_virtual": false,
+              "is_final": false,
+              "is_override": false,
+              "is_noexcept": false,
+              "is_conditional_noexcept": false,
+              "suffix": "",
+              "is_protected": false,
+              "is_private": false,
+              "is_signal": false,
+              "is_slot": false,
+              "has_template_details": false,
+              "templates": null,
+              "has_param_details": true,
+              "params": [
+                {
+                  "name": "resp",
+                  "type": "<a href=\"_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf\" class=\"m-doc\">FlashString</a>",
+                  "type_name": "<a href=\"_s_d_i12_8h.html#a11206b202ad711bc9713f324ae619bcf\" class=\"m-doc\">FlashString</a> resp",
+                  "default": null,
+                  "description": "The message to calculate the CRC for.",
+                  "direction": ""
+                }
+              ]
+            }
+          ],
+          [
+            "func",
+            {
+              "base_url": "class_s_d_i12.html",
+              "id": "a8ef99372bb3e1281fba0c84e4b26c555",
+              "include": null,
+              "has_details": true,
+              "type": "String",
+              "name": "crcToString",
+              "brief": "Converts a numeric 16-bit CRC to an ASCII String.",
+              "description": "<p>From the SDI-12 Specifications:</p><pre>The 16 bit CRC is encoded as three ASCII characters\nusing the following algorithm:\n    1st character = 0x40 OR (CRC shifted right 12 bits)\n    2nd character = 0x40 OR ((CRC shifted right 6 bits) AND 0x3F)\n    3rd character = 0x40 OR (CRC AND 0x3F)\n</pre>",
+              "return_value": "An ASCII string for the CRC",
+              "return_values": [],
+              "exceptions": [],
+              "deprecated": null,
+              "since": null,
+              "is_constexpr": false,
+              "is_consteval": false,
+              "is_explicit": false,
+              "is_virtual": false,
+              "prefix": "",
+              "is_defaulted": false,
+              "is_deleted": false,
+              "is_pure_virtual": false,
+              "is_final": false,
+              "is_override": false,
+              "is_noexcept": false,
+              "is_conditional_noexcept": false,
+              "suffix": "",
+              "is_protected": false,
+              "is_private": false,
+              "is_signal": false,
+              "is_slot": false,
+              "has_template_details": false,
+              "templates": null,
+              "has_param_details": true,
+              "params": [
+                {
+                  "name": "crc",
+                  "type": "uint16_t",
+                  "type_name": "uint16_t crc",
+                  "default": null,
+                  "description": "The 16-bit CRC",
+                  "direction": ""
+                }
+              ]
+            }
+          ],
+          [
+            "func",
+            {
+              "base_url": "class_s_d_i12.html",
+              "id": "a8450afe2c752d832936b6ecfdb1c6b7a",
+              "include": null,
+              "has_details": true,
+              "type": "bool",
+              "name": "verifyCRC",
+              "brief": "Verifies that the CRC returned at the end of an SDI-12 message matches that of the content of the message.",
+              "description": "",
+              "return_value": "True if the CRC matches and the message is valid, false if the CRC doesn&#x27;t match and the message could be retried.",
+              "return_values": [],
+              "exceptions": [],
+              "deprecated": null,
+              "since": null,
+              "is_constexpr": false,
+              "is_consteval": false,
+              "is_explicit": false,
+              "is_virtual": false,
+              "prefix": "",
+              "is_defaulted": false,
+              "is_deleted": false,
+              "is_pure_virtual": false,
+              "is_final": false,
+              "is_override": false,
+              "is_noexcept": false,
+              "is_conditional_noexcept": false,
+              "suffix": "",
+              "is_protected": false,
+              "is_private": false,
+              "is_signal": false,
+              "is_slot": false,
+              "has_template_details": false,
+              "templates": null,
+              "has_param_details": true,
+              "params": [
+                {
+                  "name": "respWithCRC",
+                  "type": "String&amp;",
+                  "type_name": "String&amp; respWithCRC",
+                  "default": null,
+                  "description": "The full SDI-12 message, including the CRC at the end.",
+                  "direction": ""
+                }
+              ]
+            }
+          ],
+          [
+            "func",
+            {
+              "base_url": "class_s_d_i12.html",
+              "id": "a63690622e1ee57d78bd6ea5ef20960c0",
               "include": null,
               "has_details": true,
               "type": "void",
@@ -1747,6 +1966,14 @@
                   "default": null,
                   "description": "the response to send",
                   "direction": ""
+                },
+                {
+                  "name": "addCRC",
+                  "type": "bool",
+                  "type_name": "bool addCRC",
+                  "default": "false",
+                  "description": "True to append a CRC to the outgoing response",
+                  "direction": ""
                 }
               ]
             }
@@ -1755,7 +1982,7 @@
             "func",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "a74474c4f47491e72b28045ca2eea696b",
+              "id": "a4ef73880b0d41bf5cb5009f674dc3d69",
               "include": null,
               "has_details": true,
               "type": "void",
@@ -1795,6 +2022,14 @@
                   "default": null,
                   "description": "the response to send",
                   "direction": ""
+                },
+                {
+                  "name": "addCRC",
+                  "type": "bool",
+                  "type_name": "bool addCRC",
+                  "default": "false",
+                  "description": "True to append a CRC to the outgoing response",
+                  "direction": ""
                 }
               ]
             }
@@ -1803,7 +2038,7 @@
             "func",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "ae51a8ca102896cda0de061d1bd527b5e",
+              "id": "a16c75cebfe59a953f74edc27d59ba82a",
               "include": null,
               "has_details": true,
               "type": "void",
@@ -1843,6 +2078,14 @@
                   "default": null,
                   "description": "the response to send",
                   "direction": ""
+                },
+                {
+                  "name": "addCRC",
+                  "type": "bool",
+                  "type_name": "bool addCRC",
+                  "default": "false",
+                  "description": "True to append a CRC to the outgoing response",
+                  "direction": ""
                 }
               ]
             }
@@ -1858,7 +2101,7 @@
             "func",
             {
               "base_url": "class_s_d_i12.html",
-              "id": "a8856fcfc9ba4776cf9f0e0f337408ce7",
+              "id": "a70ec41e8674e0335b549c4d8ab8cbca1",
               "include": null,
               "has_details": true,
               "type": "void",
@@ -1902,6 +2145,10 @@
     "has_var_details": true,
     "has_define_details": false,
     "breadcrumb": [
+      [
+        "Stream",
+        "class_stream.html"
+      ],
       [
         "SDI12",
         "class_s_d_i12.html"

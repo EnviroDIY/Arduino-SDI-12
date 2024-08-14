@@ -1,5 +1,5 @@
 {
-  "version": "1.9.1",
+  "version": "1.12.0",
   "compound": {
     "kind": "file",
     "id": "_s_d_i12_8h",
@@ -10,7 +10,7 @@
     "has_template_details": false,
     "templates": null,
     "brief": "This file contains the main class for the SDI-12 implementation.",
-    "description": "<aside class=\"m-note m-default\"><h4>Copyright</h4><p>(c) 2013-2020 Stroud Water Research Center (SWRC) and the EnviroDIY Development Team</p></aside><aside class=\"m-note m-default\"><h4>Date</h4><p>August 2013</p></aside><aside class=\"m-note m-default\"><h4>Author</h4><p>Kevin M.Smith <a href=\"mailto:SDI12@ethosengineering.org\">SDI12@ethosengineering.org</a></p></aside><p>========================== Arduino SDI-12 ==================================</p><p>An Arduino library for SDI-12 communication with a wide variety of environmental sensors. This library provides a general software solution, without requiring any additional hardware.</p><p>======================== Attribution &amp; License =============================</p><p>Copyright (C) 2013 Stroud Water Research Center Available at <a href=\"https://github.com/EnviroDIY/Arduino-SDI-12\">https:/<wbr />/<wbr />github.com/<wbr />EnviroDIY/<wbr />Arduino-SDI-12</a></p><p>Authored initially in August 2013 by: Kevin M. Smith (<a href=\"http://ethosengineering.org\">http:/<wbr />/<wbr />ethosengineering.org</a>) Inquiries: <a href=\"mailto:SDI12@ethosengineering.org\">SDI12@ethosengineering.org</a></p><p>Modified 2017 by Manuel Jimenez Buendia to work with ARM based processors (Arduino Zero)</p><p>Maintenance and merging 2017 by Sara Damiano</p><p>based on the SoftwareSerial library (formerly NewSoftSerial), authored by: ladyada (<a href=\"http://ladyada.net\">http:/<wbr />/<wbr />ladyada.net</a>) Mikal Hart (<a href=\"http://www.arduiniana.org\">http:/<wbr />/<wbr />www.arduiniana.org</a>) Paul Stoffregen (<a href=\"http://www.pjrc.com\">http:/<wbr />/<wbr />www.pjrc.com</a>) Garrett Mace (<a href=\"http://www.macetech.com\">http:/<wbr />/<wbr />www.macetech.com</a>) Brett Hagman (<a href=\"http://www.roguerobotics.com/\">http:/<wbr />/<wbr />www.roguerobotics.com/<wbr /></a>)</p><p>This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.</p><p>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.</p><p>You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA</p>",
+    "description": "<aside class=\"m-note m-default\"><h4>Copyright</h4><p>Stroud Water Research Center</p></aside><aside class=\"m-note m-default\"><h4>License</h4><p>This library is published under the BSD-3 license.</p></aside><aside class=\"m-note m-default\"><h4>Date</h4><p>August 2013</p></aside><aside class=\"m-note m-default\"><h4>Author</h4><p>Kevin M.Smith <a href=\"mailto:SDI12@ethosengineering.org\">SDI12@ethosengineering.org</a></p></aside><p>========================== Arduino SDI-12 ==================================</p><p>An Arduino library for SDI-12 communication with a wide variety of environmental sensors. This library provides a general software solution, without requiring any additional hardware.</p><p>======================== Attribution &amp; License =============================</p><p>Copyright (C) 2013 Stroud Water Research Center Available at <a href=\"https://github.com/EnviroDIY/Arduino-SDI-12\">https:/<wbr />/<wbr />github.com/<wbr />EnviroDIY/<wbr />Arduino-SDI-12</a></p><p>Authored initially in August 2013 by: Kevin M. Smith (<a href=\"http://ethosengineering.org\">http:/<wbr />/<wbr />ethosengineering.org</a>) Inquiries: <a href=\"mailto:SDI12@ethosengineering.org\">SDI12@ethosengineering.org</a></p><p>Modified 2017 by Manuel Jimenez Buendia to work with ARM based processors (Arduino Zero)</p><p>Maintenance and merging 2017 by Sara Damiano</p><p>based on the SoftwareSerial library (formerly NewSoftSerial), authored by: ladyada (<a href=\"http://ladyada.net\">http:/<wbr />/<wbr />ladyada.net</a>) Mikal Hart (<a href=\"http://www.arduiniana.org\">http:/<wbr />/<wbr />www.arduiniana.org</a>) Paul Stoffregen (<a href=\"http://www.pjrc.com\">http:/<wbr />/<wbr />www.pjrc.com</a>) Garrett Mace (<a href=\"http://www.macetech.com\">http:/<wbr />/<wbr />www.macetech.com</a>) Brett Hagman (<a href=\"http://www.roguerobotics.com/\">http:/<wbr />/<wbr />www.roguerobotics.com/<wbr /></a>)</p><p>This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.</p><p>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.</p><p>You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA</p>",
     "sections": "",
     "deprecated": null,
     "since": null,
@@ -42,7 +42,7 @@
         "type": "",
         "name": "LookaheadMode",
         "brief": "This enumeration provides the lookahead options for parseInt(), parseFloat().",
-        "description": "<p>The rules set out here are used until either the first valid character is found or a time out occurs due to lack of input.</p><p>This enum is part of the Stream parent class, but is missing from the ESP8266 and ESP32 cores.</p>",
+        "description": "<p>The rules set out here are used until either the first valid character is found or a time out occurs due to lack of input.</p><p>This enum is part of the <a href=\"class_stream.html\" class=\"m-doc\">Stream</a> parent class, but is missing from the ESP8266 and ESP32 cores.</p>",
         "deprecated": null,
         "since": null,
         "is_protected": false,
@@ -118,6 +118,21 @@
       },
       {
         "base_url": "_s_d_i12_8h.html",
+        "id": "a0c8d96c247fc38f23456bf045e7be5cc",
+        "include": null,
+        "has_details": false,
+        "name": "SDI12_CHECK_PARITY",
+        "initializer": null,
+        "brief": "Check the value of the parity bit on reception.",
+        "description": "",
+        "return_value": null,
+        "deprecated": null,
+        "since": null,
+        "has_param_details": false,
+        "params": null
+      },
+      {
+        "base_url": "_s_d_i12_8h.html",
         "id": "adf7ac65ee62c8bab1bf3ba6baf41a908",
         "include": null,
         "has_details": false,
@@ -148,18 +163,33 @@
       },
       {
         "base_url": "_s_d_i12_8h.html",
-        "id": "a5261e90ea3b53cca5dd95bdf1749d9d9",
+        "id": "a93d8d63b30c6472737d4717e253dd1a8",
         "include": null,
         "has_details": true,
-        "name": "READTIME",
-        "initializer": "sdi12timer.SDI12TimerRead()",
-        "brief": "The function or macro used to read the clock timer value.",
-        "description": "<aside class=\"m-note m-info\"><h4>Note</h4><p>The ESP32 and ESP8266 are fast enough processors that they can take the time to read the core &#x27;micros()&#x27; function still complete the other processing needed on the serial bits. All of the other processors using the Arduino core also have the micros function, but the rest are not fast enough to waste the processor cycles to use the micros function and must use the faster assembly macros to read the processor timer directly.</p></aside>",
+        "name": "SDI12_YIELD_MS",
+        "initializer": "0",
+        "brief": "The time to delay, in milliseconds, to allow the buffer to fill before returning the value from the buffer.",
+        "description": "<p>This may be needed for faster processors to account for the slow baud rate of SDI-12. Without this, the available() function may return 0 while we&#x27;re in the middle of reading a character.</p><p>There are 8.33 ms/character, so we delay by 8ms for fast processors to allow one character to finish.</p>",
         "return_value": null,
         "deprecated": null,
         "since": null,
         "has_param_details": false,
         "params": null
+      },
+      {
+        "base_url": "_s_d_i12_8h.html",
+        "id": "a759ea857ecb5343f2dac34b047299697",
+        "include": null,
+        "has_details": true,
+        "name": "SDI12_YIELD",
+        "initializer": "  { delay(",
+        "brief": "A delay function to allow the buffer to fill before returning the value from the buffer.",
+        "description": "<p>This may be needed for faster processors to account for the slow baud rate of SDI-12.</p>",
+        "return_value": null,
+        "deprecated": null,
+        "since": null,
+        "has_param_details": false,
+        "params": []
       }
     ],
     "public_types": [],
@@ -187,6 +217,10 @@
     "has_var_details": false,
     "has_define_details": true,
     "breadcrumb": [
+      [
+        "src",
+        "dir_68267d1309a1af8e8297ef4c3efbcdba.html"
+      ],
       [
         "SDI12.h",
         "_s_d_i12_8h.html"

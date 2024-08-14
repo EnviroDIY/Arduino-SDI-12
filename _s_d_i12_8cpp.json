@@ -1,5 +1,5 @@
 {
-  "version": "1.9.1",
+  "version": "1.12.0",
   "compound": {
     "kind": "file",
     "id": "_s_d_i12_8cpp",
@@ -10,7 +10,7 @@
     "has_template_details": false,
     "templates": null,
     "brief": "This file implements the main class for the SDI-12 implementation.",
-    "description": "<aside class=\"m-note m-default\"><h4>Copyright</h4><p>(c) 2013-2020 Stroud Water Research Center (SWRC) and the EnviroDIY Development Team</p></aside><aside class=\"m-note m-default\"><h4>Date</h4><p>August 2013</p></aside><aside class=\"m-note m-default\"><h4>Author</h4><p>Kevin M.Smith <a href=\"mailto:SDI12@ethosengineering.org\">SDI12@ethosengineering.org</a></p></aside><p>========================== Arduino SDI-12 ==================================</p><p>An Arduino library for SDI-12 communication with a wide variety of environmental sensors. This library provides a general software solution, without requiring any additional hardware.</p><p>======================== Attribution &amp; License =============================</p><p>Copyright (C) 2013 Stroud Water Research Center Available at <a href=\"https://github.com/EnviroDIY/Arduino-SDI-12\">https:/<wbr />/<wbr />github.com/<wbr />EnviroDIY/<wbr />Arduino-SDI-12</a></p><p>Authored initially in August 2013 by: Kevin M. Smith (<a href=\"http://ethosengineering.org\">http:/<wbr />/<wbr />ethosengineering.org</a>) Inquiries: <a href=\"mailto:SDI12@ethosengineering.org\">SDI12@ethosengineering.org</a></p><p>Modified 2017 by Manuel Jimenez Buendia to work with ARM based processors (Arduino Zero)</p><p>Maintenance and merging 2017 by Sara Damiano</p><p>based on the SoftwareSerial library (formerly NewSoftSerial), authored by: ladyada (<a href=\"http://ladyada.net\">http:/<wbr />/<wbr />ladyada.net</a>) Mikal Hart (<a href=\"http://www.arduiniana.org\">http:/<wbr />/<wbr />www.arduiniana.org</a>) Paul Stoffregen (<a href=\"http://www.pjrc.com\">http:/<wbr />/<wbr />www.pjrc.com</a>) Garrett Mace (<a href=\"http://www.macetech.com\">http:/<wbr />/<wbr />www.macetech.com</a>) Brett Hagman (<a href=\"http://www.roguerobotics.com/\">http:/<wbr />/<wbr />www.roguerobotics.com/<wbr /></a>)</p><p>This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.</p><p>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.</p><p>You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA</p>",
+    "description": "<aside class=\"m-note m-default\"><h4>Copyright</h4><p>Stroud Water Research Center</p></aside><aside class=\"m-note m-default\"><h4>License</h4><p>This library is published under the BSD-3 license.</p></aside><aside class=\"m-note m-default\"><h4>Date</h4><p>August 2013</p></aside><aside class=\"m-note m-default\"><h4>Author</h4><p>Kevin M.Smith <a href=\"mailto:SDI12@ethosengineering.org\">SDI12@ethosengineering.org</a></p></aside><p>========================== Arduino SDI-12 ==================================</p><p>An Arduino library for SDI-12 communication with a wide variety of environmental sensors. This library provides a general software solution, without requiring any additional hardware.</p><p>======================== Attribution &amp; License =============================</p><p>Copyright (C) 2013 Stroud Water Research Center Available at <a href=\"https://github.com/EnviroDIY/Arduino-SDI-12\">https:/<wbr />/<wbr />github.com/<wbr />EnviroDIY/<wbr />Arduino-SDI-12</a></p><p>Authored initially in August 2013 by: Kevin M. Smith (<a href=\"http://ethosengineering.org\">http:/<wbr />/<wbr />ethosengineering.org</a>) Inquiries: <a href=\"mailto:SDI12@ethosengineering.org\">SDI12@ethosengineering.org</a></p><p>Modified 2017 by Manuel Jimenez Buendia to work with ARM based processors (Arduino Zero)</p><p>Maintenance and merging 2017 by Sara Damiano</p><p>based on the SoftwareSerial library (formerly NewSoftSerial), authored by: ladyada (<a href=\"http://ladyada.net\">http:/<wbr />/<wbr />ladyada.net</a>) Mikal Hart (<a href=\"http://www.arduiniana.org\">http:/<wbr />/<wbr />www.arduiniana.org</a>) Paul Stoffregen (<a href=\"http://www.pjrc.com\">http:/<wbr />/<wbr />www.pjrc.com</a>) Garrett Mace (<a href=\"http://www.macetech.com\">http:/<wbr />/<wbr />www.macetech.com</a>) Brett Hagman (<a href=\"http://www.roguerobotics.com/\">http:/<wbr />/<wbr />www.roguerobotics.com/<wbr /></a>)</p><p>This library is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.</p><p>This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.</p><p>You should have received a copy of the GNU Lesser General Public License along with this library; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA</p>",
     "sections": "",
     "deprecated": null,
     "since": null,
@@ -27,7 +27,23 @@
     "typedefs": [],
     "funcs": [],
     "vars": [],
-    "defines": [],
+    "defines": [
+      {
+        "base_url": "_s_d_i12_8cpp.html",
+        "id": "aa55bbb692b1c5e89d3a5c3bee1ce8399",
+        "include": null,
+        "has_details": false,
+        "name": "POLY",
+        "initializer": "0xa001",
+        "brief": "The polynomial to match the CRC with; set in the SDI-12 specifications.",
+        "description": "",
+        "return_value": null,
+        "deprecated": null,
+        "since": null,
+        "has_param_details": false,
+        "params": null
+      }
+    ],
     "public_types": [],
     "public_static_funcs": [],
     "typeless_funcs": [],
@@ -53,6 +69,10 @@
     "has_var_details": false,
     "has_define_details": false,
     "breadcrumb": [
+      [
+        "src",
+        "dir_68267d1309a1af8e8297ef4c3efbcdba.html"
+      ],
       [
         "SDI12.cpp",
         "_s_d_i12_8cpp.html"

@@ -1,0 +1,97 @@
+{
+  "version": "1.12.0",
+  "compound": {
+    "kind": "dir",
+    "id": "dir_68267d1309a1af8e8297ef4c3efbcdba",
+    "name": "src",
+    "url_base": "dir_68267d1309a1af8e8297ef4c3efbcdba",
+    "url": "dir_68267d1309a1af8e8297ef4c3efbcdba.html",
+    "include": null,
+    "has_template_details": false,
+    "templates": null,
+    "brief": "Contains the source code for the SDI-12 library.",
+    "description": "",
+    "sections": "",
+    "deprecated": null,
+    "since": null,
+    "example_navigation": null,
+    "footer_navigation": null,
+    "modules": [],
+    "dirs": [],
+    "files": [
+      {
+        "url": "_s_d_i12_8cpp.html",
+        "name": "SDI12.cpp",
+        "brief": "This file implements the main class for the SDI-12 implementation.",
+        "deprecated": null,
+        "since": null
+      },
+      {
+        "url": "_s_d_i12_8h.html",
+        "name": "SDI12.h",
+        "brief": "This file contains the main class for the SDI-12 implementation.",
+        "deprecated": null,
+        "since": null
+      },
+      {
+        "url": "_s_d_i12__boards_8cpp.html",
+        "name": "SDI12_boards.cpp",
+        "brief": "This file implements the setting and unsetting of the proper prescalers for the timers for SDI-12.",
+        "deprecated": null,
+        "since": null
+      },
+      {
+        "url": "_s_d_i12__boards_8h.html",
+        "name": "SDI12_boards.h",
+        "brief": "This file defines the timing units needed for various Arduino boards.",
+        "deprecated": null,
+        "since": null
+      }
+    ],
+    "namespaces": [],
+    "classes": [],
+    "base_classes": [],
+    "derived_classes": [],
+    "enums": [],
+    "typedefs": [],
+    "funcs": [],
+    "vars": [],
+    "defines": [],
+    "public_types": [],
+    "public_static_funcs": [],
+    "typeless_funcs": [],
+    "public_funcs": [],
+    "signals": [],
+    "public_slots": [],
+    "public_static_vars": [],
+    "public_vars": [],
+    "protected_types": [],
+    "protected_static_funcs": [],
+    "protected_funcs": [],
+    "protected_slots": [],
+    "protected_static_vars": [],
+    "protected_vars": [],
+    "private_funcs": [],
+    "private_slots": [],
+    "related": [],
+    "friend_funcs": [],
+    "groups": [],
+    "has_enum_details": false,
+    "has_typedef_details": false,
+    "has_func_details": false,
+    "has_var_details": false,
+    "has_define_details": false,
+    "breadcrumb": [
+      [
+        "src",
+        "dir_68267d1309a1af8e8297ef4c3efbcdba.html"
+      ]
+    ],
+    "breadcrumbGroup": [
+      [
+        "src",
+        "dir_68267d1309a1af8e8297ef4c3efbcdba.html"
+      ]
+    ]
+  }
+}

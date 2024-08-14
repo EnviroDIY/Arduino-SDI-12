@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <title>Timer Configurations | SDI-12 for Arduino2.2.0</title>
+  <link rel="stylesheet" href="m-EnviroDIY+documentation.compiled.css" />
+
+<style id="wp-emoji-styles-inline-css" type="text/css">
+  img.wp-smiley,
+  img.emoji {
+    display: inline !important;
+    border: none !important;
+    box-shadow: none !important;
+    height: 1em !important;
+    width: 1em !important;
+    margin: 0 0.07em !important;
+    vertical-align: -0.1em !important;
+    background: none !important;
+    padding: 0 !important;
+  }
+</style>
+<link
+  rel="stylesheet"
+  id="gp-parent-style-css"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/style.css?ver=6.5.4"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="redux-extendify-styles-css"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/framework/redux/assets/css/extendify-utilities.css?ver=4.4.11"
+  type="text/css"
+  media="all"
+/>
+<style id="ghostpool-style-inline-css" type="text/css">
+  #gp-main-header {
+    min-height: 80px;
+  }
+  .gp-desktop-scrolling #gp-main-header {
+    min-height: 80px;
+  }
+  .gp-header-standard #gp-logo {
+    padding: 19px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-logo {
+    padding: 12.5px 0;
+  }
+  .gp-header-standard #gp-primary-main-nav .menu > li > a {
+    padding: 30.5px 0;
+  }
+  .gp-header-standard #gp-cart-button,
+  .gp-header-standard #gp-search-button,
+  .gp-header-standard #gp-profile-button {
+    padding: 31px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-primary-main-nav .menu > li > a {
+    padding: 30.5px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-cart-button,
+  .gp-desktop-scrolling.gp-header-standard #gp-search-button,
+  .gp-desktop-scrolling.gp-header-standard #gp-profile-button {
+    padding: 31px 0;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li:hover > a {
+    color: #fff;
+  }
+  .gp-theme li:hover .gp-primary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-theme .sub-menu li:hover .gp-secondary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-header-centered #gp-cart-button,
+  .gp-header-centered #gp-search-button,
+  .gp-header-centered #gp-profile-button {
+    line-height: 18px;
+  }
+  .gp-header-standard #gp-secondary-main-nav .menu > li > a {
+    padding: 31.5px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-secondary-main-nav .menu > li > a {
+    padding: 31.5px 0;
+  }
+  .gp-header-centered #gp-secondary-main-nav .menu > li > a {
+    line-height: 16px;
+  }
+  .gp-active {
+    color: #000;
+  }
+  .gp-theme .widget.buddypress div.item-options a.selected:hover {
+    color: #0579bd !important;
+  }
+  .gp-theme #buddypress .activity-list .activity-content blockquote a {
+    color: #0579bd;
+  }
+  .gp-theme #buddypress .activity-list .activity-content blockquote a:hover {
+    color: #000;
+  }
+  @media only screen and (max-width: 1082px) {
+    .gp-header-standard #gp-primary-main-nav .menu > li > a {
+      padding: 30.5px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard #gp-primary-main-nav .menu > li > a {
+      padding: 30.5px 0;
+    }
+    .gp-header-standard #gp-cart-button,
+    .gp-header-standard #gp-search-button,
+    .gp-header-standard #gp-profile-button {
+      padding: 31px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard #gp-cart-button,
+    .gp-desktop-scrolling.gp-header-standard #gp-search-button,
+    .gp-desktop-scrolling.gp-header-standard #gp-profile-button {
+      padding: 31px 0;
+    }
+    .gp-header-standard #gp-secondary-main-nav .menu > li > a {
+      padding: 31.5px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard #gp-secondary-main-nav .menu > li > a {
+      padding: 31.5px 0;
+    }
+  }
+  @media only screen and (max-width: 1023px) {
+    .gp-responsive #gp-main-header {
+      min-height: 80px;
+    }
+    .gp-responsive #gp-logo {
+      padding: 26px 0;
+    }
+    .gp-responsive #gp-mobile-nav-button,
+    .gp-responsive #gp-cart-button,
+    .gp-responsive #gp-search-button,
+    .gp-responsive #gp-profile-button {
+      padding: 31px 0;
+    }
+  }
+</style>
+<link
+  rel="stylesheet"
+  id="fontawesome-css"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=6.5.4"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+  media="print"
+  onload="this.media='all'"
+/>
+<noscript
+  ><link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+/></noscript>
+
+<style type="text/css" id="wp-custom-css">
+  /* Print Styles */
+  @media print {
+    @page {
+      margin: 10mm 0;
+    }
+    body {
+      background: white;
+      color: black;
+      background-image: none;
+      margin: 0 !important;
+      padding: 0;
+    }
+
+    body:not(.gp-full-page-page-header) .gp-page-header.gp-has-text:before,
+    body:not(.gp-full-page-page-header)
+      .gp-page-header.gp-has-teaser-video.gp-has-text
+      .gp-video-header:before {
+      background-image: none !important;
+    }
+    /* End print styles */
+
+    #gp-main-header,
+    #gp-small-header,
+    #gp-header-area,
+    #gp-footer,
+    #gp-sidebar-right,
+    #swrc-post-navigation,
+    .hkb-subheader,
+    .hkb-feedback,
+    .hkb-mainpage__sidebar,
+    .print-page {
+      display: none;
+    }
+    .hkb-mainpage-wrapper {
+      padding: 0 !important;
+      background-image: none !important;
+    }
+    a#gp-to-top,
+    span#toTopHover {
+      display: none;
+    }
+    a[href]:after {
+      content: ' (' attr(href) ')';
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: 1.25em;
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+    .hkb-article__content h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: 1.25em;
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+    table {
+      page-break-before: avoid;
+      page-break-inside: avoid;
+      page-break-after: avoid;
+    }
+    img {
+      page-break-inside: avoid;
+      visibility: visible;
+      float: none;
+    }
+    blockquote,
+    table,
+    pre {
+      page-break-inside: avoid;
+    }
+    ul,
+    ol,
+    dl {
+      page-break-before: avoid;
+    }
+  }
+
+  /*Gutenberg styles*/
+  /*Buttons*/
+  a.wp-block-button__link {
+    background-color: #538122;
+    border-radius: 5px;
+    text-decoration: none !important;
+  }
+  .wp-block-button__link:hover {
+    background: #365516 !important;
+    color: #ffffff !important;
+  }
+  figcaption {
+    font-style: italic;
+  }
+  /*End Gutenberg styles*/
+  #gp-content a,
+  .gp-sidebar a {
+    font-weight: 400;
+    text-decoration: underline;
+  }
+  /*BuddyPress styles*/
+  /*Make activity feed content darker*/
+  #buddypress .activity-list .activity-content .activity-inner p {
+    color: #000000;
+  }
+  /*Hide activity filter on activity page*/
+  #activity-filter-select.last {
+    display: none !important;
+  }
+  /*Hide disabled BuddyPress status updates on profile page, activity page*/
+  #latest-update {
+    display: none;
+  }
+  .item-title .update {
+    display: none;
+  }
+  /*Prevent display of comment/favorite links in activity stream. Because the comments do not get applied to posts or forum topics, they just confuse users*/
+  .gp-theme #buddypress .activity-list div.activity-meta a.button,
+  .gp-theme #buddypress .activity .acomment-options a,
+  .gp-theme #buddypress .activity-list li.load-newest a,
+  .widget.buddypress div.item-options a.selected {
+    color: #26a9e0;
+    display: none;
+  }
+  /*End BuddyPress styles*/
+  /* Style print link */
+  .pdfprnt-buttons > a > span {
+    margin: 15px 0;
+    padding-left: 0;
+    text-decoration: underline;
+  }
+  /*Change caption text color and size*/
+  .wp-caption-text {
+    color: #333;
+    font-size: 14px;
+  }
+  /*Collapse table borders */
+  #gp-content table {
+    border-collapse: collapse;
+  }
+  /*Add borders to Tableizer tables */
+  .tableizer table,
+  th,
+  td {
+    border: 1px solid #333;
+  }
+  /*Nested list styles*/
+  #gp-content,
+  .hkb-article ol ol li {
+    list-style-type: lower-alpha;
+  }
+  #gp-content,
+  .hkb-article ol ol ol li {
+    list-style-type: lower-roman;
+  }
+  #gp-content,
+  .hkb-article ul ul li {
+    list-style-type: circle !important;
+  }
+  /* Add border */
+  tr:last-child td {
+    border-width: 1px;
+  }
+  /*bbPress*/
+  /* Make forum title and description larger, remove link underlining */
+  div.bbp-forum-content {
+    font-size: 22px;
+    line-height: 28px;
+  }
+  div.bbp-forum-content p {
+    font-size: 16px;
+    line-height: 22px;
+  }
+  #bbpress-forums a.bbp-forum-title {
+    text-decoration: none;
+  }
+  .widgettitle {
+    border-bottom: 3px solid #92d050 !important;
+  }
+  .bbp-author-name {
+    font-size: 14px;
+  }
+  /*End bbpress styles*/
+  #gp-copyright-text,
+  #gp-copyright-text a:link,
+  #gp-copyright-text a:visited {
+    color: #fff;
+    font-weight: 400;
+  }
+  /*WooCommerce styles*/
+  bdi {
+    color: #538122;
+    font-weight: 500;
+  }
+  a.button.product_type_simple {
+    display: none;
+  }
+  p.stock.out-of-stock {
+    color: red;
+    font-weight: 500;
+  }
+  .products li * {
+    text-decoration: none !important;
+  }
+  div.gp-entry-cats {
+    color: #333333;
+  }
+  span.woocommerce-Price-amount.amount {
+    text-decoration: none !important;
+  }
+  /* Hide additional information tab */
+  div.woocommerce-tabs {
+    display: none !important;
+  }
+  /*End WooCommerce styles*/
+  /*The Events Calendar*/
+  #tribe-events-content a {
+    color: #0579bd;
+  }
+  #tribe-events-content .wp-block-button__link {
+    color: #ffffff;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget {
+    background-color: #fff;
+    padding: 15px;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > header {
+    text-transform: uppercase;
+    color: #000;
+    border-bottom: 3px solid #92d050;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > header
+    > h3 {
+    font-family: Roboto !important;
+    font-size: 14px !important;
+    font-weight: 500;
+    padding-bottom: 11px;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > div.tribe-events-widget-events-list__view-more.tribe-common-b1.tribe-common-b2--min-medium
+    > a {
+    color: #26a9e0;
+  }
+  /*Hero Knowledge Base styles*/
+  #hkb .hkb-fullwcontainer {
+    max-width: var(--hkb-main-container-width);
+    margin: 0 auto;
+    padding: 20px 20px;
+    left: 0 !important;
+    right: 0 !important;
+  }
+  h1.hkb-article__title {
+    font-weight: 300 !important;
+    margin: 0 0 0.5em !important;
+  }
+  .hkb-categoryheader__title {
+    font-weight: 300 !important;
+    font-size: 40px !important;
+  }
+  .hkb-articlepreview__title a {
+    font-weight: 300 !important;
+    font-size: 28px !important;
+    text-decoration: underline !important;
+    color: #0579bd !important;
+    font-size: 28px !important;
+  }
+  #hkb a {
+    text-decoration: underline;
+    font-weight: 400;
+  }
+  a.hkb_widget_exit__btn {
+    background-color: #538122 !important;
+    border-radius: 5px;
+    text-decoration: none !important;
+  }
+  a.hkb_widget_exit__btn:hover {
+    background: #365516 !important;
+    color: #ffffff !important;
+  }
+  /* End Heroic KB styles */
+  #swrc-post-navigation a {
+    font-size: small;
+  }
+  p.last-updated {
+    font-size: 12px;
+    font-style: italic;
+  }
+  aside#gp-sidebar-right.gp-sidebar p.last-updated {
+    display: none;
+  }
+  #gp-content p.last-updated {
+    display: none;
+  }
+  #gp-content ul {
+    margin: 0 0 0 20px !important;
+  }
+</style>
+<style id="socialize-dynamic-css" title="dynamic-css" class="redux-options-output">
+  #footer-image img {
+    margin-top: 10px;
+    margin-right: 0px;
+    margin-bottom: 10px;
+    margin-left: 0px;
+  }
+  body {
+    background-color: #f1f1f1;
+  }
+  body:not(.gp-full-page-page-header) #gp-page-wrapper,
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-container,
+  .gp-homepage .widgettitle.gp-fancy-title:before {
+    background-color: #e8e8e8;
+  }
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-left-triangle {
+    border-left-color: #e8e8e8;
+  }
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-right-triangle {
+    border-bottom-color: #e8e8e8;
+  }
+  #gp-content {
+    background-color: #ffffff;
+  }
+  body {
+    font-family: Roboto, 'Arial Black', Gadget, sans-serif;
+    line-height: 28px;
+    font-weight: 300;
+    font-style: normal;
+    color: #000;
+    font-size: 16px;
+  }
+  a {
+    color: #0579bd;
+  }
+  a:hover {
+    color: #000;
+  }
+  h1 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 40px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 36px;
+  }
+  h2 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 32px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 28px;
+  }
+  h3,
+  #tab-description h2,
+  .woocommerce #comments h2,
+  .woocommerce #reviews h3,
+  .woocommerce .related h2,
+  .woocommerce-checkout .woocommerce h2,
+  .woocommerce-checkout .woocommerce h3 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 28px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 24px;
+  }
+  h4 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 30px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px;
+  }
+  h5 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 26px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 18px;
+  }
+  h6 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 24px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 16px;
+  }
+  .gp-entry-meta .gp-post-meta-row-1,
+  .gp-homepage #gp-content .gp-vc-element-3,
+  .gp-homepage #gp-content .gp-vc-element-4,
+  .gp-homepage #gp-content .gp-vc-element-5,
+  .gp-homepage #gp-content .gp-vc-element-6,
+  #comments .commentlist li .comment_container,
+  .gp-loop-divider:before,
+  .gp-recent-comments ul li,
+  .gp-search {
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .gp-entry-video-wrapper .gp-entry-meta .gp-post-meta-row-1,
+  .gp-footer-widget .gp-recent-comments ul li {
+    border-top: 1px solid #50504b;
+    border-bottom: 1px solid #50504b;
+  }
+  #gp-main-header {
+    background-color: #222222;
+  }
+  .gp-desktop-scrolling #gp-main-header {
+    background-color: #222222;
+  }
+  #gp-primary-main-nav .menu > li,
+  #gp-primary-main-nav .menu > li > a {
+    font-family: Roboto;
+    text-transform: none;
+    line-height: 16px;
+    font-weight: 400;
+    font-style: normal;
+    color: #ababab;
+    font-size: 16px;
+  }
+  #gp-primary-main-nav .menu > li:hover > a,
+  #gp-primary-main-nav .menu > li > a {
+    color: #fff;
+  }
+  #gp-primary-main-nav .menu > li:hover > a:hover,
+  #gp-primary-main-nav .menu > li > a:hover {
+    color: #fff;
+  }
+  #gp-primary-main-nav .menu > li > a:hover,
+  #gp-primary-main-nav .menu > li:hover > a {
+    border-top: 3px solid #fff;
+  }
+  #gp-secondary-main-nav .menu > li,
+  #gp-secondary-main-nav .menu > li > a {
+    font-family: Roboto;
+    text-transform: none;
+    line-height: 14px;
+    font-weight: 400;
+    font-style: normal;
+    color: #fff;
+    font-size: 14px;
+  }
+  #gp-secondary-main-nav .menu > li:hover > a,
+  #gp-secondary-main-nav .menu > li > a {
+    color: #fff;
+  }
+  #gp-secondary-main-nav .menu > li:hover > a:hover,
+  #gp-secondary-main-nav .menu > li > a:hover {
+    color: #fff;
+  }
+  #gp-secondary-main-nav .menu > li > a:hover,
+  #gp-secondary-main-nav .menu > li:hover > a {
+    border-top: 3px solid #fff;
+  }
+  #gp-search-button,
+  #gp-cart-button {
+    color: #fff;
+  }
+  #gp-search-button:hover,
+  #gp-cart-button:hover {
+    color: #fff;
+  }
+  .gp-nav .sub-menu,
+  .gp-nav .menu li .gp-menu-tabs li:hover,
+  .gp-nav .menu li .gp-menu-tabs li.gp-selected,
+  #gp-search-box {
+    background-color: #fff;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a:hover,
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li:hover > a {
+    background-color: #353535;
+  }
+  .gp-nav .gp-standard-menu .sub-menu li,
+  .gp-nav .gp-standard-menu .sub-menu li a,
+  .gp-nav li.gp-megamenu .sub-menu li,
+  .gp-nav .gp-megamenu .sub-menu li a {
+    font-family: Roboto;
+    font-weight: 400;
+    font-style: normal;
+    color: #000;
+    font-size: 14px;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a {
+    color: #000;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a:hover {
+    color: #fff;
+  }
+  .gp-nav .sub-menu li,
+  #gp-dropdowncart .total,
+  #gp-dropdowncart .buttons {
+    border-top: 1px solid #e0e0e0;
+  }
+  .gp-nav .gp-megamenu > .sub-menu > li > a,
+  .gp-nav .gp-megamenu > .sub-menu > li > span {
+    color: #000000;
+  }
+  .gp-nav li.gp-megamenu a {
+    color: #000;
+  }
+  .gp-nav li.gp-megamenu a:hover {
+    color: #e93100;
+  }
+  .gp-primary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-primary-dropdown-icon:hover {
+    color: #fff;
+  }
+  .gp-secondary-dropdown-icon {
+    color: #000;
+  }
+  .gp-secondary-dropdown-icon:hover {
+    color: #fff;
+  }
+  .gp-menu-tabs {
+    background-color: #353535;
+  }
+  .gp-nav .menu li .gp-menu-tabs li {
+    color: #ffffff;
+  }
+  .gp-nav .menu li .gp-menu-tabs li:hover,
+  .gp-nav .menu li .gp-menu-tabs li.gp-selected {
+    color: #e93100;
+  }
+  #gp-small-header #gp-top-nav {
+    background-color: #26a9e0;
+  }
+  #gp-small-header .menu > li,
+  #gp-small-header .menu > li > a {
+    color: #ffffff;
+  }
+  #gp-small-header .menu > li:hover,
+  #gp-small-header .menu > li > a:hover {
+    color: #e0e0e0;
+  }
+  #gp-mobile-nav-button,
+  #gp-profile-button,
+  #gp-mobile-nav-close-button {
+    color: #ffffff;
+  }
+  #gp-mobile-nav {
+    background-color: #fff;
+  }
+  #gp-mobile-nav-close-button {
+    background-color: #0579bd;
+  }
+  #gp-mobile-nav li {
+    color: #000000;
+  }
+  #gp-mobile-nav .menu li span,
+  #gp-mobile-nav .menu li a {
+    color: #000;
+  }
+  #gp-mobile-nav .menu li span:hover,
+  #gp-mobile-nav .menu li a:hover {
+    color: #000;
+  }
+  #gp-mobile-nav li a:hover {
+    background-color: #f1f1f1;
+  }
+  #gp-mobile-nav li {
+    border-top: 1px solid #e0e0e0;
+  }
+  #gp-mobile-nav .gp-megamenu > .sub-menu > li > a {
+    color: #000000;
+  }
+  .gp-large-page-header .gp-page-header,
+  .gp-fullwidth-page-header .gp-page-header,
+  #gp-full-page-bg {
+    background-color: #353535;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-position: center center;
+    background-size: cover;
+  }
+  .gp-page-header h1,
+  .gp-page-header h2 {
+    font-family: Roboto;
+    line-height: 90px;
+    font-weight: normal;
+    font-style: normal;
+    color: #fff;
+    font-size: 80px;
+  }
+  .gp-page-header .gp-container {
+    height: 250px;
+  }
+  .gp-entry-title,
+  .woocommerce .page-title,
+  .woocommerce div.product .entry-title.product_title {
+    font-family: Roboto;
+    line-height: 46px;
+    font-weight: 300;
+    font-style: normal;
+    color: #000;
+    font-size: 40px;
+  }
+  .gp-subtitle {
+    font-family: Roboto;
+    line-height: 32px;
+    font-weight: 300;
+    font-style: normal;
+    color: #0579bd;
+    font-size: 20px;
+  }
+  #gp-post-links a,
+  .gp-pagination-arrows a.prev,
+  .gp-pagination-arrows a.next,
+  .gp-carousel-wrapper .flex-direction-nav a {
+    color: #aaa;
+  }
+  #gp-post-links a:hover,
+  .gp-pagination-arrows a.prev:hover,
+  .gp-pagination-arrows a.next:hover,
+  .gp-carousel-wrapper .flex-direction-nav a:hover {
+    color: #333;
+  }
+  .gp-entry-meta,
+  .gp-meta-comments a {
+    color: #aaaaaa;
+  }
+  .gp-entry-cats,
+  .gp-entry-cats a,
+  .gp-entry-cats a:hover {
+    color: #ffffff;
+  }
+  .gp-entry-cats {
+    background-color: #92d050;
+  }
+  .gp-entry-tags a,
+  .gp-entry-tags a:hover {
+    color: #ffffff;
+  }
+  .gp-entry-tags a {
+    background-color: #353535;
+  }
+  .gp-author-info,
+  #gp-post-navigation #gp-share-icons {
+    background-color: #353535;
+  }
+  .gp-author-info,
+  .gp-author-info a,
+  #gp-post-navigation #gp-share-icons h3 {
+    line-height: 24px;
+    color: #fff;
+    font-size: 14px;
+  }
+  .gp-author-info a {
+    color: #b1b1b1;
+  }
+  .gp-author-info a:hover {
+    color: #fff;
+  }
+  .gp-entry-video-wrapper {
+    background-color: #353535;
+  }
+  .gp-entry-video-wrapper .gp-entry-title {
+    color: #ffffff;
+  }
+  .gp-entry-video-wrapper .gp-video-description {
+    color: #777777;
+  }
+  blockquote {
+    background-color: #0579bd;
+  }
+  blockquote,
+  blockquote a,
+  blockquote a:hover {
+    font-family: 'Roboto Slab';
+    line-height: 38px;
+    font-weight: 400;
+    font-style: normal;
+    color: #fff;
+    font-size: 24px;
+  }
+  .gp-loop-title {
+    line-height: 22px;
+    font-weight: 400;
+    font-size: 19px;
+  }
+  .gp-blog-large .gp-loop-title {
+    line-height: 46px;
+    font-weight: 200;
+    font-size: 40px;
+  }
+  .gp-loop-title a,
+  .bboss_search_item .entry-title a {
+    color: #000;
+  }
+  .gp-loop-title a:hover,
+  .bboss_search_item .entry-title a:hover {
+    color: #0579bd;
+  }
+  .gp-loop-text,
+  .gp-login-wrapper p {
+    color: #545454;
+  }
+  .gp-loop-meta,
+  .gp-loop-meta a,
+  #gp-breadcrumbs,
+  #gp-breadcrumbs a,
+  .woocommerce .woocommerce-breadcrumb a,
+  .woocommerce .woocommerce-breadcrumb,
+  .comment-text time,
+  div.bbp-breadcrumb,
+  div.bbp-breadcrumb a,
+  .gp-statistics-wrapper .gp-stat-title,
+  .widget_display_replies ul li div,
+  .widget_display_topics ul li div {
+    color: #545454;
+  }
+  .gp-loop-cats,
+  .gp-loop-cats a,
+  .gp-loop-cats a:hover {
+    color: #545454;
+  }
+  .gp-loop-tags,
+  .gp-loop-tags a,
+  .gp-loop-tags a:hover {
+    color: #0579bd;
+  }
+  .gp-blog-masonry section,
+  section.sticky {
+    background-color: #f8f8f8;
+  }
+  ul.page-numbers .page-numbers {
+    background-color: #538122;
+  }
+  ul.page-numbers .page-numbers:hover,
+  ul.page-numbers .page-numbers.current,
+  ul.page-numbers > span.page-numbers {
+    background-color: #353535;
+  }
+  ul.page-numbers .page-numbers {
+    color: #ffffff;
+  }
+  .widgettitle,
+  .widget-title,
+  .wp-block-search__label {
+    font-family: Roboto;
+    line-height: 18px;
+    font-weight: 500;
+    font-style: normal;
+    color: #000;
+    font-size: 14px;
+  }
+  .widgettitle a,
+  .widget-title a,
+  .wp-block-search__label {
+    color: #0579bd;
+  }
+  .widgettitle a:hover,
+  .widget-title a:hover,
+  .wp-block-search__label:hover {
+    color: #000;
+  }
+  .gp-sidebar .widgettitle,
+  .widgettitle.gp-standard-title,
+  .gp-sidebar .widget-title,
+  .gp-sidebar .wp-block-search__label {
+    border-bottom: 3px solid #538122;
+  }
+  .widget,
+  .gp-vc-element,
+  .widgettitle.gp-fancy-title .gp-widget-title,
+  .widgettitle.gp-fancy-title .gp-element-icon,
+  .widget .woocommerce {
+    background-color: #ffffff;
+  }
+  .widgettitle.gp-fancy-title .gp-triangle {
+    border-left-color: #ffffff;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .wp-block-search__input,
+  .gp-theme #buddypress .dir-search input[type='search'],
+  .gp-theme #buddypress .dir-search input[type='text'],
+  .gp-theme #buddypress .groups-members-search input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='color'],
+  .gp-theme #buddypress .standard-form input[type='date'],
+  .gp-theme #buddypress .standard-form input[type='datetime-local'],
+  .gp-theme #buddypress .standard-form input[type='datetime'],
+  .gp-theme #buddypress .standard-form input[type='email'],
+  .gp-theme #buddypress .standard-form input[type='month'],
+  .gp-theme #buddypress .standard-form input[type='number'],
+  .gp-theme #buddypress .standard-form input[type='password'],
+  .gp-theme #buddypress .standard-form input[type='range'],
+  .gp-theme #buddypress .standard-form input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='tel'],
+  .gp-theme #buddypress .standard-form input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='time'],
+  .gp-theme #buddypress .standard-form input[type='url'],
+  .gp-theme #buddypress .standard-form input[type='week'],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .gp-theme #buddypress form#whats-new-form textarea {
+    background-color: #fafafa;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .wp-block-search__input,
+  .gp-login-wrapper .gp-login-icon,
+  .gp-login-wrapper .gp-password-icon,
+  .gp-login-wrapper .gp-email-icon,
+  .gp-theme #buddypress .dir-search input[type='search'],
+  .gp-theme #buddypress .dir-search input[type='text'],
+  .gp-theme #buddypress .groups-members-search input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='color'],
+  .gp-theme #buddypress .standard-form input[type='date'],
+  .gp-theme #buddypress .standard-form input[type='datetime-local'],
+  .gp-theme #buddypress .standard-form input[type='datetime'],
+  .gp-theme #buddypress .standard-form input[type='email'],
+  .gp-theme #buddypress .standard-form input[type='month'],
+  .gp-theme #buddypress .standard-form input[type='number'],
+  .gp-theme #buddypress .standard-form input[type='password'],
+  .gp-theme #buddypress .standard-form input[type='range'],
+  .gp-theme #buddypress .standard-form input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='tel'],
+  .gp-theme #buddypress .standard-form input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='time'],
+  .gp-theme #buddypress .standard-form input[type='url'],
+  .gp-theme #buddypress .standard-form input[type='week'],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .bb-global-search-ac.ui-autocomplete {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .wp-block-search__input,
+  .gp-theme #buddypress .dir-search input[type='search'],
+  .gp-theme #buddypress .dir-search input[type='text'],
+  .gp-theme #buddypress .groups-members-search input[type='search'],
+  .gp-theme #buddypress .groups-members-search input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='color'],
+  .gp-theme #buddypress .standard-form input[type='date'],
+  .gp-theme #buddypress .standard-form input[type='datetime-local'],
+  .gp-theme #buddypress .standard-form input[type='datetime'],
+  .gp-theme #buddypress .standard-form input[type='email'],
+  .gp-theme #buddypress .standard-form input[type='month'],
+  .gp-theme #buddypress .standard-form input[type='number'],
+  .gp-theme #buddypress .standard-form input[type='password'],
+  .gp-theme #buddypress .standard-form input[type='range'],
+  .gp-theme #buddypress .standard-form input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='tel'],
+  .gp-theme #buddypress .standard-form input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='time'],
+  .gp-theme #buddypress .standard-form input[type='url'],
+  .gp-theme #buddypress .standard-form input[type='week'],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .gp-theme #buddypress form#whats-new-form textarea {
+    color: #000000;
+  }
+  select,
+  .gp-theme #buddypress .standard-form select,
+  .gp-theme #buddypress form#whats-new-form #whats-new-options select,
+  #buddypress .standard-form select:focus {
+    background-color: #353535;
+  }
+  select,
+  .gp-theme #buddypress .standard-form select,
+  .gp-theme #buddypress form#whats-new-form #whats-new-options select {
+    color: #ffffff;
+  }
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  button,
+  .button,
+  .wp-block-search__button,
+  .gp-theme #buddypress .comment-reply-link,
+  .gp-notification-counter,
+  #gp-cart-counter,
+  .gp-theme #buddypress a.button,
+  .gp-theme #buddypress button,
+  .gp-theme #buddypress div.generic-button a,
+  .gp-theme #buddypress input[type='button'],
+  .gp-theme #buddypress input[type='reset'],
+  .gp-theme #buddypress input[type='submit'],
+  .gp-theme #buddypress ul.button-nav li a,
+  a.bp-title-button,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  .tribe-events-calendar thead th,
+  #tribe-events .tribe-events-button,
+  #tribe-events .tribe-events-button:hover,
+  #tribe_events_filters_wrapper input[type='submit'],
+  .tribe-events-button,
+  .tribe-events-button.tribe-active:hover,
+  .tribe-events-button.tribe-inactive,
+  .tribe-events-button:hover,
+  .tribe-events-calendar td.tribe-events-present div[id*='tribe-events-daynum-'],
+  .tribe-events-calendar td.tribe-events-present div[id*='tribe-events-daynum-'] > a,
+  #tribe-bar-form .tribe-bar-submit input[type='submit'],
+  .woocommerce #respond input#submit.alt,
+  .woocommerce a.button.alt,
+  .woocommerce button.button.alt,
+  .woocommerce input.button.alt,
+  #gp-dropdowncart .woocommerce a.button {
+    background-color: #0579bd;
+  }
+  input[type='button']:hover,
+  input[type='submit']:hover,
+  input[type='reset']:hover,
+  button:hover,
+  .button:hover,
+  .wp-block-search__button:hover,
+  .gp-theme #buddypress .comment-reply-link:hover,
+  .gp-theme #buddypress a.button:hover,
+  .gp-theme #buddypress button:hover,
+  .gp-theme #buddypress div.generic-button a:hover,
+  .gp-theme #buddypress input[type='button']:hover,
+  .gp-theme #buddypress input[type='reset']:hover,
+  .gp-theme #buddypress input[type='submit']:hover,
+  .gp-theme #buddypress ul.button-nav li a:hover,
+  a.bp-title-button:hover,
+  .gp-theme #buddypress .activity-list #reply-title small a:hover span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action:hover span,
+  .woocommerce #respond input#submit.alt:hover,
+  .woocommerce a.button.alt:hover,
+  .woocommerce button.button.alt:hover,
+  .woocommerce input.button.alt:hover,
+  #gp-dropdowncart .woocommerce a.button:hover {
+    background-color: #353535;
+  }
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  button,
+  .button,
+  .wp-block-search__button,
+  a.gp-notification-counter,
+  a.gp-notification-counter:hover,
+  #gp-cart-counter:hover,
+  .gp-theme #buddypress .comment-reply-link,
+  .gp-theme #buddypress a.button,
+  .gp-theme #buddypress button,
+  .gp-theme #buddypress div.generic-button a,
+  .gp-theme #buddypress input[type='button'],
+  .gp-theme #buddypress input[type='reset'],
+  .gp-theme #buddypress input[type='submit'],
+  .gp-theme #buddypress ul.button-nav li a,
+  a.bp-title-button,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  #gp-dropdowncart .woocommerce a.button {
+    color: #ffffff;
+  }
+  input[type='button']:hover,
+  input[type='submit']:hover,
+  input[type='reset']:hover,
+  button,
+  .button:hover,
+  .wp-block-search__button:hover,
+  .gp-theme #buddypress .comment-reply-link:hover,
+  .gp-theme #buddypress a.button:hover,
+  .gp-theme #buddypress button:hover,
+  .gp-theme #buddypress div.generic-button a:hover,
+  .gp-theme #buddypress input[type='button']:hover,
+  .gp-theme #buddypress input[type='reset']:hover,
+  .gp-theme #buddypress input[type='submit']:hover,
+  .gp-theme #buddypress ul.button-nav li a:hover,
+  a.bp-title-button:hover,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  #gp-dropdowncart .woocommerce a.button:hover {
+    color: #ffffff;
+  }
+  #gp-footer {
+    background-color: #353535;
+  }
+  .gp-footer-widget .widgettitle,
+  .gp-footer-widget .widget-title,
+  .gp-footer-widget .wp-block-search__label {
+    font-family: Roboto;
+    line-height: 20px;
+    font-weight: 300;
+    font-style: normal;
+    color: #fff;
+    font-size: 16px;
+  }
+  .gp-footer-widget {
+    font-family: Roboto;
+    line-height: 20px;
+    font-weight: 300;
+    font-style: normal;
+    color: #ffffff;
+    font-size: 14px;
+  }
+  .gp-footer-widget a {
+    color: #f9bd16;
+  }
+  .gp-footer-widget a:hover {
+    color: #b1b1b1;
+  }
+  #gp-copyright {
+    background-color: #353535;
+  }
+  #gp-copyright {
+    border-top: 1px solid #444;
+  }
+  #gp-copyright {
+    color: #777777;
+  }
+  #gp-copyright a {
+    color: #999;
+  }
+  #gp-copyright a:hover {
+    color: #e0e0e0;
+  }
+  #gp-to-top {
+    background-color: #0579bd;
+  }
+  #gp-to-top {
+    color: #ffffff;
+  }
+</style>
+  <link rel="icon" href="enviroDIY_Favicon.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#cb4b16" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="clipboard.js"></script>
+</head>
+
+<body
+    class="theme-socialize page-template-socialize-child gp-theme gp-responsive gp-wide-layout gp-retina gp-normal-scrolling gp-no-back-to-top gp-relative-header gp-header-standard gp-cart-disabled gp-search-all gp-profile-disabled gp-small-header-all gp-standard-page-header gp-no-sidebar"
+>
+	<div id="gp-site-wrapper">
+
+  <nav id="gp-mobile-nav">
+    <div id="gp-mobile-nav-close-button"></div>
+    <ul class="menu">
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+      >
+<a href="class_s_d_i12.html" class="menu-link main-menu-link">SDI12</a>        <ul class="sub-menu menu-odd menu-depth-1">
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#data-line-states">Data Line States</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>          </li>
+        </ul>
+      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+      >
+<a href="examples_page.html" class="menu-link main-menu-link">Examples using the SDI-12 Library</a>      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+      >
+<a href="annotated.html" class="menu-link main-menu-link">Classes</a>      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+      >
+<a href="pages.html" class="menu-link main-menu-link">Notes</a>        <ul class="sub-menu menu-odd menu-depth-1">
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav> <!-- gp-mobile-nav -->
+  <div id="gp-mobile-nav-bg"></div>
+
+  <div id="gp-page-wrapper">
+
+    <header id="gp-main-header">
+      <div class="gp-container">
+        <div id="gp-logo">
+          <a href="index.html" title="SDI-12 for Arduino 2.2.0">
+            <img
+              src="gp-desktop-logo.png"
+              alt="SDI-12 for Arduino 2.2.0"
+              width="200"
+              height="42"
+              class="gp-desktop-logo"
+            />
+            <img
+              src="gp-scrolling-logo.png"
+              alt="SDI-12 for Arduino 2.2.0"
+              width="264"
+              height="55"
+              class="gp-scrolling-logo"
+            />
+            <img
+              src="gp-mobile-logo.png"
+              alt="SDI-12 for Arduino 2.2.0"
+              width="132"
+              height="28"
+              class="gp-mobile-logo"
+            />
+          </a>
+        </div> <!-- gp-logo -->
+
+        <a id="gp-mobile-nav-button"></a>
+
+        <nav id="gp-main-nav" class="gp-nav">
+          <nav id="gp-primary-main-nav">
+            <ul id="menu-main-menu-1" class="menu">
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+              >
+<a href="class_s_d_i12.html" class="menu-link main-menu-link" >SDI12</a>                <ul class="sub-menu menu-odd menu-depth-1">
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#data-line-states">Data Line States</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>                  </li>
+                </ul>
+              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+              >
+<a href="examples_page.html"class="menu-link main-menu-link">Examples using the SDI-12 Library</a>              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+              >
+<a href="annotated.html"class="menu-link main-menu-link">Classes</a>              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+              >
+<a href="pages.html" class="menu-link main-menu-link" >Notes</a>                <ul class="sub-menu menu-odd menu-depth-1">
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav> <!-- gp-primary-main-nav -->
+
+          <div id="gp-search">
+            <div id="m-search-button" class="m-show-m" onclick="return showSearch()">
+            </div> <!-- gp-search-box -->
+          </div> <!-- gp-search -->
+
+          <nav id="gp-secondary-main-nav"></nav>
+        </nav> <!-- gp-main-nav -->
+      </div> <!-- gp-container -->
+    </header> <!-- gp-main-header -->
+
+    <header id="gp-small-header">
+      <div class="gp-container">
+        <div class="gp-left-triangle"></div>
+        <div class="gp-right-triangle"></div>
+
+        <nav id="gp-top-nav" class="gp-nav">
+          <div id="gp-left-top-nav">
+            <p style="color:#fff">An Arduino library for SDI-12 communication without requiring any additional hardware.</p>
+          </div>
+
+          <div id="gp-right-top-nav">
+            <ul id="menu-icon-links" class="menu">
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 fa fa-github menu-item menu-item-type-custom menu-item-object-custom"
+              >
+                <a
+                  title="See it on GitHub"
+                  href="https://github.com/EnviroDIY/Arduino-SDI-12"
+                  class="menu-link main-menu-link"
+                  >See the source code on GitHub</a
+                >
+              </li>
+            </ul>
+          </div>
+
+        </nav>
+      </div>
+    </header> <!-- gp-small-header -->
+
+    <div id="gp-fixed-header-padding"></div>
+
+    <div class="m-doc-search" id="search">
+      <a href="#!" onclick="return hideSearch()"></a>
+      <div id="gp-header-area">
+        <div class="gp-container">
+          <div style="background-color:#fff;padding:20px;">
+            <div class="m-doc-search-header m-text m-small">
+              <div><span class="m-label m-info">Tab</span> / <span class="m-label m-info">T</span> to search, <span class="m-label m-info">Esc</span> to close</div>
+              <div id="search-symbolcount">&hellip;</div>
+            </div>
+            <div class="m-doc-search-content">
+              <form>
+                <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+              </form>
+              <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+              <div id="search-help" class="m-text m-dim m-text-center">
+                <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+              </div>
+              <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+              <ul id="search-results"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="search-v2.js"></script>
+    <script src="searchdata-v2.js" async="async"></script>
+
+    <div class="gp-clear"></div>
+
+    <div id="gp-content-wrapper" class="gp-container">
+      <div id="gp-inner-container">
+        <div id="gp-left-column">
+          <div id="gp-content">
+
+            <main>
+              <article>
+                <div class="breadcrumbs" typeof="BreadcrumbList" vocab="http://schema.org/">
+          <span class="m-breadcrumb">
+            <a href="index.html">
+              SDI-12 for Arduino
+            </a>  &gt; <wbr/>
+          </span>
+          <span class="m-breadcrumb">
+            <a href="pages.html">
+              Pages
+            </a>  &gt; <wbr/>
+          </span>
+                    <span class="m-breadcrumb">
+            Timer Configurations
+          </span>
+                </div>
+                <header class="gp-entry-header">
+                  <h1 class="gp-entry-title" itemprop="headline">
+          Timer Configurations
+
+                </h1>
+                </header>
+        <nav class="m-block m-default">
+          <ul>
+            <li><a href="#timer_configurations_sdi-12-timing-rules">SDI-12 Timing Rules</a></li>
+            <li><a href="#timer_configurations_ideal-timer-settings">Ideal Timer Settings</a></li>
+            <li>
+              <a href="#timer_configurations_avr-boards">AVR Boards</a>
+              <ul>
+                <li>
+                  <a href="#timer_configurations_available-timers-on-avr-boards">Available Timers on AVR Boards</a>
+                  <ul>
+                    <li><a href="#timer_configurations_atmega-avr-available-timers">ATmega AVR Available Timers</a></li>
+                    <li><a href="#timer_configurations_attiny-avr-available-timers">ATtiny AVR Available Timers</a></li>
+                    <li><a href="#timer_configurations_atmegaxu-avr-available-timers">ATmegaXU AVR Available Timers</a></li>
+                  </ul>
+                </li>
+                <li><a href="#timer_configurations_timers-used-by-arduino-avr-core">Timers Used by Arduino AVR Core</a></li>
+                <li>
+                  <a href="#timer_configurations_selected-avr-timers-for-sdi-12">Selected AVR Timers for SDI-12</a>
+                  <ul>
+                    <li><a href="#timer_configurations_atmega-avr-selected-timers">ATmega AVR Selected Timers</a></li>
+                    <li><a href="#timer_configurations_attiny-avr-selected-timers">ATtiny AVR Selected Timers</a></li>
+                    <li><a href="#timer_configurations_atmegaxu-selected-timers">ATmegaXU Selected Timers</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a href="#timer_configurations_samd-boards">SAMD Boards</a>
+              <ul>
+                <li>
+                  <a href="#timer_configurations_samd21">SAMD21</a>
+                  <ul>
+                    <li>
+                      <a href="#timer_configurations_available-clocks-and-timers-on-samd21-boards">Available Clocks and Timers on SAMD21 Boards</a>
+                      <ul>
+                        <li><a href="#timer_configurations_samd21-generic-clock-generators">SAMD21 Generic Clock Generators</a></li>
+                        <li><a href="#timer_configurations_samd21-timer-controllers">SAMD21 Timer Controllers</a></li>
+                      </ul>
+                    </li>
+                    <li><a href="#timer_configurations_timers-used-by-arduino-samd21-core">Timers Used by Arduino SAMD21 Core</a></li>
+                    <li><a href="#timer_configurations_selected-samd21-timers-for-sdi-12">Selected SAMD21 Timers for SDI-12</a></li>
+                  </ul>
+                </li>
+                <li>
+                  <a href="#timer_configurations_samd51same51">SAMD51/SAME51</a>
+                  <ul>
+                    <li>
+                      <a href="#timer_configurations_available-clocks-and-timers-on-samd51-boards">Available Clocks and Timers on SAMD51 Boards</a>
+                      <ul>
+                        <li><a href="#timer_configurations_samd51-generic-clock-generators">SAMD51 Generic Clock Generators</a></li>
+                        <li><a href="#timer_configurations_samd51-timer-controllers">SAMD51 Timer Controllers</a></li>
+                      </ul>
+                    </li>
+                    <li><a href="#timer_configurations_timers-used-by-arduino-samd51-core">Timers Used by Arduino SAMD51 Core</a></li>
+                    <li><a href="#timer_configurations_selected-samd51-timers-for-sdi-12">Selected SAMD51 Timers for SDI-12</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li><a href="#timer_configurations_other-boards">Other Boards</a></li>
+          </ul>
+        </nav>
+<p><a name="md_docs_2_timer_configurations"></a></p><p>This library listens for pin level changes and then use a timer to calculate how many databits have been sent since the last change and to convert that to a character. The speed of the timer is dependent on the speed of the processor and &quot;dividers&quot; and &quot;prescalers&quot; used to slow the effective clock. Unfortunately, the &quot;ticks&quot; of the processor clock aren&#x27;t perfectly aligned with the times of the level changes from the SDI-12 device. With the clocks not perfectly aligned, we can&#x27;t know exactly the time that a bit started or ended, just the time of the last readable tick. This means we need to do some averaging and &quot;fudging&quot; to align the two.</p><aside class="m-note m-default"><h4>See also</h4><p>rx_page for more information on how a character is created.</p></aside><section id="timer_configurations_sdi-12-timing-rules"><h2>SDI-12 Timing Rules</h2><p>SDI-12 Communicates at 1200 baud (bits/s) and sends each character using 10 bits (7E1).</p><ul><li>Character Times:<ul><li>1 bit = 0.83333 ms (?? tolerance ??)</li><li>1 character = 8.33333 ms</li><li>maximum marking between character stop (LOW) and next character start (HIGH) = 1.66ms (<strong>no tolerance</strong>)<ul><li>This is equivalent to 2 bits!</li></ul></li></ul></li><li>Break and Marking Times<ul><li>maximum sensor wake time (between a break and start bit) = 100ms ± 0.4ms</li><li>minimum marking (LOW) return-to-sleep time = 100ms ± 0.4ms</li><li>recorder break (HIGH) between commands = &gt;12ms ± 0.4ms (ie, &gt;12.5ms)</li><li>maximum recorder marking (LOW) before a start bit (HIGH) = &gt;8.33ms ± 0.4ms (ie, &gt;8.73ms)</li><li>maximum time before relinquishing line control after stop bit = 7.5ms ± 0.4ms</li><li>maximum marking (LOW) before a new waking break (HIGH) must be issued = 87ms ± 0.4ms<ul><li>A break is also required when switching between sensors</li></ul></li></ul></li><li>Retry Times<ul><li>There are two retry &quot;loops&quot; - an &quot;inner&quot; loop of retries without breaks between and an &quot;outer&quot; loop of retries with breaks in between</li><li>Inner Retries (<em>without</em> breaks between)<ul><li>Response window before a retry = 16.67ms - 87ms (&lt; 87ms = time before a break is required)</li><li>A minimum of 3 &quot;inner&quot; retries are required.</li><li>At least one of the &quot;inner&quot; retries must start &gt;100ms after the falling edge (end) of the break that started the innter retry loop.</li></ul></li><li>Outer Retries (<em>with</em> breaks between)<ul><li>Outer retries are used after &gt;112.5ms of inner retries have been attempted</li><li>A minimum of 3 &quot;outer&quot; retries are required.</li></ul></li></ul></li></ul></section><section id="timer_configurations_ideal-timer-settings"><h2>Ideal Timer Settings</h2><p>When setting up our timers, the goal is to be able to have as many ticks as possible for each bit. The more ticks we have, the better job we can do with the needed averaging and fudging. With &lt;10 ticks/bit, we probably won&#x27;t be accurate enough to be functional. But, we also need to make sure that the clock timer doesn&#x27;t roll over before the end of the 8.33ms required for each character. When acting as a recording device, it would be even better if the timer could last until the end of a 112.5ms retry timer before rolling over. There is no benefit to the timer lasting longer than 112.5ms before rolling over.</p><p>Each timer has finite options for pre-scaling, often in powers of 2. To catch all the bits we need, when selecting the prescaler, we must round **UP** to the next closest available prescaler number (round **DOWN** the Hz) to give us *more* ticks than required.</p><p>Using a 16 bit counter, the counter rolls after 65536 ticks.</p><ul><li>Going for the maximum retry time, 112.5ms / 65536 ticks<ul><li>1.71661376953125 µsec/tick, 582.54222 kHz</li><li>485.25767 ticks/bit</li><li>This is *plenty* of ticks per bit! With a 16-bit timer, there&#x27;s no reason to not use this whole period.</li></ul></li><li>Going for the minimum 8.33ms per character, 8.33ms / 65536 ticks<ul><li>0.127105712890625 µsec/tick, 7.86747 MHz</li><li>6553.6 ticks/bit</li><li>This is overkill.</li></ul></li><li>Conclusion: With a 16-bit timer, select the smallest prescaler possible that keeps the speed *below* 582 kHz</li></ul><p>If we only have an 8 bit timer, the counter rolls after 256 ticks.</p><ul><li>Going for the maximum retry time, 112.5ms / 256 ticks<ul><li>0.439453125 msec/tick, 2.275 kHz</li><li>1.89554 ticks/bit</li><li>This is no where near enough bits / tick for accuracy, so it is not possible to keep a timer running for the 112.5 ms retry with a 8-bit timer.</li></ul></li><li>Going for the minimum 8.33ms per character, 8.33ms / 256 ticks = 25.6 ticks/bit<ul><li>0.0325390625 msec/tick, 30.73229 kHz</li><li>25.6 ticks/bit</li></ul></li><li>Conclusion: With a 8-bit timer, select the smallest prescaler possible that keeps the speed *below* 30 kHz</li></ul></section><section id="timer_configurations_avr-boards"><h2>AVR Boards</h2><section id="timer_configurations_available-timers-on-avr-boards"><h3>Available Timers on AVR Boards</h3><section id="timer_configurations_atmega-avr-available-timers"><h4>ATmega AVR Available Timers</h4><p>[ATmega164A/PA/324A/PA/644A/PA/1284/P](<a href="https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8272-8-bit-AVR-microcontroller-ATmega164A_PA-324A_PA-644A_PA-1284_P_datasheet.pdf">https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8272-8-bit-AVR-microcontroller-ATmega164A_<wbr />PA-324A_<wbr />PA-644A_<wbr />PA-1284_<wbr />P_<wbr />datasheet.pdf</a>)</p><blockquote><ul><li>Up to 20MIPS throughput at 20MHz<ul><li>Most Arduino boards are run at 16 or 8 MHz with a few at 12 MHz</li></ul></li><li>Two 8-bit Timer/Counters with Separate Prescalers and Compare Modes<ul><li>Timers 0 and 2</li><li>Prescalers available at 8/64/256/1024 on Timer 0</li><li>Prescalers available at 8/32/64/128/256/1024 on Timer 2</li></ul></li><li>One/two 16-bit Timer/Counter with Separate Prescaler, Compare Mode, and Capture Mode<ul><li>Timers 1 and 3</li><li>Prescalers available at 8/64/256/1024 on Timers 1 and 3</li><li>Timer 3 is only available on the 1284p</li></ul></li></ul></blockquote><p><a href="https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf">ATmega640/<wbr />V-1280/<wbr />V-1281/<wbr />V-2560/<wbr />V-2561/<wbr />V</a></p><blockquote><ul><li>Up to 16 MIPS Throughput at 16MHz – Two 8-bit Timer/Counters with Separate Prescaler and Compare Mode<ul><li>Timers 0 and 2</li><li>Prescalers available at 8/64/256/1024 on Timer 0</li><li>Prescalers available at 8/32/64/128/256/1024 on Timer 2 – Four 16-bit Timer/Counters with Separate Prescaler, Compare- and Capture Mode</li><li>Timers 1, 3, 4, and 5</li><li>Prescalers available at 8/64/256/1024 on Timer 1, 3, 4, and 5</li></ul></li></ul></blockquote></section><section id="timer_configurations_attiny-avr-available-timers"><h4>ATtiny AVR Available Timers</h4><p><a href="https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2586-AVR-8-bit-Microcontroller-ATtiny25-ATtiny45-ATtiny85_Datasheet.pdf">ATtiny25/V / ATtiny45/V / ATtiny85/V</a></p><blockquote><ul><li>Up to 20MIPS throughput at 20MHz<ul><li>Most Arduino boards are run at 16 or 8 MHz with a few at 12 MHz – One 8-bit Timer/Counter with Prescaler and Two PWM Channels</li><li>Timer 0</li><li>Prescalers available at 8/64/256/1024 – One 8-bit High Speed Timer/Counter with Separate Prescaler</li><li>Timer 1</li><li>Prescalers available at 64/128/256/512/1024/2048/4096/8192/16384</li></ul></li></ul></blockquote></section><section id="timer_configurations_atmegaxu-avr-available-timers"><h4>ATmegaXU AVR Available Timers</h4><p><a href="https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7766-8-bit-AVR-ATmega16U4-32U4_Datasheet.pdf">ATmega16U4/<wbr />ATmega32U4</a></p><blockquote><p>– Up to 16 MIPS Throughput at 16MHz – One 8-bit Timer/Counter with Separate Prescaler and Compare Mode</p><ul><li>Timer 0</li><li>Prescalers available at 8/64/256/1024 on Timer 0 – Two 16-bit Timer/Counter with Separate Prescaler, Compare- and Capture Mode</li><li>Timers 1 and 3</li><li>Prescalers available at 8/64/256/1024 on Timer 1 and 3 – One 10-bit High-Speed Timer/Counter with PLL (64MHz) and Compare Mode</li><li>Timer 4</li><li>Prescalers available at 2/4/8/16/32/64/128/256/512/1024/2048/8192/169384 on Timer 4</li></ul></blockquote><aside class="m-note m-info"><h4>Note</h4><p>There is no Timer 2 on the 16U4 or the 32U4</p></aside></section></section><section id="timer_configurations_timers-used-by-arduino-avr-core"><h3>Timers Used by Arduino AVR Core</h3><ul><li>Timer 0<ul><li><a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/wiring.c">The primary clock (millis)</a></li><li>Fast hardware PWM</li></ul></li><li>Timer 1<ul><li>Phase-correct hardware PWM</li><li><a href="https://github.com/PaulStoffregen/AltSoftSerial/">AltSoftSerial</a></li><li>Primary for <a href="https://github.com/arduino-libraries/Servo">Servo</a></li></ul></li><li>Timer 2<ul><li>Primary for <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Tone.cpp">Tone</a> (except on the 16U4/32U4)</li><li>Phase-correct hardware PWM</li><li><a href="https://github.com/SlashDevin/NeoSWSerial/">NeoSWSerial</a></li></ul></li><li>Timer 3<ul><li>Primary for <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Tone.cpp">Tone</a> (only on the 16U4/32U4)</li><li>Optional for <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Tone.cpp">Tone</a> on some boards</li><li>Optional for <a href="https://github.com/arduino-libraries/Servo">Servo</a> on some boards</li></ul></li><li>Timer 4<ul><li>Optional for <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Tone.cpp">Tone</a> on some boards</li><li>Optional for <a href="https://github.com/arduino-libraries/Servo">Servo</a> on some boards</li></ul></li><li>Timer 5<ul><li>Optional for <a href="https://github.com/arduino/ArduinoCore-avr/blob/master/cores/arduino/Tone.cpp">Tone</a> on some boards</li><li>Optional for <a href="https://github.com/arduino-libraries/Servo">Servo</a> on some boards</li></ul></li></ul></section><section id="timer_configurations_selected-avr-timers-for-sdi-12"><h3>Selected AVR Timers for SDI-12</h3><section id="timer_configurations_atmega-avr-selected-timers"><h4>ATmega AVR Selected Timers</h4><p>For simplicity, we use Timer/Counter 2 for both ATmega164A/PA/324A/PA/644A/PA/1284/P and ATmega640/V-1280/V-1281/V-2560/V-2561/V series boards.</p><blockquote><p>Timer/Counter2 (TC2) is a general purpose, single channel, 8-bit Timer/Counter module.</p><p><strong>Features of Timer/Counter 2</strong></p><ul><li>Single Channel Counter</li><li>Clear Timer on Compare Match (Auto Reload)</li><li>Glitch-free, Phase Correct Pulse Width Modulator (PWM)</li><li>Frequency Generator</li><li>10-bit Clock Prescaler</li><li>Overflow and Compare Match Interrupt Sources (TOV2, OCF2A, and OCF2B)</li><li>Allows Clocking from External 32kHz Watch Crystal Independent of the I/O Clock</li></ul></blockquote></section><section id="timer_configurations_attiny-avr-selected-timers"><h4>ATtiny AVR Selected Timers</h4><p>On the ATTiny series (ATtiny25/V / ATtiny45/V / ATtiny85/V) boards, we use Timer/Counter 1</p><blockquote><p>The Timer/Counter1 features a high resolution and a high accuracy usage with the lower prescaling opportunities. It can also support two accurate, high speed, 8-bit pulse width modulators using clock speeds up to 64MHz (or 32MHz in low speedmode).</p></blockquote></section><section id="timer_configurations_atmegaxu-selected-timers"><h4>ATmegaXU Selected Timers</h4><p>On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.</p><blockquote><p>Timer/Counter4 is a general purpose high speed Timer/Counter module, with three independent Output Compare Units, and with enhanced PWM support.</p><p><strong>Features of Timer/Counter 4</strong></p><ul><li>Up to 10-Bit Accuracy</li><li>Three Independent Output Compare Units</li><li>Clear Timer on Compare Match (Auto Reload)</li><li>Glitch Free, Phase and Frequency Correct Pulse Width Modulator (PWM)</li><li>Enhanced PWM mode: one optional additional accuracy bit without effect on output frequency</li><li>Variable PWM Period</li><li>Independent Dead Time Generators for each PWM channels</li><li>Synchronous update of PWM registers</li><li>Five Independent Interrupt Sources (TOV4, OCF4A, OCF4B, OCF4D, FPF4)</li><li>High Speed Asynchronous and Synchronous Clocking Modes</li><li>Separate Prescaler Unit</li></ul></blockquote><aside class="m-note m-info"><h4>Note</h4><p>We only utilize the low byte register of Timer 4, effectively using the 10-bit timer as an 8-bit timer.</p></aside></section></section></section><section id="timer_configurations_samd-boards"><h2>SAMD Boards</h2><section id="timer_configurations_samd21"><h3>SAMD21</h3><section id="timer_configurations_available-clocks-and-timers-on-samd21-boards"><h4>Available Clocks and Timers on SAMD21 Boards</h4><section id="timer_configurations_samd21-generic-clock-generators"><h5>SAMD21 Generic Clock Generators</h5><blockquote><p>The Generic Clock controller GCLK provides nine Generic Clock Generators that can provide a wide range of clock frequencies. Generators can be set to use different external and internal oscillators as source. The clock of each Generator can be divided. The outputs from the Generators are used as sources for the Generic Clock Multiplexers, which provide the Generic Clock (GCLK_PERIPHERAL) to the peripheral modules, as shown in Generic Clock Controller Block Diagram.</p><p><strong>Features of the Generic Clock Generator</strong></p><ul><li>Provides Generic Clocks</li><li>Wide frequency range</li><li>Clock source for the generator can be changed on the fly</li></ul></blockquote></section><section id="timer_configurations_samd21-timer-controllers"><h5>SAMD21 Timer Controllers</h5><blockquote><p>The TC consists of a counter, a prescaler, compare/capture channels and control logic. The counter can be set to count events, or it can be configured to count clock pulses. The counter, together with the compare/capture channels, can be configured to timestamp input events, allowing capture of frequency and pulse width. It can also perform waveform generation, such as frequency generation and pulse-width modulation (PWM).</p><p><strong>Features of the Timer Controller</strong></p><ul><li>Selectable configuration – Up to five 16-bit Timer/Counters (TC) including one low-power TC, each configurable as:<ul><li>8-bit TC with two compare/capture channels</li><li>16-bit TC with two compare/capture channels</li><li>32-bit TC with two compare/capture channels, by using two TCs</li></ul></li><li>Waveform generation – Frequency generation – Single-slope pulse-width modulation</li><li>Input capture – Event capture – Frequency capture – Pulse-width capture</li><li>One input event</li><li>Interrupts/output events on: – Counter overflow/underflow – Compare match or capture</li><li>Internal prescaler</li><li>Can be used with DMA and to trigger DMA transactions</li></ul></blockquote></section></section><section id="timer_configurations_timers-used-by-arduino-samd21-core"><h4>Timers Used by Arduino SAMD21 Core</h4><p>The Adafruit Arduino core uses:</p><ul><li>0 as GENERIC_CLOCK_GENERATOR_MAIN (the main clock)</li></ul><p>The Adafruit Arduino core uses:</p><ul><li>TC5 for Tone</li><li>TC4 for Servo</li></ul></section><section id="timer_configurations_selected-samd21-timers-for-sdi-12"><h4>Selected SAMD21 Timers for SDI-12</h4><p>For SDI-12, we&#x27;ll use Generic Clock Generator 4 and Timer Controller 3</p></section></section><section id="timer_configurations_samd51same51"><h3>SAMD51/SAME51</h3><section id="timer_configurations_available-clocks-and-timers-on-samd51-boards"><h4>Available Clocks and Timers on SAMD51 Boards</h4><section id="timer_configurations_samd51-generic-clock-generators"><h5>SAMD51 Generic Clock Generators</h5><blockquote><p>Depending on the application, peripherals may require specific clock frequencies to operate correctly. The Generic Clock controller (GCLK) features 12 Generic Clock Generators [11:0] that can provide a wide range of clock frequencies.</p><p>Generators can be set to use different external and internal oscillators as source. The clock of each Generator can be divided. The outputs from the Generators are used as sources for the Peripheral Channels, which provide the Generic Clock (GCLK_PERIPH) to the peripheral modules, as shown in Figure 14-2. The number of Peripheral Clocks depends on how many peripherals the device has.</p><p>NOTE: The Generator 0 is always the direct source of the GCLK_MAIN signal.</p><p><strong>Features of the Generic Clock Generators</strong></p><ul><li>Provides a device-defined, configurable number of Peripheral Channel clocks</li><li>Wide frequency range<ul><li>Various clock sources</li><li>Embedded dividers</li></ul></li></ul></blockquote></section><section id="timer_configurations_samd51-timer-controllers"><h5>SAMD51 Timer Controllers</h5><blockquote><p>There are up to eight TC peripheral instances.</p><p>Each TC consists of a counter, a prescaler, compare/capture channels and control logic. The counter can be set to count events, or clock pulses. The counter, together with the compare/capture channels, can be configured to timestamp input events or IO pin edges, allowing for capturing of frequency and/or pulse width.</p><p>A TC can also perform waveform generation, such as frequency generation and pulse-width modulation.</p><p><strong>Features of the Timer Controllers</strong></p><ul><li>Selectable configuration<ul><li>8-, 16- or 32-bit TC operation, with compare/capture channels</li></ul></li><li>2 compare/capture channels (CC) with:<ul><li>Double buffered timer period setting (in 8-bit mode only)</li><li>Double buffered compare channel</li></ul></li><li>Waveform generation<ul><li>Frequency generation</li><li>Single-slope pulse-width modulation</li></ul></li><li>Input capture<ul><li>Event / IO pin edge capture</li><li>Frequency capture</li><li>Pulse-width capture</li><li>Time-stamp capture</li><li>Minimum and maximum capture</li></ul></li><li>One input event</li><li>Interrupts/output events on:<ul><li>Counter overflow/underflow</li><li>Compare match or capture</li></ul></li><li>Internal prescaler</li><li>DMA support</li></ul></blockquote></section></section><section id="timer_configurations_timers-used-by-arduino-samd51-core"><h4>Timers Used by Arduino SAMD51 Core</h4><p>The Adafruit Arduino core uses:</p><ul><li>0 as GENERIC_CLOCK_GENERATOR_MAIN (the main clock, sourced from MAIN_CLOCK_SOURCE = GCLK_GENCTRL_SRC_DPLL0)</li><li>1 as GENERIC_CLOCK_GENERATOR_48M (48MHz clock for USB and &#x27;stuff&#x27;, sourced from GCLK_GENCTRL_SRC_DPLL0)</li><li>2 as GENERIC_CLOCK_GENERATOR_100M (100MHz clock for other peripherals, sourced from GCLK_GENCTRL_SRC_DPLL1)</li><li>3 as GENERIC_CLOCK_GENERATOR_XOSC32K (32kHz oscillator, sourced from 32kHz external oscillator GCLK_GENCTRL_SRC_XOSC32K)</li><li>4 as GENERIC_CLOCK_GENERATOR_12M (12MHz clock for DAC, sourced from GCLK_GENCTRL_SRC_DPLL0)</li><li>5 as GENERIC_CLOCK_GENERATOR_1M (??, sourced from CLK_GENCTRL_SRC_DPLL0)</li></ul><p>The Adafruit Arduino core uses:</p><ul><li>TC0 for Tone (though any other timer may be used, if another pin is selected)</li><li>TC1 for Servo (though any other timer may be used, if another pin is selected)</li></ul></section><section id="timer_configurations_selected-samd51-timers-for-sdi-12"><h4>Selected SAMD51 Timers for SDI-12</h4><p>For SDI-12, we&#x27;ll use Generic Clock Generator 6 and Timer Controller 2</p></section></section></section><section id="timer_configurations_other-boards"><h2>Other Boards</h2><p>For sufficiently fast boards, instead of using a dedicated processor timer, we can use the built-in <code>micros()</code> function as the timer.</p><p>From calculations using <a href="https://github.com/SRGDamia1/avrcycle">https:/<wbr />/<wbr />github.com/<wbr />SRGDamia1/<wbr />avrcycle</a>, the micros() function takes about 60 (!!) clock cycles on a Mayfly. We&#x27;re going to blindly assume that the micros() function takes up about the same number of clock cycles for all Arduino boards. This is probably a huge assumption, but go with it. If we&#x27;re going to use micros() fortiming, lets set a minimum usable CPU speed of the micros() function being accurate to 1µs. That means we need to get 60 ticks/1µs or 60MHz. Ehh.. Maybe we&#x27;ll be generous and allow it down to 48MHz in the code. That will allow Rensas AVR processors to attempt SDI-12.</p><p>I know from testing, that we <em>cannot</em> use micros on a board 8MHz AVR board, but that it does work on a 80MHz Espressif8266.</p><aside class="m-note m-danger"><h4>Warning</h4><p>I haven&#x27;t actually tested the minimum speed that this will work at!</p></aside><aside class="m-note m-dim"><h4><a href="todo.html#_todo000001" class="m-doc">Todo</a></h4><p>: Test 48MHz</p></aside><p>Both the ESP8266 and ESP32 are definitely fast enough that this works.</p><ul><li>The ESP8266 runs at either 80 or 160 MHz</li><li>The ESP32 runs at 160 or 240 MHz.</li></ul><p>All of the other processors using the Arduino core also have the micros function, but the rest are not fast enough to waste the processor cycles to use the micros function and must manually configure the processor timer and use the faster assembly macros to read that processor timer directly.</p></section>
+              </article>
+            </main>
+
+          </div> <!-- gp-content -->
+        </div> <!-- gp-left-column -->
+      </div> <!-- gp-inner-container -->
+    </div> <!-- gp-content-wrapper -->
+
+    <div id="footer-image">
+      <div class="gp-container">
+        <img
+          src="https://www.envirodiy.org/wp-content/uploads/2016/05/EnviroDIY_LogoMaster_Square_V5_TwoTree_Trans_notext-e1462820115833.png"
+          width="99"
+          height="22"
+          alt=""
+        />
+      </div>
+    </div>
+
+    <footer id="gp-footer">
+      <div id="gp-copyright">
+        <div class="gp-container">
+          <div id="gp-copyright-text">
+            <p>
+              <a href="https://stroudcenter.org/" target="_blank"
+                >EnviroDIY™ is a community for do-it-yourself ideas for environmental
+                science and monitoring. EnviroDIY is an initiative of
+                <a
+                  style="text-decoration: underline"
+                  href="https://stroudcenter.org/"
+                  target="_blank"
+                  >Stroud Water Research Center</a
+                >, which advances knowledge and stewardship of freshwater systems through
+                global research, education, and watershed restoration.
+              </a>
+            </p>
+            <p>
+              All content on EnviroDIY is licensed as Creative Commons
+              Attribution-ShareAlike 4.0 International (CC-BY-SA). Hardware designs on this
+              website are released under the CERN Open Hardware License 1.2.
+              <a style="text-decoration: underline" href="https://envirodiy.org/licenses/"
+                >See all licenses.</a
+              >
+              <a style="text-decoration: underline" href="https://envirodiy.org/terms/"
+                >Terms of Use</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/privacy/"
+                >Privacy Policy</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/cookies/"
+                >Cookie Policy</a
+              >
+              |
+              <a
+                style="text-decoration: underline"
+                href="https://envirodiy.org/shop-policies/"
+                >Shop Policies</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/contact/"
+                >Contact</a
+              >
+            </p>
+            <p>
+              Created with <a href="https://doxygen.org/">Doxygen</a> 1.12.0 and <a href="https://mcss.mosra.cz/">m.css</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div class="gp-clear"></div>
+
+    </div> <!-- gp-site-wrapper -->
+  </div> <!-- gp-site-wrapper -->
+
+</body>
+</html>

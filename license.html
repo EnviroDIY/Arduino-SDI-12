@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <title>LICENSE | SDI-12 for Arduino2.2.0</title>
+  <link rel="stylesheet" href="m-EnviroDIY+documentation.compiled.css" />
+
+<style id="wp-emoji-styles-inline-css" type="text/css">
+  img.wp-smiley,
+  img.emoji {
+    display: inline !important;
+    border: none !important;
+    box-shadow: none !important;
+    height: 1em !important;
+    width: 1em !important;
+    margin: 0 0.07em !important;
+    vertical-align: -0.1em !important;
+    background: none !important;
+    padding: 0 !important;
+  }
+</style>
+<link
+  rel="stylesheet"
+  id="gp-parent-style-css"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/style.css?ver=6.5.4"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="redux-extendify-styles-css"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/framework/redux/assets/css/extendify-utilities.css?ver=4.4.11"
+  type="text/css"
+  media="all"
+/>
+<style id="ghostpool-style-inline-css" type="text/css">
+  #gp-main-header {
+    min-height: 80px;
+  }
+  .gp-desktop-scrolling #gp-main-header {
+    min-height: 80px;
+  }
+  .gp-header-standard #gp-logo {
+    padding: 19px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-logo {
+    padding: 12.5px 0;
+  }
+  .gp-header-standard #gp-primary-main-nav .menu > li > a {
+    padding: 30.5px 0;
+  }
+  .gp-header-standard #gp-cart-button,
+  .gp-header-standard #gp-search-button,
+  .gp-header-standard #gp-profile-button {
+    padding: 31px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-primary-main-nav .menu > li > a {
+    padding: 30.5px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-cart-button,
+  .gp-desktop-scrolling.gp-header-standard #gp-search-button,
+  .gp-desktop-scrolling.gp-header-standard #gp-profile-button {
+    padding: 31px 0;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li:hover > a {
+    color: #fff;
+  }
+  .gp-theme li:hover .gp-primary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-theme .sub-menu li:hover .gp-secondary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-header-centered #gp-cart-button,
+  .gp-header-centered #gp-search-button,
+  .gp-header-centered #gp-profile-button {
+    line-height: 18px;
+  }
+  .gp-header-standard #gp-secondary-main-nav .menu > li > a {
+    padding: 31.5px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-secondary-main-nav .menu > li > a {
+    padding: 31.5px 0;
+  }
+  .gp-header-centered #gp-secondary-main-nav .menu > li > a {
+    line-height: 16px;
+  }
+  .gp-active {
+    color: #000;
+  }
+  .gp-theme .widget.buddypress div.item-options a.selected:hover {
+    color: #0579bd !important;
+  }
+  .gp-theme #buddypress .activity-list .activity-content blockquote a {
+    color: #0579bd;
+  }
+  .gp-theme #buddypress .activity-list .activity-content blockquote a:hover {
+    color: #000;
+  }
+  @media only screen and (max-width: 1082px) {
+    .gp-header-standard #gp-primary-main-nav .menu > li > a {
+      padding: 30.5px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard #gp-primary-main-nav .menu > li > a {
+      padding: 30.5px 0;
+    }
+    .gp-header-standard #gp-cart-button,
+    .gp-header-standard #gp-search-button,
+    .gp-header-standard #gp-profile-button {
+      padding: 31px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard #gp-cart-button,
+    .gp-desktop-scrolling.gp-header-standard #gp-search-button,
+    .gp-desktop-scrolling.gp-header-standard #gp-profile-button {
+      padding: 31px 0;
+    }
+    .gp-header-standard #gp-secondary-main-nav .menu > li > a {
+      padding: 31.5px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard #gp-secondary-main-nav .menu > li > a {
+      padding: 31.5px 0;
+    }
+  }
+  @media only screen and (max-width: 1023px) {
+    .gp-responsive #gp-main-header {
+      min-height: 80px;
+    }
+    .gp-responsive #gp-logo {
+      padding: 26px 0;
+    }
+    .gp-responsive #gp-mobile-nav-button,
+    .gp-responsive #gp-cart-button,
+    .gp-responsive #gp-search-button,
+    .gp-responsive #gp-profile-button {
+      padding: 31px 0;
+    }
+  }
+</style>
+<link
+  rel="stylesheet"
+  id="fontawesome-css"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=6.5.4"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+  media="print"
+  onload="this.media='all'"
+/>
+<noscript
+  ><link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+/></noscript>
+
+<style type="text/css" id="wp-custom-css">
+  /* Print Styles */
+  @media print {
+    @page {
+      margin: 10mm 0;
+    }
+    body {
+      background: white;
+      color: black;
+      background-image: none;
+      margin: 0 !important;
+      padding: 0;
+    }
+
+    body:not(.gp-full-page-page-header) .gp-page-header.gp-has-text:before,
+    body:not(.gp-full-page-page-header)
+      .gp-page-header.gp-has-teaser-video.gp-has-text
+      .gp-video-header:before {
+      background-image: none !important;
+    }
+    /* End print styles */
+
+    #gp-main-header,
+    #gp-small-header,
+    #gp-header-area,
+    #gp-footer,
+    #gp-sidebar-right,
+    #swrc-post-navigation,
+    .hkb-subheader,
+    .hkb-feedback,
+    .hkb-mainpage__sidebar,
+    .print-page {
+      display: none;
+    }
+    .hkb-mainpage-wrapper {
+      padding: 0 !important;
+      background-image: none !important;
+    }
+    a#gp-to-top,
+    span#toTopHover {
+      display: none;
+    }
+    a[href]:after {
+      content: ' (' attr(href) ')';
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: 1.25em;
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+    .hkb-article__content h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: 1.25em;
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+    table {
+      page-break-before: avoid;
+      page-break-inside: avoid;
+      page-break-after: avoid;
+    }
+    img {
+      page-break-inside: avoid;
+      visibility: visible;
+      float: none;
+    }
+    blockquote,
+    table,
+    pre {
+      page-break-inside: avoid;
+    }
+    ul,
+    ol,
+    dl {
+      page-break-before: avoid;
+    }
+  }
+
+  /*Gutenberg styles*/
+  /*Buttons*/
+  a.wp-block-button__link {
+    background-color: #538122;
+    border-radius: 5px;
+    text-decoration: none !important;
+  }
+  .wp-block-button__link:hover {
+    background: #365516 !important;
+    color: #ffffff !important;
+  }
+  figcaption {
+    font-style: italic;
+  }
+  /*End Gutenberg styles*/
+  #gp-content a,
+  .gp-sidebar a {
+    font-weight: 400;
+    text-decoration: underline;
+  }
+  /*BuddyPress styles*/
+  /*Make activity feed content darker*/
+  #buddypress .activity-list .activity-content .activity-inner p {
+    color: #000000;
+  }
+  /*Hide activity filter on activity page*/
+  #activity-filter-select.last {
+    display: none !important;
+  }
+  /*Hide disabled BuddyPress status updates on profile page, activity page*/
+  #latest-update {
+    display: none;
+  }
+  .item-title .update {
+    display: none;
+  }
+  /*Prevent display of comment/favorite links in activity stream. Because the comments do not get applied to posts or forum topics, they just confuse users*/
+  .gp-theme #buddypress .activity-list div.activity-meta a.button,
+  .gp-theme #buddypress .activity .acomment-options a,
+  .gp-theme #buddypress .activity-list li.load-newest a,
+  .widget.buddypress div.item-options a.selected {
+    color: #26a9e0;
+    display: none;
+  }
+  /*End BuddyPress styles*/
+  /* Style print link */
+  .pdfprnt-buttons > a > span {
+    margin: 15px 0;
+    padding-left: 0;
+    text-decoration: underline;
+  }
+  /*Change caption text color and size*/
+  .wp-caption-text {
+    color: #333;
+    font-size: 14px;
+  }
+  /*Collapse table borders */
+  #gp-content table {
+    border-collapse: collapse;
+  }
+  /*Add borders to Tableizer tables */
+  .tableizer table,
+  th,
+  td {
+    border: 1px solid #333;
+  }
+  /*Nested list styles*/
+  #gp-content,
+  .hkb-article ol ol li {
+    list-style-type: lower-alpha;
+  }
+  #gp-content,
+  .hkb-article ol ol ol li {
+    list-style-type: lower-roman;
+  }
+  #gp-content,
+  .hkb-article ul ul li {
+    list-style-type: circle !important;
+  }
+  /* Add border */
+  tr:last-child td {
+    border-width: 1px;
+  }
+  /*bbPress*/
+  /* Make forum title and description larger, remove link underlining */
+  div.bbp-forum-content {
+    font-size: 22px;
+    line-height: 28px;
+  }
+  div.bbp-forum-content p {
+    font-size: 16px;
+    line-height: 22px;
+  }
+  #bbpress-forums a.bbp-forum-title {
+    text-decoration: none;
+  }
+  .widgettitle {
+    border-bottom: 3px solid #92d050 !important;
+  }
+  .bbp-author-name {
+    font-size: 14px;
+  }
+  /*End bbpress styles*/
+  #gp-copyright-text,
+  #gp-copyright-text a:link,
+  #gp-copyright-text a:visited {
+    color: #fff;
+    font-weight: 400;
+  }
+  /*WooCommerce styles*/
+  bdi {
+    color: #538122;
+    font-weight: 500;
+  }
+  a.button.product_type_simple {
+    display: none;
+  }
+  p.stock.out-of-stock {
+    color: red;
+    font-weight: 500;
+  }
+  .products li * {
+    text-decoration: none !important;
+  }
+  div.gp-entry-cats {
+    color: #333333;
+  }
+  span.woocommerce-Price-amount.amount {
+    text-decoration: none !important;
+  }
+  /* Hide additional information tab */
+  div.woocommerce-tabs {
+    display: none !important;
+  }
+  /*End WooCommerce styles*/
+  /*The Events Calendar*/
+  #tribe-events-content a {
+    color: #0579bd;
+  }
+  #tribe-events-content .wp-block-button__link {
+    color: #ffffff;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget {
+    background-color: #fff;
+    padding: 15px;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > header {
+    text-transform: uppercase;
+    color: #000;
+    border-bottom: 3px solid #92d050;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > header
+    > h3 {
+    font-family: Roboto !important;
+    font-size: 14px !important;
+    font-weight: 500;
+    padding-bottom: 11px;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > div.tribe-events-widget-events-list__view-more.tribe-common-b1.tribe-common-b2--min-medium
+    > a {
+    color: #26a9e0;
+  }
+  /*Hero Knowledge Base styles*/
+  #hkb .hkb-fullwcontainer {
+    max-width: var(--hkb-main-container-width);
+    margin: 0 auto;
+    padding: 20px 20px;
+    left: 0 !important;
+    right: 0 !important;
+  }
+  h1.hkb-article__title {
+    font-weight: 300 !important;
+    margin: 0 0 0.5em !important;
+  }
+  .hkb-categoryheader__title {
+    font-weight: 300 !important;
+    font-size: 40px !important;
+  }
+  .hkb-articlepreview__title a {
+    font-weight: 300 !important;
+    font-size: 28px !important;
+    text-decoration: underline !important;
+    color: #0579bd !important;
+    font-size: 28px !important;
+  }
+  #hkb a {
+    text-decoration: underline;
+    font-weight: 400;
+  }
+  a.hkb_widget_exit__btn {
+    background-color: #538122 !important;
+    border-radius: 5px;
+    text-decoration: none !important;
+  }
+  a.hkb_widget_exit__btn:hover {
+    background: #365516 !important;
+    color: #ffffff !important;
+  }
+  /* End Heroic KB styles */
+  #swrc-post-navigation a {
+    font-size: small;
+  }
+  p.last-updated {
+    font-size: 12px;
+    font-style: italic;
+  }
+  aside#gp-sidebar-right.gp-sidebar p.last-updated {
+    display: none;
+  }
+  #gp-content p.last-updated {
+    display: none;
+  }
+  #gp-content ul {
+    margin: 0 0 0 20px !important;
+  }
+</style>
+<style id="socialize-dynamic-css" title="dynamic-css" class="redux-options-output">
+  #footer-image img {
+    margin-top: 10px;
+    margin-right: 0px;
+    margin-bottom: 10px;
+    margin-left: 0px;
+  }
+  body {
+    background-color: #f1f1f1;
+  }
+  body:not(.gp-full-page-page-header) #gp-page-wrapper,
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-container,
+  .gp-homepage .widgettitle.gp-fancy-title:before {
+    background-color: #e8e8e8;
+  }
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-left-triangle {
+    border-left-color: #e8e8e8;
+  }
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-right-triangle {
+    border-bottom-color: #e8e8e8;
+  }
+  #gp-content {
+    background-color: #ffffff;
+  }
+  body {
+    font-family: Roboto, 'Arial Black', Gadget, sans-serif;
+    line-height: 28px;
+    font-weight: 300;
+    font-style: normal;
+    color: #000;
+    font-size: 16px;
+  }
+  a {
+    color: #0579bd;
+  }
+  a:hover {
+    color: #000;
+  }
+  h1 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 40px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 36px;
+  }
+  h2 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 32px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 28px;
+  }
+  h3,
+  #tab-description h2,
+  .woocommerce #comments h2,
+  .woocommerce #reviews h3,
+  .woocommerce .related h2,
+  .woocommerce-checkout .woocommerce h2,
+  .woocommerce-checkout .woocommerce h3 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 28px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 24px;
+  }
+  h4 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 30px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px;
+  }
+  h5 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 26px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 18px;
+  }
+  h6 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 24px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 16px;
+  }
+  .gp-entry-meta .gp-post-meta-row-1,
+  .gp-homepage #gp-content .gp-vc-element-3,
+  .gp-homepage #gp-content .gp-vc-element-4,
+  .gp-homepage #gp-content .gp-vc-element-5,
+  .gp-homepage #gp-content .gp-vc-element-6,
+  #comments .commentlist li .comment_container,
+  .gp-loop-divider:before,
+  .gp-recent-comments ul li,
+  .gp-search {
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .gp-entry-video-wrapper .gp-entry-meta .gp-post-meta-row-1,
+  .gp-footer-widget .gp-recent-comments ul li {
+    border-top: 1px solid #50504b;
+    border-bottom: 1px solid #50504b;
+  }
+  #gp-main-header {
+    background-color: #222222;
+  }
+  .gp-desktop-scrolling #gp-main-header {
+    background-color: #222222;
+  }
+  #gp-primary-main-nav .menu > li,
+  #gp-primary-main-nav .menu > li > a {
+    font-family: Roboto;
+    text-transform: none;
+    line-height: 16px;
+    font-weight: 400;
+    font-style: normal;
+    color: #ababab;
+    font-size: 16px;
+  }
+  #gp-primary-main-nav .menu > li:hover > a,
+  #gp-primary-main-nav .menu > li > a {
+    color: #fff;
+  }
+  #gp-primary-main-nav .menu > li:hover > a:hover,
+  #gp-primary-main-nav .menu > li > a:hover {
+    color: #fff;
+  }
+  #gp-primary-main-nav .menu > li > a:hover,
+  #gp-primary-main-nav .menu > li:hover > a {
+    border-top: 3px solid #fff;
+  }
+  #gp-secondary-main-nav .menu > li,
+  #gp-secondary-main-nav .menu > li > a {
+    font-family: Roboto;
+    text-transform: none;
+    line-height: 14px;
+    font-weight: 400;
+    font-style: normal;
+    color: #fff;
+    font-size: 14px;
+  }
+  #gp-secondary-main-nav .menu > li:hover > a,
+  #gp-secondary-main-nav .menu > li > a {
+    color: #fff;
+  }
+  #gp-secondary-main-nav .menu > li:hover > a:hover,
+  #gp-secondary-main-nav .menu > li > a:hover {
+    color: #fff;
+  }
+  #gp-secondary-main-nav .menu > li > a:hover,
+  #gp-secondary-main-nav .menu > li:hover > a {
+    border-top: 3px solid #fff;
+  }
+  #gp-search-button,
+  #gp-cart-button {
+    color: #fff;
+  }
+  #gp-search-button:hover,
+  #gp-cart-button:hover {
+    color: #fff;
+  }
+  .gp-nav .sub-menu,
+  .gp-nav .menu li .gp-menu-tabs li:hover,
+  .gp-nav .menu li .gp-menu-tabs li.gp-selected,
+  #gp-search-box {
+    background-color: #fff;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a:hover,
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li:hover > a {
+    background-color: #353535;
+  }
+  .gp-nav .gp-standard-menu .sub-menu li,
+  .gp-nav .gp-standard-menu .sub-menu li a,
+  .gp-nav li.gp-megamenu .sub-menu li,
+  .gp-nav .gp-megamenu .sub-menu li a {
+    font-family: Roboto;
+    font-weight: 400;
+    font-style: normal;
+    color: #000;
+    font-size: 14px;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a {
+    color: #000;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a:hover {
+    color: #fff;
+  }
+  .gp-nav .sub-menu li,
+  #gp-dropdowncart .total,
+  #gp-dropdowncart .buttons {
+    border-top: 1px solid #e0e0e0;
+  }
+  .gp-nav .gp-megamenu > .sub-menu > li > a,
+  .gp-nav .gp-megamenu > .sub-menu > li > span {
+    color: #000000;
+  }
+  .gp-nav li.gp-megamenu a {
+    color: #000;
+  }
+  .gp-nav li.gp-megamenu a:hover {
+    color: #e93100;
+  }
+  .gp-primary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-primary-dropdown-icon:hover {
+    color: #fff;
+  }
+  .gp-secondary-dropdown-icon {
+    color: #000;
+  }
+  .gp-secondary-dropdown-icon:hover {
+    color: #fff;
+  }
+  .gp-menu-tabs {
+    background-color: #353535;
+  }
+  .gp-nav .menu li .gp-menu-tabs li {
+    color: #ffffff;
+  }
+  .gp-nav .menu li .gp-menu-tabs li:hover,
+  .gp-nav .menu li .gp-menu-tabs li.gp-selected {
+    color: #e93100;
+  }
+  #gp-small-header #gp-top-nav {
+    background-color: #26a9e0;
+  }
+  #gp-small-header .menu > li,
+  #gp-small-header .menu > li > a {
+    color: #ffffff;
+  }
+  #gp-small-header .menu > li:hover,
+  #gp-small-header .menu > li > a:hover {
+    color: #e0e0e0;
+  }
+  #gp-mobile-nav-button,
+  #gp-profile-button,
+  #gp-mobile-nav-close-button {
+    color: #ffffff;
+  }
+  #gp-mobile-nav {
+    background-color: #fff;
+  }
+  #gp-mobile-nav-close-button {
+    background-color: #0579bd;
+  }
+  #gp-mobile-nav li {
+    color: #000000;
+  }
+  #gp-mobile-nav .menu li span,
+  #gp-mobile-nav .menu li a {
+    color: #000;
+  }
+  #gp-mobile-nav .menu li span:hover,
+  #gp-mobile-nav .menu li a:hover {
+    color: #000;
+  }
+  #gp-mobile-nav li a:hover {
+    background-color: #f1f1f1;
+  }
+  #gp-mobile-nav li {
+    border-top: 1px solid #e0e0e0;
+  }
+  #gp-mobile-nav .gp-megamenu > .sub-menu > li > a {
+    color: #000000;
+  }
+  .gp-large-page-header .gp-page-header,
+  .gp-fullwidth-page-header .gp-page-header,
+  #gp-full-page-bg {
+    background-color: #353535;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-position: center center;
+    background-size: cover;
+  }
+  .gp-page-header h1,
+  .gp-page-header h2 {
+    font-family: Roboto;
+    line-height: 90px;
+    font-weight: normal;
+    font-style: normal;
+    color: #fff;
+    font-size: 80px;
+  }
+  .gp-page-header .gp-container {
+    height: 250px;
+  }
+  .gp-entry-title,
+  .woocommerce .page-title,
+  .woocommerce div.product .entry-title.product_title {
+    font-family: Roboto;
+    line-height: 46px;
+    font-weight: 300;
+    font-style: normal;
+    color: #000;
+    font-size: 40px;
+  }
+  .gp-subtitle {
+    font-family: Roboto;
+    line-height: 32px;
+    font-weight: 300;
+    font-style: normal;
+    color: #0579bd;
+    font-size: 20px;
+  }
+  #gp-post-links a,
+  .gp-pagination-arrows a.prev,
+  .gp-pagination-arrows a.next,
+  .gp-carousel-wrapper .flex-direction-nav a {
+    color: #aaa;
+  }
+  #gp-post-links a:hover,
+  .gp-pagination-arrows a.prev:hover,
+  .gp-pagination-arrows a.next:hover,
+  .gp-carousel-wrapper .flex-direction-nav a:hover {
+    color: #333;
+  }
+  .gp-entry-meta,
+  .gp-meta-comments a {
+    color: #aaaaaa;
+  }
+  .gp-entry-cats,
+  .gp-entry-cats a,
+  .gp-entry-cats a:hover {
+    color: #ffffff;
+  }
+  .gp-entry-cats {
+    background-color: #92d050;
+  }
+  .gp-entry-tags a,
+  .gp-entry-tags a:hover {
+    color: #ffffff;
+  }
+  .gp-entry-tags a {
+    background-color: #353535;
+  }
+  .gp-author-info,
+  #gp-post-navigation #gp-share-icons {
+    background-color: #353535;
+  }
+  .gp-author-info,
+  .gp-author-info a,
+  #gp-post-navigation #gp-share-icons h3 {
+    line-height: 24px;
+    color: #fff;
+    font-size: 14px;
+  }
+  .gp-author-info a {
+    color: #b1b1b1;
+  }
+  .gp-author-info a:hover {
+    color: #fff;
+  }
+  .gp-entry-video-wrapper {
+    background-color: #353535;
+  }
+  .gp-entry-video-wrapper .gp-entry-title {
+    color: #ffffff;
+  }
+  .gp-entry-video-wrapper .gp-video-description {
+    color: #777777;
+  }
+  blockquote {
+    background-color: #0579bd;
+  }
+  blockquote,
+  blockquote a,
+  blockquote a:hover {
+    font-family: 'Roboto Slab';
+    line-height: 38px;
+    font-weight: 400;
+    font-style: normal;
+    color: #fff;
+    font-size: 24px;
+  }
+  .gp-loop-title {
+    line-height: 22px;
+    font-weight: 400;
+    font-size: 19px;
+  }
+  .gp-blog-large .gp-loop-title {
+    line-height: 46px;
+    font-weight: 200;
+    font-size: 40px;
+  }
+  .gp-loop-title a,
+  .bboss_search_item .entry-title a {
+    color: #000;
+  }
+  .gp-loop-title a:hover,
+  .bboss_search_item .entry-title a:hover {
+    color: #0579bd;
+  }
+  .gp-loop-text,
+  .gp-login-wrapper p {
+    color: #545454;
+  }
+  .gp-loop-meta,
+  .gp-loop-meta a,
+  #gp-breadcrumbs,
+  #gp-breadcrumbs a,
+  .woocommerce .woocommerce-breadcrumb a,
+  .woocommerce .woocommerce-breadcrumb,
+  .comment-text time,
+  div.bbp-breadcrumb,
+  div.bbp-breadcrumb a,
+  .gp-statistics-wrapper .gp-stat-title,
+  .widget_display_replies ul li div,
+  .widget_display_topics ul li div {
+    color: #545454;
+  }
+  .gp-loop-cats,
+  .gp-loop-cats a,
+  .gp-loop-cats a:hover {
+    color: #545454;
+  }
+  .gp-loop-tags,
+  .gp-loop-tags a,
+  .gp-loop-tags a:hover {
+    color: #0579bd;
+  }
+  .gp-blog-masonry section,
+  section.sticky {
+    background-color: #f8f8f8;
+  }
+  ul.page-numbers .page-numbers {
+    background-color: #538122;
+  }
+  ul.page-numbers .page-numbers:hover,
+  ul.page-numbers .page-numbers.current,
+  ul.page-numbers > span.page-numbers {
+    background-color: #353535;
+  }
+  ul.page-numbers .page-numbers {
+    color: #ffffff;
+  }
+  .widgettitle,
+  .widget-title,
+  .wp-block-search__label {
+    font-family: Roboto;
+    line-height: 18px;
+    font-weight: 500;
+    font-style: normal;
+    color: #000;
+    font-size: 14px;
+  }
+  .widgettitle a,
+  .widget-title a,
+  .wp-block-search__label {
+    color: #0579bd;
+  }
+  .widgettitle a:hover,
+  .widget-title a:hover,
+  .wp-block-search__label:hover {
+    color: #000;
+  }
+  .gp-sidebar .widgettitle,
+  .widgettitle.gp-standard-title,
+  .gp-sidebar .widget-title,
+  .gp-sidebar .wp-block-search__label {
+    border-bottom: 3px solid #538122;
+  }
+  .widget,
+  .gp-vc-element,
+  .widgettitle.gp-fancy-title .gp-widget-title,
+  .widgettitle.gp-fancy-title .gp-element-icon,
+  .widget .woocommerce {
+    background-color: #ffffff;
+  }
+  .widgettitle.gp-fancy-title .gp-triangle {
+    border-left-color: #ffffff;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .wp-block-search__input,
+  .gp-theme #buddypress .dir-search input[type='search'],
+  .gp-theme #buddypress .dir-search input[type='text'],
+  .gp-theme #buddypress .groups-members-search input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='color'],
+  .gp-theme #buddypress .standard-form input[type='date'],
+  .gp-theme #buddypress .standard-form input[type='datetime-local'],
+  .gp-theme #buddypress .standard-form input[type='datetime'],
+  .gp-theme #buddypress .standard-form input[type='email'],
+  .gp-theme #buddypress .standard-form input[type='month'],
+  .gp-theme #buddypress .standard-form input[type='number'],
+  .gp-theme #buddypress .standard-form input[type='password'],
+  .gp-theme #buddypress .standard-form input[type='range'],
+  .gp-theme #buddypress .standard-form input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='tel'],
+  .gp-theme #buddypress .standard-form input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='time'],
+  .gp-theme #buddypress .standard-form input[type='url'],
+  .gp-theme #buddypress .standard-form input[type='week'],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .gp-theme #buddypress form#whats-new-form textarea {
+    background-color: #fafafa;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .wp-block-search__input,
+  .gp-login-wrapper .gp-login-icon,
+  .gp-login-wrapper .gp-password-icon,
+  .gp-login-wrapper .gp-email-icon,
+  .gp-theme #buddypress .dir-search input[type='search'],
+  .gp-theme #buddypress .dir-search input[type='text'],
+  .gp-theme #buddypress .groups-members-search input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='color'],
+  .gp-theme #buddypress .standard-form input[type='date'],
+  .gp-theme #buddypress .standard-form input[type='datetime-local'],
+  .gp-theme #buddypress .standard-form input[type='datetime'],
+  .gp-theme #buddypress .standard-form input[type='email'],
+  .gp-theme #buddypress .standard-form input[type='month'],
+  .gp-theme #buddypress .standard-form input[type='number'],
+  .gp-theme #buddypress .standard-form input[type='password'],
+  .gp-theme #buddypress .standard-form input[type='range'],
+  .gp-theme #buddypress .standard-form input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='tel'],
+  .gp-theme #buddypress .standard-form input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='time'],
+  .gp-theme #buddypress .standard-form input[type='url'],
+  .gp-theme #buddypress .standard-form input[type='week'],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .bb-global-search-ac.ui-autocomplete {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .wp-block-search__input,
+  .gp-theme #buddypress .dir-search input[type='search'],
+  .gp-theme #buddypress .dir-search input[type='text'],
+  .gp-theme #buddypress .groups-members-search input[type='search'],
+  .gp-theme #buddypress .groups-members-search input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='color'],
+  .gp-theme #buddypress .standard-form input[type='date'],
+  .gp-theme #buddypress .standard-form input[type='datetime-local'],
+  .gp-theme #buddypress .standard-form input[type='datetime'],
+  .gp-theme #buddypress .standard-form input[type='email'],
+  .gp-theme #buddypress .standard-form input[type='month'],
+  .gp-theme #buddypress .standard-form input[type='number'],
+  .gp-theme #buddypress .standard-form input[type='password'],
+  .gp-theme #buddypress .standard-form input[type='range'],
+  .gp-theme #buddypress .standard-form input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='tel'],
+  .gp-theme #buddypress .standard-form input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='time'],
+  .gp-theme #buddypress .standard-form input[type='url'],
+  .gp-theme #buddypress .standard-form input[type='week'],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .gp-theme #buddypress form#whats-new-form textarea {
+    color: #000000;
+  }
+  select,
+  .gp-theme #buddypress .standard-form select,
+  .gp-theme #buddypress form#whats-new-form #whats-new-options select,
+  #buddypress .standard-form select:focus {
+    background-color: #353535;
+  }
+  select,
+  .gp-theme #buddypress .standard-form select,
+  .gp-theme #buddypress form#whats-new-form #whats-new-options select {
+    color: #ffffff;
+  }
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  button,
+  .button,
+  .wp-block-search__button,
+  .gp-theme #buddypress .comment-reply-link,
+  .gp-notification-counter,
+  #gp-cart-counter,
+  .gp-theme #buddypress a.button,
+  .gp-theme #buddypress button,
+  .gp-theme #buddypress div.generic-button a,
+  .gp-theme #buddypress input[type='button'],
+  .gp-theme #buddypress input[type='reset'],
+  .gp-theme #buddypress input[type='submit'],
+  .gp-theme #buddypress ul.button-nav li a,
+  a.bp-title-button,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  .tribe-events-calendar thead th,
+  #tribe-events .tribe-events-button,
+  #tribe-events .tribe-events-button:hover,
+  #tribe_events_filters_wrapper input[type='submit'],
+  .tribe-events-button,
+  .tribe-events-button.tribe-active:hover,
+  .tribe-events-button.tribe-inactive,
+  .tribe-events-button:hover,
+  .tribe-events-calendar td.tribe-events-present div[id*='tribe-events-daynum-'],
+  .tribe-events-calendar td.tribe-events-present div[id*='tribe-events-daynum-'] > a,
+  #tribe-bar-form .tribe-bar-submit input[type='submit'],
+  .woocommerce #respond input#submit.alt,
+  .woocommerce a.button.alt,
+  .woocommerce button.button.alt,
+  .woocommerce input.button.alt,
+  #gp-dropdowncart .woocommerce a.button {
+    background-color: #0579bd;
+  }
+  input[type='button']:hover,
+  input[type='submit']:hover,
+  input[type='reset']:hover,
+  button:hover,
+  .button:hover,
+  .wp-block-search__button:hover,
+  .gp-theme #buddypress .comment-reply-link:hover,
+  .gp-theme #buddypress a.button:hover,
+  .gp-theme #buddypress button:hover,
+  .gp-theme #buddypress div.generic-button a:hover,
+  .gp-theme #buddypress input[type='button']:hover,
+  .gp-theme #buddypress input[type='reset']:hover,
+  .gp-theme #buddypress input[type='submit']:hover,
+  .gp-theme #buddypress ul.button-nav li a:hover,
+  a.bp-title-button:hover,
+  .gp-theme #buddypress .activity-list #reply-title small a:hover span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action:hover span,
+  .woocommerce #respond input#submit.alt:hover,
+  .woocommerce a.button.alt:hover,
+  .woocommerce button.button.alt:hover,
+  .woocommerce input.button.alt:hover,
+  #gp-dropdowncart .woocommerce a.button:hover {
+    background-color: #353535;
+  }
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  button,
+  .button,
+  .wp-block-search__button,
+  a.gp-notification-counter,
+  a.gp-notification-counter:hover,
+  #gp-cart-counter:hover,
+  .gp-theme #buddypress .comment-reply-link,
+  .gp-theme #buddypress a.button,
+  .gp-theme #buddypress button,
+  .gp-theme #buddypress div.generic-button a,
+  .gp-theme #buddypress input[type='button'],
+  .gp-theme #buddypress input[type='reset'],
+  .gp-theme #buddypress input[type='submit'],
+  .gp-theme #buddypress ul.button-nav li a,
+  a.bp-title-button,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  #gp-dropdowncart .woocommerce a.button {
+    color: #ffffff;
+  }
+  input[type='button']:hover,
+  input[type='submit']:hover,
+  input[type='reset']:hover,
+  button,
+  .button:hover,
+  .wp-block-search__button:hover,
+  .gp-theme #buddypress .comment-reply-link:hover,
+  .gp-theme #buddypress a.button:hover,
+  .gp-theme #buddypress button:hover,
+  .gp-theme #buddypress div.generic-button a:hover,
+  .gp-theme #buddypress input[type='button']:hover,
+  .gp-theme #buddypress input[type='reset']:hover,
+  .gp-theme #buddypress input[type='submit']:hover,
+  .gp-theme #buddypress ul.button-nav li a:hover,
+  a.bp-title-button:hover,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  #gp-dropdowncart .woocommerce a.button:hover {
+    color: #ffffff;
+  }
+  #gp-footer {
+    background-color: #353535;
+  }
+  .gp-footer-widget .widgettitle,
+  .gp-footer-widget .widget-title,
+  .gp-footer-widget .wp-block-search__label {
+    font-family: Roboto;
+    line-height: 20px;
+    font-weight: 300;
+    font-style: normal;
+    color: #fff;
+    font-size: 16px;
+  }
+  .gp-footer-widget {
+    font-family: Roboto;
+    line-height: 20px;
+    font-weight: 300;
+    font-style: normal;
+    color: #ffffff;
+    font-size: 14px;
+  }
+  .gp-footer-widget a {
+    color: #f9bd16;
+  }
+  .gp-footer-widget a:hover {
+    color: #b1b1b1;
+  }
+  #gp-copyright {
+    background-color: #353535;
+  }
+  #gp-copyright {
+    border-top: 1px solid #444;
+  }
+  #gp-copyright {
+    color: #777777;
+  }
+  #gp-copyright a {
+    color: #999;
+  }
+  #gp-copyright a:hover {
+    color: #e0e0e0;
+  }
+  #gp-to-top {
+    background-color: #0579bd;
+  }
+  #gp-to-top {
+    color: #ffffff;
+  }
+</style>
+  <link rel="icon" href="enviroDIY_Favicon.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#cb4b16" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="clipboard.js"></script>
+</head>
+
+<body
+    class="theme-socialize page-template-socialize-child gp-theme gp-responsive gp-wide-layout gp-retina gp-normal-scrolling gp-no-back-to-top gp-relative-header gp-header-standard gp-cart-disabled gp-search-all gp-profile-disabled gp-small-header-all gp-standard-page-header gp-no-sidebar"
+>
+	<div id="gp-site-wrapper">
+
+  <nav id="gp-mobile-nav">
+    <div id="gp-mobile-nav-close-button"></div>
+    <ul class="menu">
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+      >
+<a href="class_s_d_i12.html" class="menu-link main-menu-link">SDI12</a>        <ul class="sub-menu menu-odd menu-depth-1">
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#data-line-states">Data Line States</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>          </li>
+        </ul>
+      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+      >
+<a href="examples_page.html" class="menu-link main-menu-link">Examples using the SDI-12 Library</a>      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+      >
+<a href="annotated.html" class="menu-link main-menu-link">Classes</a>      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+      >
+<a href="pages.html" class="menu-link main-menu-link">Notes</a>        <ul class="sub-menu menu-odd menu-depth-1">
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav> <!-- gp-mobile-nav -->
+  <div id="gp-mobile-nav-bg"></div>
+
+  <div id="gp-page-wrapper">
+
+    <header id="gp-main-header">
+      <div class="gp-container">
+        <div id="gp-logo">
+          <a href="index.html" title="SDI-12 for Arduino 2.2.0">
+            <img
+              src="gp-desktop-logo.png"
+              alt="SDI-12 for Arduino 2.2.0"
+              width="200"
+              height="42"
+              class="gp-desktop-logo"
+            />
+            <img
+              src="gp-scrolling-logo.png"
+              alt="SDI-12 for Arduino 2.2.0"
+              width="264"
+              height="55"
+              class="gp-scrolling-logo"
+            />
+            <img
+              src="gp-mobile-logo.png"
+              alt="SDI-12 for Arduino 2.2.0"
+              width="132"
+              height="28"
+              class="gp-mobile-logo"
+            />
+          </a>
+        </div> <!-- gp-logo -->
+
+        <a id="gp-mobile-nav-button"></a>
+
+        <nav id="gp-main-nav" class="gp-nav">
+          <nav id="gp-primary-main-nav">
+            <ul id="menu-main-menu-1" class="menu">
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+              >
+<a href="class_s_d_i12.html" class="menu-link main-menu-link" >SDI12</a>                <ul class="sub-menu menu-odd menu-depth-1">
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#constructor-destructor-begins-and-setters">Constructor, Destructor, Begins, and Setters</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#waking-up-and-talking-to-sensors">Waking Up and Talking To Sensors</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#reading-from-the-sdi-12-buffer">Reading from the SDI-12 Buffer</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#data-line-states">Data Line States</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#using-more-than-one-sdi-12-object">Using more than one SDI-12 Object</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="class_s_d_i12.html#interrupt-service-routine">Interrupt Service Routine</a>                  </li>
+                </ul>
+              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+              >
+<a href="examples_page.html"class="menu-link main-menu-link">Examples using the SDI-12 Library</a>              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+              >
+<a href="annotated.html"class="menu-link main-menu-link">Classes</a>              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+              >
+<a href="pages.html" class="menu-link main-menu-link" >Notes</a>                <ul class="sub-menu menu-odd menu-depth-1">
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a class="menu-link sub-menu-link" href="specifications.html">Notes on SDI-12, Specification v1.4</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a class="menu-link sub-menu-link" href="interrupts_page.html">Overview of Interrupts</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a class="menu-link sub-menu-link" href="rx_page.html">Creating a Character - Stepping through the Rx ISR</a>                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav> <!-- gp-primary-main-nav -->
+
+          <div id="gp-search">
+            <div id="m-search-button" class="m-show-m" onclick="return showSearch()">
+            </div> <!-- gp-search-box -->
+          </div> <!-- gp-search -->
+
+          <nav id="gp-secondary-main-nav"></nav>
+        </nav> <!-- gp-main-nav -->
+      </div> <!-- gp-container -->
+    </header> <!-- gp-main-header -->
+
+    <header id="gp-small-header">
+      <div class="gp-container">
+        <div class="gp-left-triangle"></div>
+        <div class="gp-right-triangle"></div>
+
+        <nav id="gp-top-nav" class="gp-nav">
+          <div id="gp-left-top-nav">
+            <p style="color:#fff">An Arduino library for SDI-12 communication without requiring any additional hardware.</p>
+          </div>
+
+          <div id="gp-right-top-nav">
+            <ul id="menu-icon-links" class="menu">
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 fa fa-github menu-item menu-item-type-custom menu-item-object-custom"
+              >
+                <a
+                  title="See it on GitHub"
+                  href="https://github.com/EnviroDIY/Arduino-SDI-12"
+                  class="menu-link main-menu-link"
+                  >See the source code on GitHub</a
+                >
+              </li>
+            </ul>
+          </div>
+
+        </nav>
+      </div>
+    </header> <!-- gp-small-header -->
+
+    <div id="gp-fixed-header-padding"></div>
+
+    <div class="m-doc-search" id="search">
+      <a href="#!" onclick="return hideSearch()"></a>
+      <div id="gp-header-area">
+        <div class="gp-container">
+          <div style="background-color:#fff;padding:20px;">
+            <div class="m-doc-search-header m-text m-small">
+              <div><span class="m-label m-info">Tab</span> / <span class="m-label m-info">T</span> to search, <span class="m-label m-info">Esc</span> to close</div>
+              <div id="search-symbolcount">&hellip;</div>
+            </div>
+            <div class="m-doc-search-content">
+              <form>
+                <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+              </form>
+              <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+              <div id="search-help" class="m-text m-dim m-text-center">
+                <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+              </div>
+              <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+              <ul id="search-results"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="search-v2.js"></script>
+    <script src="searchdata-v2.js" async="async"></script>
+
+    <div class="gp-clear"></div>
+
+    <div id="gp-content-wrapper" class="gp-container">
+      <div id="gp-inner-container">
+        <div id="gp-left-column">
+          <div id="gp-content">
+
+            <main>
+              <article>
+                <div class="breadcrumbs" typeof="BreadcrumbList" vocab="http://schema.org/">
+          <span class="m-breadcrumb">
+            <a href="index.html">
+              SDI-12 for Arduino
+            </a>  &gt; <wbr/>
+          </span>
+          <span class="m-breadcrumb">
+            <a href="pages.html">
+              Pages
+            </a>  &gt; <wbr/>
+          </span>
+                    <span class="m-breadcrumb">
+            LICENSE
+          </span>
+                </div>
+                <header class="gp-entry-header">
+                  <h1 class="gp-entry-title" itemprop="headline">
+          LICENSE
+
+                </h1>
+                </header>
+<p>BSD 3-Clause License</p><p>Copyright (c) 2013, Stroud Water Research Center (SWRC) and the EnviroDIY Development Team. All rights reserved.</p><p>Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:</p><ol><li>Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.</li><li>Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.</li><li>Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.</li></ol><p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+              </article>
+            </main>
+
+          </div> <!-- gp-content -->
+        </div> <!-- gp-left-column -->
+      </div> <!-- gp-inner-container -->
+    </div> <!-- gp-content-wrapper -->
+
+    <div id="footer-image">
+      <div class="gp-container">
+        <img
+          src="https://www.envirodiy.org/wp-content/uploads/2016/05/EnviroDIY_LogoMaster_Square_V5_TwoTree_Trans_notext-e1462820115833.png"
+          width="99"
+          height="22"
+          alt=""
+        />
+      </div>
+    </div>
+
+    <footer id="gp-footer">
+      <div id="gp-copyright">
+        <div class="gp-container">
+          <div id="gp-copyright-text">
+            <p>
+              <a href="https://stroudcenter.org/" target="_blank"
+                >EnviroDIY™ is a community for do-it-yourself ideas for environmental
+                science and monitoring. EnviroDIY is an initiative of
+                <a
+                  style="text-decoration: underline"
+                  href="https://stroudcenter.org/"
+                  target="_blank"
+                  >Stroud Water Research Center</a
+                >, which advances knowledge and stewardship of freshwater systems through
+                global research, education, and watershed restoration.
+              </a>
+            </p>
+            <p>
+              All content on EnviroDIY is licensed as Creative Commons
+              Attribution-ShareAlike 4.0 International (CC-BY-SA). Hardware designs on this
+              website are released under the CERN Open Hardware License 1.2.
+              <a style="text-decoration: underline" href="https://envirodiy.org/licenses/"
+                >See all licenses.</a
+              >
+              <a style="text-decoration: underline" href="https://envirodiy.org/terms/"
+                >Terms of Use</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/privacy/"
+                >Privacy Policy</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/cookies/"
+                >Cookie Policy</a
+              >
+              |
+              <a
+                style="text-decoration: underline"
+                href="https://envirodiy.org/shop-policies/"
+                >Shop Policies</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/contact/"
+                >Contact</a
+              >
+            </p>
+            <p>
+              Created with <a href="https://doxygen.org/">Doxygen</a> 1.12.0 and <a href="https://mcss.mosra.cz/">m.css</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div class="gp-clear"></div>
+
+    </div> <!-- gp-site-wrapper -->
+  </div> <!-- gp-site-wrapper -->
+
+</body>
+</html>
