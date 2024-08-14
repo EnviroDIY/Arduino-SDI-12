@@ -33,19 +33,20 @@
 
 //==============================================================
 // Select the interrupt control method for AVR boards
-// Uncomment the following line to use your own PCINT ISRs on AVR boards.
+// Uncomment the following line to allow this library full control of the PCINT ISRs on
+// AVR boards.  Without this, interrupts will be handled by the EnableInterrupt library.
 // This has no effect on non-AVR boards.
 /**
- * @def SDI12_EXTERNAL_PCINT
- * @brief Use application-defined PCINT ISRs on AVR boards.
+ * @def SDI12_INTERNAL_PCINT
+ * @brief Use internal PCINT ISRs on AVR boards.
  */
-// #define SDI12_EXTERNAL_PCINT
+// #define SDI12_INTERNAL_PCINT
 //==============================================================
 
 //==============================================================
 // Select the interrupt vector for AVR boards
 // To use a single interrupt vector, uncomment the appropriate line below.
-// This only applies if you have **not** defined SDI12_EXTERNAL_PCINT.
+// This only applies if you have also defined SDI12_INTERNAL_PCINT.
 // This has no effect on non-AVR boards.
 
 /**
