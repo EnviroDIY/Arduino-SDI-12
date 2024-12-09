@@ -20,6 +20,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [2.2.1] - 2024-12-09
+
+### Added
+
+- Added support for Arduino ESP32 Core versions >3.x.x, based on IDF >5.1.x
+
+### Fixed
+
+- Reordered steps to unset the prescaler on SAM/D boards. The incorrect order was causing a hang when waiting for sync.
+
+***
+
 ## [2.2.0] - 2024-08-14
 
 _CRC and SAMD51 Support_
@@ -178,7 +190,8 @@ The first "official" release of this interrupt-based SDI-12 library for AVR and 
 
 ***
 
-[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.2.1...HEAD
+[2.2.1]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.2.1
 [2.2.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.2.0
 [2.1.4]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.1.4
 [2.1.3]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.1.3

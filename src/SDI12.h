@@ -199,15 +199,26 @@ typedef const __FlashStringHelper* FlashString;
   { delay(SDI12_YIELD_MS); }
 #endif
 
-#if defined(ESP32) || defined(ESP8266)
+#if defined(ESP8266) || \
+  (defined(ESP32) && !defined(ESP_IDF_VERSION) && !defined(ESP_IDF_VERSION_VAL))
+#define NEED_LOOKAHEAD_ENUM
+#endif
+#if (defined(ESP32) && defined(ESP_IDF_VERSION_VAL) && defined(ESP_IDF_VERSION))
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 1, 0)
+// do nothing
+#else
+#define NEED_LOOKAHEAD_ENUM
+#endif
+#endif
+#if defined NEED_LOOKAHEAD_ENUM
 /**
  * @brief This enumeration provides the lookahead options for parseInt(), parseFloat().
  *
  * The rules set out here are used until either the first valid character is found or a
  * time out occurs due to lack of input.
  *
- * This enum is part of the Stream parent class, but is missing from the ESP8266 and
- * ESP32 cores.
+ * This enum is part of the Stream parent class, but is missing from the ESP8266 core
+ * and ESP32 cores prior to 3.0 (IDF prior to 5.1).
  */
 enum LookaheadMode {
   /** All invalid characters are ignored. */
@@ -218,7 +229,8 @@ enum LookaheadMode {
   /** Only tabs, spaces, line feeds & carriage returns are skipped.*/
   SKIP_WHITESPACE
 };
-#endif  // defined(ESP32) || defined(ESP8266)
+#endif  // NEED_LOOKAHEAD_ENUM
+#undef NEED_LOOKAHEAD_ENUM
 
 /**
  * @brief The main class for SDI 12 instances

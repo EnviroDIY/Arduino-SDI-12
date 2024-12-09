@@ -99,7 +99,8 @@ int SDI12::peek() {
 // a public function that clears the buffer contents and resets the status of the buffer
 // overflow.
 void SDI12::clearBuffer() {
-  _rxBufferHead = _rxBufferTail = 0;
+  _rxBufferHead                 = 0;
+  _rxBufferTail                 = 0;
   _bufferOverflow               = false;
 }
 
