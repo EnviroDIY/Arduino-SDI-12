@@ -17,19 +17,19 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "h__s_d_i-12_slave_implementation_8ino-example.html",
-        "h_SDI-12_slave_implementation.ino"
+        "e_continuous_measurement_8ino-example.html",
+        "e_continuous_measurement.ino"
       ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "_test_commands_8ino-example.html",
-        "TestCommands.ino"
+        "d_simple_logger_8ino-example.html",
+        "d_simple_logger.ino"
       ]
     ],
-    "modules": [],
+    "topics": [],
     "dirs": [],
     "files": [],
     "namespaces": [],

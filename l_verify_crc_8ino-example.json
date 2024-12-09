@@ -16,20 +16,17 @@
     "since": null,
     "example_navigation": null,
     "footer_navigation": [
-      [
-        "k_concurrent_logger_8ino-example.html",
-        "k_concurrent_logger.ino"
-      ],
+      null,
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "g_terminal_window_8ino-example.html",
-        "g_terminal_window.ino"
+        "k_concurrent_logger_8ino-example.html",
+        "k_concurrent_logger.ino"
       ]
     ],
-    "modules": [],
+    "topics": [],
     "dirs": [],
     "files": [],
     "namespaces": [],

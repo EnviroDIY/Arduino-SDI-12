@@ -17,19 +17,19 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "c_check_all_addresses_8ino-example.html",
-        "c_check_all_addresses.ino"
+        "j_external_pcint_library_8ino-example.html",
+        "j_external_pcint_library.ino"
       ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "h__s_d_i-12_slave_implementation_8ino-example.html",
-        "h_SDI-12_slave_implementation.ino"
+        "g_terminal_window_8ino-example.html",
+        "g_terminal_window.ino"
       ]
     ],
-    "modules": [],
+    "topics": [],
     "dirs": [],
     "files": [],
     "namespaces": [],

@@ -17,19 +17,19 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "b_address_change_8ino-example.html",
-        "b_address_change.ino"
+        "a_wild_card_8ino-example.html",
+        "a_wild_card.ino"
       ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "j_external_pcint_library_8ino-example.html",
-        "j_external_pcint_library.ino"
+        "c_check_all_addresses_8ino-example.html",
+        "c_check_all_addresses.ino"
       ]
     ],
-    "modules": [],
+    "topics": [],
     "dirs": [],
     "files": [],
     "namespaces": [],

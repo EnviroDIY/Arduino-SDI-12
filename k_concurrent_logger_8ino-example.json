@@ -16,17 +16,20 @@
     "since": null,
     "example_navigation": null,
     "footer_navigation": [
-      null,
+      [
+        "l_verify_crc_8ino-example.html",
+        "l_verify_crc.ino"
+      ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "l_verify_crc_8ino-example.html",
-        "l_verify_crc.ino"
+        "i__s_d_i-12_interface_8ino-example.html",
+        "i_SDI-12_interface.ino"
       ]
     ],
-    "modules": [],
+    "topics": [],
     "dirs": [],
     "files": [],
     "namespaces": [],

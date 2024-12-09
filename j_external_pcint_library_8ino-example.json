@@ -17,19 +17,19 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "d_simple_logger_8ino-example.html",
-        "d_simple_logger.ino"
+        "b_address_change_8ino-example.html",
+        "b_address_change.ino"
       ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "i__s_d_i-12_interface_8ino-example.html",
-        "i_SDI-12_interface.ino"
+        "f_basic_data_request_8ino-example.html",
+        "f_basic_data_request.ino"
       ]
     ],
-    "modules": [],
+    "topics": [],
     "dirs": [],
     "files": [],
     "namespaces": [],
