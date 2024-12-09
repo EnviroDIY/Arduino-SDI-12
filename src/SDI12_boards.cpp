@@ -271,13 +271,12 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
 }
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {
+  // fully software reset the control register for Timer Controller 3 and then disable
+  // it
+  resetTC(SDI12_TC);
+
   // reset the generic clock generator divisor register
   REG_GCLK_GENDIV = preSDI12_REG_GCLK_GENDIV;
-  while (GCLK->STATUS.bit.SYNCBUSY)
-    ;  // Wait for synchronization
-
-  // reset the generic clock generator control register
-  REG_GCLK_GENCTRL = preSDI12_REG_GCLK_GENCTRL;
   while (GCLK->STATUS.bit.SYNCBUSY)
     ;  // Wait for synchronization
 
@@ -286,9 +285,9 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   while (GCLK->STATUS.bit.SYNCBUSY)
     ;  // Wait for synchronization
 
-  // fully software reset the control register for Timer Controller 3 and then disable
-  // it
-  resetTC(SDI12_TC);
+  // reset the generic clock generator control register
+  REG_GCLK_GENCTRL = preSDI12_REG_GCLK_GENCTRL;
+  while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
 }
 
 // SAMD51 and SAME51 boards
@@ -490,19 +489,24 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
 }
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {
-  // Reset the generator control register for the clock generator
-  GCLK->GENCTRL[GENERIC_CLOCK_GENERATOR_SDI12].reg = preSDI12_REG_GCLK_GENCTRL;
-  while (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_SDI12)
-    ;  // Wait for the SDI-12 clock generator sync busy bit to clear
-
-  // Reset the generic clock peripheral control channel register
-  GCLK->PCHCTRL[SDI12_TC_GCLK_ID].reg = preSDI12_REG_GCLK_PCHCTRL;
-  while (!GCLK->PCHCTRL[SDI12_TC_GCLK_ID].bit.CHEN)
-    ;  // wait to finish enabling ??
-
   // fully software reset the control register for SDI-12 Timer Controller and then
   // disable it
   resetTC(SDI12_TC);
+
+  // Reset the generic clock peripheral control channel register
+  GCLK->PCHCTRL[SDI12_TC_GCLK_ID].reg = preSDI12_REG_GCLK_PCHCTRL;
+
+  // NOTE: This hangs. For some reason the enable bit is never clearing.
+  //   if (!bitRead(preSDI12_REG_GCLK_PCHCTRL, GCLK_PCHCTRL_CHEN_Pos)) {
+  //     while (!GCLK->PCHCTRL[SDI12_TC_GCLK_ID].bit.CHEN)
+  //       ;  // wait to finish enabling ??
+  //   }
+
+  // Reset the generator control register for the clock generator
+  GCLK->GENCTRL[GENERIC_CLOCK_GENERATOR_SDI12].reg = preSDI12_REG_GCLK_GENCTRL;
+  while (
+    GCLK->SYNCBUSY.reg &
+    GCLK_SYNCBUSY_SDI12);  // Wait for the SDI-12 clock generator sync busy bit to clear
 }
 
 // Espressif ESP32/ESP8266 boards or other boards faster than 48MHz
