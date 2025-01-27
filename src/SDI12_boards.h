@@ -155,6 +155,8 @@ sensors. This library provides a general software solution, without requiring
 #define TIMER_INT_TYPE uint16_t
 #define TIMER_INT_SIZE 16
 
+/// The clock generator number to use
+#define GENERIC_CLOCK_GENERATOR_SDI12 (4u)
 /// The timer controller to use
 #define SDI12_TC TC3
 
