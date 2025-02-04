@@ -215,8 +215,7 @@ boolean checkActive(char i) {
 
 void setup() {
   Serial.begin(serialBaud);
-  while (!Serial)
-    ;
+  while (!Serial && millis() < 10000L);
 
   Serial.println("Opening SDI-12 bus...");
   mySDI12.begin();
@@ -230,8 +229,7 @@ void setup() {
     Serial.println("Powering up sensors, wait...");
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
-    delay(15000L);
-    // delay(200);
+    delay(5000L);
   }
 
   // Quickly Scan the Address Space
