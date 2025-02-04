@@ -462,8 +462,7 @@ bool printInfo(char i, bool printCommands = true) {
 
 void setup() {
   Serial.begin(serialBaud);
-  while (!Serial)
-    ;
+  while (!Serial && millis() < 10000L);
 
   Serial.print("Opening SDI-12 bus on pin ");
   Serial.print(String(dataPin));

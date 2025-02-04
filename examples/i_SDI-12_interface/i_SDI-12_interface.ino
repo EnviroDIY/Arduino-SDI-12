@@ -56,8 +56,7 @@ SDI12 mySDI12(dataPin);
 
 void setup() {
   Serial.begin(serialBaud);
-  while (!Serial)
-    ;
+  while (!Serial && millis() < 10000L);
 
   // Power the sensors;
   if (powerPin >= 0) {

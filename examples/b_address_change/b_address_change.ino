@@ -81,7 +81,7 @@ boolean checkActive(byte i) {  // this checks for activity at a particular addre
 
 void setup() {
   Serial.begin(serialBaud);
-  while (!Serial)
+  while (!Serial && millis() < 10000L)
     ;
 
   Serial.println("Opening SDI-12 bus...");
