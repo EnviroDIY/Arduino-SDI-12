@@ -222,25 +222,22 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
 
   // Set up the generic clock generator divisor register
   // NOTE: Could write the below as GCLK->GENDIV.reg instead of REG_GCLK_GENDIV
-  REG_GCLK_GENDIV = GCLK_GENDIV_ID(4) |  // Select Generic Clock Generator 4
+  REG_GCLK_GENDIV =
+    GCLK_GENDIV_ID(GENERIC_CLOCK_GENERATOR_SDI12) |  // Select Generic Clock Generator 4
     GCLK_GENDIV_DIV(6);                  // Divide the clock source by divisor 6
-  while (GCLK->STATUS.bit.SYNCBUSY)
-    ;
-  ;  // Wait for synchronization
+  while (GCLK->STATUS.bit.SYNCBUSY);     // Wait for synchronization
 
 
   // Set up the generic clock generator control register
   // NOTE: Could write the below as GCLK->GENCTRL.reg instead ofREG_GCLK_GENCTRL
-  REG_GCLK_GENCTRL = (GCLK_GENCTRL_ID(4) |        // Select GCLK4
+  REG_GCLK_GENCTRL = (GCLK_GENCTRL_ID(GENERIC_CLOCK_GENERATOR_SDI12) |  // Select GCLK4
                       GCLK_GENCTRL_SRC_DFLL48M |  // Select the 48MHz clock source
                       GCLK_GENCTRL_IDC |     // Set the duty cycle to 50/50 HIGH/LOW
                       GCLK_GENCTRL_GENEN) &  // Enable the generic clock clontrol
     ~GCLK_GENCTRL_RUNSTDBY &                 // Do NOT run in stand by
     ~GCLK_GENCTRL_DIVSEL;  // Divide clock source by GENDIV.DIV: 48MHz/5=9.6MHz
                            // ^^ & ~ for DIVSEL to set DIVSEL to 0
-  while (GCLK->STATUS.bit.SYNCBUSY)
-    ;
-  ;  // Wait for synchronization
+  while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
 
   // Set up the generic clock control register
   // NOTE: Could write the below as GCLK->CLKCTRL.reg instead of REG_GCLK_CLKCTRL
@@ -253,9 +250,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
     GCLK_CLKCTRL_CLKEN |                       // Enable the generic clock generator
     GCLK_CLKCTRL_ID_TCC2_TC3;  // Feed the Generic Clock Generator 4 to TCC2 and TC3
 
-  while (GCLK->STATUS.bit.SYNCBUSY)
-    ;
-  ;  // Wait for synchronization
+  while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
 
   // fully software reset and disable the TC before we start messing with it
   resetTC(SDI12_TC);
