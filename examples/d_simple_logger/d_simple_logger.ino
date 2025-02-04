@@ -17,7 +17,7 @@
  * sensor type, but it will likely be helpful in getting you started.
  *
  * Each sensor should have a unique address already - if not, multiple sensors may
- * respond simultaenously to the same request and the output will not be readable by the
+ * respond simultaneously to the same request and the output will not be readable by the
  * Arduino.
  *
  * To address a sensor, please see Example B: b_address_change.ino

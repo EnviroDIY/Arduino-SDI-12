@@ -13,7 +13,7 @@
  * THIS CAN BE *REALLY* SLOW TO RUN!!!
  *
  * Each sensor should have a unique address already - if not, multiple sensors may
- * respond simultaenously to the same request and the output will not be readable
+ * respond simultaneously to the same request and the output will not be readable
  * by the Arduino.
  *
  * To address a sensor, please see Example B: b_address_change.ino
@@ -33,7 +33,7 @@ int8_t   powerPin   = 22; /*!< The sensor power pin (or -1 if not switching powe
  * @param sdi the SDI-12 instance
  * @param i a character between '0'-'9', 'a'-'z', or 'A'-'Z'
  */
-void printInfo(SDI12 sdi, char i) {
+void printInfo(SDI12& sdi, char i) {
   String command = "";
   command += (char)i;
   command += "I!";
@@ -53,7 +53,7 @@ void printInfo(SDI12 sdi, char i) {
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-boolean checkActive(SDI12 sdi, char i) {
+boolean checkActive(SDI12& sdi, char i) {
   String myCommand = "";
   myCommand        = "";
   myCommand += (char)i;  // sends basic 'acknowledge' command [address][!]
@@ -71,7 +71,7 @@ boolean checkActive(SDI12 sdi, char i) {
   return false;
 }
 
-void scanAddressSpace(SDI12 sdi) {
+void scanAddressSpace(SDI12& sdi) {
   // scan address space 0-9
   for (char i = '0'; i <= '9'; i++)
     if (checkActive(sdi, i)) { printInfo(sdi, i); }
@@ -85,6 +85,8 @@ void scanAddressSpace(SDI12 sdi) {
 
 void setup() {
   Serial.begin(serialBaud);
+  while (!Serial);
+
   Serial.println("//\n// Start Search for SDI-12 Devices \n// -----------------------");
 
   // Power the sensors;
@@ -92,7 +94,7 @@ void setup() {
     Serial.println("Powering up sensors...");
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
-    delay(200);
+    delay(500L);
   }
 
   for (uint8_t pin = FirstPin; pin <= LastPin; pin++) {
