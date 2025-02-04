@@ -517,11 +517,7 @@ size_t SDI12::write(uint8_t byte) {
 
 // this function sends out the characters of the String cmd, one by one
 void SDI12::sendCommand(String& cmd, int8_t extraWakeTime) {
-  wakeSensors(extraWakeTime);  // wake up sensors
-  for (int unsigned i = 0; i < cmd.length(); i++) {
-    writeChar(cmd[i]);  // write each character
-  }
-  setState(SDI12_LISTENING);  // listen for reply
+  sendCommand(cmd.c_str(), extraWakeTime);
 }
 
 void SDI12::sendCommand(const char* cmd, int8_t extraWakeTime) {
@@ -546,20 +542,7 @@ void SDI12::sendCommand(FlashString cmd, int8_t extraWakeTime) {
 // that is, when the Arduino itself is acting as an SDI-12 device rather than a
 // recorder).
 void SDI12::sendResponse(String& resp, bool addCRC) {
-  setState(SDI12_TRANSMITTING);       // Get ready to send data to the recorder
-  digitalWrite(_dataPin, LOW);        // marking is LOW
-  delayMicroseconds(marking_micros);  // 8.33 ms marking before response
-  for (int unsigned i = 0; i < resp.length(); i++) {
-    writeChar(resp[i]);  // write each character
-  }
-  // tack on the CRC if requested
-  if (addCRC) {
-    String crc = crcToString(calculateCRC(resp));
-    for (int unsigned i = 0; i < 3; i++) {
-      writeChar(crc[i]);  // write each character
-    }
-  }
-  setState(SDI12_LISTENING);  // return to listening state
+  sendResponse(resp.c_str(), addCRC);
 }
 
 void SDI12::sendResponse(const char* resp, bool addCRC) {
@@ -603,22 +586,7 @@ void SDI12::sendResponse(FlashString resp, bool addCRC) {
 #define POLY 0xa001
 
 uint16_t SDI12::calculateCRC(String& resp) {
-  uint16_t crc = 0;
-
-  for (uint16_t i = 0; i < resp.length(); i++) {
-    crc ^= static_cast<uint16_t>(
-      resp[i]);  // Set the CRC equal to the exclusive OR of the character and itself
-    for (int j = 0; j < 8; j++) {  // count = 1 to 8
-      if (crc & 0x0001) {          // if the least significant bit of the CRC is one
-        crc >>= 1;                 // right shift the CRC one bit
-        crc ^=
-          POLY;  // set CRC equal to the exclusive OR of the match polynomial and itself
-      } else {
-        crc >>= 1;  // right shift the CRC one bit
-      }
-    }
-  }
-  return crc;
+  return calculateCRC(resp.c_str());
 }
 
 uint16_t SDI12::calculateCRC(const char* resp) {
