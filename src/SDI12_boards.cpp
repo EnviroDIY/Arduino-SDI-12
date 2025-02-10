@@ -284,7 +284,14 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 
 /// Fully reset the TC to factory settings and disable it
 static inline void resetTC(Tc* TCx) {
-  // Disable TCx
+  // Disable TCx, if and only if the timer is set to anything
+  // If the timer has no set configuration, activating the software reset will cause a
+  // hang.
+  if (GCLK->GENCTRL[GENERIC_CLOCK_GENERATOR_SDI12].reg == 0 &&
+      GCLK->PCHCTRL[SDI12_TC_GCLK_ID].reg == 0 && TCx->COUNT16.CTRLA.reg == 0) {
+    return;
+  }
+
   TCx->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;  // unset enable bit
   while (TCx->COUNT16.SYNCBUSY.bit.ENABLE);    // wait for enable sync busy bit to clear
 
@@ -480,11 +487,11 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   // Reset the generic clock peripheral control channel register
   GCLK->PCHCTRL[SDI12_TC_GCLK_ID].reg = preSDI12_REG_GCLK_PCHCTRL;
 
-  // NOTE: This hangs. For some reason the enable bit is never clearing.
-  //   if (!bitRead(preSDI12_REG_GCLK_PCHCTRL, GCLK_PCHCTRL_CHEN_Pos)) {
-  //     while (!GCLK->PCHCTRL[SDI12_TC_GCLK_ID].bit.CHEN)
-  //       ;  // wait to finish enabling ??
-  //   }
+  // Only wait for the enable bit to return to zero if the timer wasn't enabled prior to
+  // this library enabling it
+  if (!bitRead(GCLK->PCHCTRL[SDI12_TC_GCLK_ID].reg, GCLK_PCHCTRL_CHEN_Pos)) {
+    while (GCLK->PCHCTRL[SDI12_TC_GCLK_ID].bit.CHEN);  // wait to finish diabling
+  }
 
   // Reset the generator control register for the clock generator
   GCLK->GENCTRL[GENERIC_CLOCK_GENERATOR_SDI12].reg = preSDI12_REG_GCLK_GENCTRL;

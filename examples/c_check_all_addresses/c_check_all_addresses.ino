@@ -126,7 +126,7 @@ void scanAddressSpace(SDI12& sdi) {
   // Quickly scan the address space
   for (byte i = firstAddress; i < lastAddress; i++) {
     char addr = decToChar(i);
-    if (checkActive(sdi, i)) { printInfo(sdi, i); };
+    if (checkActive(sdi, addr)) { printInfo(sdi, addr); };
   }
 }
 
