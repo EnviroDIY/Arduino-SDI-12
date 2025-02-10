@@ -101,7 +101,7 @@ static uint8_t preSDI12_TCCR1A;
 void SDI12Timer::configSDI12TimerPrescale(void) {
   preSDI12_TCCR1A = TCCR1;
 #if F_CPU == 16000000L
-  TCCR1           = 0b00001011;  // Set the prescaler to 1024
+  TCCR1 = 0b00001011;  // Set the prescaler to 1024
 #elif F_CPU == 8000000L
   TCCR1 = 0b00001010;  // Set the prescaler to 512
 #endif
@@ -177,15 +177,12 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 static inline void resetTC(Tc* TCx) {
   // Disable TCx
   TCx->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
-  while (TCx->COUNT16.STATUS.bit.SYNCBUSY)
-    ;
+  while (TCx->COUNT16.STATUS.bit.SYNCBUSY);
 
   // Reset TCx
   TCx->COUNT16.CTRLA.reg = TC_CTRLA_SWRST;
-  while (TCx->COUNT16.STATUS.bit.SYNCBUSY)
-    ;
-  while (TCx->COUNT16.CTRLA.bit.SWRST)
-    ;
+  while (TCx->COUNT16.STATUS.bit.SYNCBUSY);
+  while (TCx->COUNT16.CTRLA.bit.SWRST);
 }
 
 /**
@@ -224,8 +221,8 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   // NOTE: Could write the below as GCLK->GENDIV.reg instead of REG_GCLK_GENDIV
   REG_GCLK_GENDIV =
     GCLK_GENDIV_ID(GENERIC_CLOCK_GENERATOR_SDI12) |  // Select Generic Clock Generator 4
-    GCLK_GENDIV_DIV(6);                  // Divide the clock source by divisor 6
-  while (GCLK->STATUS.bit.SYNCBUSY);     // Wait for synchronization
+    GCLK_GENDIV_DIV(6);               // Divide the clock source by divisor 6
+  while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
 
 
   // Set up the generic clock generator control register
@@ -261,8 +258,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
     TC_CTRLA_WAVEGEN_NFRQ |     // Put the timer TC3 into normal frequency (NFRQ) mode
     TC_CTRLA_MODE_COUNT16 |     // Put the timer TC3 into 16-bit mode
     TC_CTRLA_ENABLE;            // Enable TC3
-  while (SDI12_TC->COUNT16.STATUS.bit.SYNCBUSY)
-    ;  // Wait for synchronization
+  while (SDI12_TC->COUNT16.STATUS.bit.SYNCBUSY);  // Wait for synchronization
 }
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {
@@ -272,13 +268,11 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 
   // reset the generic clock generator divisor register
   REG_GCLK_GENDIV = preSDI12_REG_GCLK_GENDIV;
-  while (GCLK->STATUS.bit.SYNCBUSY)
-    ;  // Wait for synchronization
+  while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
 
   // reset the generic clock control register
   REG_GCLK_CLKCTRL = preSDI12_REG_GCLK_CLKCTRL;
-  while (GCLK->STATUS.bit.SYNCBUSY)
-    ;  // Wait for synchronization
+  while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
 
   // reset the generic clock generator control register
   REG_GCLK_GENCTRL = preSDI12_REG_GCLK_GENCTRL;
@@ -292,8 +286,7 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 static inline void resetTC(Tc* TCx) {
   // Disable TCx
   TCx->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;  // unset enable bit
-  while (TCx->COUNT16.SYNCBUSY.bit.ENABLE)
-    ;  // wait for enable sync busy bit to clear
+  while (TCx->COUNT16.SYNCBUSY.bit.ENABLE);    // wait for enable sync busy bit to clear
 
   // Reset TCx with SWRST (Software Reset) bit
   // - Writing a '0' to this bit has no effect.
@@ -303,8 +296,7 @@ static inline void resetTC(Tc* TCx) {
   //   same write-operation will be discarded.
 
   TCx->COUNT16.CTRLA.reg = TC_CTRLA_SWRST;
-  while (TCx->COUNT16.SYNCBUSY.bit.SWRST)
-    ;  // wait for software reset busy bit to clear
+  while (TCx->COUNT16.SYNCBUSY.bit.SWRST);  // wait for software reset busy bit to clear
 }
 
 /**
@@ -341,8 +333,7 @@ sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
   SDI12_TC->COUNT16.CTRLBSET.reg = TC_CTRLBSET_CMD_READSYNC;
 
   // wait for the CMD bits in CTRLBSET to be cleared, meaning the CMD has been executed
-  while (SDI12_TC->COUNT16.CTRLBSET.reg & TC_CTRLBSET_CMD_READSYNC)
-    ;
+  while (SDI12_TC->COUNT16.CTRLBSET.reg & TC_CTRLBSET_CMD_READSYNC);
 
   // read the COUNT register
   return SDI12_TC->COUNT16.COUNT.reg;
@@ -420,8 +411,8 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   // Set the generator control register for the clock generator for the selected clock
   // generator source
   GCLK->GENCTRL[GENERIC_CLOCK_GENERATOR_SDI12].reg = postSDI12_REG_GCLK_GENCTRL;
-  while (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_SDI12)
-    ;  // Wait for the SDI-12 clock generator sync busy bit to clear
+  while (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_SDI12);
+  // Wait for the SDI-12 clock generator sync busy bit to clear
 
   // Calculate the new value for the generic clock peripheral control channel register.
   uint8_t postSDI12_REG_GCLK_PCHCTRL =
@@ -444,8 +435,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
 
   // Set the generic clock peripheral control channel register
   GCLK->PCHCTRL[SDI12_TC_GCLK_ID].reg = postSDI12_REG_GCLK_PCHCTRL;
-  while (!GCLK->PCHCTRL[SDI12_TC_GCLK_ID].bit.CHEN)
-    ;  // wait to finish enabling
+  while (!GCLK->PCHCTRL[SDI12_TC_GCLK_ID].bit.CHEN);  // wait to finish enabling
 
   // fully software reset and disable the TC before we start messing with it
   resetTC(SDI12_TC);
@@ -463,8 +453,8 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   if (SDI12_TC->COUNT16.CTRLBSET.bit
         .DIR) {  // check the current direction first (0=counting up, 1=counting down)
     SDI12_TC->COUNT16.CTRLBSET.bit.DIR = 1;
-    while (SDI12_TC->COUNT16.SYNCBUSY.bit.CTRLB)
-      ;  // wait the control B sync busy bit to clear
+    while (SDI12_TC->COUNT16.SYNCBUSY.bit.CTRLB);
+    // wait the control B sync busy bit to clear
   }
 
   // configure the control register for the timer control
@@ -479,8 +469,7 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
     );
 
   SDI12_TC->COUNT16.CTRLA.reg = postSDI12_REG_TC_CTRLA;
-  while (SDI12_TC->COUNT16.SYNCBUSY.bit.ENABLE)
-    ;  // wait for to finish enabling
+  while (SDI12_TC->COUNT16.SYNCBUSY.bit.ENABLE);  // wait for to finish enabling
 }
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {
@@ -499,9 +488,7 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 
   // Reset the generator control register for the clock generator
   GCLK->GENCTRL[GENERIC_CLOCK_GENERATOR_SDI12].reg = preSDI12_REG_GCLK_GENCTRL;
-  while (
-    GCLK->SYNCBUSY.reg &
-    GCLK_SYNCBUSY_SDI12);  // Wait for the SDI-12 clock generator sync busy bit to clear
+  while (GCLK->SYNCBUSY.reg & GCLK_SYNCBUSY_SDI12);  // Wait for the SDI-12 clock
 }
 
 // Espressif ESP32/ESP8266 boards or other boards faster than 48MHz
