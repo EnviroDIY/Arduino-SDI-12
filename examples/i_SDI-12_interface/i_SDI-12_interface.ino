@@ -45,10 +45,17 @@
 
 #include <SDI12.h>
 
+#ifndef SDI12_DATA_PIN
+#define SDI12_DATA_PIN 7
+#endif
+#ifndef SDI12_POWER_PIN
+#define SDI12_POWER_PIN 22
+#endif
+
 /* connection information */
 uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port */
-int8_t   dataPin       = 7;      /*!< The pin of the SDI-12 data bus */
-int8_t   powerPin      = 22; /*!< The sensor power pin (or -1 if not switching power) */
+int8_t   dataPin       = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin      = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
 char     sensorAddress = '1'; /*!< The address of the SDI-12 sensor */
 
 /** Define the SDI-12 bus */

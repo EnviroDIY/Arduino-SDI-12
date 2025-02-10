@@ -21,11 +21,49 @@
 
 #include <SDI12.h>
 
-uint32_t serialBaud = 115200; /*!< The baud rate for the output serial port */
-int8_t   powerPin   = 22; /*!< The sensor power pin (or -1 if not switching power) */
-uint32_t wake_delay = 0;  /*!< Extra time needed for the sensor to wake (0-100ms) */
-#define FirstPin 5        /*! change to lowest pin number on your board */
-#define LastPin 24        /*! change to highest pin number on your board */
+#ifndef SDI12_DATA_PIN
+#define SDI12_DATA_PIN 7
+#endif
+#ifndef SDI12_POWER_PIN
+#define SDI12_POWER_PIN 22
+#endif
+
+uint32_t serialBaud   = 115200; /*!< The baud rate for the output serial port */
+int8_t   powerPin     = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
+uint32_t wake_delay   = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
+int8_t   firstPin     = 3; /*! change to lowest pin number to search on your board */
+int8_t   lastPin      = 7; /*! change to highest pin number to search on your board */
+int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
+int8_t   lastAddress  = 9; /* The last address in the address space to check (62='z') */
+
+/**
+ * @brief converts allowable address characters ('0'-'9', 'a'-'z', 'A'-'Z') to a
+ * decimal number between 0 and 61 (inclusive) to cover the 62 possible
+ * addresses.
+ */
+byte charToDec(char i) {
+  if ((i >= '0') && (i <= '9')) return i - '0';
+  if ((i >= 'a') && (i <= 'z')) return i - 'a' + 10;
+  if ((i >= 'A') && (i <= 'Z'))
+    return i - 'A' + 36;
+  else
+    return i;
+}
+
+/**
+ * @brief maps a decimal number between 0 and 61 (inclusive) to allowable
+ * address characters '0'-'9', 'a'-'z', 'A'-'Z',
+ *
+ * THIS METHOD IS UNUSED IN THIS EXAMPLE, BUT IT MAY BE HELPFUL.
+ */
+char decToChar(byte i) {
+  if (i < 10) return i + '0';
+  if ((i >= 10) && (i < 36)) return i + 'a' - 10;
+  if ((i >= 36) && (i <= 62))
+    return i + 'A' - 36;
+  else
+    return i;
+}
 
 /**
  * @brief gets identification information from a sensor, and prints it to the serial
@@ -69,9 +107,14 @@ boolean checkActive(SDI12& sdi, char i) {
   for (int j = 0; j < 3; j++) {  // goes through three rapid contact attempts
     sdi.clearBuffer();
     sdi.sendCommand(myCommand, wake_delay);
-    delay(100);
+    Serial.print(">>>");
+    Serial.println(myCommand);
+    uint32_t start_millis = millis();
+    while (!sdi.available() && millis() - start_millis < 250);
     if (sdi.available()) {  // If we here anything, assume we have an active sensor
-      sdi.clearBuffer();
+      Serial.print("<<<");
+      while (sdi.available()) { Serial.write(sdi.read()); }
+      Serial.println();
       return true;
     }
   }
@@ -80,15 +123,11 @@ boolean checkActive(SDI12& sdi, char i) {
 }
 
 void scanAddressSpace(SDI12& sdi) {
-  // scan address space 0-9
-  for (char i = '0'; i <= '9'; i++)
-    if (checkActive(sdi, i)) { printInfo(sdi, i); }
-  // scan address space a-z
-  for (char i = 'a'; i <= 'z'; i++)
-    if (checkActive(sdi, i)) { printInfo(sdi, i); }
-  // scan address space A-Z
-  for (char i = 'A'; i <= 'Z'; i++)
+  // Quickly scan the address space
+  for (byte i = firstAddress; i < lastAddress; i++) {
+    char addr = decToChar(i);
     if (checkActive(sdi, i)) { printInfo(sdi, i); };
+  }
 }
 
 void setup() {
@@ -105,14 +144,14 @@ void setup() {
     delay(5000L);
   }
 
-  for (uint8_t pin = FirstPin; pin <= LastPin; pin++) {
+  for (int8_t pin = firstPin; pin <= lastPin; pin++) {
+    Serial.print("Checking pin ");
+    Serial.print(pin);
+    Serial.println("...");
     if (pin != powerPin) {
       pinMode(pin, INPUT);
       SDI12 mySDI12(pin);
       mySDI12.begin();
-      Serial.print("Checking pin ");
-      Serial.print(pin);
-      Serial.println("...");
       scanAddressSpace(mySDI12);
       mySDI12.end();
     }

@@ -21,8 +21,7 @@ uint32_t serialBaud = 921600; /*!< The baud rate for the output serial port */
 uint32_t serialBaud = 115200; /*!< The baud rate for the output serial port */
 #endif
 int8_t dataPin = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
-int8_t powerPin =
-  SDI12_POWER_PIN; /*!< The sensor power pin (or -1 if not switching power) */
+int8_t       powerPin   = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
 uint32_t     wake_delay = 10; /*!< Extra time needed for the sensor to wake (0-100ms) */
 const int8_t firstAddress =
   0; /* The first address in the address space to check (0='0') */
@@ -614,7 +613,7 @@ void setup() {
     delay(5000L);
   }
 
-  // Quickly Scan the Address Space
+  // Quickly scan the address space
   Serial.println("Scanning all addresses, please wait...");
 
   for (int8_t i = firstAddress; i <= lastAddress; i++) {
