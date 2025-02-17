@@ -9,7 +9,7 @@
  *
  * Example sketch demonstrating how to implement an arduino as a slave on an SDI-12 bus.
  * This may be used, for example, as a middleman between an I2C sensor and an SDI-12
- * datalogger.
+ * data logger.
  *
  * Note that an SDI-12 slave must respond to M! or C! with the number of values it will
  * report and the max time until these values will be available.  This example uses 9

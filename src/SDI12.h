@@ -56,7 +56,7 @@
  * SDI-12 is a communications protocol that uses a single data wire to communicate with
  * up to 62 uniquely addressed sensors.  So long as each sensor supports SDI-12, mixed
  * sensor types can appear on the same data bus.  Each address is a single character.
- * The valid ranges are 0-9, a-z, and A-Z. Only the datalogger can initiate
+ * The valid ranges are 0-9, a-z, and A-Z. Only the data logger can initiate
  * communications on the data bus.
  *
  * It does so by pulling the data line into a 5v state for at least 12 milliseconds to
@@ -65,7 +65,7 @@
  * the address of the device who should respond.  If there is a sensor on the bus with
  * that address, it is responsible for responding to the command.  Sensors should ignore
  * commands that were not issued to them, and should return to a sleep state until the
- * datalogger again issues the wakeup sequence.
+ * data logger again issues the wakeup sequence.
  *
  * @section connection_details Connection Details
  *
@@ -575,7 +575,7 @@ class SDI12 : public Stream {
    * @brief Set the SDI12::_datapin and begin the SDI-12 object.
    *
    * @copydetails SDI12::begin()
-   * If the SDI-12 instance is created using the empty constuctor, this must be used
+   * If the SDI-12 instance is created using the empty constructor, this must be used
    * to set the data pin.
    *
    * @param dataPin The data pin's digital pin number
@@ -597,7 +597,7 @@ class SDI12 : public Stream {
    * sensor.
    *
    * The timeout return for an Arduino stream object when no character is available in
-   * the Rx buffer is "0."  For enviromental sensors (the typical SDI-12 users) 0 is a
+   * the Rx buffer is "0."  For environmental sensors (the typical SDI-12 users) 0 is a
    * common result value.  To better distinguish between a timeout because of no
    * sensor response and a true zero return, the timeout should be set to some value
    * that is NOT a possible return from that sensor.  If the timeout is not set, -9999
@@ -609,7 +609,7 @@ class SDI12 : public Stream {
    * return from the sensor.
    *
    * The "standard" timeout return for an Arduino stream object when no character is
-   * available in the Rx buffer is "0."  For enviromental sensors (the typical SDI-12
+   * available in the Rx buffer is "0."  For environmental sensors (the typical SDI-12
    * users) 0 is a common result value.  To better distinguish between a timeout because
    * of no sensor response and a true zero return, the timeout should be set to some
    * value that is NOT a possible return from that sensor.  If the timeout is not set,
@@ -688,7 +688,7 @@ class SDI12 : public Stream {
    * @brief Check if this instance is active
    *
    * @return True indicates that the curren SDI-12
-   * instace is the active one.
+   * instance is the active one.
    *
    * isActive() is a method for checking if the object is the active object.  Returns
    * true if the object is currently the active object, false otherwise.
@@ -792,7 +792,7 @@ class SDI12 : public Stream {
    *
    * @param enable True to enable pin interrupts
    *
-   * A private helper function to turn pin interupts on or off
+   * A private helper function to turn pin interrupts on or off
    */
   void setPinInterrupts(bool enable);
   /**
@@ -830,7 +830,7 @@ class SDI12 : public Stream {
    * @name Waking Up and Talking To Sensors
    *
    * @brief These functions are needed to communicate with SDI-12 sensors (slaves) or an
-   * SDI-12 datalogger (master).
+   * SDI-12 data logger (master).
    */
   /**@{*/
  private:
@@ -899,13 +899,13 @@ class SDI12 : public Stream {
    *
    * Sets the state to transmitting, writes a character, and then sets the state back to
    * listening.  This function must be implemented as part of the Arduino Stream
-   * instance, but is *NOT* intenteded to be used for SDI-12 objects.  Instead, use the
+   * instance, but is *NOT* intended to be used for SDI-12 objects.  Instead, use the
    * SDI12::sendCommand() or SDI12::sendResponse() functions.
    */
   virtual size_t write(uint8_t byte);
 
   /**
-   * @brief Send a command out on the data line, acting as a datalogger (master)
+   * @brief Send a command out on the data line, acting as a data logger (master)
    *
    * @param cmd the command to send
    *

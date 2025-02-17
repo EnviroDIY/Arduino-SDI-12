@@ -609,12 +609,12 @@ uint16_t SDI12::calculateCRC(const char* resp) {
 
 uint16_t SDI12::calculateCRC(FlashString resp) {
   uint16_t crc = 0;
-  char     responsechar;
+  char     response_char;
 
   for (size_t i = 0; i < strlen_P((PGM_P)resp); i++) {
-    responsechar = (char)pgm_read_byte((const char*)resp + i);
-    crc ^= static_cast<uint16_t>(responsechar);  // Set the CRC equal to the exclusive
-                                                 // OR of the character and itself
+    response_char = (char)pgm_read_byte((const char*)resp + i);
+    crc ^= static_cast<uint16_t>(response_char);  // Set the CRC equal to the exclusive
+                                                  // OR of the character and itself
     for (int j = 0; j < 8; j++) {                // count = 1 to 8
       if (crc & 0x0001) {  // if the least significant bit of the CRC is one
         crc >>= 1;         // right shift the CRC one bit
@@ -720,7 +720,7 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     // the case of the DEL character.  (DEL = 1 HIGH start - 7 LOW (1) data bits - 1 LOW
     // (1) even parity bit - 1 LOW stop bit, last level change before line idle is the
     // end of the start bit)  Because we cannot detect the end of the stop bit, in
-    // sequention characters the next change will be the next start bit and it will
+    // sequential characters the next change will be the next start bit and it will
     // arrive with the rxState set to the middle of the last character.  So, since we
     // cannot depend on the rxState telling us if we're WAITING_FOR_START_BIT, we have
     // to figure it out by the time passed.
@@ -731,7 +731,7 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     // and stop bits.
     //      - If the total number of bits in this frame is more than the number of
     // data+parity bits remaining in the character, then the number of data+parity bits
-    // is equal to the number of bits remaining for the character and partiy.
+    // is equal to the number of bits remaining for the character and parity.
     //      - If the total number of bits in this frame is less than the number of data
     // bits left for the character and parity, then the number of data+parity bits
     // received in this frame is equal to the total number of bits received in this

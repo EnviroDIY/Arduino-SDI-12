@@ -36,7 +36,7 @@ sensors. This library provides a general software solution, without requiring
  * @brief A string description of the timer to use
  *
  * @def TIMER_INT_TYPE
- * @brief The interger type of the timer.
+ * @brief The integer type of the timer.
  *
  * @def TIMER_INT_SIZE
  * @brief The size in bits of the timer count value.
@@ -298,7 +298,7 @@ sensors. This library provides a general software solution, without requiring
 #endif
 
 
-/** The interger type (size) of the timer return value */
+/** The integer type (size) of the timer return value */
 typedef TIMER_INT_TYPE sdi12timer_t;
 
 /**

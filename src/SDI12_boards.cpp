@@ -332,7 +332,7 @@ sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
   // see:
   // https://onlinedocs.microchip.com/oxy/GUID-F5813793-E016-46F5-A9E2-718D8BCED496-en-US-13/GUID-5033DFD7-EB2D-4870-AE98-D40CADB0531E.html
 
-  // Code taken from Microchip article on how to read the tiemr value
+  // Code taken from Microchip article on how to read the timer value
   // https://microchip.my.site.com/s/article/SAM-D5x-E5x--Reading-TC-TCC-COUNT-register
 
 
