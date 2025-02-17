@@ -26,8 +26,8 @@
 #endif
 
 /* connection information */
-uint32_t serialBaud   = 115200; /*!< The baud rate for the output serial port */
-int8_t   dataPin      = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
+uint32_t serialBaud   = 115200;         /*!< The baud rate for the output serial port */
+int8_t   dataPin      = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin     = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
 int8_t   lastAddress = 62; /* The last address in the address space to check (62='z') */
@@ -82,7 +82,7 @@ void printInfo(char i) {
   command += (char)i;
   command += "I!";
   mySDI12.sendCommand(command);
-  delay(100);
+  delay(30);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
@@ -106,8 +106,6 @@ bool getResults(char i, int resultsExpected) {
   uint8_t cmd_number      = 0;
   while (resultsReceived < resultsExpected && cmd_number <= 9) {
     String command = "";
-    // in this example we will only take the 'DO' measurement
-    command = "";
     command += i;
     command += "D";
     command += cmd_number;
@@ -124,7 +122,7 @@ bool getResults(char i, int resultsExpected) {
       char c = mySDI12.peek();
       if (c == '-' || (c >= '0' && c <= '9') || c == '.') {
         float result = mySDI12.parseFloat(SKIP_NONE);
-        Serial.print(String(result, 10));
+        Serial.print(String(result, 7));
         if (result != -9999) { resultsReceived++; }
       } else if (c == '+') {
         mySDI12.read();
@@ -150,10 +148,10 @@ bool takeMeasurement(char i, String meas_type = "") {
   command += meas_type;
   command += "!";  // SDI-12 measurement command format  [address]['M'][!]
   mySDI12.sendCommand(command);
-  delay(100);
+  delay(30);
 
-  // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of
-  // measurments available, 0-9]
+  // wait for acknowledgement with format [address][ttt (3 char, seconds)][number of
+  // measurements available, 0-9]
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
 
@@ -200,7 +198,7 @@ boolean checkActive(char i) {
 
   for (int j = 0; j < 3; j++) {  // goes through three rapid contact attempts
     mySDI12.sendCommand(myCommand);
-    delay(100);
+    delay(30);
     if (mySDI12.available()) {  // If we here anything, assume we have an active sensor
       mySDI12.clearBuffer();
       return true;
@@ -238,7 +236,7 @@ void setup() {
   Serial.println("Protocol Version, Sensor Address, Sensor Vendor, Sensor Model, "
                  "Sensor Version, Sensor ID");
 
-  for (byte i = firstAddress; i < lastAddress; i++) {
+  for (byte i = firstAddress; i <= lastAddress; i++) {
     char addr = decToChar(i);
     if (checkActive(addr)) {
       numSensors++;
@@ -265,7 +263,7 @@ void setup() {
 
 void loop() {
   // measure one at a time
-  for (byte i = firstAddress; i < lastAddress; i++) {
+  for (byte i = firstAddress; i <= lastAddress; i++) {
     char addr = decToChar(i);
     if (isActive[i]) {
       Serial.print(millis() / 1000);

@@ -302,8 +302,8 @@ startMeasurementResult startMeasurement(char address, bool is_concurrent = false
     Serial.println(command);
   }
 
-  // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of
-  // measurments available, 0-9]
+  // wait for acknowledgement with format [address][ttt (3 char, seconds)][number of
+  // measurements available, 0-9]
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
   if (printCommands) {

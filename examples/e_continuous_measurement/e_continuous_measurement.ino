@@ -22,9 +22,10 @@
 #define SDI12_POWER_PIN 22
 #endif
 
-uint32_t serialBaud   = 115200; /*!< The baud rate for the output serial port */
-int8_t   dataPin      = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
+uint32_t serialBaud   = 115200;         /*!< The baud rate for the output serial port */
+int8_t   dataPin      = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin     = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
+uint32_t wake_delay   = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
 int8_t   lastAddress = 62; /* The last address in the address space to check (62='z') */
 
@@ -77,8 +78,8 @@ void printInfo(char i) {
   String command = "";
   command += (char)i;
   command += "I!";
-  mySDI12.sendCommand(command);
-  delay(100);
+  mySDI12.sendCommand(command, wake_delay);
+  delay(30);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
@@ -102,13 +103,11 @@ bool getContinuousResults(char i, int resultsExpected) {
   uint8_t cmd_number      = 0;
   while (resultsReceived < resultsExpected && cmd_number <= 9) {
     String command = "";
-    // in this example we will only take the 'DO' measurement
-    command = "";
     command += i;
     command += "R";
     command += cmd_number;
     command += "!";  // SDI-12 command to get data [address][D][dataOption][!]
-    mySDI12.sendCommand(command);
+    mySDI12.sendCommand(command, wake_delay);
 
     uint32_t start = millis();
     while (mySDI12.available() < 3 && (millis() - start) < 1500) {}
@@ -147,8 +146,8 @@ boolean checkActive(char i) {
   myCommand += "!";
 
   for (int j = 0; j < 3; j++) {  // goes through three rapid contact attempts
-    mySDI12.sendCommand(myCommand);
-    delay(100);
+    mySDI12.sendCommand(myCommand, wake_delay);
+    delay(30);
     if (mySDI12.available()) {  // If we here anything, assume we have an active sensor
       mySDI12.clearBuffer();
       return true;
@@ -174,7 +173,7 @@ void setup() {
     Serial.println("Powering up sensors, wait...");
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
-    delay(10000L);
+    delay(5000L);
   }
 
   // Quickly scan the address space
@@ -182,7 +181,7 @@ void setup() {
   Serial.println("Sensor Address, Protocol Version, Sensor Vendor, Sensor Model, "
                  "Sensor Version, Sensor ID");
 
-  for (byte i = firstAddress; i < lastAddress; i++) {
+  for (byte i = firstAddress; i <= lastAddress; i++) {
     char addr = decToChar(i);
     if (checkActive(addr)) {
       numSensors++;
@@ -210,13 +209,15 @@ void setup() {
 
 void loop() {
   // measure one at a time
-  for (byte i = firstAddress; i < lastAddress; i++) {
+  for (byte i = firstAddress; i <= lastAddress; i++) {
     char addr = decToChar(i);
     if (isActive[i]) {
       // Serial.print(millis() / 1000);
       Serial.print(millis());
       Serial.print(", ");
-      getContinuousResults(addr, 4);
+      Serial.print(addr);
+      Serial.print(", ");
+      getContinuousResults(addr, 0);
       Serial.println();
     }
   }

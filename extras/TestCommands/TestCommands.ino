@@ -350,7 +350,7 @@ bool getContinuousResults(char address, int resultsExpected,
       char c = mySDI12.peek();
       if (c == '-' || (c >= '0' && c <= '9') || c == '.') {
         float result = mySDI12.parseFloat(SKIP_NONE);
-        Serial.print(String(result, 10));
+        Serial.print(String(result, 7));
         if (result != -9999) { resultsReceived++; }
       } else if (c >= 0 && c != '\r' && c != '\n') {
         Serial.write(mySDI12.read());
@@ -394,8 +394,8 @@ startMeasurementResult startMeasurement(char address, bool is_concurrent = false
     Serial.println(command);
   }
 
-  // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of
-  // measurments available, 0-9]
+  // wait for acknowledgement with format [address][ttt (3 char, seconds)][number of
+  // measurements available, 0-9]
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
   if (printCommands) {

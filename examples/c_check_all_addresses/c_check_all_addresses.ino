@@ -78,7 +78,7 @@ void printInfo(SDI12& sdi, char i) {
   command += "I!";
   sdi.clearBuffer();
   sdi.sendCommand(command, wake_delay);
-  delay(100);
+  delay(30);
 
   String sdiResponse = sdi.readStringUntil('\n');
   sdiResponse.trim();
@@ -124,8 +124,12 @@ boolean checkActive(SDI12& sdi, char i) {
 
 void scanAddressSpace(SDI12& sdi) {
   // Quickly scan the address space
-  for (byte i = firstAddress; i < lastAddress; i++) {
+  for (byte i = firstAddress; i <= lastAddress; i++) {
     char addr = decToChar(i);
+    Serial.print("i=");
+    Serial.print(i);
+    Serial.print("addr=");
+    Serial.print(addr);
     if (checkActive(sdi, addr)) { printInfo(sdi, addr); };
   }
 }

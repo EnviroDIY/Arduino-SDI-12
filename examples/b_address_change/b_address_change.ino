@@ -42,7 +42,7 @@ void printInfo(char i) {
   command += (char)i;
   command += "I!";
   mySDI12.sendCommand(command, wake_delay);
-  delay(100);
+  delay(30);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
@@ -73,7 +73,7 @@ boolean checkActive(byte i) {  // this checks for activity at a particular addre
 
   for (int j = 0; j < 3; j++) {  // goes through three rapid contact attempts
     mySDI12.sendCommand(myCommand, wake_delay);
-    delay(100);
+    delay(30);
     if (mySDI12.available()) {  // If we here anything, assume we have an active sensor
       Serial.println("Occupied");
       mySDI12.clearBuffer();
