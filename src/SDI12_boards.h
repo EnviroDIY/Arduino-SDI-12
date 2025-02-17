@@ -157,6 +157,8 @@ sensors. This library provides a general software solution, without requiring
 
 /// The clock generator number to use
 #define GENERIC_CLOCK_GENERATOR_SDI12 (4u)
+/// The generic clock multiplexer IDs for the timer peripheral
+#define SDI12_TC_GCLK_ID GCM_TCC2_TC3
 /// The timer controller to use
 #define SDI12_TC TC3
 
@@ -184,10 +186,10 @@ sensors. This library provides a general software solution, without requiring
 #define GENERIC_CLOCK_GENERATOR_SDI12 (6u)
 /// The bit to check for synchronization
 #define GCLK_SYNCBUSY_SDI12 GCLK_SYNCBUSY_GENCTRL6
+/// The peripheral index within the generic clock for the selected timer controller
+#define SDI12_TC_GCLK_ID TC2_GCLK_ID
 /// The timer controller to use
 #define SDI12_TC TC2
-// The peripheral index within the generic clock for the selected timer controller
-#define SDI12_TC_GCLK_ID TC2_GCLK_ID
 
 // For the SAMD51, reading the timer is a multi-step process of first writing a read
 // sync bit, waiting, and then reading the register.  Because of the steps, we need a

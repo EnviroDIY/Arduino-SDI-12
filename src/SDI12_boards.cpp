@@ -175,6 +175,10 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 
 /// Fully reset the TC to factory settings and disable it
 static inline void resetTC(Tc* TCx) {
+  // Disable TCx, if and only if the timer is set to anything
+  // If the timer has no set configuration and is stopped, activating the software reset
+  // will cause a hang.
+  if (TCx->COUNT16.CTRLA.reg == 0 && TCx->COUNT16.STATUS.bit.STOP == 1) { return; }
   // Disable TCx
   TCx->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
   while (TCx->COUNT16.STATUS.bit.SYNCBUSY);
@@ -199,23 +203,15 @@ static uint32_t preSDI12_REG_GCLK_GENDIV;
  * This is an 32-bit register located at 0x40000C00 + 0x4
  */
 static uint32_t preSDI12_REG_GCLK_GENCTRL;
-/**
- * @brief The value of generic clock control register prior to being set for
- * SDI-12.
- *
- * This is an 32-bit register located at 0x40000C00 + 0x2
- */
-static uint8_t preSDI12_REG_GCLK_CLKCTRL;
 
 sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
-  return REG_TC3_COUNT8_COUNT;
+  return REG_TC3_COUNT16_COUNT;
 }
 
 void SDI12Timer::configSDI12TimerPrescale(void) {
   // read control register values prior to changes
   preSDI12_REG_GCLK_GENDIV  = REG_GCLK_GENDIV;
   preSDI12_REG_GCLK_GENCTRL = REG_GCLK_GENCTRL;
-  preSDI12_REG_GCLK_CLKCTRL = REG_GCLK_CLKCTRL;
 
   // Set up the generic clock generator divisor register
   // NOTE: Could write the below as GCLK->GENDIV.reg instead of REG_GCLK_GENDIV
@@ -224,40 +220,58 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
     GCLK_GENDIV_DIV(6);               // Divide the clock source by divisor 6
   while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
 
-
   // Set up the generic clock generator control register
-  // NOTE: Could write the below as GCLK->GENCTRL.reg instead ofREG_GCLK_GENCTRL
+  // NOTE: `REG_GCLK_GENCTRL` and `REG_GCLK_GENCTRL` mean the same thing
   REG_GCLK_GENCTRL = (GCLK_GENCTRL_ID(GENERIC_CLOCK_GENERATOR_SDI12) |  // Select GCLK4
                       GCLK_GENCTRL_SRC_DFLL48M |  // Select the 48MHz clock source
                       GCLK_GENCTRL_IDC |     // Set the duty cycle to 50/50 HIGH/LOW
-                      GCLK_GENCTRL_GENEN) &  // Enable the generic clock clontrol
+                      GCLK_GENCTRL_GENEN) &  // Enable the generic clock generator
     ~GCLK_GENCTRL_RUNSTDBY &                 // Do NOT run in stand by
     ~GCLK_GENCTRL_DIVSEL;  // Divide clock source by GENDIV.DIV: 48MHz/5=9.6MHz
                            // ^^ & ~ for DIVSEL to set DIVSEL to 0
   while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
 
   // Set up the generic clock control register
-  // NOTE: Could write the below as GCLK->CLKCTRL.reg instead of REG_GCLK_CLKCTRL
+  // NOTE: `GCLK->CLKCTRL.reg` and `REG_GCLK_CLKCTRL` mean the same thing
   // Feed GCLK4 to TC3 (also feeds to TCC2, the two must have the same source).
   // TC3 (and TCC2) seem to be free, so I'm using them.
   // TC4 is used by Tone and Servo, TC5 is tied to the same clock as TC4.
   // TC6 and TC7 are not available on all boards.
-  REG_GCLK_CLKCTRL = GCLK_CLKCTRL_GEN_GCLK4 |  // Select Generic Clock Generator
-                                               // 4
+  REG_GCLK_CLKCTRL = GCLK_CLKCTRL_GEN_GCLK4 |  // Select Generic Clock Generator 4
     GCLK_CLKCTRL_CLKEN |                       // Enable the generic clock generator
-    GCLK_CLKCTRL_ID_TCC2_TC3;  // Feed the Generic Clock Generator 4 to TCC2 and TC3
-
+    GCLK_CLKCTRL_ID_TCC2_TC3;  // Select the peripheral multiplexer for TCC2 and TC3 to
+                               // link them with GCLK4
   while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
 
   // fully software reset and disable the TC before we start messing with it
   resetTC(SDI12_TC);
 
-  // Set up the control register for Timer Controller 3
-  REG_TC3_CTRLA |=
-    TC_CTRLA_PRESCALER_DIV16 |  // Set prescaler to 16, 9.6MHz/16 = 600kHz
-    TC_CTRLA_WAVEGEN_NFRQ |     // Put the timer TC3 into normal frequency (NFRQ) mode
-    TC_CTRLA_MODE_COUNT16 |     // Put the timer TC3 into 16-bit mode
-    TC_CTRLA_ENABLE;            // Enable TC3
+  // NOTE: The timer capture and waveform output inversion are controlled by CTRLC, but
+  // that is the only thing controlled by CTRLC and it's all off after a reset, so since
+  // we just reset, we don't need to mess with that register.
+
+  // Set the timer to count up
+  // >> This bit is used to change the direction of the counter.
+  // >> Writing a '0' to this bit has no effect
+  // >> Writing a '1' to this bit will clear the bit and make the counter count up.
+  // SRGD Note: Writing to 1 actually flips the direction from whatever it was, not
+  // reset it to up
+  if (SDI12_TC->COUNT16.CTRLBSET.bit
+        .DIR) {  // check the current direction first (0=counting up, 1=counting down)
+    SDI12_TC->COUNT16.CTRLBSET.bit.DIR = 1;
+    while (SDI12_TC->COUNT16.STATUS.bit.SYNCBUSY);  // Wait for synchronization
+  }
+
+  // configure the control register for the timer control
+  uint32_t postSDI12_REG_TC_CTRLA = ~TC_CTRLA_RUNSTDBY &  // Disable run on standby
+    (TC_CTRLA_PRESCALER_DIV16 |  // Set prescaler to 16, 9.6MHz/16 = 600kHz
+     TC_CTRLA_WAVEGEN_NFRQ |     // Put the timer into normal frequency (NFRQ) mode
+     TCC_CTRLA_PRESCSYNC_GCLK |  // Reload or reset the counter on next generic clock
+     TC_CTRLA_MODE_COUNT16 |     // Put the timer into 16-bit mode
+     TC_CTRLA_ENABLE             // Enable the timer
+    );
+  // apply the new settings
+  SDI12_TC->COUNT16.CTRLA.reg = postSDI12_REG_TC_CTRLA;
   while (SDI12_TC->COUNT16.STATUS.bit.SYNCBUSY);  // Wait for synchronization
 }
 
@@ -270,12 +284,22 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   REG_GCLK_GENDIV = preSDI12_REG_GCLK_GENDIV;
   while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
 
-  // reset the generic clock control register
-  REG_GCLK_CLKCTRL = preSDI12_REG_GCLK_CLKCTRL;
-  while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
-
   // reset the generic clock generator control register
   REG_GCLK_GENCTRL = preSDI12_REG_GCLK_GENCTRL;
+  while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
+
+  // Set the generic clock multiplexer for the timer peripheral back to the default
+  // generic clock generator (GCLK0)
+  // NOTE: We have no way of knowing what generic clock generator the multiplexer for
+  // our timer was on before we started messing with it. The register to set the link is
+  // write only - you must supply both the peripheral GCLK clock ID (multiplexer ID) and
+  // the clock generator in one write. Reading the register doesn't give anything
+  // meaningful.
+  REG_GCLK_CLKCTRL = GCLK_CLKCTRL_GEN_GCLK0 |  // Select Generic Clock Generator 0
+    GCLK_CLKCTRL_ID_TCC2_TC3;  // Select the peripheral multiplexer for TCC2 and TC3 to
+                               // link them back to GCLK0
+  // NOTE: Don't disable any generic clocks! We cannot disable GCLK4 directly, but if
+  // nothing else is linked to it, it should not be active.
   while (GCLK->STATUS.bit.SYNCBUSY);  // Wait for synchronization
 }
 
@@ -285,12 +309,9 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 /// Fully reset the TC to factory settings and disable it
 static inline void resetTC(Tc* TCx) {
   // Disable TCx, if and only if the timer is set to anything
-  // If the timer has no set configuration, activating the software reset will cause a
-  // hang.
-  if (GCLK->GENCTRL[GENERIC_CLOCK_GENERATOR_SDI12].reg == 0 &&
-      GCLK->PCHCTRL[SDI12_TC_GCLK_ID].reg == 0 && TCx->COUNT16.CTRLA.reg == 0) {
-    return;
-  }
+  // If the timer has no set configuration and is stopped, activating the software reset
+  // will cause a hang.
+  if (TCx->COUNT16.CTRLA.reg == 0 && TCx->COUNT16.STATUS.bit.STOP == 1) { return; }
 
   TCx->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;  // unset enable bit
   while (TCx->COUNT16.SYNCBUSY.bit.ENABLE);    // wait for enable sync busy bit to clear
@@ -471,10 +492,10 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
     ~TC_CTRLA_RUNSTDBY &         // Disable run on standby
     (TC_CTRLA_PRESCALER_DIV16 |  // Set prescaler to 16
      TCC_CTRLA_PRESCSYNC_GCLK |  // Reload or reset the counter on next generic clock
-     TC_CTRLA_MODE_COUNT16 |     // Put the timer TC3 into 16-bit mode
-     TC_CTRLA_ENABLE             // Enable TC3
+     TC_CTRLA_MODE_COUNT16 |     // Put the timer into 16-bit mode
+     TC_CTRLA_ENABLE             // Enable the timer
     );
-
+  // apply the new settings
   SDI12_TC->COUNT16.CTRLA.reg = postSDI12_REG_TC_CTRLA;
   while (SDI12_TC->COUNT16.SYNCBUSY.bit.ENABLE);  // wait for to finish enabling
 }
@@ -490,7 +511,7 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   // Only wait for the enable bit to return to zero if the timer wasn't enabled prior to
   // this library enabling it
   if (!bitRead(GCLK->PCHCTRL[SDI12_TC_GCLK_ID].reg, GCLK_PCHCTRL_CHEN_Pos)) {
-    while (GCLK->PCHCTRL[SDI12_TC_GCLK_ID].bit.CHEN);  // wait to finish diabling
+    while (GCLK->PCHCTRL[SDI12_TC_GCLK_ID].bit.CHEN);  // wait to finish disabling
   }
 
   // Reset the generator control register for the clock generator
