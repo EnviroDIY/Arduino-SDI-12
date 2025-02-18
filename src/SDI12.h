@@ -465,44 +465,52 @@ class SDI12 : public Stream {
   /**
    * @brief Return the first valid (long) integer value from the current position.
    *
-   * The value of lookahead determines how parseInt looks ahead in the stream.
-   * See LookaheadMode enumeration at the top of the file.
-   * Lookahead is terminated by the first character that is not a valid part of an
-   * integer.
-   * Once parsing commences, 'ignore' will be skipped in the stream.
+   * This function is customized to only return numbers as they are passed in the data
+   * command responses.
    *
-   * @param lookahead the mode to use to look ahead in the
-   * stream, default is LookaheadMode::SKIP_ALL
-   * @param ignore a character to ignore in the stream, default is '\\x01'
-   * @return The first valid integer in the stream
+   * A data command response is structured <addr><values><CR><LF> or
+   * <addr><values><CRC><CR><LF> the value portion must be structred as pd.d
+   * - p - the polarity sign (+ or -)
+   * - d - numeric digits before the decimal place
+   * - . - the decimal point (optional)
+   * - d - numeric digits after the decimal point
+   * - the maximum number of digits for a data value is 7, even without a decimal point
+   * - the minimum number of digits for a data value (excluding the decimal point) is 1
+   * - the maximum number of characters in a data value is 9 (the (polarity sign + 7
+   * digits + the decimal point))
+   * - The polarity symbol (+ or -) acts as a delimeter between the numeric values
+   *
+   * Because of the well codified structure of the response, we know that we can always
+   * set the LookaheadMode to not skip any characters (LookaheadMode::SKIP_NONE), we
+   * accept a + or - only as the first character, and we should not ignore any other
+   * characters.
+   *
+   * @param warning Any input LookaheadMode or ignore character will be ignored by this
+   * function!
+   * @return The next valid integer in the stream or -9999 if there is a timeout or the
+   * next character is not part of an integer.
    *
    * @note This function _hides_ the Stream class function to allow a custom value to be
    * returned on timeout.  It cannot overwrite the Stream function because it is not
    * virtual.
-   * @see @ref SDI12::LookaheadMode
    */
-  long parseInt(LookaheadMode lookahead = SKIP_ALL, char ignore = NO_IGNORE_CHAR);
+  long parseInt(LookaheadMode = SKIP_NONE, char = '+');
 
   /**
    * @brief Return the first valid float value from the current position.
    *
-   * The value of lookahead determines how parseInt looks ahead in the stream.
-   * See LookaheadMode enumeration at the top of the file.
-   * Lookahead is terminated by the first character that is not a valid part of an
-   * integer.
-   * Once parsing commences, 'ignore' will be skipped in the stream.
+   * This is identical to SDI12::parseInt(LookaheadMode, char) except that it looks for
+   * a decimal and returns a float.
    *
-   * @param lookahead the mode to use to look ahead in the
-   * stream, default is LookaheadMode::SKIP_ALL
-   * @param ignore a character to ignore in the stream, default is '\\x01'
-   * @return The first valid float in the stream
+   * @return The first valid float in the stream or -9999 if there is a timeout or the
+   * next character is not part of an float.
    *
    * @note This function _hides_ the Stream class function to allow a custom value to be
    * returned on timeout.  It cannot overwrite the Stream function because it is not
    * virtual.
-   * @see @ref SDI12::LookaheadMode
+   * @see @ref SDI12::parseInt(LookaheadMode, char)
    */
-  float parseFloat(LookaheadMode lookahead = SKIP_ALL, char ignore = NO_IGNORE_CHAR);
+  float parseFloat(LookaheadMode = SKIP_NONE, char = '+');
 
  protected:
   /**
@@ -513,6 +521,9 @@ class SDI12 : public Stream {
    * @param detectDecimal True to accept a decimal point ('.') as part of a
    * number
    * @return The next numeric digit in the stream
+   *
+   * @note This peekNextDigit function is almost identical to the Stream version, but it
+   * accepts a "+" as the start of a digit.
    */
   int peekNextDigit(LookaheadMode lookahead, bool detectDecimal);
   /**@}*/

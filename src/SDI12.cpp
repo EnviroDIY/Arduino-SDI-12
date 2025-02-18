@@ -115,43 +115,30 @@ int SDI12::read() {
 }
 
 // these functions HIDE the stream equivalents to return a custom timeout value
-// This peekNextDigit function is identical to the Stream version
-int SDI12::peekNextDigit(LookaheadMode lookahead, bool detectDecimal) {
+// This peekNextDigit function is almost identical to the Stream version, but it accepts
+// a "+" as the start of a digit and doesn't support any look ahead.
+int SDI12::peekNextDigit(LookaheadMode, bool detectDecimal) {
   int c;
-  while (true) {
-    c = timedPeek();
+  c = timedPeek();
 
-    if (c < 0 || c == '-' || (c >= '0' && c <= '9') || (detectDecimal && c == '.'))
-      return c;
-
-    switch (lookahead) {
-      case SKIP_NONE: return -1;  // Fail code.
-      case SKIP_WHITESPACE:
-        switch (c) {
-          case ' ':
-          case '\t':
-          case '\r':
-          case '\n': break;
-          default: return -1;  // Fail code.
-        }
-      case SKIP_ALL: break;
-    }
-    read();  // discard non-numeric
+  if (c < 0 || c == '-' || c == '+' || (c >= '0' && c <= '9') ||
+      (detectDecimal && c == '.')) {
+    return c;
   }
+  return -1;  // Fail code
 }
 
-long SDI12::parseInt(LookaheadMode lookahead, char ignore) {
+long SDI12::parseInt(LookaheadMode, char) {
   bool     isNegative = false;
   uint16_t value      = 0;
   int      c;
 
-  c = peekNextDigit(lookahead, false);
-  // ignore non numeric leading characters
-  if (c < 0) return TIMEOUT;  // TIMEOUT returned if timeout
-  //  THIS IS THE ONLY DIFFERENCE BETWEEN THIS FUNCTION AND THE STREAM DEFAULT!
+  c = peekNextDigit(SKIP_NONE, false);
+  if (c < 0)
+    return TIMEOUT;  // TIMEOUT value returned if peek gives a -1 (indicating timeout)
 
   do {
-    if (c == ignore) {  // ignore this character
+    if (c == '+') {  // ignore an initial '+'
     } else if (c == '-') {
       isNegative = true;
     } else if (c >= '0' && c <= '9') {  // is c a digit?
@@ -159,27 +146,26 @@ long SDI12::parseInt(LookaheadMode lookahead, char ignore) {
     }
     read();  // consume the character we got with peek
     c = timedPeek();
-  } while ((c >= '0' && c <= '9') || c == ignore);
+  } while ((c >= '0' && c <= '9'));
 
   if (isNegative) value = -value;
   return value;
 }
 
 // the same as parseInt but returns a floating point value
-float SDI12::parseFloat(LookaheadMode lookahead, char ignore) {
+float SDI12::parseFloat(LookaheadMode, char) {
   bool  isNegative = false;
   bool  isFraction = false;
   long  value      = 0;
   int   c;
   float fraction = 1.0;
 
-  c = peekNextDigit(lookahead, true);
-  // ignore non numeric leading characters
-  if (c < 0) return TIMEOUT;  // TIMEOUT returned if timeout
-  //  THIS IS THE ONLY DIFFERENCE BETWEEN THIS FUNCTION AND THE STREAM DEFAULT!
+  c = peekNextDigit(SKIP_NONE, true);
+  if (c < 0)
+    return TIMEOUT;  // TIMEOUT value returned if peek gives a -1 (indicating timeout)
 
   do {
-    if (c == ignore) {  // ignore
+    if (c == '+') {  // ignore an initial '+'
     } else if (c == '-') {
       isNegative = true;
     } else if (c == '.') {
@@ -190,7 +176,7 @@ float SDI12::parseFloat(LookaheadMode lookahead, char ignore) {
     }
     read();  // consume the character we got with peek
     c = timedPeek();
-  } while ((c >= '0' && c <= '9') || (c == '.' && !isFraction) || c == ignore);
+  } while ((c >= '0' && c <= '9') || (c == '.' && !isFraction));
 
   if (isNegative) value = -value;
   if (isFraction)
@@ -615,7 +601,7 @@ uint16_t SDI12::calculateCRC(FlashString resp) {
     response_char = (char)pgm_read_byte((const char*)resp + i);
     crc ^= static_cast<uint16_t>(response_char);  // Set the CRC equal to the exclusive
                                                   // OR of the character and itself
-    for (int j = 0; j < 8; j++) {                // count = 1 to 8
+    for (int j = 0; j < 8; j++) {                 // count = 1 to 8
       if (crc & 0x0001) {  // if the least significant bit of the CRC is one
         crc >>= 1;         // right shift the CRC one bit
         crc ^= POLY;       // set CRC equal to the exclusive OR of POLY and itself
