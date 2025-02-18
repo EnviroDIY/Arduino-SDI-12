@@ -63,7 +63,7 @@ void printInfo(char i) {
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-boolean checkActive(byte i) {  // this checks for activity at a particular address
+bool checkActive(byte i) {  // this checks for activity at a particular address
   Serial.print("Checking address ");
   Serial.print((char)i);
   Serial.print("...");
@@ -74,7 +74,7 @@ boolean checkActive(byte i) {  // this checks for activity at a particular addre
   for (int j = 0; j < 3; j++) {  // goes through three rapid contact attempts
     mySDI12.sendCommand(myCommand, wake_delay);
     delay(30);
-    if (mySDI12.available()) {  // If we here anything, assume we have an active sensor
+    if (mySDI12.available()) {  // If we hear anything, assume we have an active sensor
       Serial.println("Occupied");
       mySDI12.clearBuffer();
       return true;

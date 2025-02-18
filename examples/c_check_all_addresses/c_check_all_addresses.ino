@@ -98,7 +98,7 @@ void printInfo(SDI12& sdi, char i) {
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-boolean checkActive(SDI12& sdi, char i) {
+bool checkActive(SDI12& sdi, char i) {
   String myCommand = "";
   myCommand        = "";
   myCommand += (char)i;  // sends basic 'acknowledge' command [address][!]
@@ -111,7 +111,7 @@ boolean checkActive(SDI12& sdi, char i) {
     Serial.println(myCommand);
     uint32_t start_millis = millis();
     while (!sdi.available() && millis() - start_millis < 250);
-    if (sdi.available()) {  // If we here anything, assume we have an active sensor
+    if (sdi.available()) {  // If we hear anything, assume we have an active sensor
       Serial.print("<<<");
       while (sdi.available()) { Serial.write(sdi.read()); }
       Serial.println();
@@ -124,7 +124,7 @@ boolean checkActive(SDI12& sdi, char i) {
 
 void scanAddressSpace(SDI12& sdi) {
   // Quickly scan the address space
-  for (byte i = firstAddress; i <= lastAddress; i++) {
+  for (int8_t i = firstAddress; i <= lastAddress; i++) {
     char addr = decToChar(i);
     Serial.print("i=");
     Serial.print(i);
