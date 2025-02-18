@@ -199,12 +199,13 @@ typedef const __FlashStringHelper* FlashString;
   { delay(SDI12_YIELD_MS); }
 #endif
 
-#if defined(ESP8266) || \
-  (defined(ESP32) && !defined(ESP_IDF_VERSION) && !defined(ESP_IDF_VERSION_VAL))
+#if defined(ESP8266) ||                               \
+  (defined(ESP32) && !defined(ESP_ARDUINO_VERSION) && \
+   !defined(ESP_ARDUINO_VERSION_VAL))
 #define NEED_LOOKAHEAD_ENUM
 #endif
-#if (defined(ESP32) && defined(ESP_IDF_VERSION_VAL) && defined(ESP_IDF_VERSION))
-#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 1, 0)
+#if (defined(ESP32) && defined(ESP_ARDUINO_VERSION_VAL) && defined(ESP_ARDUINO_VERSION))
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 5)
 // do nothing
 #else
 #define NEED_LOOKAHEAD_ENUM
