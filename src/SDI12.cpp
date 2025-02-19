@@ -326,7 +326,16 @@ void SDI12::setPinInterrupts(bool enable) {
   } else {
     return;
   }
-// for other boards (SAMD/Espressif/??) use the attachInterrupt function
+// For the particle, or other boards without the digitalPinToInterrupt define, use bare
+// attachInterrupt and detachInterrupt functions
+#elif defined(PARTICLE) || !defined(digitalPinToInterrupt)
+  // Merely need to attach the interrupt function to the pin
+  if (enable) attachInterrupt(_dataPin, handleInterrupt, CHANGE);
+  // Merely need to detach the interrupt function from the pin
+  else
+    detachInterrupt(_dataPin);
+// for other boards (SAMD/Espressif/??) use attachInterrupt and detachInterrupt
+// functions with digitalPinToInterrupt
 #else
   // Merely need to attach the interrupt function to the pin
   if (enable) attachInterrupt(digitalPinToInterrupt(_dataPin), handleInterrupt, CHANGE);

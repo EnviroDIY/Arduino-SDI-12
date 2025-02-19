@@ -204,9 +204,10 @@ sensors. This library provides a general software solution, without requiring
 // ticks/bit
 #define TICKS_PER_SECOND 500000
 
-// Espressif ESP32/ESP8266 boards or any boards faster than 48MHz not mentioned above
+// Espressif ESP32/ESP8266 boards, Particle boards, or any boards faster than 48MHz not
+// mentioned above
 // WARNING: I haven't actually tested the minimum speed that this will work at!
-#elif defined(ESP32) || defined(ESP8266) || F_CPU >= 48000000L
+#elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || F_CPU >= 48000000L
 
 // Using the micros() function
 #define TIMER_IN_USE_STR "micros()"
