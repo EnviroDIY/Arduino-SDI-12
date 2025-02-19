@@ -199,7 +199,7 @@ typedef const __FlashStringHelper* FlashString;
   { delay(SDI12_YIELD_MS); }
 #endif
 
-#if defined(ESP8266) ||                               \
+#if defined(PARTICLE) || defined(ESP8266) ||          \
   (defined(ESP32) && !defined(ESP_ARDUINO_VERSION) && \
    !defined(ESP_ARDUINO_VERSION_VAL))
 #define NEED_LOOKAHEAD_ENUM
