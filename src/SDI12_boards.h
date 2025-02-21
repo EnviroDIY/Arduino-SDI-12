@@ -294,7 +294,11 @@ sensors. This library provides a general software solution, without requiring
  * The 32-bit timer rolls over after 4294967296 ticks, or 4294.9673 seconds
  */
 #define TICKS_PER_BIT 833UL
+#if F_CPU == 48000000L
 #define RX_WINDOW_FUDGE 95
+#else
+#define RX_WINDOW_FUDGE 50
+#endif
 
 #else
 #error "Board timer is incorrectly configured!"

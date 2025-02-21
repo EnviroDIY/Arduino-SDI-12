@@ -161,14 +161,21 @@ getResultsResult getResults(char addr, int resultsExpected, bool verify_crc = fa
   uint8_t cmd_number      = 0;
   uint8_t cmd_retries     = 0;
 
+  // From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses:
   // The maximum number of characters that can be returned in the <values> part of the
   // response to a D command is either 35 or 75. If the D command is issued to
   // retrieve data in response to a concurrent measurement command, or in response to
   // a high-volume ASCII measurement command, the maximum is 75. The maximum is also
   // 75 in response to a continuous measurement command. Otherwise, the maximum is 35.
   int max_sdi_response = 76;
-  // max chars in a unsigned 64 bit number
-  int max_sdi_digits = 21;
+  // From SDI-12 Protocol v1.4, Table 11 The send data command (aD0!, aD1! . . . aD9!):
+  // - the maximum number of digits for a data value is 7, even without a decimal point
+  // - the minimum number of digits for a data value (excluding the decimal point) is 1
+  // - the maximum number of characters in a data value is 9 (the (polarity sign + 7
+  // digits + the decimal point))
+  // - SRGD Note: The polarity symbol (+ or -) acts as a delimeter between the numeric
+  // values
+  int max_sdi_digits = 10;
 
   String compiled_response = "";
 
@@ -186,6 +193,7 @@ getResultsResult getResults(char addr, int resultsExpected, bool verify_crc = fa
   while (resultsReceived < resultsExpected && cmd_number <= 9 && cmd_retries < 5) {
     bool    gotResults  = false;
     uint8_t cmd_results = 0;
+
     // Assemble the command based on how many commands we've already sent,
     // starting with D0 and ending with D9
     // SDI-12 command to get data [address][D][dataOption][!]
@@ -205,8 +213,8 @@ getResultsResult getResults(char addr, int resultsExpected, bool verify_crc = fa
 
     // read bytes into the char array until we get to a new line (\r\n)
     size_t bytes_read = mySDI12.readBytesUntil('\n', resp_buffer, max_sdi_response);
-    // Serial.print(bytes_read);
-    // Serial.println(" characters");
+    Serial.print(bytes_read);
+    Serial.println(" characters");
 
     size_t data_bytes_read = bytes_read - 1;  // subtract one for the /r before the /n
     String sdiResponse     = String(resp_buffer);
@@ -232,7 +240,32 @@ getResultsResult getResults(char addr, int resultsExpected, bool verify_crc = fa
     }
     mySDI12.clearBuffer();
 
+    // check the crc, break if it's incorrect
+    if (verify_crc) {
+      bool crcMatch = mySDI12.verifyCRC(sdiResponse);
+      // subtract the 3 characters of the CRC from the total number of data values
+      data_bytes_read = data_bytes_read - 3;
+      if (crcMatch) {
+        if (printIO) { Serial.println("CRC valid"); }
+      } else {
+        if (printIO) { Serial.println("CRC check failed!"); }
+        return_result.crcMatch = false;
+        success                = false;
+        // if we failed CRC in the response, add one to the retry
+        // attempts but do not bump up the command number or transfer any
+        // results because we want to retry the same data command to try get
+        // a valid response
+        cmd_retries++;
+        // stop processing; no reason to read the numbers when we already know
+        // something's wrong
+        continue;
+      }
+    }
+
     // check the address, break if it's incorrect
+    // NOTE: If the address is wrong because the response is garbled, the CRC check
+    // above should fail. But we still verify the address in case we're not checking the
+    // CRC or we got a well formed response from the wrong sensor.
     char returnedAddress = resp_buffer[0];
     if (returnedAddress != addr) {
       if (printIO) {
@@ -245,32 +278,24 @@ getResultsResult getResults(char addr, int resultsExpected, bool verify_crc = fa
       }
       success                    = false;
       return_result.addressMatch = false;
-      break;
-    }
-
-    // check the crc, break if it's incorrect
-    if (verify_crc) {
-      bool crcMatch   = mySDI12.verifyCRC(sdiResponse);
-      data_bytes_read = data_bytes_read - 3;
-      if (crcMatch) {
-        if (printIO) { Serial.println("CRC valid"); }
-      } else {
-        if (printIO) { Serial.println("CRC check failed!"); }
-        return_result.crcMatch = false;
-        success                = false;
-        break;
-      }
+      // if we didn't get the correct address, add one to the retry
+      // attempts but do not bump up the command number or transfer any
+      // results because we want to retry the same data command to try get
+      // a valid response
+      cmd_retries++;
+      // stop processing; no reason to read the numbers when we already know
+      // something's wrong
+      continue;
     }
 
     bool    bad_read                     = false;
-    bool    gotResults                   = false;
     char    float_buffer[max_sdi_digits] = {'\0'};
-    char*   dec_pl                       = float_buffer;
-    uint8_t fb_pos                       = 0;  // start at start of buffer
-    bool    finished_last_number         = false;
+    bool    got_decimal                  = false;
+    char*   dec_pl = float_buffer;  // just used for pretty printing
+    uint8_t fb_pos = 0;             // start at start of buffer
     // iterate through the char array and to check results
     // NOTE: start at 1 since we already looked at the address!
-    for (size_t i = 1; i < data_bytes_read; i++) {
+    for (size_t i = 1; i <= data_bytes_read; i++) {
       // Get the character at position
       char c = resp_buffer[i];
       // Serial.print(i);
@@ -279,26 +304,10 @@ getResultsResult getResults(char addr, int resultsExpected, bool verify_crc = fa
       // Serial.print(" '");
       // Serial.print(c);
       // Serial.println("'");
-      // if we didn't get something number-esque or we're at the end of the buffer,
-      // assume the last number finished and parse it
-      //(c != '-' && (c < '0' || c > '9') && c != '.')
-      if (c == '-' || (c >= '0' && c <= '9') || c == '.') {
-        // if there's a number, a decimal, or a negative sign next in the
-        // buffer, add it to the float buffer.
-        float_buffer[fb_pos] = c;
-        fb_pos++;
-        float_buffer[fb_pos] = '\0';  // null terminate the buffer
-        finished_last_number = false;
-        // Serial.print("Added to float buffer, currently: '");
-        // Serial.print(float_buffer);
-        // Serial.println("'");
-      } else {
-        // Serial.println("Non Numeric");
-        finished_last_number = true;
-      }
-      // if we've gotten to the end of a number or the end of the buffer, parse the
-      // character
-      if ((finished_last_number || i == data_bytes_read - 1) &&
+      // if we get a polarity sign (+ or -) that is not the first character after the
+      // address, or we've reached the end of the buffer, then we're at the end of the
+      // previous number and can parse the float buffer
+      if ((((c == '-' || c == '+') && i != 1) || i == data_bytes_read) &&
           strnlen(float_buffer, max_sdi_digits) > 0) {
         float result = atof(float_buffer);
         if (printIO) {
@@ -306,7 +315,8 @@ getResultsResult getResults(char addr, int resultsExpected, bool verify_crc = fa
           Serial.print(resultsReceived);
           Serial.print(", Raw value: ");
           Serial.print(float_buffer);
-          dec_pl              = strchr(float_buffer, '.');
+          dec_pl = strchr(float_buffer, '.');
+          // NOTE: This bit below is just for pretty-printing
           size_t len_post_dec = 0;
           if (dec_pl != nullptr) { len_post_dec = strnlen(dec_pl, max_sdi_digits) - 1; }
           Serial.print(", Len after decimal: ");
@@ -330,11 +340,34 @@ getResultsResult getResults(char addr, int resultsExpected, bool verify_crc = fa
             }
           }
         }
-
-        // empty the buffer
+        // empty the float buffer so it's ready for the next number
         float_buffer[0] = '\0';
         fb_pos          = 0;
+        got_decimal     = false;
       }
+      if (i == data_bytes_read) { continue; }
+      // if we're mid-number and there's a digit, a decimal, or a negative sign in the
+      // sdi12 response buffer, add it to the current float buffer
+      if (c == '-' || (c >= '0' && c <= '9') || (c == '.' && !got_decimal)) {
+        float_buffer[fb_pos] = c;
+        fb_pos++;
+        float_buffer[fb_pos] = '\0';  // null terminate the buffer
+        // Serial.print("Added to float buffer, currently: '");
+        // Serial.print(float_buffer);
+        // Serial.print("' (");
+        // Serial.print(strnlen(float_buffer, max_sdi_digits));
+        // Serial.println(")");
+      } else if (c == '+') {
+        // if we get a "+", it's a valid SDI-12 polarity indicator, but not something
+        // accepted by atof in parsing the float, so we just ignore it
+        // NOTE: A mis-read like this should also cause the CRC to be wrong, but still
+        // check here in case we're not using a CRC.
+      } else {  //(c != '-' && c != '+' && (c < '0' || c > '9') && c != '.')
+        Serial.println("Invalid data response character!");
+        bad_read = true;
+      }
+      // if we get a decimal, mark it so we can verify we don't get repeated decimals
+      if (c == '.') { got_decimal = true; }
     }
 
     if (!gotResults) {
@@ -344,17 +377,24 @@ getResultsResult getResults(char addr, int resultsExpected, bool verify_crc = fa
       break;
     }  // don't do another loop if we got nothing
 
-    if (printIO) {
-      Serial.print("Total Results Received: ");
-      Serial.print(resultsReceived);
-      Serial.print(", Remaining: ");
-      Serial.println(resultsExpected - resultsReceived);
+    if (gotResults && !bad_read) {
+      resultsReceived = resultsReceived + cmd_results;
+      if (printIO) {
+        Serial.print(F("  Total Results Received: "));
+        Serial.print(resultsReceived);
+        Serial.print(F(", Remaining: "));
+        Serial.println(resultsExpected - resultsReceived);
+      }
+      cmd_number++;
+    } else {
+      // if we got a bad charater in the response, add one to the retry
+      // attempts but do not bump up the command number or transfer any
+      // results because we want to retry the same data command to try get
+      // a valid response
+      cmd_retries++;
     }
-
-    cmd_number++;
+    mySDI12.clearBuffer();
   }
-
-  mySDI12.clearBuffer();
 
   if (printIO) {
     Serial.print("After ");
