@@ -97,14 +97,7 @@ int SDI12::peek() {
     0x7F;  // Otherwise, read from "head", excluding parity bit
 }
 
-/**
- * @brief Reveals the byte in the buffer without consuming
- *
- * @param[in] offset Offset position from the buffer head, offset=0 refers to the buffer
- * head.
- * @return int - uint8_t representation of byte if valid, -1 if offset is outside buffer
- * range.
- */
+// Peek at byte from Rx buffer without consuming it.
 int SDI12::peekByte(uint8_t offset) {
   SDI12_YIELD()
   if (_rxBufferHead + offset >= _rxBufferTail) return -1;  // Empty buffer? If yes, -1
@@ -129,19 +122,7 @@ int SDI12::read() {
   return nextChar & 0x7F;  // return the char, excluding parity bit
 }
 
-/**
- * @brief Return next byte in the Rx buffer including parity bit, consuming it
- *
- * @return @m_span{m-type} int @m_endspan The next byte in the character buffer.
- *
- * readByte() returns the character at the current head in the buffer after incrementing
- * the index of the buffer head. This action 'consumes' the character, meaning it can
- * not be read from the buffer again. If you would rather see the character, but leave
- * the index to head intact, you should use peekByte(uint8_t offset);
- *
- * @see peekByte(uint8_t offset)
- * @see readBytes(char *output, size_t length)
- */
+// Read a byte data (includes parity) from buffer and move index ahead
 int SDI12::readByte() {
   SDI12_YIELD()
   _bufferOverflow = false;                        // Reading makes room in the buffer
@@ -151,23 +132,8 @@ int SDI12::readByte() {
   return nextChar;                                             // return the char
 }
 
-/**
- * @brief Return the number of bytes given by @p length or until timeout,
- * and store it at reference pointed to by @p buffer in little-endian format.
- *
- * @param[out] output Reference to location in memory to store the bytes read from
- * buffer
- * @param[in] length Max number of bytes to read from buffer
- * @return size_t Number of bytes read from buffer
- *
- * readBytes() attempts to return the number of bytes up to the given @p length
- * after incrementing the index of the buffer head using @see timedReadByte().
- * This action "consumes" the number of bytes requested by @p length, meaning
- * it can not be used to read from the buffer again. If readBytes is unable to
- * return to return the number of bytes before timeout, the number of bytes
- * returned is less than the required @p length . The byte chunks are then
- * stored at the location pointed to by @p buffer in little-endian format.
- */
+// Read up to given number of bytes (including 8th bit) from buffer before timeout and
+// move index ahead
 size_t SDI12::readBytes(char* output, size_t length) {
   size_t count = 0;
   while (count < length) {
@@ -179,11 +145,7 @@ size_t SDI12::readBytes(char* output, size_t length) {
   return count;
 }
 
-/**
- * @brief Reads the next byte from the buffer (and moves the index ahead) with timeout
- *
- * @return int Byte data from buffer or -1 if buffer is empty or timeout during read
- */
+// Read a byte data (includes 8th bit) before timeout from buffer and move index ahead
 int SDI12::timedReadByte(void) {
   int c;
   _startMillis = millis();
