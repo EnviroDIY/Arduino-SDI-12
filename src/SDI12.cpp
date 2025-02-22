@@ -368,11 +368,12 @@ void SDI12::setState(SDI12_STATES state) {
       }
     case SDI12_LISTENING:
       {
-        digitalWrite(_dataPin, LOW);  // Pin state = low (turns off pull-up)
-        pinMode(_dataPin, INPUT);     // Pin mode = input, pull-up resistor off
-        interrupts();                 // Enable general interrupts
-        setPinInterrupts(true);       // Enable Rx interrupts on data pin
-        rxState = WAITING_FOR_START_BIT;
+        digitalWrite(_dataPin, LOW);          // Pin state = low (turns off pull-up)
+        pinMode(_dataPin, INPUT);             // Pin mode = input, pull-up resistor off
+        interrupts();                         // Enable general interrupts
+        setPinInterrupts(true);               // Enable Rx interrupts on data pin
+        prevBitTCNT = READTIME;               // Set the last interrupt time to now
+        rxState     = WAITING_FOR_START_BIT;  // Set state to ready for new start bit
         break;
       }
     default:  // SDI12_DISABLED or SDI12_ENABLED
@@ -677,6 +678,16 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
 
   uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
 
+  // Check how many bit times have passed since the last change
+  uint16_t rxBits = SDI12Timer::bitTimes(thisBitTCNT - prevBitTCNT);
+
+#if !(TICKS_PER_SECOND == 31250 && TIMER_INT_SIZE == 8)
+  // if we haven't had a bit spacing between the last interrupt, just ignore and move on
+  // NOTE: In case of timer/prescaler settings that will rollover with each character,
+  // we can't rely on this check!!
+  if (rxBits == 0) { return; }
+#endif
+
   // Check if we're ready for a start bit, and if this could possibly be it.
   if (rxState == WAITING_FOR_START_BIT) {
     // If we are waiting for a start bit and the pin is low it's not a start bit, exit
@@ -691,8 +702,6 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     // incomplete character and therefore this change in the pin state must be from a
     // data, parity, or stop bit.
 
-    // Check how many bit times have passed since the last change
-    uint16_t rxBits = SDI12Timer::bitTimes(thisBitTCNT - prevBitTCNT);
     // Calculate how many *data+parity* bits should be left in the current character
     //      - Each character has a total of 10 bits, 1 start bit, 7 data bits, 1 parity
     // bit, and 1 stop bit
@@ -770,12 +779,16 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
 #ifdef SDI12_CHECK_PARITY
       uint8_t rxParity = bitRead(rxValue, 7);  // pull out the parity bit
 #endif
-      rxValue &= 0x7F;        // Throw away the parity bit (and with 0b01111111)
-      charToBuffer(rxValue);  // Put the finished character into the buffer
+      rxValue &= 0x7F;  // Throw away the parity bit (and with 0b01111111)
 #ifdef SDI12_CHECK_PARITY
       uint8_t checkParity =
         parity_even_bit(rxValue);  // Calculate the parity bit from character w/o parity
       if (rxParity != checkParity) { _parityFailure = true; }
+      if (!_parityFailure) {
+#endif
+        charToBuffer(rxValue);  // Put the finished character into the buffer
+#ifdef SDI12_CHECK_PARITY
+      }
 #endif
 
       // if this is LOW, or we haven't exceeded the number of bits in a

@@ -459,7 +459,8 @@ class SDI12 : public Stream {
   int read() override;
 
   /**
-   * @brief Wait for sending to finish - because no TX buffering, does nothing
+   * @brief Wait for sending to finish - because no TX buffering and the write function
+   * is blocking, we don't need to do anything.
    */
   void flush() override {}
 
