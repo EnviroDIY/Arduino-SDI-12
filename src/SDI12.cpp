@@ -93,7 +93,22 @@ int SDI12::available() {
 int SDI12::peek() {
   SDI12_YIELD()
   if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
-  return _rxBuffer[_rxBufferHead];                // Otherwise, read from "head"
+  return _rxBuffer[_rxBufferHead] &
+    0x7F;  // Otherwise, read from "head", excluding parity bit
+}
+
+/**
+ * @brief Reveals the byte in the buffer without consuming
+ *
+ * @param[in] offset Offset position from the buffer head, offset=0 refers to the buffer
+ * head.
+ * @return int - uint8_t representation of byte if valid, -1 if offset is outside buffer
+ * range.
+ */
+int SDI12::peekByte(uint8_t offset) {
+  SDI12_YIELD()
+  if (_rxBufferHead + offset >= _rxBufferTail) return -1;  // Empty buffer? If yes, -1
+  return (uint8_t)_rxBuffer[_rxBufferHead];  // Otherwise, read from "head"
 }
 
 // a public function that clears the buffer contents and resets the status of the buffer
@@ -111,7 +126,72 @@ int SDI12::read() {
   if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
   uint8_t nextChar = _rxBuffer[_rxBufferHead];    // Otherwise, grab char at head
   _rxBufferHead    = (_rxBufferHead + 1) % SDI12_BUFFER_SIZE;  // increment head
+  return nextChar & 0x7F;  // return the char, excluding parity bit
+}
+
+/**
+ * @brief Return next byte in the Rx buffer including parity bit, consuming it
+ *
+ * @return @m_span{m-type} int @m_endspan The next byte in the character buffer.
+ *
+ * readByte() returns the character at the current head in the buffer after incrementing
+ * the index of the buffer head. This action 'consumes' the character, meaning it can
+ * not be read from the buffer again. If you would rather see the character, but leave
+ * the index to head intact, you should use peekByte(uint8_t offset);
+ *
+ * @see peekByte(uint8_t offset)
+ * @see readBytes(char *output, size_t length)
+ */
+int SDI12::readByte() {
+  SDI12_YIELD()
+  _bufferOverflow = false;                        // Reading makes room in the buffer
+  if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
+  uint8_t nextChar = _rxBuffer[_rxBufferHead];    // Otherwise, grab char at head
+  _rxBufferHead    = (_rxBufferHead + 1) % SDI12_BUFFER_SIZE;  // increment head
   return nextChar;                                             // return the char
+}
+
+/**
+ * @brief Return the number of bytes given by @p length or until timeout,
+ * and store it at reference pointed to by @p buffer in little-endian format.
+ *
+ * @param[out] output Reference to location in memory to store the bytes read from
+ * buffer
+ * @param[in] length Max number of bytes to read from buffer
+ * @return size_t Number of bytes read from buffer
+ *
+ * readBytes() attempts to return the number of bytes up to the given @p length
+ * after incrementing the index of the buffer head using @see timedReadByte().
+ * This action "consumes" the number of bytes requested by @p length, meaning
+ * it can not be used to read from the buffer again. If readBytes is unable to
+ * return to return the number of bytes before timeout, the number of bytes
+ * returned is less than the required @p length . The byte chunks are then
+ * stored at the location pointed to by @p buffer in little-endian format.
+ */
+size_t SDI12::readBytes(char* output, size_t length) {
+  size_t count = 0;
+  while (count < length) {
+    int c = timedReadByte();
+    if (c < 0) break;
+    *output++ = (char)c;
+    count++;
+  }
+  return count;
+}
+
+/**
+ * @brief Reads the next byte from the buffer (and moves the index ahead) with timeout
+ *
+ * @return int Byte data from buffer or -1 if buffer is empty or timeout during read
+ */
+int SDI12::timedReadByte(void) {
+  int c;
+  _startMillis = millis();
+  do {
+    c = readByte();
+    if (c >= 0) return c;
+  } while (millis() - _startMillis < _timeout);
+  return -1;  // -1 indicates timeout
 }
 
 // these functions HIDE the stream equivalents to return a custom timeout value
@@ -501,6 +581,84 @@ void SDI12::writeChar(uint8_t outChar) {
   while (static_cast<sdi12timer_t>(READTIME - t0) < bitTimeRemaining) {}
 }
 
+/**
+ * @brief Used to send a byte (8N1) out on the data line, use writeBytes(T value)
+ * instead
+ *
+ * @param byte **uint8_t (char)** the byte to write
+ *
+ * This function writes a character out to the data line.  SDI-12 specifies the
+ * general transmission format of a single character as:
+ * - 10 bits per data frame (8N1)
+ *     - 1 start bit
+ *     - 8 data bits (least significant bit first)
+ *     - 1 stop bit
+ *
+ * Recall that we are using inverse logic, so HIGH represents 0, and LOW represents
+ * a 1.
+ *
+ * This function must be implemented as part of the Arduino Stream
+ * instance, but is *NOT* intenteded to be used for SDI-12 objects.
+ *
+ * @return size_t 1
+ */
+size_t SDI12::writeByte(uint8_t outByte) {
+  uint8_t currentTxBitNum = 0;  // first bit is start bit
+  uint8_t bitValue        = 1;  // start bit is HIGH (inverse parity...)
+
+  noInterrupts();  // _ALL_ interrupts disabled so timing can't be shifted
+
+  sdi12timer_t t0 = READTIME;  // start time
+
+  digitalWrite(
+    _dataPin,
+    HIGH);  // immediately get going on the start bit
+            // this gives us 833µs to calculate parity and position of last high bit
+  currentTxBitNum++;
+
+  // Calculate the position of the last bit that is a 0/HIGH (ie, HIGH, not marking)
+  // That bit will be the last time-critical bit.  All bits after that can be
+  // sent with interrupts enabled.
+
+  uint8_t lastHighBit =
+    9;  // The position of the last bit that is a 0 (ie, HIGH, not marking)
+  uint8_t msbMask = 0x80;  // A mask with all bits at 1
+  while (msbMask & outByte) {
+    lastHighBit--;
+    msbMask >>= 1;
+  }
+
+  // Hold the line for the rest of the start bit duration
+
+  while ((uint8_t)(READTIME - t0) < txBitWidth) {}
+  t0 = READTIME;  // advance start time
+
+  // repeat for all data bits until the last bit different from marking
+  while (currentTxBitNum++ < lastHighBit) {
+    bitValue = outByte & 0x01;  // get next bit in the character to send
+    if (bitValue) {
+      digitalWrite(_dataPin, LOW);  // set the pin state to LOW for 1's
+    } else {
+      digitalWrite(_dataPin, HIGH);  // set the pin state to HIGH for 0's
+    }
+    // Hold the line for this bit duration
+    while ((uint8_t)(READTIME - t0) < txBitWidth) {}
+    t0 = READTIME;  // start time
+
+    outByte = outByte >> 1;  // shift character to expose the following bit
+  }
+
+  // Set the line low for the all remaining 1's and the stop bit
+  digitalWrite(_dataPin, LOW);
+
+  interrupts();  // Re-enable universal interrupts as soon as critical timing is past
+
+  // Hold the line low until the end of the 10th bit
+  uint8_t bitTimeRemaining = txBitWidth * (10 - lastHighBit);
+  while ((uint8_t)(READTIME - t0) < bitTimeRemaining) {}
+  return 1;
+}
+
 // The typical write functionality for a stream object
 // This allows you to use the stream print functions to send commands out on
 // the SDI-12, line, but it will not wake the sensors in advance of the command.
@@ -537,28 +695,21 @@ void SDI12::sendCommand(FlashString cmd, int8_t extraWakeTime) {
 // marking and then sending out the characters of resp one by one (for slave-side use,
 // that is, when the Arduino itself is acting as an SDI-12 device rather than a
 // recorder).
-void SDI12::sendResponse(String& resp, bool addCRC) {
-  sendResponse(resp.c_str(), addCRC);
+void SDI12::sendResponse(String& resp) {
+  sendResponse(resp.c_str());
 }
 
-void SDI12::sendResponse(const char* resp, bool addCRC) {
+void SDI12::sendResponse(const char* resp) {
   setState(SDI12_TRANSMITTING);       // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);        // marking is LOW
   delayMicroseconds(marking_micros);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen(resp); i++) {
     writeChar(resp[i]);  // write each character
   }
-  // tack on the CRC if requested
-  if (addCRC) {
-    String crc = crcToString(calculateCRC(resp));
-    for (int unsigned i = 0; i < 3; i++) {
-      writeChar(crc[i]);  // write each character
-    }
-  }
   setState(SDI12_LISTENING);  // return to listening state
 }
 
-void SDI12::sendResponse(FlashString resp, bool addCRC) {
+void SDI12::sendResponse(FlashString resp) {
   setState(SDI12_TRANSMITTING);       // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);        // marking is LOW
   delayMicroseconds(marking_micros);  // 8.33 ms marking before response
@@ -566,115 +717,28 @@ void SDI12::sendResponse(FlashString resp, bool addCRC) {
     // write each character
     writeChar(static_cast<char>(pgm_read_byte((const char*)resp + i)));
   }
-  // tack on the CRC if requested
-  if (addCRC) {
-    String crc = crcToString(calculateCRC(resp));
-    for (int unsigned i = 0; i < 3; i++) {
-      writeChar(crc[i]);  // write each character
-    }
-  }
   setState(SDI12_LISTENING);  // return to listening state
-}
-
-/**
- * @brief The polynomial to match the CRC with; set in the SDI-12 specifications
- */
-#define POLY 0xa001
-
-uint16_t SDI12::calculateCRC(String& resp) {
-  return calculateCRC(resp.c_str());
-}
-
-uint16_t SDI12::calculateCRC(const char* resp) {
-  uint16_t crc = 0;
-
-  for (size_t i = 0; i < strlen(resp); i++) {
-    crc ^= static_cast<uint16_t>(
-      resp[i]);  // Set the CRC equal to the exclusive OR of the character and itself
-    for (int j = 0; j < 8; j++) {  // count = 1 to 8
-      if (crc & 0x0001) {          // if the least significant bit of the CRC is one
-        crc >>= 1;                 // right shift the CRC one bit
-        crc ^= POLY;  // set CRC equal to the exclusive OR of POLY and itself
-      } else {
-        crc >>= 1;  // right shift the CRC one bit
-      }
-    }
-  }
-  return crc;
-}
-
-uint16_t SDI12::calculateCRC(FlashString resp) {
-  uint16_t crc = 0;
-  char     response_char;
-
-  for (size_t i = 0; i < strlen_P((PGM_P)resp); i++) {
-    response_char = (char)pgm_read_byte((const char*)resp + i);
-    crc ^= static_cast<uint16_t>(response_char);  // Set the CRC equal to the exclusive
-                                                  // OR of the character and itself
-    for (int j = 0; j < 8; j++) {                 // count = 1 to 8
-      if (crc & 0x0001) {  // if the least significant bit of the CRC is one
-        crc >>= 1;         // right shift the CRC one bit
-        crc ^= POLY;       // set CRC equal to the exclusive OR of POLY and itself
-      } else {
-        crc >>= 1;  // right shift the CRC one bit
-      }
-    }
-  }
-  return crc;
-}
-
-String SDI12::crcToString(uint16_t crc) {
-  char crcStr[3] = {0};
-  crcStr[0]      = (char)(0x0040 | (crc >> 12));
-  crcStr[1]      = (char)(0x0040 | ((crc >> 6) & 0x003F));
-  crcStr[2]      = (char)(0x0040 | (crc & 0x003F));
-  return (String(crcStr[0]) + String(crcStr[1]) + String(crcStr[2]));
-}
-
-bool SDI12::verifyCRC(String& respWithCRC) {
-  // trim trailing \r and \n (<CR> and <LF>)
-  respWithCRC.trim();
-  uint16_t nChar =
-    respWithCRC.length();  // number of characters without  (readable string composed of
-                           // sensor address, values separated by + and -) and the 3
-                           // characters of the CRC
-  String recCRC    = "";   // the CRC portion of the response
-  String recString = "";   // the data portion of the response
-
-  // extract the data portion of the string
-  for (uint16_t i = 0; i < (nChar - 3); i++) recString += respWithCRC[i];
-
-  // extract the last 3 characters that are the CRC from the full response string
-  for (uint16_t i = (nChar - 3); i < nChar; i++) recCRC += respWithCRC[i];
-
-  // calculate the CRC for the data portion
-  String calcCRC = crcToString(calculateCRC(recString));
-
-  if (recCRC == calcCRC) {
-    return true;
-  } else {
-    return false;
-  }
 }
 
 /* ================ Interrupt Service Routine =======================================*/
 
-// 7.1 - Passes off responsibility for the interrupt to the active object.
+// Passes off responsibility for the interrupt to the active object.
+// On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
 void ISR_MEM_ACCESS SDI12::handleInterrupt() {
   if (_activeObject) _activeObject->receiveISR();
 }
 
-// 7.2 - Creates a blank slate of bits for an incoming character
+// Creates a blank slate of bits for an incoming character
 void ISR_MEM_ACCESS SDI12::startChar() {
   rxState = 0x00;  // 0b00000000, got a start bit
   rxMask  = 0x01;  // 0b00000001, bit mask, lsb first
   rxValue = 0x00;  // 0b00000000, RX character to be, a blank slate
 }  // startChar
 
-// 7.3 - The actual interrupt service routine
+// The actual interrupt service routine
 void ISR_MEM_ACCESS SDI12::receiveISR() {
-  sdi12timer_t thisBitTCNT =
-    READTIME;  // time of this data transition (plus ISR latency)
+  // time of this data transition (plus ISR latency)
+  sdi12timer_t thisBitTCNT = READTIME;
 
   uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
 
@@ -776,20 +840,11 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     // If this was the 8th or more bit then the character and parity are complete.
     // The stop bit may still be outstanding
     if (rxState > 7) {
-#ifdef SDI12_CHECK_PARITY
-      uint8_t rxParity = bitRead(rxValue, 7);  // pull out the parity bit
-#endif
-      rxValue &= 0x7F;  // Throw away the parity bit (and with 0b01111111)
-#ifdef SDI12_CHECK_PARITY
-      uint8_t checkParity =
-        parity_even_bit(rxValue);  // Calculate the parity bit from character w/o parity
-      if (rxParity != checkParity) { _parityFailure = true; }
-      if (!_parityFailure) {
-#endif
-        charToBuffer(rxValue);  // Put the finished character into the buffer
-#ifdef SDI12_CHECK_PARITY
-      }
-#endif
+      // Mask out all but the least significant byte
+      // parity handling will be taken care by respective read function
+      rxValue &= 0xFF;
+      charToBuffer(rxValue);  // Put the finished character into the buffer
+
 
       // if this is LOW, or we haven't exceeded the number of bits in a
       // character (but have gotten all the data bits) then this should be a
