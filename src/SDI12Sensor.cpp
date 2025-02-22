@@ -23,8 +23,7 @@
 
 /* Initialize Static Variables */
 // Pointer reference to last active SDISensor instance
-SDI12Sensor *SDI12Sensor::last_set_active_object_ = nullptr;
-
+SDI12Sensor* SDI12Sensor::last_set_active_object_ = nullptr;
 
 /**
  * @brief Construct a default SDI12Sensor::SDI12Sensor object.
@@ -32,15 +31,15 @@ SDI12Sensor *SDI12Sensor::last_set_active_object_ = nullptr;
  * Sensor address defaults to Zero - '0'
  * Device address can be changed with SDI12Sensor::SetAddress(address).
  *
- * This empty constructor is provided for easier integration with other Arduino libraries.
+ * This empty constructor is provided for easier integration with other Arduino
+ * libraries.
  *
  * @see SetAddress(const char address)
  * @see SDI12Sensor(const char address)
  */
 SDI12Sensor::SDI12Sensor(void) {
-    sensor_address_ = SDI12SENSOR_DEFAULT_ADDR;
+  sensor_address_ = SDI12SENSOR_DEFAULT_ADDR;
 }
-
 
 /**
  * @brief Construct a new SDI12Sensor::SDI12Sensor object with the address set.
@@ -53,11 +52,8 @@ SDI12Sensor::SDI12Sensor(void) {
  * @see SetAddress(const char address)
  */
 SDI12Sensor::SDI12Sensor(const char address) {
-    if (!SetAddress(address)) {
-        sensor_address_ = SDI12SENSOR_DEFAULT_ADDR;
-    }
+  if (!SetAddress(address)) { sensor_address_ = SDI12SENSOR_DEFAULT_ADDR; }
 }
-
 
 /**
  * @brief Destroy the SDI12Sensor::SDI12Sensor object
@@ -65,28 +61,26 @@ SDI12Sensor::SDI12Sensor(const char address) {
  * @see SDI12Sensor(const char address)
  */
 SDI12Sensor::~SDI12Sensor(void) {
-    // Reset active reference if current instance is being destroyed
-    if (IsActive()) { ClearLastActive(); }
+  // Reset active reference if current instance is being destroyed
+  if (IsActive()) { ClearLastActive(); }
 }
-
 
 /**
  * @brief Sets the sensor address of the SDI12Sensor object.
  *
  * @param[in] address Single alpha numeric character representation of sensor address
- * @return true Sensor address is alpha numeric and update sucessfull
+ * @return true Sensor address is alpha numeric and update successful
  * @return false Sensor address was not updated
  *
  * @see Address(void)
  */
 bool SDI12Sensor::SetAddress(const char address) {
-    if (isalnum(address)) {
-        sensor_address_ = address;
-        return true;
-    }
-    return false;
+  if (isalnum(address)) {
+    sensor_address_ = address;
+    return true;
+  }
+  return false;
 }
-
 
 /**
  * @brief Gets sensor address.
@@ -96,9 +90,8 @@ bool SDI12Sensor::SetAddress(const char address) {
  * @see SetAddress(const char address)
  */
 char SDI12Sensor::Address(void) const {
-    return sensor_address_;
+  return sensor_address_;
 }
-
 
 /**
  * @brief Sets the active state of the current SDI12Sensor instance.
@@ -108,20 +101,17 @@ char SDI12Sensor::Address(void) const {
  * @return false SDI12 object active status was the same and not changed
  */
 bool SDI12Sensor::SetActive(const bool active) {
-    if (last_set_active_object_ != this && active) {
-        last_set_active_object_ = this;
-        active_ = true;
-        return true;
-    } else if (active_ != active) {
-        if (last_set_active_object_ == this && !active) {
-            ClearLastActive();
-        }
-        active_ = active;
-        return true;
-    }
-    return false;
+  if (last_set_active_object_ != this && active) {
+    last_set_active_object_ = this;
+    active_                 = true;
+    return true;
+  } else if (active_ != active) {
+    if (last_set_active_object_ == this && !active) { ClearLastActive(); }
+    active_ = active;
+    return true;
+  }
+  return false;
 }
-
 
 /**
  * @brief Checks if the current SDI12 object instance is set to active.
@@ -133,19 +123,18 @@ bool SDI12Sensor::IsActive(void) const {
   return active_;
 }
 
-
 /**
  * @brief Get the pointer to last set active mutable SDI12Sensor object.
  *
- * @return SDI12Sensor* Pointer reference to  mutable active object, returns @c nullptr if no device is active
+ * @return SDI12Sensor* Pointer reference to  mutable active object, returns @c nullptr
+ * if no device is active
  *
  * @see SetActive(bool)
  * @see ClearLastActive(void)
  */
-SDI12Sensor *SDI12Sensor::LastActive(void) {
-    return last_set_active_object_;
+SDI12Sensor* SDI12Sensor::LastActive(void) {
+  return last_set_active_object_;
 }
-
 
 /**
  * @brief Clears the last set active SDI12Sensor object, resets
@@ -157,10 +146,9 @@ SDI12Sensor *SDI12Sensor::LastActive(void) {
  * @see ClearLastActive(void)
  */
 void SDI12Sensor::ClearLastActive(void) {
-    last_set_active_object_->active_ = false;
-    last_set_active_object_ = nullptr;
+  last_set_active_object_->active_ = false;
+  last_set_active_object_          = nullptr;
 }
-
 
 /**
  * @brief Checks if last active SDI12Sensor object is set.
@@ -172,9 +160,8 @@ void SDI12Sensor::ClearLastActive(void) {
  * @see LastActive(void)
  */
 bool SDI12Sensor::IsSetLastActive(void) {
-    return (last_set_active_object_ != nullptr);
+  return (last_set_active_object_ != nullptr);
 }
-
 
 /**
  * @brief Manually set a flag reference to remember if CRC was requested. Not
@@ -186,9 +173,8 @@ bool SDI12Sensor::IsSetLastActive(void) {
  * @see CrcRequested(void)
  */
 void SDI12Sensor::SetCrcRequest(const bool crc_request) {
-    crc_requested_ = crc_request;
+  crc_requested_ = crc_request;
 }
-
 
 /**
  * @brief Gets the reference flag if a CRC was requested from the sensor.
@@ -197,9 +183,8 @@ void SDI12Sensor::SetCrcRequest(const bool crc_request) {
  * @see SetCrcRequest(bool)
  */
 bool SDI12Sensor::CrcRequested(void) const {
-    return crc_requested_;
+  return crc_requested_;
 }
-
 
 /**
  * @brief Translates the incoming command to the enumerated type SDI12SensorCommand_e,
@@ -211,74 +196,72 @@ bool SDI12Sensor::CrcRequested(void) const {
  * @see ParseCommand(char*, char)
  */
 SDI12SensorCommand_e SDI12Sensor::ReadCommand(const char* received) {
-    uint8_t len = strlen(received);
-    char first_char = kUnknown;
-    char second_char = kUnknown;
-    char third_char = kUnknown;
+  uint8_t len         = strlen(received);
+  char    first_char  = kUnknown;
+  char    second_char = kUnknown;
+  char    third_char  = kUnknown;
 
-    if (len >= 3) {
-        first_char = received[0];
-        second_char = received[1];
-        third_char = received[2];
-    } else if (len >= 2) {
-        first_char = received[0];
-        second_char = received[1];
-    } else if (len >= 1) {
-        first_char = received[0];
-    } else {
-        // Not enough info to bother proceeding
-        return kUnknown;
-    }
-
-    switch (first_char) {
-        case '?': // Query Address, v1.2+
-            if (second_char == '!' || second_char == '\0') { return kAddressQuery; }
-            break;
-        case 'I': // Identification, v1.0+
-            return kIdentification;
-            break;
-        case 'A': // Change address v1.2+
-            if (isgraph(second_char) &&
-                    (third_char == '!' || third_char == '\0')) {
-                return kAddressChange;
-            }
-            break;
-        case 'M': // Blocking Measurement v1.0+
-            return kMeasurement;
-            break;
-        case 'C': // Concurrent Measurement v1.2+
-            return kConcurrentMeasurement;
-            break;
-        case 'D': // Data Request
-            if (second_char == 'B') {
-                return kByteDataRequest; // v1.4+
-            } else {
-                return kDataRequest; // v1.0+
-            }
-            break;
-        case 'R': // Continous Measurement v1.2+
-            return kContinuousMeasurement;
-            break;
-        case 'V': // Verification v1.0+
-            return kVerification;
-            break;
-        case 'H': // High Volume Measurement v1.4+
-            if (second_char == 'A') {
-                return kHighVolumeASCII;
-            } else if (second_char == 'B') {
-                return kHighVolumeByte;
-            }
-            break;
-        case 'X':
-            if (second_char && second_char != '!') { return kExtended; }
-            break;
-        default: // For debugging purposes
-            return kUnknown;
-            break;
-    }
+  if (len >= 3) {
+    first_char  = received[0];
+    second_char = received[1];
+    third_char  = received[2];
+  } else if (len >= 2) {
+    first_char  = received[0];
+    second_char = received[1];
+  } else if (len >= 1) {
+    first_char = received[0];
+  } else {
+    // Not enough info to bother proceeding
     return kUnknown;
-}
+  }
 
+  switch (first_char) {
+    case '?':  // Query Address, v1.2+
+      if (second_char == '!' || second_char == '\0') { return kAddressQuery; }
+      break;
+    case 'I':  // Identification, v1.0+
+      return kIdentification;
+      break;
+    case 'A':  // Change address v1.2+
+      if (isgraph(second_char) && (third_char == '!' || third_char == '\0')) {
+        return kAddressChange;
+      }
+      break;
+    case 'M':  // Blocking Measurement v1.0+
+      return kMeasurement;
+      break;
+    case 'C':  // Concurrent Measurement v1.2+
+      return kConcurrentMeasurement;
+      break;
+    case 'D':  // Data Request
+      if (second_char == 'B') {
+        return kByteDataRequest;  // v1.4+
+      } else {
+        return kDataRequest;  // v1.0+
+      }
+      break;
+    case 'R':  // Continuous Measurement v1.2+
+      return kContinuousMeasurement;
+      break;
+    case 'V':  // Verification v1.0+
+      return kVerification;
+      break;
+    case 'H':  // High Volume Measurement v1.4+
+      if (second_char == 'A') {
+        return kHighVolumeASCII;
+      } else if (second_char == 'B') {
+        return kHighVolumeByte;
+      }
+      break;
+    case 'X':
+      if (second_char && second_char != '!') { return kExtended; }
+      break;
+    default:  // For debugging purposes
+      return kUnknown;
+      break;
+  }
+  return kUnknown;
+}
 
 /**
  * @brief Private support function to test supported secondary command for
@@ -289,20 +272,17 @@ SDI12SensorCommand_e SDI12Sensor::ReadCommand(const char* received) {
  * @return false - Invalid Identification second command.
  */
 bool IdentificationSecondaryCommand(SDI12SensorCommand_e cmd) {
-    switch (cmd) {
-        case kMeasurement: // Fall Through
-        case kVerification: // Fall through
-        case kConcurrentMeasurement: // Fall Through
-        case kContinuousMeasurement: // Fall Through
-        case kHighVolumeASCII: // Fall Through
-        case kHighVolumeByte: // Fall Through
-        case kExtended:
-            return true;
-        default:
-            return false;
-    }
+  switch (cmd) {
+    case kMeasurement:            // Fall Through
+    case kVerification:           // Fall through
+    case kConcurrentMeasurement:  // Fall Through
+    case kContinuousMeasurement:  // Fall Through
+    case kHighVolumeASCII:        // Fall Through
+    case kHighVolumeByte:         // Fall Through
+    case kExtended: return true;
+    default: return false;
+  }
 }
-
 
 /**
  * @brief Decipher received commands and apply rules to determine if the command
@@ -317,186 +297,178 @@ bool IdentificationSecondaryCommand(SDI12SensorCommand_e cmd) {
  * @return const SDI12CommandSet_s - Received commands structure separated into their
  * primary, and first param, and secondary and secondary parameters.
  */
-const SDI12CommandSet_s SDI12Sensor::ParseCommand(const char* received, const char ack_address, char **_endptr) {
-    SDI12CommandSet_s parsed_command; // Parsed command reference object
-    SDI12SensorCommand_e cmd1 = kUnknown; // Reference to primary command
-    SDI12SensorCommand_e cmd2 = kUnknown; // Reference to secondary command
-    int param1 = 0; // Reference to primary command parameter
-    int param2 = 0; // Reference to secondary command parameter
-    uint8_t flags = 0x00; // Reference flag for command parsing info
-    char* param_end = nullptr; // Pointer reference for end of parameter
+const SDI12CommandSet_s SDI12Sensor::ParseCommand(const char* received,
+                                                  const char  ack_address,
+                                                  char**      _endptr) {
+  SDI12CommandSet_s    parsed_command;        // Parsed command reference object
+  SDI12SensorCommand_e cmd1      = kUnknown;  // Reference to primary command
+  SDI12SensorCommand_e cmd2      = kUnknown;  // Reference to secondary command
+  int                  param1    = 0;         // Reference to primary command parameter
+  int                  param2    = 0;        // Reference to secondary command parameter
+  uint8_t              flags     = 0x00;     // Reference flag for command parsing info
+  char*                param_end = nullptr;  // Pointer reference for end of parameter
 
-    if (_endptr) { *_endptr = (char*)&received[0]; }
-    if (!received) {return parsed_command;} // Process nothing
+  if (_endptr) { *_endptr = (char*)&received[0]; }
+  if (!received) { return parsed_command; }  // Process nothing
 
-    // Get first command instruction set
-    if (received[1] == '!' || received[1] == '\0') {
-        // command string length is <= 2
-        if (received[0] == ack_address || isalnum(received[0])) {
-            parsed_command.address = *received;
-            parsed_command.primary = kAcknowledge; // Acknowledge, v1.0+
-        } else {
-            // Expect to capture QueryAddress here only
-            parsed_command.primary = ReadCommand(received);
-        }
-    } else if ((received[0] == ack_address || isalnum(received[0])) && received[1] != '?') {
-        // Store address, move pointer along and read instruction
-        parsed_command.address = *received++;
-        cmd1 = ReadCommand(received);
+  // Get first command instruction set
+  if (received[1] == '!' || received[1] == '\0') {
+    // command string length is <= 2
+    if (received[0] == ack_address || isalnum(received[0])) {
+      parsed_command.address = *received;
+      parsed_command.primary = kAcknowledge;  // Acknowledge, v1.0+
+    } else {
+      // Expect to capture QueryAddress here only
+      parsed_command.primary = ReadCommand(received);
     }
+  } else if ((received[0] == ack_address || isalnum(received[0])) &&
+             received[1] != '?') {
+    // Store address, move pointer along and read instruction
+    parsed_command.address = *received++;
+    cmd1                   = ReadCommand(received);
+  }
 
-    /* Escape at this point as cmd1 is either UNK for string of all lengths,
-    or cmd1 is ACK or QueryAddress for string length of <=2 */
-    if (cmd1 == kUnknown) { return parsed_command; }
+  /* Escape at this point as cmd1 is either UNK for string of all lengths,
+  or cmd1 is ACK or QueryAddress for string length of <=2 */
+  if (cmd1 == kUnknown) { return parsed_command; }
 
-    // Moving pointer to end of first instruction
-    received++;
+  // Moving pointer to end of first instruction
+  received++;
+  switch (cmd1) {
+    case kExtended:
+      if (_endptr) { *_endptr = (char*)&received[0]; }
+      while (isalpha(*received)) { received++; }
+      break;
+    case kHighVolumeASCII:  // Fall through
+    case kHighVolumeByte:   // Fall through
+    case kByteDataRequest:
+      received++;
+      // Fall Through
+    default:
+      // Pointer at char after first instruction
+      break;
+  }
+
+  /* Get second instruction set if exist */
+  if (cmd1 == kIdentification && received) {
+    // v1.4 Identify metadata command support
+    cmd2 = ReadCommand(received);
+    if (cmd2 != kUnknown) {
+      received++;
+      if (cmd2 == kHighVolumeASCII || cmd2 == kHighVolumeByte) { received++; }
+      // Pointer at char after second instruction
+    }
+  }
+
+  /* Parse CRC request for the following instruction group, v1.3+ */
+  if (*received == 'C') {
     switch (cmd1) {
-        case kExtended:
-            if (_endptr) { *_endptr = (char*)&received[0]; }
-            while (isalpha(*received)) {
-                received++;
-            }
-            break;
-        case kHighVolumeASCII: // Fall through
-        case kHighVolumeByte: // Fall through
-        case kByteDataRequest:
-            received++;
-            // Fall Through
-        default:
-            // Pointer at char after first instruction
-            break;
-    }
-
-    /* Get second instruction set if exist */
-    if (cmd1 == kIdentification && received) {
+      case kIdentification:
         // v1.4 Identify metadata command support
-        cmd2 = ReadCommand(received);
-        if (cmd2 != kUnknown) {
-            received++;
-            if (cmd2 == kHighVolumeASCII || cmd2 == kHighVolumeByte) {
-                received++;
-            }
-            // Pointer at char after second instruction
+        if (cmd2 != kUnknown && cmd2 == kVerification) {
+          break;  // CRC not required for aI and aIV
         }
-    }
-
-    /* Parse CRC request for the follwing instruction group, v1.3+ */
-    if (*received == 'C') {
-        switch (cmd1) {
-            case kIdentification:
-                // v1.4 Identify metada command support
-                if (cmd2 != kUnknown && cmd2 == kVerification) {
-                    break; // CRC not required for aI and aIV
-                }
-                // Fall Through
-            case kMeasurement: // Fall Through
-            case kConcurrentMeasurement: // Fall Through
-            case kContinuousMeasurement: // Fall Through
-                parsed_command.crc_requested = true;
-                received++; // Pointer at char after CRC request 'C'
-                break;
-            default:
-                break;
-        }
-    } else if (cmd1 == kHighVolumeASCII || cmd1 == kHighVolumeByte) {
-        // Command automatically includes CRC request
+        // Fall Through
+      case kMeasurement:            // Fall Through
+      case kConcurrentMeasurement:  // Fall Through
+      case kContinuousMeasurement:  // Fall Through
         parsed_command.crc_requested = true;
+        received++;  // Pointer at char after CRC request 'C'
+        break;
+      default: break;
     }
+  } else if (cmd1 == kHighVolumeASCII || cmd1 == kHighVolumeByte) {
+    // Command automatically includes CRC request
+    parsed_command.crc_requested = true;
+  }
 
-    /* Parse First parameter, option/group number for the following instruction sets */
-    switch (cmd1) {
-        case (kAddressChange):
-            // Store the new desired address as param and move pointer along
-            param1 = (char)*received++;
-            break;
-        case kIdentification:
-            if (!IdentificationSecondaryCommand(cmd2)) { break; }
-            // Fall Through
-        case kMeasurement: // Fall Through
-        case kDataRequest: // Fall Through
-        case kConcurrentMeasurement: // Fall Through
-        case kContinuousMeasurement: // Fall Through
-        case kByteDataRequest:
-        case kExtended:
-            param1 = strtol(received, &param_end, 10);
-            if (received != param_end) {
-                SET_BITS(flags, CMD_PARAM1_FLAG);
-                if (*received == '+' || *received == '-') {
-                    SET_BITS(flags, CMD_PARAM_SIGN_FLAG);
-                    received++;
-                }
-                // Scan remaining char up to terminator or kIdentification metagroup separator
-                if ((*param_end == '!' || *param_end == '_' || *param_end == '\0') &&
-                        !(*received == '0' && param1 != 0)) {
-                    // Nothing wrong, up to termination is numeric, no lead zero.
-                    received = param_end; // Pointer at char after Param1
-                } else {
-                    for (size_t i = 0; i < strlen(received); i++) {
-                        if (!isdigit(received[i]) || (*received == '0' && param1 != 0)) {
-                            // Leading zeros or trailing non numeric characters
-                            SET_BITS(flags, CMD_PARAM_ERR_FLAG);
-                            break;
-                        }
-                    }
-                }
-            }
-            break;
-        default:
-            break;
-    }
-
-
-    /* Parse identity metadata parameter group/option, v1.4+ */
-    if (*received == '_') { SET_BITS(flags, CMD_HAS_META_FLAG); }
-    if ((cmd1 == kIdentification || cmd1 == kExtended) &&
-            GET_BITS(flags, CMD_HAS_META_FLAG)) {
-        param2 = strtol(++received, &param_end, 10);
-        if (received != param_end) {
-            SET_BITS(flags, CMD_PARAM2_FLAG);
-            if (*received == '+' || *received == '-') {
-                SET_BITS(flags, CMD_PARAM_SIGN_FLAG);
-                received++;
-            }
-            if (cmd1 == kIdentification) {
-                int len_param2 = 0;
-                len_param2 = param_end - received;
-                if (len_param2 == 3 && (*param_end == '!' || *param_end == '\0')) {
-                    // format is correct of aIx_ddd
-                    received = param_end; // Move pointer to char after param2
-                } else {
-                    // Not appropriate format, aIx_ddd
-                    SET_BITS(flags, CMD_PARAM_ERR_FLAG);
-                }
-            } else {
-                received = param_end; // Move pointer to char after param2
-            }
+  /* Parse First parameter, option/group number for the following instruction sets */
+  switch (cmd1) {
+    case (kAddressChange):
+      // Store the new desired address as param and move pointer along
+      param1 = (char)*received++;
+      break;
+    case kIdentification:
+      if (!IdentificationSecondaryCommand(cmd2)) { break; }
+      // Fall Through
+    case kMeasurement:            // Fall Through
+    case kDataRequest:            // Fall Through
+    case kConcurrentMeasurement:  // Fall Through
+    case kContinuousMeasurement:  // Fall Through
+    case kByteDataRequest:
+    case kExtended:
+      param1 = strtol(received, &param_end, 10);
+      if (received != param_end) {
+        SET_BITS(flags, CMD_PARAM1_FLAG);
+        if (*received == '+' || *received == '-') {
+          SET_BITS(flags, CMD_PARAM_SIGN_FLAG);
+          received++;
         }
-    }
+        // Scan remaining char up to terminator or kIdentification metagroup separator
+        if ((*param_end == '!' || *param_end == '_' || *param_end == '\0') &&
+            !(*received == '0' && param1 != 0)) {
+          // Nothing wrong, up to termination is numeric, no lead zero.
+          received = param_end;  // Pointer at char after Param1
+        } else {
+          for (size_t i = 0; i < strlen(received); i++) {
+            if (!isdigit(received[i]) || (*received == '0' && param1 != 0)) {
+              // Leading zeros or trailing non numeric characters
+              SET_BITS(flags, CMD_PARAM_ERR_FLAG);
+              break;
+            }
+          }
+        }
+      }
+      break;
+    default: break;
+  }
 
-    // Determine if at end of command, i.e after all digits
-    SET_BITS(flags, (*received == '!' || *received == '\0') << CMD_IS_END_BIT);
-    if (_endptr && GET_BITS(flags, CMD_IS_END_FLAG)) { *_endptr = (char*)&received[0]; }
 
-    /* Instruction Rule Set */
-    parsed_command.flags = flags;
-    if (RuleIsContinous(cmd1, param1, flags) ||
-            RuleIsMeasurement(cmd1, param1, flags) ||
-            RuleIsDataRequest(cmd1, param1, flags) ||
-            RuleIsConcurrent(cmd1, param1, flags) ||
-            cmd1 == kExtended ||
-            RuleIsAddressChange(cmd1, param1, flags) ||
-            RuleIsVerify(cmd1, flags) ||
-            RuleIsHighVolumeMeasure(cmd1, flags) ||
-            RuleIsIdentifyGroup(cmd1, cmd2, param1, param2, flags)) {
-        parsed_command.primary = cmd1;
-        parsed_command.secondary = cmd2;
-        parsed_command.param1 = param1;
-        parsed_command.param2 = param2;
+  /* Parse identity metadata parameter group/option, v1.4+ */
+  if (*received == '_') { SET_BITS(flags, CMD_HAS_META_FLAG); }
+  if ((cmd1 == kIdentification || cmd1 == kExtended) &&
+      GET_BITS(flags, CMD_HAS_META_FLAG)) {
+    param2 = strtol(++received, &param_end, 10);
+    if (received != param_end) {
+      SET_BITS(flags, CMD_PARAM2_FLAG);
+      if (*received == '+' || *received == '-') {
+        SET_BITS(flags, CMD_PARAM_SIGN_FLAG);
+        received++;
+      }
+      if (cmd1 == kIdentification) {
+        int len_param2 = 0;
+        len_param2     = param_end - received;
+        if (len_param2 == 3 && (*param_end == '!' || *param_end == '\0')) {
+          // format is correct of aIx_ddd
+          received = param_end;  // Move pointer to char after param2
+        } else {
+          // Not appropriate format, aIx_ddd
+          SET_BITS(flags, CMD_PARAM_ERR_FLAG);
+        }
+      } else {
+        received = param_end;  // Move pointer to char after param2
+      }
     }
-    return parsed_command;
+  }
+
+  // Determine if at end of command, i.e after all digits
+  SET_BITS(flags, (*received == '!' || *received == '\0') << CMD_IS_END_BIT);
+  if (_endptr && GET_BITS(flags, CMD_IS_END_FLAG)) { *_endptr = (char*)&received[0]; }
+
+  /* Instruction Rule Set */
+  parsed_command.flags = flags;
+  if (RuleIsContinuous(cmd1, param1, flags) || RuleIsMeasurement(cmd1, param1, flags) ||
+      RuleIsDataRequest(cmd1, param1, flags) || RuleIsConcurrent(cmd1, param1, flags) ||
+      cmd1 == kExtended || RuleIsAddressChange(cmd1, param1, flags) ||
+      RuleIsVerify(cmd1, flags) || RuleIsHighVolumeMeasure(cmd1, flags) ||
+      RuleIsIdentifyGroup(cmd1, cmd2, param1, param2, flags)) {
+    parsed_command.primary   = cmd1;
+    parsed_command.secondary = cmd2;
+    parsed_command.param1    = param1;
+    parsed_command.param2    = param2;
+  }
+  return parsed_command;
 }
-
 
 /**
  * @brief Rule to test if received address change command is correct.
@@ -509,13 +481,13 @@ const SDI12CommandSet_s SDI12Sensor::ParseCommand(const char* received, const ch
  * @return true if valid command.
  * @return false if invalid command.
  */
-bool SDI12Sensor::RuleIsAddressChange(const SDI12SensorCommand_e cmd, const int param1, const uint8_t flags) {
-    if (cmd == kAddressChange && isalnum(param1) && GET_BITS(flags, CMD_IS_END_FLAG)) {
-        return true;
-    }
-    return false;
+bool SDI12Sensor::RuleIsAddressChange(const SDI12SensorCommand_e cmd, const int param1,
+                                      const uint8_t flags) {
+  if (cmd == kAddressChange && isalnum(param1) && GET_BITS(flags, CMD_IS_END_FLAG)) {
+    return true;
+  }
+  return false;
 }
-
 
 /**
  * @brief Rule to test if received measurement command is correct.
@@ -528,17 +500,18 @@ bool SDI12Sensor::RuleIsAddressChange(const SDI12SensorCommand_e cmd, const int 
  * @return true if valid command.
  * @return false if invalid command.
  */
-bool SDI12Sensor::RuleIsMeasurement(const SDI12SensorCommand_e cmd, int param1, const uint8_t flags) {
-    if (cmd != kMeasurement || GET_BITS(flags, CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG)) return false;
-    if (GET_BITS(flags, CMD_IS_END_FLAG)) {
-        if (!GET_BITS(flags, CMD_PARAM1_FLAG) ||
-            (GET_BITS(flags, CMD_PARAM1_FLAG) && param1 >= 1 && param1 <= 9)) {
-            return true;
-        }
-    }
+bool SDI12Sensor::RuleIsMeasurement(const SDI12SensorCommand_e cmd, int param1,
+                                    const uint8_t flags) {
+  if (cmd != kMeasurement || GET_BITS(flags, CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG))
     return false;
+  if (GET_BITS(flags, CMD_IS_END_FLAG)) {
+    if (!GET_BITS(flags, CMD_PARAM1_FLAG) ||
+        (GET_BITS(flags, CMD_PARAM1_FLAG) && param1 >= 1 && param1 <= 9)) {
+      return true;
+    }
+  }
+  return false;
 }
-
 
 /**
  * @brief Rule to test if received concurrent measurement is correct.
@@ -551,17 +524,19 @@ bool SDI12Sensor::RuleIsMeasurement(const SDI12SensorCommand_e cmd, int param1, 
  * @return true if valid command.
  * @return false if invalid command.
  */
-bool SDI12Sensor::RuleIsConcurrent(const SDI12SensorCommand_e cmd, int param1, const uint8_t flags) {
-    if (cmd != kConcurrentMeasurement || GET_BITS(flags, CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG)) return false;
-    if (GET_BITS(flags, CMD_IS_END_FLAG)) {
-        if (!GET_BITS(flags, CMD_PARAM1_FLAG) ||
-            (GET_BITS(flags, CMD_PARAM1_FLAG) && param1 >= 1 && param1 <= 9)) {
-            return true;
-        }
-    }
+bool SDI12Sensor::RuleIsConcurrent(const SDI12SensorCommand_e cmd, int param1,
+                                   const uint8_t flags) {
+  if (cmd != kConcurrentMeasurement ||
+      GET_BITS(flags, CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG))
     return false;
+  if (GET_BITS(flags, CMD_IS_END_FLAG)) {
+    if (!GET_BITS(flags, CMD_PARAM1_FLAG) ||
+        (GET_BITS(flags, CMD_PARAM1_FLAG) && param1 >= 1 && param1 <= 9)) {
+      return true;
+    }
+  }
+  return false;
 }
-
 
 /**
  * @brief Rule to test if received continuous measurement is correct.
@@ -574,14 +549,17 @@ bool SDI12Sensor::RuleIsConcurrent(const SDI12SensorCommand_e cmd, int param1, c
  * @return true if valid command.
  * @return false if invalid command.
  */
-bool SDI12Sensor::RuleIsContinous(const SDI12SensorCommand_e cmd, const int param1, const uint8_t flags) {
-    if (cmd != kContinuousMeasurement || GET_BITS(flags, CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG)) return false;
-    if (BITS_IS_SET(flags, CMD_PARAM1_FLAG | CMD_IS_END_FLAG) && (param1 >= 0 && param1 <= 9)) {
-        return true;
-    }
+bool SDI12Sensor::RuleIsContinuous(const SDI12SensorCommand_e cmd, const int param1,
+                                   const uint8_t flags) {
+  if (cmd != kContinuousMeasurement ||
+      GET_BITS(flags, CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG))
     return false;
+  if (BITS_IS_SET(flags, CMD_PARAM1_FLAG | CMD_IS_END_FLAG) &&
+      (param1 >= 0 && param1 <= 9)) {
+    return true;
+  }
+  return false;
 }
-
 
 /**
  * @brief Rule to test if received data request is correct.
@@ -594,18 +572,19 @@ bool SDI12Sensor::RuleIsContinous(const SDI12SensorCommand_e cmd, const int para
  * @return true if valid command.
  * @return false if invalid command.
  */
-bool SDI12Sensor::RuleIsDataRequest(const SDI12SensorCommand_e cmd, const int param1, const uint8_t flags) {
-    if ((cmd != kDataRequest && cmd != kByteDataRequest) ||
-            GET_BITS(flags, CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG)) {
-        return false;
-    }
-
-    if (BITS_IS_SET(flags, CMD_PARAM1_FLAG | CMD_IS_END_FLAG) && (param1 >= 0 && param1 <= 999)) {
-        return true;
-    }
+bool SDI12Sensor::RuleIsDataRequest(const SDI12SensorCommand_e cmd, const int param1,
+                                    const uint8_t flags) {
+  if ((cmd != kDataRequest && cmd != kByteDataRequest) ||
+      GET_BITS(flags, CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG)) {
     return false;
-}
+  }
 
+  if (BITS_IS_SET(flags, CMD_PARAM1_FLAG | CMD_IS_END_FLAG) &&
+      (param1 >= 0 && param1 <= 999)) {
+    return true;
+  }
+  return false;
+}
 
 /**
  * @brief Rule to test if received verify command is correct.
@@ -619,14 +598,12 @@ bool SDI12Sensor::RuleIsDataRequest(const SDI12SensorCommand_e cmd, const int pa
  * @return false if invalid command.
  */
 bool SDI12Sensor::RuleIsVerify(const SDI12SensorCommand_e cmd, const uint8_t flags) {
-    if (cmd == kVerification &&
-            GET_BITS(flags, CMD_IS_END_FLAG) &&
-            !GET_BITS(flags, CMD_PARAM1_FLAG | CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG)) {
-        return true;
-    }
-    return false;
+  if (cmd == kVerification && GET_BITS(flags, CMD_IS_END_FLAG) &&
+      !GET_BITS(flags, CMD_PARAM1_FLAG | CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG)) {
+    return true;
+  }
+  return false;
 }
-
 
 /**
  * @brief Rule to test if received high volume measurement command is correct.
@@ -640,15 +617,15 @@ bool SDI12Sensor::RuleIsVerify(const SDI12SensorCommand_e cmd, const uint8_t fla
  * @return true if valid command.
  * @return false if invalid command.
  */
-bool SDI12Sensor::RuleIsHighVolumeMeasure(const SDI12SensorCommand_e cmd, const uint8_t flags) {
-    if ((cmd == kHighVolumeASCII || cmd == kHighVolumeByte) &&
-            GET_BITS(flags, CMD_IS_END_FLAG) &&
-            !GET_BITS(flags, CMD_PARAM1_FLAG | CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG)) {
-        return true;
-    }
-    return false;
+bool SDI12Sensor::RuleIsHighVolumeMeasure(const SDI12SensorCommand_e cmd,
+                                          const uint8_t              flags) {
+  if ((cmd == kHighVolumeASCII || cmd == kHighVolumeByte) &&
+      GET_BITS(flags, CMD_IS_END_FLAG) &&
+      !GET_BITS(flags, CMD_PARAM1_FLAG | CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG)) {
+    return true;
+  }
+  return false;
 }
-
 
 /**
  * @brief Rule to determine if received identify command is correct
@@ -674,54 +651,63 @@ bool SDI12Sensor::RuleIsHighVolumeMeasure(const SDI12SensorCommand_e cmd, const 
  * @return true if valid command.
  * @return false if invalid command.
  */
-bool SDI12Sensor::RuleIsIdentifyGroup(const SDI12SensorCommand_e cmd1, const SDI12SensorCommand_e cmd2,
-        int param1, const int param2, const uint8_t flags) {
-    if (cmd1 != kIdentification || GET_BITS(flags, CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG)) return false;
-
-    if (GET_BITS(flags, CMD_IS_END_FLAG)) {
-        if (cmd2 == kUnknown) {
-            return true;
-        } else if (RuleIsMeasurement(cmd2, param1, flags)) {
-            if (!GET_BITS(flags, CMD_PARAM1_FLAG | CMD_PARAM2_FLAG | CMD_HAS_META_FLAG)) {
-                return true;
-            } else if (!GET_BITS(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG)) {
-                return true;
-            } else if (BITS_IS_SET(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG) && param2 >= 1 && param2 <= 9) {
-                return true;
-            }
-        } else if (RuleIsConcurrent(cmd2, param1, flags)) {
-            // TODO: Check meta group parameters for concurrent identification vs when CRC is requested
-            if (!GET_BITS(flags, CMD_PARAM1_FLAG | CMD_PARAM2_FLAG | CMD_HAS_META_FLAG)) {
-                return true;
-            } else if (!GET_BITS(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG)) {
-                return true;
-            } else if (BITS_IS_SET(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG) && param2 >= 1 && param2 <= 99) {
-                return true;
-            }
-        } else if (RuleIsVerify(cmd2, flags)) {
-            if (!GET_BITS(flags, CMD_PARAM1_FLAG | CMD_PARAM2_FLAG | CMD_HAS_META_FLAG)) {
-                return true;
-            } else if (BITS_IS_SET(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG) && param2 >= 1 && param2 <= 9) {
-                return true;
-            }
-        } else if (RuleIsContinous(cmd2, param1, flags)) {
-            if (BITS_IS_SET(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG) && param2 >= 1 && param2 <= 99) {
-                return true;
-            }
-        } else if (RuleIsHighVolumeMeasure(cmd2, flags)) {
-            if (BITS_IS_SET(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG) && !GET_BITS(flags, CMD_PARAM1_FLAG) && param2 >= 1 && param2 <= 999) {
-                return true;
-            }
-        }
-    }
+bool SDI12Sensor::RuleIsIdentifyGroup(const SDI12SensorCommand_e cmd1,
+                                      const SDI12SensorCommand_e cmd2, int param1,
+                                      const int param2, const uint8_t flags) {
+  if (cmd1 != kIdentification ||
+      GET_BITS(flags, CMD_PARAM_ERR_FLAG | CMD_PARAM_SIGN_FLAG))
     return false;
+
+  if (GET_BITS(flags, CMD_IS_END_FLAG)) {
+    if (cmd2 == kUnknown) {
+      return true;
+    } else if (RuleIsMeasurement(cmd2, param1, flags)) {
+      if (!GET_BITS(flags, CMD_PARAM1_FLAG | CMD_PARAM2_FLAG | CMD_HAS_META_FLAG)) {
+        return true;
+      } else if (!GET_BITS(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG)) {
+        return true;
+      } else if (BITS_IS_SET(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG) &&
+                 param2 >= 1 && param2 <= 9) {
+        return true;
+      }
+    } else if (RuleIsConcurrent(cmd2, param1, flags)) {
+      // TODO: Check meta group parameters for concurrent identification vs when CRC is
+      // requested
+      if (!GET_BITS(flags, CMD_PARAM1_FLAG | CMD_PARAM2_FLAG | CMD_HAS_META_FLAG)) {
+        return true;
+      } else if (!GET_BITS(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG)) {
+        return true;
+      } else if (BITS_IS_SET(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG) &&
+                 param2 >= 1 && param2 <= 99) {
+        return true;
+      }
+    } else if (RuleIsVerify(cmd2, flags)) {
+      if (!GET_BITS(flags, CMD_PARAM1_FLAG | CMD_PARAM2_FLAG | CMD_HAS_META_FLAG)) {
+        return true;
+      } else if (BITS_IS_SET(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG) &&
+                 param2 >= 1 && param2 <= 9) {
+        return true;
+      }
+    } else if (RuleIsContinuous(cmd2, param1, flags)) {
+      if (BITS_IS_SET(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG) && param2 >= 1 &&
+          param2 <= 99) {
+        return true;
+      }
+    } else if (RuleIsHighVolumeMeasure(cmd2, flags)) {
+      if (BITS_IS_SET(flags, CMD_PARAM2_FLAG | CMD_HAS_META_FLAG) &&
+          !GET_BITS(flags, CMD_PARAM1_FLAG) && param2 >= 1 && param2 <= 999) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 /**
  * @brief Set the sensor state based on a command structure set.
  *
  * @param[in] command_set Received command structure set
- * @return true State was different and change was successfull
+ * @return true State was different and change was successful
  * @return false Same state as previous or command set received does not correspond
  * to the sensor instance
  *
@@ -729,75 +715,57 @@ bool SDI12Sensor::RuleIsIdentifyGroup(const SDI12SensorCommand_e cmd1, const SDI
  * @see SetState(int8_t)
  */
 bool SDI12Sensor::DefineState(const SDI12CommandSet_s command_set) {
-    if (command_set.address != sensor_address_) {
-        return false;
-    }
-    SDI12SensorState_e state = (SDI12SensorState_e)state_;
-    switch ((SDI12SensorCommand_e)command_set.primary) {
-        case kUnknown:
-        case kAcknowledge:
-        case kAddressChange:
-        case kAddressQuery:
-        case kByteDataRequest:
-        case kDataRequest:
-            state = kStateReady;
-            break;
-        case kIdentification:
-            // Set state to normal Ready state for normal Identify or Identify Parameter commands
-            // For Identify Measurement commands, set to appropriate measurement state to handle
-            switch (command_set.secondary) {
-                case kMeasurement:
-                    state = kStateMeasurement;
-                    break;
-                case kConcurrentMeasurement:
-                    state = kStateConcurrent;
-                    break;
-                case kHighVolumeASCII:
-                case kHighVolumeByte:
-                    state = kStateHighMeasurement;
-                    break;
-                case kVerification:
-                    state = kStateVerify;
-                    break;
-                default:
-                    state = kStateReady;
-                    break;
-            }
-            if (command_set.param2 >= 0) {
-                state = kStateReady;
-            }
-            crc_requested_ = command_set.crc_requested;
-            break;
-        case kVerification:
-            state = kStateVerify;
-            break;
-        case kMeasurement:
-            state = kStateMeasurement;
-            crc_requested_ = command_set.crc_requested;
-            break;
-        case kConcurrentMeasurement:
-            state = kStateConcurrent;
-            crc_requested_ = command_set.crc_requested;
-            break;
+  if (command_set.address != sensor_address_) { return false; }
+  SDI12SensorState_e state = (SDI12SensorState_e)state_;
+  switch ((SDI12SensorCommand_e)command_set.primary) {
+    case kUnknown:
+    case kAcknowledge:
+    case kAddressChange:
+    case kAddressQuery:
+    case kByteDataRequest:
+    case kDataRequest: state = kStateReady; break;
+    case kIdentification:
+      // Set state to normal Ready state for normal Identify or Identify Parameter
+      // commands For Identify Measurement commands, set to appropriate measurement
+      // state to handle
+      switch (command_set.secondary) {
+        case kMeasurement: state = kStateMeasurement; break;
+        case kConcurrentMeasurement: state = kStateConcurrent; break;
         case kHighVolumeASCII:
-            // Set to same state as HighVolumeByte request
-        case kHighVolumeByte:
-            state = kStateHighMeasurement;
-            crc_requested_ = command_set.crc_requested;
-            break;
-        case kContinuousMeasurement:
-            state = kStateContinuous;
-            crc_requested_ = command_set.crc_requested;
-            break;
-        case kExtended:
-            state = kStateExtended;
-            crc_requested_ = command_set.crc_requested;
-            break;
-    }
+        case kHighVolumeByte: state = kStateHighMeasurement; break;
+        case kVerification: state = kStateVerify; break;
+        default: state = kStateReady; break;
+      }
+      if (command_set.param2 >= 0) { state = kStateReady; }
+      crc_requested_ = command_set.crc_requested;
+      break;
+    case kVerification: state = kStateVerify; break;
+    case kMeasurement:
+      state          = kStateMeasurement;
+      crc_requested_ = command_set.crc_requested;
+      break;
+    case kConcurrentMeasurement:
+      state          = kStateConcurrent;
+      crc_requested_ = command_set.crc_requested;
+      break;
+    case kHighVolumeASCII:
+      // Set to same state as HighVolumeByte request
+    case kHighVolumeByte:
+      state          = kStateHighMeasurement;
+      crc_requested_ = command_set.crc_requested;
+      break;
+    case kContinuousMeasurement:
+      state          = kStateContinuous;
+      crc_requested_ = command_set.crc_requested;
+      break;
+    case kExtended:
+      state          = kStateExtended;
+      crc_requested_ = command_set.crc_requested;
+      break;
+  }
 
-    return SetState(state);
+  return SetState(state);
 }
-
 
 /**
  * @brief Manually set the state of a sensor instance.
@@ -810,13 +778,12 @@ bool SDI12Sensor::DefineState(const SDI12CommandSet_s command_set) {
  * @see State(void)
  */
 bool SDI12Sensor::SetState(const int8_t state) {
-    if (state != state_) {
-        state_ = state;
-        return true;
-    }
-    return false;
+  if (state != state_) {
+    state_ = state;
+    return true;
+  }
+  return false;
 }
-
 
 /**
  * @brief Gets the sensor current state.
@@ -828,9 +795,8 @@ bool SDI12Sensor::SetState(const int8_t state) {
  * @see SetState(int8_t)
  */
 int8_t SDI12Sensor::State(void) const {
-    return state_;
+  return state_;
 }
-
 
 // void SDI12Sensor::SendSensorAddress() {
 //     char message[5];
@@ -841,9 +807,12 @@ int8_t SDI12Sensor::State(void) const {
 
 // void SDI12Sensor::SendSensorID() {
 //     char message[36];
-//     sprintf(message, "%c%s%s%s%s\r\n", sensor_address_, SDI12SENSOR_SDI12_PROTOCOL, SDI12SENSOR_COMPANY, SDI12SENSOR_MODEL, SDI12SENSOR_VERSION, SDI12SENSOR_OTHER_INFO);
-//     sendResponse(message);
-//     // sendResponse(String(sensor_address_) + SDI12SENSOR_SDI12_PROTOCOL, SDI12SENSOR_COMPANY, SDI12SENSOR_MODEL, SDI12SENSOR_VERSION, SDI12SENSOR_OTHER_INFO);
+//     sprintf(message, "%c%s%s%s%s\r\n", sensor_address_, SDI12SENSOR_SDI12_PROTOCOL,
+//     SDI12SENSOR_COMPANY, SDI12SENSOR_MODEL, SDI12SENSOR_VERSION,
+//     SDI12SENSOR_OTHER_INFO); sendResponse(message);
+//     // sendResponse(String(sensor_address_) + SDI12SENSOR_SDI12_PROTOCOL,
+//     SDI12SENSOR_COMPANY, SDI12SENSOR_MODEL, SDI12SENSOR_VERSION,
+//     SDI12SENSOR_OTHER_INFO);
 // }
 
 
@@ -856,16 +825,15 @@ int8_t SDI12Sensor::State(void) const {
  * @return size_t Number of digits of whole/integral part.
  */
 size_t IntegralLength(double value) {
-    unsigned int len = 0;
-    if (value < 0) { value = -value; }
-    int val = (int)value;
-    do {
-        val /= 10;
-        ++len;
-    } while (val > 0);
-    return len;
+  unsigned int len = 0;
+  if (value < 0) { value = -value; }
+  int val = (int)value;
+  do {
+    val /= 10;
+    ++len;
+  } while (val > 0);
+  return len;
 }
-
 
 /**
  * @brief Look up table for Powers of 10, 10^0 to 10^9.
@@ -874,25 +842,23 @@ size_t IntegralLength(double value) {
 static const double powers_of_10[] = {1,      10,      100,      1000,      10000,
                                       100000, 1000000, 10000000, 100000000, 1000000000};
 
-
 /**
  * @brief Takes a reverses a null terminated string.
  *
  * @param begin Array in memory where to store null-terminated string
  * @param end Pointer to last non null terminated char in array to be reversed.
  */
-static void strreverse(char *begin, char *end) {
-    char aux;
-    while (end > begin) {
-        aux = *end;
-        *end-- = *begin;
-        *begin++ = aux;
-    }
+static void strreverse(char* begin, char* end) {
+  char aux;
+  while (end > begin) {
+    aux      = *end;
+    *end--   = *begin;
+    *begin++ = aux;
+  }
 }
 
-
 /**
- * @brief Converts floats to string, based on stringencoders modp_dtoa2() from
+ * @brief Converts floats to string, based on string encoders modp_dtoa2() from
  * https://github.com/client9/stringencoders/blob/master/src/modp_numtoa.h
  *
  * @param[in] value value to be converted
@@ -906,257 +872,261 @@ static void strreverse(char *begin, char *end) {
  * @param[in] pos_sign (optional) show positive sign,  default: true
  * @return size_t  Length of string, returns 0 if NaN
  */
-size_t dtoa(double value, char *str, uint8_t prec, uint8_t fit_len, bool zero_trail, bool pos_sign) {
-    /* Hacky test for NaN
-     * under -fast-math this won't work, but then you also won't
-     * have correct nan values anyways.  The alternative is
-     * to link with libmath (bad) or hack IEEE double bits (bad)
+size_t dtoa(double value, char* str, uint8_t prec, uint8_t fit_len, bool zero_trail,
+            bool pos_sign) {
+  /* Hacky test for NaN
+   * under -fast-math this won't work, but then you also won't
+   * have correct nan values anyways.  The alternative is
+   * to link with libmath (bad) or hack IEEE double bits (bad)
+   */
+  if (!(value == value)) {
+    strcpy(str, "NaN");
+    return 0;
+  }
+
+  /* we'll work in positive values and deal with the
+     negative sign issue later */
+  bool neg = false;
+  if (value < 0) {
+    neg   = true;
+    value = -value;
+  }
+
+  int whole = (int)value;
+
+  if (prec <= 0) {
+    prec = 0;
+  } else if (prec > 9) {
+    /* precision of >= 10 can lead to overflow errors */
+    prec = 9;
+  }
+
+  // Return NaN if whole digit is greater than max_length including sign
+  if (fit_len > 0) {
+    size_t len_of_integral = IntegralLength(value);
+    if (len_of_integral >= fit_len) {
+      strcpy(str, "NaN");
+      return 0;
+    }
+
+    // Resize precision if greater than would fit otherwise
+    // -2 to account for sign and decimal
+    if (prec > (fit_len - len_of_integral - 2)) {
+      prec = (fit_len - len_of_integral - 2);
+      if (!pos_sign && !neg) { prec++; }
+    }
+  }
+
+  /* if input is larger than thres_max, revert to exponential */
+  const double thres_max = (double)(0x7FFFFFFF);
+  /* for very large numbers switch back to native sprintf for exponentials.
+     anyone want to write code to replace this? */
+  /*
+     normal printf behavior is to print EVERY whole number digit
+     which can be 100s of characters overflowing your buffers == bad
      */
-    if (!(value == value)) {
-        strcpy(str, "NaN");
-        return 0;
+  if (value > thres_max) {
+    if (pos_sign) {
+      sprintf(str, "%+.*f", prec, neg ? -value : value);
+    } else {
+      sprintf(str, "%.*f", prec, neg ? -value : value);
     }
+    return strlen(str);
+  }
 
-    /* we'll work in positive values and deal with the
-       negative sign issue later */
-    bool neg = false;
-    if (value < 0) {
-        neg   = true;
-        value = -value;
+  char*    wstr          = str;
+  double   p10_fraction  = (value - whole) * powers_of_10[prec];
+  uint32_t int_from_frac = (uint32_t)(p10_fraction);
+  double   diff_frac     = p10_fraction - int_from_frac;
+  bool     has_decimal   = false;
+  uint8_t  len_of_sigfig = prec;
+
+  if (diff_frac > 0.499) {
+    // Round up above 0.49 to account for precision conversion error
+    ++int_from_frac;
+    /* handle rollover, e.g. case 0.99 with prec 1 is 1.0  */
+    if (int_from_frac >= powers_of_10[prec]) {
+      int_from_frac = 0;
+      ++whole;
     }
-
-    int whole = (int)value;
-
-    if (prec <= 0) {
-        prec = 0;
-    } else if (prec > 9) {
-        /* precision of >= 10 can lead to overflow errors */
-        prec = 9;
+  } else if (diff_frac == 0.5) {
+    if (prec > 0 && (int_from_frac & 1)) {
+      /* if halfway, round up if odd, OR
+     if last digit is 0.  That last part is strange */
+      ++int_from_frac;
+      if (int_from_frac >= powers_of_10[prec]) {
+        int_from_frac = 0;
+        ++whole;
+      }
+    } else if (prec == 0 && (whole & 1)) {
+      ++int_from_frac;
+      if (int_from_frac >= powers_of_10[prec]) {
+        int_from_frac = 0;
+        ++whole;
+      }
     }
+  }
 
-    // Return NaN if whole digit is greater than max_length including sign
-    if (fit_len > 0) {
-        size_t len_of_integral = IntegralLength(value);
-        if (len_of_integral >= fit_len) {
-            strcpy(str, "NaN");
-            return 0;
-        }
-
-        // Resize precision if greater than would fit otherwise
-        // -2 to account for sign and decimal
-        if (prec > (fit_len - len_of_integral - 2)) {
-            prec = (fit_len - len_of_integral - 2);
-            if (!pos_sign && !neg) { prec++; }
-        }
+  if (prec > 0) {
+    /* Remove ending zeros */
+    if (!zero_trail) {
+      while (len_of_sigfig > 0 && ((int_from_frac % 10) == 0)) {
+        len_of_sigfig--;
+        int_from_frac /= 10;
+      }
     }
+    if (len_of_sigfig > 0) has_decimal = true;
 
-    /* if input is larger than thres_max, revert to exponential */
-    const double thres_max = (double)(0x7FFFFFFF);
-    /* for very large numbers switch back to native sprintf for exponentials.
-       anyone want to write code to replace this? */
-    /*
-       normal printf behavior is to print EVERY whole number digit
-       which can be 100s of characters overflowing your buffers == bad
-       */
-    if (value > thres_max) {
-        if (pos_sign) {
-            sprintf(str, "%+.*f", prec, neg ? -value : value);
-        } else {
-            sprintf(str, "%.*f", prec, neg ? -value : value);
-        }
-        return strlen(str);
+    while (len_of_sigfig > 0) {
+      --len_of_sigfig;
+      *wstr++ = (char)(48 + (int_from_frac % 10));
+      int_from_frac /= 10;
     }
+    if (int_from_frac > 0) { ++whole; }
 
-    char *wstr = str;
-    double   p10_fraction  = (value - whole) * powers_of_10[prec];
-    uint32_t int_from_frac = (uint32_t)(p10_fraction);
-    double diff_frac = p10_fraction - int_from_frac;
-    bool has_decimal = false;
-    uint8_t len_of_sigfig = prec;
+    /* add decimal */
+    if (has_decimal) { *wstr++ = '.'; }
+  }
 
-    if (diff_frac > 0.499) {
-        // Round up above 0.49 to account for precision conversion error
-        ++int_from_frac;
-        /* handle rollover, e.g. case 0.99 with prec 1 is 1.0  */
-        if (int_from_frac >= powers_of_10[prec]) {
-            int_from_frac = 0;
-            ++whole;
-        }
-    } else if (diff_frac == 0.5) {
-        if (prec > 0 && (int_from_frac & 1)) {
-            /* if halfway, round up if odd, OR
-           if last digit is 0.  That last part is strange */
-            ++int_from_frac;
-            if (int_from_frac >= powers_of_10[prec]) {
-                int_from_frac = 0;
-                ++whole;
-            }
-        } else if (prec == 0 && (whole & 1)) {
-            ++int_from_frac;
-            if (int_from_frac >= powers_of_10[prec]) {
-                int_from_frac = 0;
-                ++whole;
-            }
-        }
-    }
-
-    if (prec > 0) {
-        /* Remove ending zeros */
-        if (!zero_trail) {
-            while (len_of_sigfig > 0 && ((int_from_frac % 10) == 0)) {
-                len_of_sigfig--;
-                int_from_frac /= 10;
-            }
-        }
-        if (len_of_sigfig > 0) has_decimal = true;
-
-        while (len_of_sigfig > 0) {
-            --len_of_sigfig;
-            *wstr++ = (char)(48 + (int_from_frac % 10));
-            int_from_frac /= 10;
-        }
-        if (int_from_frac > 0) { ++whole; }
-
-        /* add decimal */
-        if (has_decimal) { *wstr++ = '.'; }
-    }
-
-    /* do whole part
-     * Take care of sign conversion
-     * Number is reversed.
-     */
-    do {
-        *wstr++ = (char)(48 + (whole % 10));
-    } while (whole /= 10);
-    if (neg) { *wstr++ = '-'; } else if (pos_sign) { *wstr++ = '+'; }
-    *wstr = '\0';
-    strreverse(str, wstr - 1);
-    return (size_t)(wstr - str);
+  /* do whole part
+   * Take care of sign conversion
+   * Number is reversed.
+   */
+  do { *wstr++ = (char)(48 + (whole % 10)); } while (whole /= 10);
+  if (neg) {
+    *wstr++ = '-';
+  } else if (pos_sign) {
+    *wstr++ = '+';
+  }
+  *wstr = '\0';
+  strreverse(str, wstr - 1);
+  return (size_t)(wstr - str);
 }
 
 /**
  * @overload
  * Support for wide string
  */
-size_t dtoa(double value, String &str, uint8_t prec, uint8_t fit_len, bool zero_trail, bool pos_sign) {
-    /* Hacky test for NaN
-     * under -fast-math this won't work, but then you also won't
-     * have correct nan values anyways.  The alternative is
-     * to link with libmath (bad) or hack IEEE double bits (bad)
+size_t dtoa(double value, String& str, uint8_t prec, uint8_t fit_len, bool zero_trail,
+            bool pos_sign) {
+  /* Hacky test for NaN
+   * under -fast-math this won't work, but then you also won't
+   * have correct nan values anyways.  The alternative is
+   * to link with libmath (bad) or hack IEEE double bits (bad)
+   */
+  if (!(value == value)) {
+    str = "NaN";
+    return 0;
+  }
+
+  /* we'll work in positive values and deal with the
+     negative sign issue later */
+  bool neg = false;
+  if (value < 0) {
+    neg   = true;
+    value = -value;
+  }
+
+  int whole = (int)value;
+
+  if (prec <= 0) {
+    prec = 0;
+  } else if (prec > 9) {
+    /* precision of >= 10 can lead to overflow errors */
+    prec = 9;
+  }
+
+  // Return NaN if whole digit is greater than max_length including sign
+  if (fit_len > 0) {
+    size_t len_of_integral = IntegralLength(value);
+    if (len_of_integral >= fit_len) {
+      str = "NaN";
+      return 0;
+    }
+
+    // Resize precision if greater than would fit otherwise
+    // -2 to account for sign and decimal
+    if (prec > (fit_len - len_of_integral - 2)) {
+      prec = (fit_len - len_of_integral - 2);
+      if (!pos_sign && !neg) { prec++; }
+    }
+  }
+
+  /* if input is larger than thres_max, revert to exponential */
+  const double thres_max = (double)(0x7FFFFFFF);
+  /* for very large numbers switch back to native sprintf for exponentials.
+     anyone want to write code to replace this? */
+  /*
+     normal printf behavior is to print EVERY whole number digit
+     which can be 100s of characters overflowing your buffers == bad
      */
-    if (!(value == value)) {
-        str = "NaN";
-        return 0;
-    }
-
-    /* we'll work in positive values and deal with the
-       negative sign issue later */
-    bool neg = false;
-    if (value < 0) {
-        neg   = true;
-        value = -value;
-    }
-
-    int whole = (int)value;
-
-    if (prec <= 0) {
-        prec = 0;
-    } else if (prec > 9) {
-        /* precision of >= 10 can lead to overflow errors */
-        prec = 9;
-    }
-
-    // Return NaN if whole digit is greater than max_length including sign
-    if (fit_len > 0) {
-        size_t len_of_integral = IntegralLength(value);
-        if (len_of_integral >= fit_len) {
-            str = "NaN";
-            return 0;
-        }
-
-        // Resize precision if greater than would fit otherwise
-        // -2 to account for sign and decimal
-        if (prec > (fit_len - len_of_integral - 2)) {
-            prec = (fit_len - len_of_integral - 2);
-            if (!pos_sign && !neg) { prec++; }
-        }
-    }
-
-    /* if input is larger than thres_max, revert to exponential */
-    const double thres_max = (double)(0x7FFFFFFF);
-    /* for very large numbers switch back to native sprintf for exponentials.
-       anyone want to write code to replace this? */
-    /*
-       normal printf behavior is to print EVERY whole number digit
-       which can be 100s of characters overflowing your buffers == bad
-       */
-    if (value > thres_max) {
-        if (neg) {
-            str = String(-value, prec);
-        } else if (pos_sign) {
-            str = "+";
-            str += String(value, prec);
-        } else {
-            str = String(value, prec);
-        }
-        return str.length();
-    }
-
-    double   p10_fraction  = (value - whole) * powers_of_10[prec];
-    uint32_t int_from_frac = (uint32_t)(p10_fraction);
-    double diff_frac = p10_fraction - int_from_frac;
-    uint8_t len_of_sigfig = prec;
-
-    if (diff_frac > 0.499) {
-        // Round up above 0.49 to account for precision conversion error
-        ++int_from_frac;
-        /* handle rollover, e.g. case 0.99 with prec 1 is 1.0  */
-        if (int_from_frac >= powers_of_10[prec]) {
-            int_from_frac = 0;
-            ++whole;
-        }
-    } else if (diff_frac == 0.5) {
-        if (prec > 0 && (int_from_frac & 1)) {
-            /* if halfway, round up if odd, OR
-           if last digit is 0.  That last part is strange */
-            ++int_from_frac;
-            if (int_from_frac >= powers_of_10[prec]) {
-                int_from_frac = 0;
-                ++whole;
-            }
-        } else if (prec == 0 && (whole & 1)) {
-            ++int_from_frac;
-            if (int_from_frac >= powers_of_10[prec]) {
-                int_from_frac = 0;
-                ++whole;
-            }
-        }
-    }
-
-    if (prec > 0) {
-        /* Remove ending zeros */
-        if (!zero_trail) {
-            while (len_of_sigfig > 0 && ((int_from_frac % 10) == 0)) {
-                len_of_sigfig--;
-                int_from_frac /= 10;
-            }
-        }
-    }
-
-    /* start building string */
+  if (value > thres_max) {
     if (neg) {
-        str = String(-value, len_of_sigfig);
+      str = String(-value, prec);
     } else if (pos_sign) {
-        str = "+";
-        str += String(value, len_of_sigfig);
+      str = "+";
+      str += String(value, prec);
     } else {
-        str = String(value, len_of_sigfig);
+      str = String(value, prec);
     }
-    return (size_t)(str.length());
+    return str.length();
+  }
+
+  double   p10_fraction  = (value - whole) * powers_of_10[prec];
+  uint32_t int_from_frac = (uint32_t)(p10_fraction);
+  double   diff_frac     = p10_fraction - int_from_frac;
+  uint8_t  len_of_sigfig = prec;
+
+  if (diff_frac > 0.499) {
+    // Round up above 0.49 to account for precision conversion error
+    ++int_from_frac;
+    /* handle rollover, e.g. case 0.99 with prec 1 is 1.0  */
+    if (int_from_frac >= powers_of_10[prec]) {
+      int_from_frac = 0;
+      ++whole;
+    }
+  } else if (diff_frac == 0.5) {
+    if (prec > 0 && (int_from_frac & 1)) {
+      /* if halfway, round up if odd, OR
+     if last digit is 0.  That last part is strange */
+      ++int_from_frac;
+      if (int_from_frac >= powers_of_10[prec]) {
+        int_from_frac = 0;
+        ++whole;
+      }
+    } else if (prec == 0 && (whole & 1)) {
+      ++int_from_frac;
+      if (int_from_frac >= powers_of_10[prec]) {
+        int_from_frac = 0;
+        ++whole;
+      }
+    }
+  }
+
+  if (prec > 0) {
+    /* Remove ending zeros */
+    if (!zero_trail) {
+      while (len_of_sigfig > 0 && ((int_from_frac % 10) == 0)) {
+        len_of_sigfig--;
+        int_from_frac /= 10;
+      }
+    }
+  }
+
+  /* start building string */
+  if (neg) {
+    str = String(-value, len_of_sigfig);
+  } else if (pos_sign) {
+    str = "+";
+    str += String(value, len_of_sigfig);
+  } else {
+    str = String(value, len_of_sigfig);
+  }
+  return (size_t)(str.length());
 }
 
-
-// void FormatOutputSDI(float *measurementValues, String *dValues, unsigned int maxChar) {
+// void FormatOutputSDI(float *measurementValues, String *dValues, unsigned int maxChar)
+// {
 //     /* Ingests an array of floats and produces Strings in SDI-12 output format */
 
 //     uint8_t lenValues = sizeof(*measurementValues) / sizeof(char *);
@@ -1171,7 +1141,7 @@ size_t dtoa(double value, String &str, uint8_t prec, uint8_t fit_len, bool zero_
 //         //  decimal place precision if integer part is one digit)
 //         String valStr = String(measurementValues[i], SDI12_DIGITS_MAX - 1);
 
-//         // Explictly add implied + sign if non-negative
+//         // Explicitly add implied + sign if non-negative
 //         if (valStr.charAt(0) != '-') {
 //             valStr = '+' + valStr;
 //         }

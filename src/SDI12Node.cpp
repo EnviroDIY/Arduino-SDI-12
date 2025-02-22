@@ -22,16 +22,14 @@
 
 unsigned long SDI12Node::_previous_TCNT = 0;  // previous RX transition in micros
 
-
 /**
  * @brief Destroy the SDI12Node::SDI12Node object
  * @see SDI12Node(uint8_t data_pin)
  * @see SDI12Node(uint8_t data_pin, int eeprom_address)
  */
 SDI12Node::~SDI12Node(void) {
-    // Do nothing
+  // Do nothing
 }
-
 
 /**
  * @brief Gets reference line break.
@@ -45,9 +43,8 @@ SDI12Node::~SDI12Node(void) {
  * @see ClearLineMarkingReceived(void)
  */
 bool SDI12Node::LineBreakReceived(void) {
-    return !waiting_for_break_;
+  return !waiting_for_break_;
 }
-
 
 /**
  * @brief Gets reference to line marking, detectable after receiving line break.
@@ -61,33 +58,32 @@ bool SDI12Node::LineBreakReceived(void) {
  * @see ClearLineMarkingReceived(void)
  */
 bool SDI12Node::LineMarkReceived(void) {
-    return !waiting_for_mark_;
+  return !waiting_for_mark_;
 }
 
-
 /**
- * @brief Resets the references of waiting for line marking and line break status for SDI12
+ * @brief Resets the references of waiting for line marking and line break status for
+ * SDI12
  *
  * @see LineBreakReceived(void)
  * @see LineMarkReceived(void)
  */
 void SDI12Node::ClearLineMarkingReceived(void) {
-    waiting_for_break_ = true;
-    waiting_for_mark_ = true;
+  waiting_for_break_ = true;
+  waiting_for_mark_  = true;
 }
 
-
 /**
- * @brief Holds line and marks line for 8.33 milliseconds in preparation for data transmitting.
- * Does not release data line. Need to call forceListen() to release data line.
+ * @brief Holds line and marks line for 8.33 milliseconds in preparation for data
+ * transmitting. Does not release data line. Need to call forceListen() to release data
+ * line.
  *
  * @see forceListen()
  */
 void SDI12Node::MarkLine(void) {
-    forceHold();
-    delayMicroseconds(SDI12NODE_LINE_MARK_MICROS);  // 8.33 ms marking before response
+  forceHold();
+  delayMicroseconds(SDI12NODE_LINE_MARK_MICROS);  // 8.33 ms marking before response
 };
-
 
 /**
  *
@@ -100,38 +96,37 @@ void SDI12Node::MarkLine(void) {
  * @see LineMarkReceived(void)
  */
 void SDI12Node::receiveISR(void) {
-    if (waiting_for_mark_ || waiting_for_break_) {
-        // time of this data transition (plus ISR latency)
-        unsigned long current_TCNT = micros();
-        uint8_t pinLevel = digitalRead(getDataPin());  // current RX data level
+  if (waiting_for_mark_ || waiting_for_break_) {
+    // time of this data transition (plus ISR latency)
+    unsigned long current_TCNT = micros();
+    uint8_t       pinLevel     = digitalRead(getDataPin());  // current RX data level
 
-        // Serial.print(pinLevel);
-        // Serial.print(" : "); Serial.print(current_TCNT);
-        // Serial.print(" : "); Serial.print(_previous_TCNT);
-        // Serial.print(" : "); Serial.print((current_TCNT - _previous_TCNT));
+    // Serial.print(pinLevel);
+    // Serial.print(" : "); Serial.print(current_TCNT);
+    // Serial.print(" : "); Serial.print(_previous_TCNT);
+    // Serial.print(" : "); Serial.print((current_TCNT - _previous_TCNT));
 
-        if (waiting_for_break_) {
-            if (pinLevel == HIGH) {
-                return;
-            } else if ((current_TCNT - _previous_TCNT) >= SDI12NODE_LINE_BREAK_MICROS) {
-                waiting_for_break_ = false;
-            }
-        } else if (waiting_for_mark_ && (pinLevel == HIGH) &&
-                ((current_TCNT - _previous_TCNT) >= SDI12NODE_LINE_MARK_MICROS)) {
-            waiting_for_mark_ = false;
-        }
-
-        // Serial.print(" : "); Serial.print(waiting_for_break_);
-        // Serial.print(" : "); Serial.print((current_TCNT - _previous_TCNT) >= SDI12NODE_LINE_BREAK_MICROS);
-        // Serial.print(" : "); Serial.print(waiting_for_mark_);
-        // Serial.print(" : "); Serial.print((current_TCNT - _previous_TCNT) >= SDI12NODE_LINE_MARK_MICROS);
-        // Serial.println("");
-
-        _previous_TCNT = current_TCNT;  // Remember timestamp of this change!
+    if (waiting_for_break_) {
+      if (pinLevel == HIGH) {
+        return;
+      } else if ((current_TCNT - _previous_TCNT) >= SDI12NODE_LINE_BREAK_MICROS) {
+        waiting_for_break_ = false;
+      }
+    } else if (waiting_for_mark_ && (pinLevel == HIGH) &&
+               ((current_TCNT - _previous_TCNT) >= SDI12NODE_LINE_MARK_MICROS)) {
+      waiting_for_mark_ = false;
     }
-    SDI12::receiveISR();
-}
 
+    // Serial.print(" : "); Serial.print(waiting_for_break_);
+    // Serial.print(" : "); Serial.print((current_TCNT - _previous_TCNT) >=
+    // SDI12NODE_LINE_BREAK_MICROS); Serial.print(" : ");
+    // Serial.print(waiting_for_mark_); Serial.print(" : "); Serial.print((current_TCNT
+    // - _previous_TCNT) >= SDI12NODE_LINE_MARK_MICROS); Serial.println("");
+
+    _previous_TCNT = current_TCNT;  // Remember timestamp of this change!
+  }
+  SDI12::receiveISR();
+}
 
 // uint16_t SDI12Node::TCNTMicros(void){
 //     uint8_t m = 0;
