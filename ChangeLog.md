@@ -20,6 +20,29 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [2.3.0] - SOON
+
+### Added
+
+- Added support for Particle boards, thanks to @joaquinperaza
+  - These boards use millis() and default interrupts like other 48MHz boards, but without the `digitalPinToInterrupt()` macro.
+
+### Changed
+
+- **Breaking** Changed the `parseInt()`, `parseFloat()`, and `peekNextDigit()` functions so that they are better customized for reading from a data response request.
+  - Any LookupMode or ignore inputs will be ignored.
+- **Potentially Breaking** Characters that fail parity will not be added to the Rx buffer.
+- Change fudge for 48MHz boards using millis() from 50 to 95 based on comments in [#145](https://github.com/EnviroDIY/Arduino-SDI-12/issues/145)
+- Reset bit timer when entering listening state.
+- Verify that at least one bit time has passed before processing a pin change interrupt, where possible.
+
+### Fixed
+
+- Fixed un-setting of clocks and timers on SAMD (SAMD51 and SAMD21) boards.
+- Fix check for the LookaheadMode enum to use the Espressif Arduino core version instead of the IDF version.
+
+***
+
 ## [2.2.1] - 2024-12-09
 
 ### Added
