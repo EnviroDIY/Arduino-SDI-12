@@ -79,16 +79,19 @@ sensors. This library provides a general software solution, without requiring
 #define READTIME TCNT2
 
 #if F_CPU == 16000000L
+#define PRESCALE_IN_USE 1024
 #define PRESCALE_IN_USE_STR "16MHz/1024=15.625kHz"
 // 16MHz / 1024 prescaler = 15625 'ticks'/sec = 64 µs / 'tick'
 #define TICKS_PER_SECOND 15625
 
 #elif F_CPU == 12000000L
+#define PRESCALE_IN_USE 1024
 #define PRESCALE_IN_USE_STR "12MHz/1024=11.7kHz"
 // 12MHz / 1024 prescaler = 11719 'ticks'/sec = 85.33 µs / 'tick'
 #define TICKS_PER_SECOND 11719
 
 #elif F_CPU == 8000000L
+#define PRESCALE_IN_USE 256
 #define PRESCALE_IN_USE_STR "8MHz/256=31.25kHz"
 // 8MHz / 256 prescaler = 31250 'ticks'/sec = 32 µs / 'tick'
 #define TICKS_PER_SECOND 31250
@@ -107,11 +110,13 @@ sensors. This library provides a general software solution, without requiring
 #define READTIME TCNT1
 
 #if F_CPU == 16000000L
+#define PRESCALE_IN_USE 1024
 #define PRESCALE_IN_USE_STR "16MHz/1024=15.625kHz"
 // 16MHz / 1024 prescaler = 15625 'ticks'/sec = 15.625 kHz = 64 µs / 'tick'
 #define TICKS_PER_SECOND 15625
 
 #elif F_CPU == 8000000L
+#define PRESCALE_IN_USE 512
 #define PRESCALE_IN_USE_STR "8MHz/512=15.625kHz"
 // 8MHz / 512 prescaler = 15625 'ticks'/sec = 15.625 kHz = 64 µs / 'tick'
 #define TICKS_PER_SECOND 15625
@@ -133,11 +138,13 @@ sensors. This library provides a general software solution, without requiring
 #define READTIME TCNT4
 
 #if F_CPU == 16000000L
+#define PRESCALE_IN_USE 1024
 #define PRESCALE_IN_USE_STR "16MHz/1024=15.625kHz"
 // 16MHz / 1024 prescaler = 15625 'ticks'/sec = 64 µs / 'tick'
 #define TICKS_PER_SECOND 15625
 
 #elif F_CPU == 8000000L
+#define PRESCALE_IN_USE 512
 #define PRESCALE_IN_USE_STR "8MHz/512=15.625kHz"
 // 8MHz / 512 prescaler = 15625 'ticks'/sec = 64 µs / 'tick'
 #define TICKS_PER_SECOND 15625
@@ -166,6 +173,7 @@ sensors. This library provides a general software solution, without requiring
 // This is equivalent to TC3->COUNT16.COUNT.reg
 #define READTIME REG_TC3_COUNT16_COUNT
 
+#define PRESCALE_IN_USE 96
 #define PRESCALE_IN_USE_STR "48MHz/6/16=500kHz"
 // Start with 48MHz "main" clock source (GCLK_GENCTRL_SRC_DFLL48M)
 // 48MHz / 6x clock source divider (GCLK_GENDIV_DIV(6)) = 8MHz
@@ -196,6 +204,7 @@ sensors. This library provides a general software solution, without requiring
 // function.
 #define READTIME sdi12timer.SDI12TimerRead()
 
+#define PRESCALE_IN_USE 240
 #define PRESCALE_IN_USE_STR "120MHz/15/16=500kHz"
 // Start with 120MHz "main" clock source (MAIN_CLOCK_SOURCE = GCLK_GENCTRL_SRC_DPLL0)
 // 120MHz / 15x clock source divider (GCLK_GENCTRL_DIV(15)) = 8MHz
