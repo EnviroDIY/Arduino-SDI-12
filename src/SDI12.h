@@ -378,6 +378,24 @@ enum LookaheadMode {
 #undef NEED_LOOKAHEAD_ENUM
 
 /**
+ * @brief Enumerated type to reference the type of supported binary data types
+ * for binary measurements
+ */
+typedef enum SDI12BinaryDataType_e : uint8_t {
+  kInvalidDataType = 0,  // Invalid data or Empty data type
+  kInt8DataType    = 1,  // Signed 8-bit integer
+  kUint8DataType   = 2,  // Unsigned 8-bit integer
+  kInt16DataType   = 3,  // Signed 16-bit integer
+  kUint16DataType  = 4,  // Unsigned 16-bit integer
+  kInt32DataType   = 5,  // Signed 32-bit integer
+  kUint32DataType  = 6,  // Unsigned 32-bit integer
+  kInt64DataType   = 7,  // Signed 64-bit integer
+  kUint64DataType  = 8,  // Unsigned 64-bit integer
+  kFloatDataType   = 9,  // IEEE 32-bit floating point single precision
+  kDoubleDataType  = 10  // IEEE 64-bit floating point double precision
+} SDI12BinaryDataType_e;
+
+/**
  * @brief The main class for SDI 12 instances
  */
 class SDI12 : public Stream {
@@ -549,7 +567,7 @@ class SDI12 : public Stream {
    */
   int available() override;
   /**
-   * @brief Reveal next byte in the Rx buffer without consuming it.
+   * @brief Reveal next byte **(7E1)** in the Rx buffer without consuming it.
    *
    * @return The next byte in the character buffer.
    *
@@ -560,6 +578,15 @@ class SDI12 : public Stream {
    */
   int peek() override;
   /**
+   * @brief Reveals the next byte **(8N1)** in the buffer without consuming
+   *
+   * @param offset Offset position from the buffer head, offset=0 refers to the buffer
+   * head.
+   * @return int - uint8_t representation of byte if valid, -1 if offset is outside
+   * buffer range.
+   */
+  int peekByte(uint8_t offset = 0);
+  /**
    * @brief Clear the Rx buffer by setting the head and tail pointers to the same value.
    *
    * clearBuffer() is a public function that clears the buffers contents by setting the
@@ -567,16 +594,61 @@ class SDI12 : public Stream {
    */
   void clearBuffer();
   /**
-   * @brief Return next byte in the Rx buffer, consuming it
+   * @brief Return next byte in the Rx buffer **excluding parity bit**, consuming it.
    *
-   * @return The next byte in the character buffer.
+   * This is used for standard SDI-12 7E1 characters.
+   *
+   * @return The next byte in the character buffer, **7E1, excluding parity**.
    *
    * read() returns the character at the current head in the buffer after incrementing
    * the index of the buffer head. This action 'consumes' the character, meaning it can
    * not be read from the buffer again. If you would rather see the character, but leave
    * the index to head intact, you should use peek();
+   * @see peek()
+   * @see readByte(const char address)
    */
   int read() override;
+
+  /**
+   * @brief Return next byte in the Rx buffer **including 8th bit**, consuming it
+   *
+   * @return The next byte in the character buffer, **8N1, including 8th bit!**.
+   *
+   * readByte() returns the character at the current head in the buffer after
+   * incrementing the index of the buffer head. This action 'consumes' the character,
+   * meaning it can not be read from the buffer again. If you would rather see the
+   * character, but leave the index to head intact, you should use peekByte(uint8_t
+   * offset);
+   *
+   * @see peekByte(uint8_t offset)
+   * @see readBytes(char *output, size_t length)
+   */
+  int readByte(void);
+
+  /**
+   * @brief Return the number of bytes given by @p length or until timeout,
+   * and store it at reference pointed to by @p buffer in little-endian format.
+   *
+   * @param[out] output Reference to location in memory to store the bytes read from
+   * buffer
+   * @param[in] length Max number of bytes to read from buffer
+   * @return size_t Number of bytes read from buffer
+   *
+   * readBytes() attempts to return the number of bytes up to the given @p length
+   * after incrementing the index of the buffer head using @see timedReadByte().
+   * This action "consumes" the number of bytes requested by @p length, meaning
+   * it can not be used to read from the buffer again. If readBytes is unable to
+   * return to return the number of bytes before timeout, the number of bytes
+   * returned is less than the required @p length . The byte chunks are then
+   * stored at the location pointed to by @p buffer in little-endian format.
+   */
+  size_t readBytes(char* output, size_t length);
+  /**
+   * @brief Reads the next byte from the buffer (and moves the index ahead) with timeout
+   *
+   * @return int Byte data from buffer or -1 if buffer is empty or timeout during read
+   */
+  int timedReadByte(void);
 
   /**
    * @brief Wait for sending to finish - because no TX buffering and the write function
@@ -1008,13 +1080,13 @@ class SDI12 : public Stream {
    */
   void wakeSensors(int8_t extraWakeTime = 0);
   /**
-   * @brief Used to send a character out on the data line
+   * @brief Used to send a single character **(7E1)** out on the data line
    *
-   * @param out **uint8_t (char)** the character to write
+   * @param out The character to write
    *
    * This function writes a character out to the data line.  SDI-12 specifies the
    * general transmission format of a single character as:
-   * - 10 bits per data frame
+   * - 10 bits per data frame (7E1)
    *     - 1 start bit
    *     - 7 data bits (least significant bit first)
    *     - 1 even parity bit
@@ -1025,19 +1097,52 @@ class SDI12 : public Stream {
    */
   void writeChar(uint8_t out);
 
+  /**
+   * @brief Used to send a single byte (8N1) out on the data line.
+   *
+   * @note This is intended to be used inside of writeBytes(T value), not independently.
+   *
+   * @note This should only be used in responses to high volume **binary** measurement
+   * data requests. That is the only situation in which 8N1 data bytes are used instead
+   * of 7E1.  In all other situations, use the writeChar(out) function.
+   *
+   * @param byte The byte to write
+   *
+   * This function writes a data byte out to the data line.  SDI-12 specifies the
+   * general transmission format of a single character as:
+   * - 10 bits per data frame (8N1)
+   *     - 1 start bit
+   *     - 8 data bits (least significant bit first)
+   *     - 1 stop bit
+   *
+   * Recall that we are using inverse logic, so HIGH represents 0, and LOW represents
+   * a 1.
+   *
+   * This function must be implemented as part of the Arduino Stream
+   * instance, but is *NOT* intended to be used for SDI-12 objects.
+   *
+   * @return size_t 1
+   */
+  size_t writeByte(uint8_t byte);
+
  public:
   /**
-   * @brief Write out a byte on the SDI-12 line
+   * @brief Write out a byte (7E1) on the SDI-12 line
    *
    * @param byte The character to write
    * @return The number of characters written
    *
    * Sets the state to transmitting, writes a character, and then sets the state back to
-   * listening.  This function must be implemented as part of the Arduino Stream
-   * instance, but is *NOT* intended to be used for SDI-12 objects.  Instead, use the
+   * listening.
+   *
+   * @warning This function must be implemented as part of the Arduino Stream instance,
+   * but is *NOT* intended to be used for SDI-12 objects.  Instead, use the
    * SDI12::sendCommand() or SDI12::sendResponse() functions.
    */
   virtual size_t write(uint8_t byte);
+
+  template<typename T>
+  size_t writeBytes(T value);  // Writes out number of bytes little-endian
 
   /**
    * @brief Send a command out on the data line, acting as a data logger (master)
@@ -1123,7 +1228,7 @@ class SDI12 : public Stream {
    * @see For a detailed explanation of interrupts see @ref interrupts_page
    */
   /**@{*/
- private:
+ protected:
   /**
    * @brief Creates a blank slate for a new incoming character
    */
@@ -1142,7 +1247,7 @@ class SDI12 : public Stream {
    * person, that 8.33ms is trivial, but for even a "slow" 8MHz processor, that's over
    * 60,000 ticks sitting idle per character.
    */
-  void receiveISR();
+  virtual void receiveISR();
   /**
    * @brief Put a finished character into the SDI12 buffer
    *
@@ -1163,6 +1268,30 @@ class SDI12 : public Stream {
   // #define SDI12_EXTERNAL_PCINT
   /**@}*/
 };
+
+/**
+ * @brief Write out number of bytes on the SDI-12 line, least significant byte first
+ * (little-endian transmission)
+ *
+ * @tparam T @p value type
+ * @param value Data to be converted to byte chunks
+ * @return size_t sizeof( @p T ), number of bytes written out
+ *
+ * Sets the state to transmitting, starts writing byte chunks of @p value from
+ * least significant byte to most significant byte, and then sets the state back
+ * to listening.
+ */
+template<typename T>
+size_t SDI12::writeBytes(T value) {
+  setState(SDI12_TRANSMITTING);
+  size_t count = sizeof(T);
+  for (size_t i = 0; i < count; i++) {
+    writeByte(value & 0xFF);
+    value >>= 8;
+  }
+  setState(SDI12_LISTENING);
+  return count;
+}
 
 #endif  // SRC_SDI12_H_
 

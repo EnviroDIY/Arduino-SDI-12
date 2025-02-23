@@ -36,7 +36,15 @@ int SDI12::available() {
 int SDI12::peek() {
   SDI12_YIELD()
   if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
-  return _rxBuffer[_rxBufferHead];                // Otherwise, read from "head"
+  return _rxBuffer[_rxBufferHead] &
+    0x7F;  // Otherwise, read from "head", excluding parity bit
+}
+
+// Peek at byte from Rx buffer without consuming it.
+int SDI12::peekByte(uint8_t offset) {
+  SDI12_YIELD()
+  if (_rxBufferHead + offset >= _rxBufferTail) return -1;  // Empty buffer? If yes, -1
+  return (uint8_t)_rxBuffer[_rxBufferHead];  // Otherwise, read from "head"
 }
 
 // a public function that clears the buffer contents and resets the status of the buffer
@@ -54,7 +62,41 @@ int SDI12::read() {
   if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
   uint8_t nextChar = _rxBuffer[_rxBufferHead];    // Otherwise, grab char at head
   _rxBufferHead    = (_rxBufferHead + 1) % SDI12_BUFFER_SIZE;  // increment head
+  return nextChar & 0x7F;  // return the char, excluding parity bit
+}
+
+// Read a byte data (includes parity) from buffer and move index ahead
+int SDI12::readByte() {
+  SDI12_YIELD()
+  _bufferOverflow = false;                        // Reading makes room in the buffer
+  if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
+  uint8_t nextChar = _rxBuffer[_rxBufferHead];    // Otherwise, grab char at head
+  _rxBufferHead    = (_rxBufferHead + 1) % SDI12_BUFFER_SIZE;  // increment head
   return nextChar;                                             // return the char
+}
+
+// Read up to given number of bytes (including 8th bit) from buffer before timeout and
+// move index ahead
+size_t SDI12::readBytes(char* output, size_t length) {
+  size_t count = 0;
+  while (count < length) {
+    int c = timedReadByte();
+    if (c < 0) break;
+    *output++ = (char)c;
+    count++;
+  }
+  return count;
+}
+
+// Read a byte data (includes 8th bit) before timeout from buffer and move index ahead
+int SDI12::timedReadByte(void) {
+  int c;
+  _startMillis = millis();
+  do {
+    c = readByte();
+    if (c >= 0) return c;
+  } while (millis() - _startMillis < _timeout);
+  return -1;  // -1 indicates timeout
 }
 
 // these functions HIDE the stream equivalents to return a custom timeout value
@@ -360,7 +402,7 @@ void SDI12::wakeSensors(int8_t extraWakeTime) {
     SDI12_LINE_MARK_MICROS);  // Required marking of 8.33 milliseconds(8,333 µs)
 }
 
-// this function writes a character out on the data line
+// this function writes a single character (7E1) out on the data line
 void SDI12::writeChar(uint8_t outChar) {
   uint8_t currentTxBitNum = 0;  // first bit is start bit
   uint8_t bitValue        = 1;  // start bit is HIGH (inverse parity...)
@@ -451,6 +493,66 @@ void SDI12::writeChar(uint8_t outChar) {
   sdi12timer_t bitTimeRemaining = static_cast<sdi12timer_t>(TICKS_PER_BIT) *
     (10 - lastHighBit);
   while (static_cast<sdi12timer_t>(READTIME - t0) < bitTimeRemaining) {}
+}
+
+// this function writes a single byte (8N1) out on the data line
+size_t SDI12::writeByte(uint8_t outByte) {
+  uint8_t currentTxBitNum = 0;  // first bit is start bit
+  uint8_t bitValue        = 1;  // start bit is HIGH (inverse parity...)
+
+  noInterrupts();  // _ALL_ interrupts disabled so timing can't be shifted
+
+  sdi12timer_t t0 = READTIME;  // start time
+
+  digitalWrite(
+    _dataPin,
+    HIGH);  // immediately get going on the start bit
+            // this gives us 833µs to calculate parity and position of last high bit
+  currentTxBitNum++;
+
+  // Calculate the position of the last bit that is a 0/HIGH (ie, HIGH, not marking)
+  // That bit will be the last time-critical bit.  All bits after that can be
+  // sent with interrupts enabled.
+
+  uint8_t lastHighBit =
+    9;  // The position of the last bit that is a 0 (ie, HIGH, not marking)
+  uint8_t msbMask = 0x80;  // A mask with all bits at 1
+  while (msbMask & outByte) {
+    lastHighBit--;
+    msbMask >>= 1;
+  }
+
+  // Hold the line for the rest of the start bit duration
+
+  while (static_cast<sdi12timer_t>(READTIME - t0) <
+         static_cast<sdi12timer_t>(TICKS_PER_BIT)) {}
+  t0 = READTIME;  // advance start time
+
+  // repeat for all data bits until the last bit different from marking
+  while (currentTxBitNum++ < lastHighBit) {
+    bitValue = outByte & 0x01;  // get next bit in the character to send
+    if (bitValue) {
+      digitalWrite(_dataPin, LOW);  // set the pin state to LOW for 1's
+    } else {
+      digitalWrite(_dataPin, HIGH);  // set the pin state to HIGH for 0's
+    }
+    // Hold the line for this bit duration
+    while (static_cast<sdi12timer_t>(READTIME - t0) <
+           static_cast<sdi12timer_t>(TICKS_PER_BIT)) {}
+    t0 = READTIME;  // start time
+
+    outByte = outByte >> 1;  // shift character to expose the following bit
+  }
+
+  // Set the line low for the all remaining 1's and the stop bit
+  digitalWrite(_dataPin, LOW);
+
+  interrupts();  // Re-enable universal interrupts as soon as critical timing is past
+
+  // Hold the line low until the end of the 10th bit
+  uint8_t bitTimeRemaining = TICKS_PER_BIT * (10 - lastHighBit);
+  while (static_cast<sdi12timer_t>(READTIME - t0) < bitTimeRemaining) {}
+  return 1;
 }
 
 // The typical write functionality for a stream object
@@ -625,8 +727,8 @@ void ISR_MEM_ACCESS SDI12::startChar() {
 
 // The actual interrupt service routine
 void ISR_MEM_ACCESS SDI12::receiveISR() {
-  sdi12timer_t thisBitTCNT =
-    READTIME;  // time of this data transition (plus ISR latency)
+  // time of this data transition (plus ISR latency)
+  sdi12timer_t thisBitTCNT = READTIME;
 
   uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
 
@@ -736,20 +838,10 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     // If this was the 8th or more bit then the character and parity are complete.
     // The stop bit may still be outstanding
     if (rxState > 7) {
-#ifdef SDI12_CHECK_PARITY
-      uint8_t rxParity = bitRead(rxValue, 7);  // pull out the parity bit
-#endif
-      rxValue &= 0x7F;  // Throw away the parity bit (and with 0b01111111)
-#ifdef SDI12_CHECK_PARITY
-      uint8_t checkParity =
-        parity_even_bit(rxValue);  // Calculate the parity bit from character w/o parity
-      if (rxParity != checkParity) { _parityFailure = true; }
-      if (!_parityFailure) {
-#endif
-        charToBuffer(rxValue);  // Put the finished character into the buffer
-#ifdef SDI12_CHECK_PARITY
-      }
-#endif
+      // Mask out all but the least significant byte
+      // parity handling will be taken care by respective read function
+      rxValue &= 0xFF;
+      charToBuffer(rxValue);  // Put the finished character into the buffer
 
       // if this is LOW, or we haven't exceeded the number of bits in a
       // character (but have gotten all the data bits) then this should be a
