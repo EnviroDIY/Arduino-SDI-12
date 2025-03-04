@@ -156,7 +156,7 @@ typedef const __FlashStringHelper* FlashString;
  * digits + the decimal point))
  * - The polarity symbol (+ or -) acts as a delimeter between the numeric values
  */
-#define SDI12_VALUE_STR_SIZE
+#define SDI12_VALUE_STR_SIZE 9
 /**
  * @brief The maximum length of a standard data command response
  *

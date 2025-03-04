@@ -26,7 +26,9 @@ uint16_t SDI12Timer::mul8x8to16(uint8_t x, uint8_t y) {
 #if TIMER_INT_SIZE == 8
 uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
   // multiply the time delta in ticks by the bits per tick
-  return mul8x8to16(dt + RX_WINDOW_FUDGE, BITS_PER_TICK_Q10) >> 10;
+  return mul8x8to16(dt + static_cast<uint8_t>(RX_WINDOW_FUDGE),
+                    static_cast<uint8_t>(BITS_PER_TICK_Q10)) >>
+    10;
 }
 
 // But nothing fancy for bigger timers
