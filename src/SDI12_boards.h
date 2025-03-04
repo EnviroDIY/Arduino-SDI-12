@@ -216,7 +216,13 @@ sensors. This library provides a general software solution, without requiring
 // Espressif ESP32/ESP8266 boards, Particle boards, or any boards faster than 48MHz not
 // mentioned above
 // WARNING: I haven't actually tested the minimum speed that this will work at!
-#elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || F_CPU >= 48000000L
+#elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
+  defined(ARDUINO_GIGA) || F_CPU >= 48000000L
+
+#if defined(ARDUINO_GIGA)
+// The Giga doesn't define F_CPU, so we'll define it here
+#define F_CPU 480000000L
+#endif
 
 // Using the micros() function
 #define TIMER_IN_USE_STR "micros()"
