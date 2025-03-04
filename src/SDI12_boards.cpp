@@ -26,7 +26,9 @@ uint16_t SDI12Timer::mul8x8to16(uint8_t x, uint8_t y) {
 #if TIMER_INT_SIZE == 8
 uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
   // multiply the time delta in ticks by the bits per tick
-  return mul8x8to16(dt + RX_WINDOW_FUDGE, BITS_PER_TICK_Q10) >> 10;
+  return mul8x8to16(dt + static_cast<uint8_t>(RX_WINDOW_FUDGE),
+                    static_cast<uint8_t>(BITS_PER_TICK_Q10)) >>
+    10;
 }
 
 // But nothing fancy for bigger timers
@@ -522,7 +524,8 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 // Espressif ESP32/ESP8266 boards, Particle boards, or any boards faster than 48MHz not
 // mentioned above
 // WARNING: I haven't tested the minimum speed that this will work at!
-#elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || F_CPU >= 48000000L
+#elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
+  defined(ARDUINO_GIGA) || F_CPU >= 48000000L
 
 void SDI12Timer::configSDI12TimerPrescale(void) {}
 

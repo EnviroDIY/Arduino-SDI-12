@@ -80,7 +80,7 @@ The pre-scaler values needed for the SDI-12 functionality are set in the begin()
 ## Compatibility Considerations<!-- {#mainpage_compatibility} -->
 
 This library has been tested with an Arduino Uno (AtMega328p), EnviroDIY Mayfly (AtMega1284p), Adafruit Feather 32u4 (AtMega32u4, identical to Arduino Leonardo), an Adafruit Feather M0 (SAMD21G18, identical to Arduino Zero), the ESP8266, and the ESP32.
-It should also work on an Arduino Mega (AtMega2560), Gemma/AtTiny board, and most other AVR processors  running on the Arduino framework.
+It should also work on an Arduino Mega (AtMega2560), Gemma/AtTiny board, and most other AVR processors running on the Arduino framework.
 
 The Arduino Due, Arduino 101, and Teensy boards are not supported at this time.
 If you are interested in adding support for those boards, please send pull requests.

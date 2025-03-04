@@ -138,6 +138,116 @@ typedef const __FlashStringHelper* FlashString;
 /// a char not found in a valid ASCII numeric field
 #define NO_IGNORE_CHAR '\x01'
 
+/* SDI-12 Data Buffer Size Specification */
+// The following data buffer sizes does not include CR+LF and CRC
+
+/**
+ * @brief The maximum number of characters in a single value in a data response.
+ *
+ * From SDI-12 Protocol v1.4, Table 11 The send data command (aD0!, aD1! . . . aD9!):
+ * the value portion must be structred as pd.d
+ * - p - the polarity sign (+ or -)
+ * - d - numeric digits before the decimal place
+ * - . - the decimal point (optional)
+ * - d - numeric digits after the decimal point
+ * - the maximum number of digits for a data value is 7, even without a decimal point
+ * - the minimum number of digits for a data value (excluding the decimal point) is 1
+ * - the maximum number of characters in a data value is 9 (the (polarity sign + 7
+ * digits + the decimal point))
+ * - The polarity symbol (+ or -) acts as a delimeter between the numeric values
+ */
+#define SDI12_VALUE_STR_SIZE 9
+/**
+ * @brief The maximum length of a standard data command response
+ *
+ * From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses:
+ * The maximum number of characters that can be returned in the <values> part of the
+ * response to a D command is either 35 or 75. If the D command is issued to retrieve
+ * data in response to a concurrent measurement command, or in response to a high-volume
+ * ASCII measurement command, the maximum is 75. The maximum is also 75 in response to a
+ * continuous measurement command. Otherwise, the maximum is 35.
+ */
+#define SDI12_DATA_STR_SIZE 35
+/**
+ * @brief The maximum length of a data response to a concurrent, continuous, or high
+ * volume ASCII
+ *
+ * @see SDI12_VALUE_STR_SIZE
+ */
+#define SDI12_HV_STR_SIZE 75
+
+#ifndef SDI12_BUFFER_SIZE
+/**
+ * @brief The buffer size for incoming SDI-12 data.
+ *
+ * All responses should be less than 81 characters:
+ * - address is a single (1) character
+ * - values has a maximum value of 75 characters
+ * - CRC is 3 characters
+ * - CR is a single character
+ * - LF is a single character
+ */
+#define SDI12_BUFFER_SIZE 81
+#endif
+
+// SDI-12 Timing Specification
+/**
+ * @brief The size of a bit in microseconds
+ *
+ * 1200 baud = 1200 bits/second ~ 833.333 µs/bit
+ */
+#define SDI12_BIT_WIDTH_MICROS static_cast<uint16_t>(833)
+/**
+ * @brief The required "break" before sending commands, >= 12ms.  The line level is HIGH
+ * for the break.
+ */
+#define SDI12_LINE_BREAK_MICROS static_cast<uint16_t>(12100)
+/**
+ * @brief The required mark before a command or response, >= 8.33ms.  The line level is
+ * LOW for the marking.
+ */
+#define SDI12_LINE_MARK_MICROS static_cast<uint16_t>(8400)
+
+/**
+ * Possible SDI-12 States
+ *
+ * WAITING_FOR_BREAK:
+ * - Sensor (slave) is asleep, waiting for the data recorder (master) to hold the line
+ * high for >= 12ms.  Or the data recorder has not initiated communication with a sensor
+ * in too long and needs to re-alert it.
+ * - Starts:
+ *   - After a sensor receives an invalid address (return to sleep)
+ *   - When the master wants to address a different sensor
+ *   - After line has been in marking (LOW) for > 100 ms (sensor returns to sleep)
+ *   - After the line has been in marking (LOW) for > 87 ms  (sensor awaits break
+ * without sleeping, recorder must send break)
+ * - Ends:
+ *    - After 12 ms break has finished
+ *
+ * WAITING_FOR_MARKING:
+ * - Sensor has received a >= 12ms HIGH break and is waiting for the data recorder to
+ * send >= 8.33 ms of LOW marking.
+ * - Data recorder has finished sending a command, has relinquished the line, and is
+ * waiting for the sensor to hold the line LOW for >= 8.33 ms of marking
+ * - Starts:
+ *   - After line has been held continuously HIGH for >= 12ms
+ * - Ends:
+ *   - After the line has been in marking (LOW) for > 87 ms
+ *
+ * WAITING_FOR_START_BIT:
+ * - Line has been held low for >= 8.33 ms of marking
+ * - Ends:
+ *   - > 15 ms after the last stop bit of a command (for the recorder/master)
+ *   - > 1.66 ms after the last stop bit between characters within a command or response
+ *
+ */
+
+/**
+ * @brief A mask for the #rxState while waiting for a start bit; 0b11111111
+ */
+#define WAITING_FOR_START_BIT 0xFF
+
+
 #ifndef SDI12_IGNORE_PARITY
 /**
  * @brief Check the value of the parity bit on reception
@@ -153,20 +263,6 @@ typedef const __FlashStringHelper* FlashString;
  * be less than 100 ms.
  */
 #define SDI12_WAKE_DELAY 0
-#endif
-
-#ifndef SDI12_BUFFER_SIZE
-/**
- * @brief The buffer size for incoming SDI-12 data.
- *
- * All responses should be less than 81 characters:
- * - address is a single (1) character
- * - values has a maximum value of 75 characters
- * - CRC is 3 characters
- * - CR is a single character
- * - LF is a single character
- */
-#define SDI12_BUFFER_SIZE 81
 #endif
 
 #ifndef SDI12_YIELD_MS
@@ -253,35 +349,11 @@ class SDI12 : public Stream {
    * @brief The SDI12Timer instance to use for checking bit reception times.
    */
   static SDI12Timer sdi12timer;
-  /**
-   * @brief The size of a bit in microseconds
-   *
-   * 1200 baud = 1200 bits/second ~ 833.333 µs/bit
-   */
-  static const uint16_t bitWidth_micros;
-  /**
-   * @brief The required "break" before sending commands, >= 12ms
-   *
-   */
-  static const uint16_t lineBreak_micros;
-  /**
-   * @brief The required mark before a command or response, >= 8.33ms
-   */
-  static const uint16_t marking_micros;
-
-  /**
-   * @brief the width of a single bit in "ticks" of the cpu clock.
-   */
-  static const sdi12timer_t txBitWidth;
-  /**
-   * @brief A mask for the #rxState while waiting for a start bit; 0b11111111
-   */
-  static const uint8_t WAITING_FOR_START_BIT;
 
   /**
    * @brief Stores the time of the previous RX transition in micros
    */
-  static sdi12timer_t prevBitTCNT;
+  sdi12timer_t prevBitTCNT;
   /**
    * @brief Tracks how many bits are accounted for on an incoming character.
    *
@@ -300,18 +372,18 @@ class SDI12 : public Stream {
    * 9 - got stop bit
    * 255 - waiting for next start bit
    */
-  static uint8_t rxState;
+  uint8_t rxState;
   /**
    * @brief a bit mask for building a received character
    *
    * The mask has a single bit set, in the place of the active bit based on the
    * #rxState.
    */
-  static uint8_t rxMask;
+  uint8_t rxMask;
   /**
    * @brief the value of the character being built
    */
-  static uint8_t rxValue;
+  uint8_t rxValue;
   /**@}*/
 
 

@@ -57,24 +57,6 @@ SDI12* SDI12::_activeObject = nullptr;
 // Timer functions
 SDI12Timer SDI12::sdi12timer;
 
-// The size of a bit in microseconds
-// 1200 baud = 1200 bits/second ~ 833.333 µs/bit
-const uint16_t SDI12::bitWidth_micros = static_cast<uint16_t>(833);
-// The required "break" before sending commands, >= 12ms
-const uint16_t SDI12::lineBreak_micros = static_cast<uint16_t>(12300);
-// The required mark before a command or response, >= 8.33ms
-const uint16_t SDI12::marking_micros = static_cast<uint16_t>(8500);
-
-// the width of a single bit in "ticks" of the cpu clock.
-const sdi12timer_t SDI12::txBitWidth = TICKS_PER_BIT;
-// A mask waiting for a start bit; 0b11111111
-const uint8_t SDI12::WAITING_FOR_START_BIT = 0xFF;
-
-sdi12timer_t SDI12::prevBitTCNT;  // previous RX transition in micros
-uint8_t      SDI12::rxState = WAITING_FOR_START_BIT;  // 0: got start bit; >0: bits rcvd
-uint8_t      SDI12::rxMask;   // bit mask for building received character
-uint8_t      SDI12::rxValue;  // character being built
-
 /* ================ Buffer Setup ====================================================*/
 uint8_t          SDI12::_rxBuffer[SDI12_BUFFER_SIZE];  // The Rx buffer
 volatile uint8_t SDI12::_rxBufferTail = 0;             // index of buff tail
@@ -216,11 +198,7 @@ SDI12::SDI12(int8_t dataPin) {
 
 // Destructor
 SDI12::~SDI12() {
-  setState(SDI12_DISABLED);
-  if (isActive()) { _activeObject = nullptr; }
-  // Set the timer prescalers back to original values
-  // NOTE:  This does NOT reset SAMD board pre-scalers!
-  sdi12timer.resetSDI12TimerPrescale();
+  end();
 }
 
 // Begin
@@ -245,7 +223,7 @@ void SDI12::begin(int8_t dataPin) {
 // End
 void SDI12::end() {
   setState(SDI12_DISABLED);
-  _activeObject = nullptr;
+  if (isActive()) { _activeObject = nullptr; }
   // Set the timer prescalers back to original values
   sdi12timer.resetSDI12TimerPrescale();
 }
@@ -404,11 +382,13 @@ void SDI12::wakeSensors(int8_t extraWakeTime) {
   // Universal interrupts can be on while the break and marking happen because
   // timings for break and from the recorder are not critical.
   // Interrupts on the pin are disabled for the entire transmitting state
-  digitalWrite(_dataPin, HIGH);         // break is HIGH
-  delayMicroseconds(lineBreak_micros);  // Required break of 12 milliseconds (12,000 µs)
-  delay(extraWakeTime);                 // allow the sensors to wake
-  digitalWrite(_dataPin, LOW);          // marking is LOW
-  delayMicroseconds(marking_micros);  // Required marking of 8.33 milliseconds(8,333 µs)
+  digitalWrite(_dataPin, HIGH);  // break is HIGH
+  delayMicroseconds(
+    SDI12_LINE_BREAK_MICROS);   // Required break of 12 milliseconds (12,000 µs)
+  delayMicroseconds(extraWakeTime * 1000);  // allow the sensors to wake
+  digitalWrite(_dataPin, LOW);  // marking is LOW
+  delayMicroseconds(
+    SDI12_LINE_MARK_MICROS);  // Required marking of 8.33 milliseconds(8,333 µs)
 }
 
 // this function writes a character out on the data line
@@ -471,7 +451,8 @@ void SDI12::writeChar(uint8_t outChar) {
   // We've used up roughly 150 clock cycles messing with parity, but a bit is 833µs, so
   // we've got time.
 
-  while (static_cast<sdi12timer_t>(READTIME - t0) < txBitWidth) {}
+  while (static_cast<sdi12timer_t>(READTIME - t0) <
+         static_cast<sdi12timer_t>(TICKS_PER_BIT)) {}
   t0 = READTIME;  // advance start time
 
   // repeat for all data bits until the last bit different from marking
@@ -483,7 +464,8 @@ void SDI12::writeChar(uint8_t outChar) {
       digitalWrite(_dataPin, HIGH);  // set the pin state to HIGH for 0's
     }
     // Hold the line for this bit duration
-    while (static_cast<sdi12timer_t>(READTIME - t0) < txBitWidth) {}
+    while (static_cast<sdi12timer_t>(READTIME - t0) <
+           static_cast<sdi12timer_t>(TICKS_PER_BIT)) {}
     t0 = READTIME;  // advance start time
 
     outChar = outChar >> 1;  // shift character to expose the following bit
@@ -497,7 +479,8 @@ void SDI12::writeChar(uint8_t outChar) {
 #endif
 
   // Hold the line low until the end of the 10th bit
-  sdi12timer_t bitTimeRemaining = txBitWidth * (10 - lastHighBit);
+  sdi12timer_t bitTimeRemaining = static_cast<sdi12timer_t>(TICKS_PER_BIT) *
+    (10 - lastHighBit);
   while (static_cast<sdi12timer_t>(READTIME - t0) < bitTimeRemaining) {}
 }
 
@@ -542,9 +525,9 @@ void SDI12::sendResponse(String& resp, bool addCRC) {
 }
 
 void SDI12::sendResponse(const char* resp, bool addCRC) {
-  setState(SDI12_TRANSMITTING);       // Get ready to send data to the recorder
-  digitalWrite(_dataPin, LOW);        // marking is LOW
-  delayMicroseconds(marking_micros);  // 8.33 ms marking before response
+  setState(SDI12_TRANSMITTING);               // Get ready to send data to the recorder
+  digitalWrite(_dataPin, LOW);                // marking is LOW
+  delayMicroseconds(SDI12_LINE_MARK_MICROS);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen(resp); i++) {
     writeChar(resp[i]);  // write each character
   }
@@ -559,9 +542,9 @@ void SDI12::sendResponse(const char* resp, bool addCRC) {
 }
 
 void SDI12::sendResponse(FlashString resp, bool addCRC) {
-  setState(SDI12_TRANSMITTING);       // Get ready to send data to the recorder
-  digitalWrite(_dataPin, LOW);        // marking is LOW
-  delayMicroseconds(marking_micros);  // 8.33 ms marking before response
+  setState(SDI12_TRANSMITTING);               // Get ready to send data to the recorder
+  digitalWrite(_dataPin, LOW);                // marking is LOW
+  delayMicroseconds(SDI12_LINE_MARK_MICROS);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen_P((PGM_P)resp); i++) {
     // write each character
     writeChar(static_cast<char>(pgm_read_byte((const char*)resp + i)));
@@ -659,19 +642,19 @@ bool SDI12::verifyCRC(String& respWithCRC) {
 
 /* ================ Interrupt Service Routine =======================================*/
 
-// 7.1 - Passes off responsibility for the interrupt to the active object.
+// Passes off responsibility for the interrupt to the active object.
 void ISR_MEM_ACCESS SDI12::handleInterrupt() {
   if (_activeObject) _activeObject->receiveISR();
 }
 
-// 7.2 - Creates a blank slate of bits for an incoming character
+// Creates a blank slate of bits for an incoming character
 void ISR_MEM_ACCESS SDI12::startChar() {
   rxState = 0x00;  // 0b00000000, got a start bit
   rxMask  = 0x01;  // 0b00000001, bit mask, lsb first
   rxValue = 0x00;  // 0b00000000, RX character to be, a blank slate
 }  // startChar
 
-// 7.3 - The actual interrupt service routine
+// The actual interrupt service routine
 void ISR_MEM_ACCESS SDI12::receiveISR() {
   sdi12timer_t thisBitTCNT =
     READTIME;  // time of this data transition (plus ISR latency)
