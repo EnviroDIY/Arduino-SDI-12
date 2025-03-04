@@ -34,7 +34,7 @@ uint32_t wake_delay   = 0; /*!< Extra time needed for the sensor to wake (0-100m
 int8_t   firstPin     = 3; /*! change to lowest pin number to search on your board */
 int8_t   lastPin      = 7; /*! change to highest pin number to search on your board */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
-int8_t   lastAddress  = 9; /* The last address in the address space to check (62='z') */
+int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
 
 /**
  * @brief converts allowable address characters ('0'-'9', 'a'-'z', 'A'-'Z') to a
@@ -128,8 +128,8 @@ void scanAddressSpace(SDI12& sdi) {
     char addr = decToChar(i);
     Serial.print("i=");
     Serial.print(i);
-    Serial.print("addr=");
-    Serial.print(addr);
+    Serial.print(" addr=");
+    Serial.println(addr);
     if (checkActive(sdi, addr)) { printInfo(sdi, addr); };
   }
 }

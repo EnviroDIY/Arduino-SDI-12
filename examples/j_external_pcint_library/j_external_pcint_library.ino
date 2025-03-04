@@ -31,7 +31,7 @@ int8_t   dataPin      = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin     = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
 uint32_t wake_delay   = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
-int8_t   lastAddress = 62; /* The last address in the address space to check (62='z') */
+int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
 bool     printIO     = false;
 
 /** Define the SDI-12 bus */

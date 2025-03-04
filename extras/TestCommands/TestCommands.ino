@@ -26,7 +26,7 @@ uint32_t     wake_delay = 10; /*!< Extra time needed for the sensor to wake (0-1
 const int8_t firstAddress =
   0; /* The first address in the address space to check (0='0') */
 const int8_t lastAddress =
-  62; /* The last address in the address space to check (62='z') */
+  61; /* The last address in the address space to check (61='z') */
 const int8_t commandsToTest =
   1; /*!< The number of measurement commands to test, between 1 and 11. */
 
@@ -363,19 +363,21 @@ getResultsResult getResults(char addr, int resultsExpected, bool verify_crc = fa
         // NOTE: A mis-read like this should also cause the CRC to be wrong, but still
         // check here in case we're not using a CRC.
       } else {  //(c != '-' && c != '+' && (c < '0' || c > '9') && c != '.')
-        Serial.println("Invalid data response character!");
+        Serial.print("Invalid data response character: ");
+        Serial.write(c);
+        Serial.println();
         bad_read = true;
       }
       // if we get a decimal, mark it so we can verify we don't get repeated decimals
       if (c == '.') { got_decimal = true; }
     }
 
-    if (!gotResults) {
-      if (printIO) {
-        Serial.println(("  No results received, will not continue requests!"));
-      }
-      break;
-    }  // don't do another loop if we got nothing
+    // if (!gotResults) {
+    //   if (printIO) {
+    //     Serial.println(("  No results received, will not continue requests!"));
+    //   }
+    //   break;
+    // }  // don't do another loop if we got nothing
 
     if (gotResults && !bad_read) {
       resultsReceived = resultsReceived + cmd_results;
@@ -640,7 +642,7 @@ bool checkActive(char addr, int8_t numPings = 3, bool printIO = true) {
       Serial.println(")");
       if (returnedAddress == String(addr)) {
         if (printIO) {
-          Serial.println("Got response from '");
+          Serial.print("Got response from '");
           Serial.print(String(returnedAddress));
           Serial.println("'");
         }
@@ -665,9 +667,13 @@ bool checkActive(char addr, int8_t numPings = 3, bool printIO = true) {
 void setup() {
   Serial.begin(serialBaud);
   while (!Serial && millis() < 10000L);
+  char tbuf[3] = {'\0'};
 
   Serial.print("Opening SDI-12 bus on pin ");
-  Serial.print(String(dataPin));
+  Serial.print(dataPin);
+  Serial.print(" (");
+  Serial.print(itoa(dataPin, tbuf, 10));
+  Serial.print(")");
   Serial.println("...");
   mySDI12.begin();
   delay(500);  // allow things to settle
