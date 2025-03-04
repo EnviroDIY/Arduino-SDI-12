@@ -2,7 +2,7 @@
 <html lang="en-US">
 <head>
   <meta charset="UTF-8" />
-  <title>Examples using the SDI-12 Library &raquo; Example H: Using SDI-12 in Slave Mode | SDI-12 for Arduino2.2.1</title>
+  <title>Examples using the SDI-12 Library &raquo; Example H: Using SDI-12 in Slave Mode | SDI-12 for Arduino2.3.0</title>
   <link rel="stylesheet" href="m-EnviroDIY+documentation.compiled.css" />
 
 <style id="wp-emoji-styles-inline-css" type="text/css">
@@ -22,7 +22,7 @@
 <link
   rel="stylesheet"
   id="gp-parent-style-css"
-  href="https://www.envirodiy.org/wp-content/themes/socialize/style.css?ver=6.5.4"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/style.css?ver=6.7.1"
   type="text/css"
   media="all"
 />
@@ -139,25 +139,25 @@
 <link
   rel="stylesheet"
   id="fontawesome-css"
-  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=6.5.4"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=6.7.1"
   type="text/css"
   media="all"
 />
 <link
   rel="preload"
   as="style"
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.7.1"
 />
 <link
   rel="stylesheet"
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.7.1"
   media="print"
   onload="this.media='all'"
 />
 <noscript
   ><link
     rel="stylesheet"
-    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.7.1"
 /></noscript>
 
 <style type="text/css" id="wp-custom-css">
@@ -1281,24 +1281,24 @@
     <header id="gp-main-header">
       <div class="gp-container">
         <div id="gp-logo">
-          <a href="index.html" title="SDI-12 for Arduino 2.2.1">
+          <a href="index.html" title="SDI-12 for Arduino 2.3.0">
             <img
               src="gp-desktop-logo.png"
-              alt="SDI-12 for Arduino 2.2.1"
+              alt="SDI-12 for Arduino 2.3.0"
               width="200"
               height="42"
               class="gp-desktop-logo"
             />
             <img
               src="gp-scrolling-logo.png"
-              alt="SDI-12 for Arduino 2.2.1"
+              alt="SDI-12 for Arduino 2.3.0"
               width="264"
               height="55"
               class="gp-scrolling-logo"
             />
             <img
               src="gp-mobile-logo.png"
-              alt="SDI-12 for Arduino 2.2.1"
+              alt="SDI-12 for Arduino 2.3.0"
               width="132"
               height="28"
               class="gp-mobile-logo"
@@ -1483,7 +1483,7 @@
 
                 </h1>
                 </header>
-<p><a name="md_examples_2h___s_d_i-12__slave__implementation_2_read_me"></a></p><p>Example sketch demonstrating how to implement an Arduino as a slave on an SDI-12 bus. This may be used, for example, as a middleman between an I2C sensor and an SDI-12 datalogger.</p><p>Note that an SDI-12 slave must respond to M! or C! with the number of values it will report and the max time until these values will be available. This example uses 9 values available in 21 s, but references to these numbers and the output array size and datatype should be changed for your specific application.</p><section id="h_SDI-12_slave_implementation_pio"><h2>PlatformIO Configuration</h2><div class="m-code-pygments-default"><div class="highlight"><div class="line"><a id="l-1" name="l-1"></a><span class="linenos"> 1</span><span class="c1">; PlatformIO Project Configuration File</span>
+<p><a name="md_examples_2h___s_d_i-12__slave__implementation_2_read_me"></a></p><p>Example sketch demonstrating how to implement an Arduino as a slave on an SDI-12 bus. This may be used, for example, as a middleman between an I2C sensor and an SDI-12 data logger.</p><p>Note that an SDI-12 slave must respond to M! or C! with the number of values it will report and the max time until these values will be available. This example uses 9 values available in 21 s, but references to these numbers and the output array size and datatype should be changed for your specific application.</p><section id="h_SDI-12_slave_implementation_pio"><h2>PlatformIO Configuration</h2><div class="m-code-pygments-default"><div class="highlight"><div class="line"><a id="l-1" name="l-1"></a><span class="linenos"> 1</span><span class="c1">; PlatformIO Project Configuration File</span>
 </div><div class="line"><a id="l-2" name="l-2"></a><span class="linenos"> 2</span>
 </div><div class="line"><a id="l-3" name="l-3"></a><span class="linenos"> 3</span><span class="k">[platformio]</span>
 </div><div class="line"><a id="l-4" name="l-4"></a><span class="linenos"> 4</span><span class="na">description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">SDI-12 Library Example H:  Using Arduino as SDI-12 Slave</span>

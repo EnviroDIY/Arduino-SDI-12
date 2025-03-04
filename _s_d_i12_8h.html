@@ -2,7 +2,7 @@
 <html lang="en-US">
 <head>
   <meta charset="UTF-8" />
-  <title>src/SDI12.h file | SDI-12 for Arduino2.2.1</title>
+  <title>src/SDI12.h file | SDI-12 for Arduino2.3.0</title>
   <link rel="stylesheet" href="m-EnviroDIY+documentation.compiled.css" />
 
 <style id="wp-emoji-styles-inline-css" type="text/css">
@@ -22,7 +22,7 @@
 <link
   rel="stylesheet"
   id="gp-parent-style-css"
-  href="https://www.envirodiy.org/wp-content/themes/socialize/style.css?ver=6.5.4"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/style.css?ver=6.7.1"
   type="text/css"
   media="all"
 />
@@ -139,25 +139,25 @@
 <link
   rel="stylesheet"
   id="fontawesome-css"
-  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=6.5.4"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=6.7.1"
   type="text/css"
   media="all"
 />
 <link
   rel="preload"
   as="style"
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.7.1"
 />
 <link
   rel="stylesheet"
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.7.1"
   media="print"
   onload="this.media='all'"
 />
 <noscript
   ><link
     rel="stylesheet"
-    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.7.1"
 /></noscript>
 
 <style type="text/css" id="wp-custom-css">
@@ -1281,24 +1281,24 @@
     <header id="gp-main-header">
       <div class="gp-container">
         <div id="gp-logo">
-          <a href="index.html" title="SDI-12 for Arduino 2.2.1">
+          <a href="index.html" title="SDI-12 for Arduino 2.3.0">
             <img
               src="gp-desktop-logo.png"
-              alt="SDI-12 for Arduino 2.2.1"
+              alt="SDI-12 for Arduino 2.3.0"
               width="200"
               height="42"
               class="gp-desktop-logo"
             />
             <img
               src="gp-scrolling-logo.png"
-              alt="SDI-12 for Arduino 2.2.1"
+              alt="SDI-12 for Arduino 2.3.0"
               width="264"
               height="55"
               class="gp-scrolling-logo"
             />
             <img
               src="gp-mobile-logo.png"
-              alt="SDI-12 for Arduino 2.2.1"
+              alt="SDI-12 for Arduino 2.3.0"
               width="132"
               height="28"
               class="gp-mobile-logo"
@@ -1546,6 +1546,38 @@
               <span class="m-doc-wrap-bumper">#define <a href="#ab362c458819bb9ea1b99a764444c4921" class="m-doc-self">NO_IGNORE_CHAR</a><span class="m-dim m-right-m m-text-right"> = '\x01'</span></span>
             </dt>
             <dd>a char not found in a valid ASCII numeric field</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">#define <a href="#a9094031e6d0258fa4b9720cec5cbf954" class="m-doc">SDI12_VALUE_STR_SIZE</a><span class="m-dim m-right-m m-text-right"> = 9</span></span>
+            </dt>
+            <dd>The maximum number of characters in a single value in a data response.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">#define <a href="#ad96cd082f16f52698497129a77e3ebbb" class="m-doc">SDI12_DATA_STR_SIZE</a><span class="m-dim m-right-m m-text-right"> = 35</span></span>
+            </dt>
+            <dd>The maximum length of a standard data command response.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">#define <a href="#aa78c3a682a4ff2bf121d92c25713291d" class="m-doc">SDI12_HV_STR_SIZE</a><span class="m-dim m-right-m m-text-right"> = 75</span></span>
+            </dt>
+            <dd>The maximum length of a data response to a concurrent, continuous, or high volume ASCII.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">#define <a href="#a4afa5b9a69eeeeec02aa78129c663f98" class="m-doc">SDI12_BUFFER_SIZE</a><span class="m-dim m-right-m m-text-right"> = 81</span></span>
+            </dt>
+            <dd>The buffer size for incoming SDI-12 data.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">#define <a href="#a57eaf015a20455c757a1bb76acf8cc80" class="m-doc">SDI12_BIT_WIDTH_MICROS</a><span class="m-dim m-right-m m-text-right"> = static_cast<uint16_t>(833)</span></span>
+            </dt>
+            <dd>The size of a bit in microseconds.</dd>
+            <dt id="a6fbcd1cabf45bf7c6968813d52fd7831">
+              <span class="m-doc-wrap-bumper">#define <a href="#a6fbcd1cabf45bf7c6968813d52fd7831" class="m-doc-self">SDI12_LINE_BREAK_MICROS</a><span class="m-dim m-right-m m-text-right"> = static_cast<uint16_t>(12100)</span></span>
+            </dt>
+            <dd>The required &quot;break&quot; before sending commands, &gt;= 12ms. The line level is HIGH for the break.</dd>
+            <dt id="a771424ac10e95e7d5be99b28f5ba811c">
+              <span class="m-doc-wrap-bumper">#define <a href="#a771424ac10e95e7d5be99b28f5ba811c" class="m-doc-self">SDI12_LINE_MARK_MICROS</a><span class="m-dim m-right-m m-text-right"> = static_cast<uint16_t>(8400)</span></span>
+            </dt>
+            <dd>The required mark before a command or response, &gt;= 8.33ms. The line level is LOW for the marking.</dd>
+            <dt>
+              <span class="m-doc-wrap-bumper">#define <a href="#ab63173692914934eca000be39c8ebae2" class="m-doc">WAITING_FOR_START_BIT</a><span class="m-dim m-right-m m-text-right"> = 0xFF</span></span>
+            </dt>
+            <dd>A mask for the #rxState while waiting for a start bit; 0b11111111.</dd>
             <dt id="a0c8d96c247fc38f23456bf045e7be5cc">
               <span class="m-doc-wrap-bumper">#define <a href="#a0c8d96c247fc38f23456bf045e7be5cc" class="m-doc-self">SDI12_CHECK_PARITY</a></span>
             </dt>
@@ -1554,10 +1586,6 @@
               <span class="m-doc-wrap-bumper">#define <a href="#adf7ac65ee62c8bab1bf3ba6baf41a908" class="m-doc-self">SDI12_WAKE_DELAY</a><span class="m-dim m-right-m m-text-right"> = 0</span></span>
             </dt>
             <dd>The amount of additional time in milliseconds that the sensor takes to wake before being ready to receive a command. Default is 0ms - meaning the sensor is ready for a command by the end of the 12ms break. Per protocol, the wake time must be less than 100 ms.</dd>
-            <dt>
-              <span class="m-doc-wrap-bumper">#define <a href="#a4afa5b9a69eeeeec02aa78129c663f98" class="m-doc">SDI12_BUFFER_SIZE</a><span class="m-dim m-right-m m-text-right"> = 81</span></span>
-            </dt>
-            <dd>The buffer size for incoming SDI-12 data.</dd>
             <dt>
               <span class="m-doc-wrap-bumper">#define <a href="#a93d8d63b30c6472737d4717e253dd1a8" class="m-doc">SDI12_YIELD_MS</a><span class="m-dim m-right-m m-text-right"> = 0</span></span>
             </dt>
@@ -1607,6 +1635,51 @@
         </section>
         <section id="define-details">
           <h2>Define documentation</h2>
+        <section class="m-doc-details" id="a9094031e6d0258fa4b9720cec5cbf954">
+          <div>
+
+            <h3>
+              <span class="m-doc-wrap-bumper">#define <a href="#a9094031e6d0258fa4b9720cec5cbf954" class="m-doc-self">SDI12_VALUE_STR_SIZE</a><span class="m-dim m-right-m m-text-right"> = 9</span></span>
+            </h3>
+
+            <p>The maximum number of characters in a single value in a data response.</p>
+
+
+              <p>From SDI-12 Protocol v1.4, Table 11 The send data command (aD0!, aD1! . . . aD9!): the value portion must be structred as pd.d</p><ul><li>p - the polarity sign (+ or -)</li><li>d - numeric digits before the decimal place</li><li>. - the decimal point (optional)</li><li>d - numeric digits after the decimal point</li><li>the maximum number of digits for a data value is 7, even without a decimal point</li><li>the minimum number of digits for a data value (excluding the decimal point) is 1</li><li>the maximum number of characters in a data value is 9 (the (polarity sign + 7 digits + the decimal point))</li><li>The polarity symbol (+ or -) acts as a delimeter between the numeric values</li></ul>
+
+            <hr>
+          </div>
+        </section>
+        <section class="m-doc-details" id="ad96cd082f16f52698497129a77e3ebbb">
+          <div>
+
+            <h3>
+              <span class="m-doc-wrap-bumper">#define <a href="#ad96cd082f16f52698497129a77e3ebbb" class="m-doc-self">SDI12_DATA_STR_SIZE</a><span class="m-dim m-right-m m-text-right"> = 35</span></span>
+            </h3>
+
+            <p>The maximum length of a standard data command response.</p>
+
+
+              <p>From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses: The maximum number of characters that can be returned in the &lt;values&gt; part of the response to a D command is either 35 or 75. If the D command is issued to retrieve data in response to a concurrent measurement command, or in response to a high-volume ASCII measurement command, the maximum is 75. The maximum is also 75 in response to a continuous measurement command. Otherwise, the maximum is 35.</p>
+
+            <hr>
+          </div>
+        </section>
+        <section class="m-doc-details" id="aa78c3a682a4ff2bf121d92c25713291d">
+          <div>
+
+            <h3>
+              <span class="m-doc-wrap-bumper">#define <a href="#aa78c3a682a4ff2bf121d92c25713291d" class="m-doc-self">SDI12_HV_STR_SIZE</a><span class="m-dim m-right-m m-text-right"> = 75</span></span>
+            </h3>
+
+            <p>The maximum length of a data response to a concurrent, continuous, or high volume ASCII.</p>
+
+
+              <aside class="m-note m-default"><h4>See also</h4><p><a href="#a9094031e6d0258fa4b9720cec5cbf954" class="m-doc">SDI12_<wbr />VALUE_<wbr />STR_<wbr />SIZE</a></p></aside>
+
+            <hr>
+          </div>
+        </section>
         <section class="m-doc-details" id="a4afa5b9a69eeeeec02aa78129c663f98">
           <div>
 
@@ -1618,6 +1691,36 @@
 
 
               <p>All responses should be less than 81 characters:</p><ul><li>address is a single (1) character</li><li>values has a maximum value of 75 characters</li><li>CRC is 3 characters</li><li>CR is a single character</li><li>LF is a single character</li></ul>
+
+            <hr>
+          </div>
+        </section>
+        <section class="m-doc-details" id="a57eaf015a20455c757a1bb76acf8cc80">
+          <div>
+
+            <h3>
+              <span class="m-doc-wrap-bumper">#define <a href="#a57eaf015a20455c757a1bb76acf8cc80" class="m-doc-self">SDI12_BIT_WIDTH_MICROS</a><span class="m-dim m-right-m m-text-right"> = static_cast<uint16_t>(833)</span></span>
+            </h3>
+
+            <p>The size of a bit in microseconds.</p>
+
+
+              <p>1200 baud = 1200 bits/second ~ 833.333 µs/bit</p>
+
+            <hr>
+          </div>
+        </section>
+        <section class="m-doc-details" id="ab63173692914934eca000be39c8ebae2">
+          <div>
+
+            <h3>
+              <span class="m-doc-wrap-bumper">#define <a href="#ab63173692914934eca000be39c8ebae2" class="m-doc-self">WAITING_FOR_START_BIT</a><span class="m-dim m-right-m m-text-right"> = 0xFF</span></span>
+            </h3>
+
+            <p>A mask for the #rxState while waiting for a start bit; 0b11111111.</p>
+
+
+              <p>Possible SDI-12 States</p><p>WAITING_FOR_BREAK:</p><ul><li>Sensor (slave) is asleep, waiting for the data recorder (master) to hold the line high for &gt;= 12ms. Or the data recorder has not initiated communication with a sensor in too long and needs to re-alert it.</li><li>Starts:<ul><li>After a sensor receives an invalid address (return to sleep)</li><li>When the master wants to address a different sensor</li><li>After line has been in marking (LOW) for &gt; 100 ms (sensor returns to sleep)</li><li>After the line has been in marking (LOW) for &gt; 87 ms (sensor awaits break without sleeping, recorder must send break)</li></ul></li><li>Ends:<ul><li>After 12 ms break has finished</li></ul></li></ul><p>WAITING_FOR_MARKING:</p><ul><li>Sensor has received a &gt;= 12ms HIGH break and is waiting for the data recorder to send &gt;= 8.33 ms of LOW marking.</li><li>Data recorder has finished sending a command, has relinquished the line, and is waiting for the sensor to hold the line LOW for &gt;= 8.33 ms of marking</li><li>Starts:<ul><li>After line has been held continuously HIGH for &gt;= 12ms</li></ul></li><li>Ends:<ul><li>After the line has been in marking (LOW) for &gt; 87 ms</li></ul></li></ul><p>WAITING_FOR_START_BIT:</p><ul><li>Line has been held low for &gt;= 8.33 ms of marking</li><li>Ends:<ul><li>&gt; 15 ms after the last stop bit of a command (for the recorder/master)</li><li>&gt; 1.66 ms after the last stop bit between characters within a command or response</li></ul></li></ul>
 
             <hr>
           </div>
