@@ -44,8 +44,7 @@ uint8_t sdi_chars[97];
 
 void setup() {
   Serial.begin(115200);
-  while (!Serial)
-    ;
+  while (!Serial && millis() < 10000L);
 
   // add allowable characters to the array
   sdi_chars[0] = '\r';

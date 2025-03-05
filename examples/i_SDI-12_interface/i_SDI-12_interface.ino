@@ -11,10 +11,10 @@
  * timing)
  *  1. Allows user to communicate to SDI-12 devices from a serial terminal emulator
  * (e.g. PuTTY).
- *  2. Able to spy on an SDI-12 bus for troubleshooting comm between datalogger and
+ *  2. Able to spy on an SDI-12 bus for troubleshooting comm between data logger and
  * sensors.
  *  3. Can also be used as a hardware middleman for interfacing software to an SDI-12
- * sensor. For example, implementing an SDI-12 datalogger in Python on a PC.  Use
+ * sensor. For example, implementing an SDI-12 data logger in Python on a PC.  Use
  * verbatim mode with feedback off in this case.
  *
  *  Note: "translation" means timing and electrical interface.  It does not ensure
@@ -45,10 +45,17 @@
 
 #include <SDI12.h>
 
+#ifndef SDI12_DATA_PIN
+#define SDI12_DATA_PIN 7
+#endif
+#ifndef SDI12_POWER_PIN
+#define SDI12_POWER_PIN 22
+#endif
+
 /* connection information */
 uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port */
-int8_t   dataPin       = 7;      /*!< The pin of the SDI-12 data bus */
-int8_t   powerPin      = 22; /*!< The sensor power pin (or -1 if not switching power) */
+int8_t   dataPin       = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin      = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
 char     sensorAddress = '1'; /*!< The address of the SDI-12 sensor */
 
 /** Define the SDI-12 bus */
@@ -56,8 +63,7 @@ SDI12 mySDI12(dataPin);
 
 void setup() {
   Serial.begin(serialBaud);
-  while (!Serial)
-    ;
+  while (!Serial && millis() < 10000L);
 
   // Power the sensors;
   if (powerPin >= 0) {

@@ -18,8 +18,7 @@
 /* connection information */
 uint32_t serialBaud = 115200;         /*!< The baud rate for the output serial port */
 int8_t   dataPin    = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
-int8_t   powerPin =
-  SDI12_POWER_PIN;          /*!< The sensor power pin (or -1 if not switching power) */
+int8_t   powerPin      = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
 uint32_t wake_delay    = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
 char     sensorAddress = '0'; /*!< The address of the SDI-12 sensor */
 
@@ -303,8 +302,8 @@ startMeasurementResult startMeasurement(char address, bool is_concurrent = false
     Serial.println(command);
   }
 
-  // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of
-  // measurments available, 0-9]
+  // wait for acknowledgement with format [address][ttt (3 char, seconds)][number of
+  // measurements available, 0-9]
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
   if (printCommands) {
@@ -462,8 +461,7 @@ bool printInfo(char i, bool printCommands = true) {
 
 void setup() {
   Serial.begin(serialBaud);
-  while (!Serial)
-    ;
+  while (!Serial && millis() < 10000L);
 
   Serial.print("Opening SDI-12 bus on pin ");
   Serial.print(String(dataPin));

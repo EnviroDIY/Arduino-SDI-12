@@ -13,9 +13,16 @@
 
 #include <SDI12.h>
 
-uint32_t serialBaud = 57600;  /*!< The baud rate for the output serial port */
-int8_t   dataPin    = 7;      /*!< The pin of the SDI-12 data bus */
-int8_t   powerPin   = 22; /*!< The sensor power pin (or -1 if not switching power) */
+#ifndef SDI12_DATA_PIN
+#define SDI12_DATA_PIN 7
+#endif
+#ifndef SDI12_POWER_PIN
+#define SDI12_POWER_PIN 22
+#endif
+
+uint32_t serialBaud = 57600;           /*!< The baud rate for the output serial port */
+int8_t   dataPin    = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin   = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
 uint32_t wake_delay = 0;  /*!< Extra time needed for the sensor to wake (0-100ms) */
 
 /** Define the SDI-12 bus */
@@ -35,7 +42,7 @@ void printInfo(char i) {
   command += (char)i;
   command += "I!";
   mySDI12.sendCommand(command, wake_delay);
-  delay(100);
+  delay(30);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
@@ -56,7 +63,7 @@ void printInfo(char i) {
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-boolean checkActive(byte i) {  // this checks for activity at a particular address
+bool checkActive(byte i) {  // this checks for activity at a particular address
   Serial.print("Checking address ");
   Serial.print((char)i);
   Serial.print("...");
@@ -66,8 +73,8 @@ boolean checkActive(byte i) {  // this checks for activity at a particular addre
 
   for (int j = 0; j < 3; j++) {  // goes through three rapid contact attempts
     mySDI12.sendCommand(myCommand, wake_delay);
-    delay(100);
-    if (mySDI12.available()) {  // If we here anything, assume we have an active sensor
+    delay(30);
+    if (mySDI12.available()) {  // If we hear anything, assume we have an active sensor
       Serial.println("Occupied");
       mySDI12.clearBuffer();
       return true;
@@ -81,8 +88,7 @@ boolean checkActive(byte i) {  // this checks for activity at a particular addre
 
 void setup() {
   Serial.begin(serialBaud);
-  while (!Serial)
-    ;
+  while (!Serial && millis() < 10000L);
 
   Serial.println("Opening SDI-12 bus...");
   mySDI12.begin();
@@ -142,8 +148,7 @@ void loop() {
     Serial.println(".");
 
     Serial.println("Enter new address.");  // prompt for a new address
-    while (!Serial.available())
-      ;
+    while (!Serial.available());
     char newAdd = Serial.read();
 
     // wait for valid response
@@ -153,8 +158,7 @@ void loop() {
         Serial.println(
           "Not a valid address. Please enter '0'-'9', 'a'-'A', or 'z'-'Z'.");
       }
-      while (!Serial.available())
-        ;
+      while (!Serial.available());
       newAdd = Serial.read();
     }
 

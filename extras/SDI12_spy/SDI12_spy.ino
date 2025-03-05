@@ -1,6 +1,10 @@
 #include <SDI12.h>
 
-int8_t dataPin = 7; /*!< The pin of the SDI-12 data bus */
+#ifndef SDI12_DATA_PIN
+#define SDI12_DATA_PIN 7
+#endif
+
+int8_t dataPin = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
 
 // Create object by which to communicate with the SDI-12 bus on SDIPIN
 SDI12 slaveSDI12(dataPin);

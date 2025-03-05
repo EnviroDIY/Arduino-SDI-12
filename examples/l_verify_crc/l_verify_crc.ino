@@ -12,11 +12,18 @@
 
 #include <SDI12.h>
 
+#ifndef SDI12_DATA_PIN
+#define SDI12_DATA_PIN 7
+#endif
+#ifndef SDI12_POWER_PIN
+#define SDI12_POWER_PIN 22
+#endif
+
 /* connection information */
 uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port */
-int8_t   dataPin       = 7;      /*!< The pin of the SDI-12 data bus */
-int8_t   powerPin      = 22; /*!< The sensor power pin (or -1 if not switching power) */
-char     sensorAddress = '2'; /*!< The address of the SDI-12 sensor */
+int8_t   dataPin       = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin      = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
+char     sensorAddress = '2';             /*!< The address of the SDI-12 sensor */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(dataPin);
@@ -26,8 +33,7 @@ String myCommand   = "";
 
 void setup() {
   Serial.begin(serialBaud);
-  while (!Serial)
-    ;
+  while (!Serial && millis() < 10000L);
 
   Serial.println("Opening SDI-12 bus...");
   mySDI12.begin();
@@ -48,7 +54,7 @@ void setup() {
   mySDI12.sendCommand(command);
   Serial.print(">>>");
   Serial.println(command);
-  delay(100);
+  delay(30);
 
   sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
@@ -80,8 +86,8 @@ void loop() {
   mySDI12.sendCommand(myCommand);
   delay(5);
 
-  // wait for acknowlegement with format [address][ttt (3 char, seconds)][number of
-  // measurments available, 0-9]
+  // wait for acknowledgement with format [address][ttt (3 char, seconds)][number of
+  // measurements available, 0-9]
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
   Serial.print("<<<");

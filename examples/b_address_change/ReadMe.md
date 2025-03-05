@@ -6,9 +6,10 @@ First, physically connect your SDI-12 sensor to your device.  Some helpful hits 
 
 Once your sensor is physically connected to your board, download this library and open this sketch.
 
-Scroll to line 54 of the sketch (`int8_t dataPin = 7;`).  Change the `7` to the pin number that your sensor is attached to.
+Scroll to line 25 of the sketch (`int8_t dataPin = SDI12_DATA_PIN;`).  Change the `7` to the pin number that your sensor is attached to.
+You could also define the data pin in your platformio.ini: (`-D SDI12_DATA_PIN=##`)
 
-Set the pin to provide power to your sensor in line 55 (`int8_t powerPin = 22;`).  If your sensor is continuously powered, set the power pin to -1.
+Set the pin to provide power to your sensor in line 25 (`int8_t powerPin = SDI12_POWER_PIN;`).  If your sensor is continuously powered, set the power pin to -1.
 
 Upload the sketch to your board.  After the upload finishes, open up the serial port monitor at a baud rate of 115200 on line 53.
 

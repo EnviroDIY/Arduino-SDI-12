@@ -36,7 +36,7 @@ sensors. This library provides a general software solution, without requiring
  * @brief A string description of the timer to use
  *
  * @def TIMER_INT_TYPE
- * @brief The interger type of the timer.
+ * @brief The integer type of the timer.
  *
  * @def TIMER_INT_SIZE
  * @brief The size in bits of the timer count value.
@@ -79,16 +79,19 @@ sensors. This library provides a general software solution, without requiring
 #define READTIME TCNT2
 
 #if F_CPU == 16000000L
+#define PRESCALE_IN_USE 1024
 #define PRESCALE_IN_USE_STR "16MHz/1024=15.625kHz"
 // 16MHz / 1024 prescaler = 15625 'ticks'/sec = 64 µs / 'tick'
 #define TICKS_PER_SECOND 15625
 
 #elif F_CPU == 12000000L
+#define PRESCALE_IN_USE 1024
 #define PRESCALE_IN_USE_STR "12MHz/1024=11.7kHz"
 // 12MHz / 1024 prescaler = 11719 'ticks'/sec = 85.33 µs / 'tick'
 #define TICKS_PER_SECOND 11719
 
 #elif F_CPU == 8000000L
+#define PRESCALE_IN_USE 256
 #define PRESCALE_IN_USE_STR "8MHz/256=31.25kHz"
 // 8MHz / 256 prescaler = 31250 'ticks'/sec = 32 µs / 'tick'
 #define TICKS_PER_SECOND 31250
@@ -107,11 +110,13 @@ sensors. This library provides a general software solution, without requiring
 #define READTIME TCNT1
 
 #if F_CPU == 16000000L
+#define PRESCALE_IN_USE 1024
 #define PRESCALE_IN_USE_STR "16MHz/1024=15.625kHz"
 // 16MHz / 1024 prescaler = 15625 'ticks'/sec = 15.625 kHz = 64 µs / 'tick'
 #define TICKS_PER_SECOND 15625
 
 #elif F_CPU == 8000000L
+#define PRESCALE_IN_USE 512
 #define PRESCALE_IN_USE_STR "8MHz/512=15.625kHz"
 // 8MHz / 512 prescaler = 15625 'ticks'/sec = 15.625 kHz = 64 µs / 'tick'
 #define TICKS_PER_SECOND 15625
@@ -133,11 +138,13 @@ sensors. This library provides a general software solution, without requiring
 #define READTIME TCNT4
 
 #if F_CPU == 16000000L
+#define PRESCALE_IN_USE 1024
 #define PRESCALE_IN_USE_STR "16MHz/1024=15.625kHz"
 // 16MHz / 1024 prescaler = 15625 'ticks'/sec = 64 µs / 'tick'
 #define TICKS_PER_SECOND 15625
 
 #elif F_CPU == 8000000L
+#define PRESCALE_IN_USE 512
 #define PRESCALE_IN_USE_STR "8MHz/512=15.625kHz"
 // 8MHz / 512 prescaler = 15625 'ticks'/sec = 64 µs / 'tick'
 #define TICKS_PER_SECOND 15625
@@ -157,6 +164,8 @@ sensors. This library provides a general software solution, without requiring
 
 /// The clock generator number to use
 #define GENERIC_CLOCK_GENERATOR_SDI12 (4u)
+/// The generic clock multiplexer IDs for the timer peripheral
+#define SDI12_TC_GCLK_ID GCM_TCC2_TC3
 /// The timer controller to use
 #define SDI12_TC TC3
 
@@ -164,6 +173,7 @@ sensors. This library provides a general software solution, without requiring
 // This is equivalent to TC3->COUNT16.COUNT.reg
 #define READTIME REG_TC3_COUNT16_COUNT
 
+#define PRESCALE_IN_USE 96
 #define PRESCALE_IN_USE_STR "48MHz/6/16=500kHz"
 // Start with 48MHz "main" clock source (GCLK_GENCTRL_SRC_DFLL48M)
 // 48MHz / 6x clock source divider (GCLK_GENDIV_DIV(6)) = 8MHz
@@ -184,16 +194,17 @@ sensors. This library provides a general software solution, without requiring
 #define GENERIC_CLOCK_GENERATOR_SDI12 (6u)
 /// The bit to check for synchronization
 #define GCLK_SYNCBUSY_SDI12 GCLK_SYNCBUSY_GENCTRL6
+/// The peripheral index within the generic clock for the selected timer controller
+#define SDI12_TC_GCLK_ID TC2_GCLK_ID
 /// The timer controller to use
 #define SDI12_TC TC2
-// The peripheral index within the generic clock for the selected timer controller
-#define SDI12_TC_GCLK_ID TC2_GCLK_ID
 
 // For the SAMD51, reading the timer is a multi-step process of first writing a read
 // sync bit, waiting, and then reading the register.  Because of the steps, we need a
 // function.
 #define READTIME sdi12timer.SDI12TimerRead()
 
+#define PRESCALE_IN_USE 240
 #define PRESCALE_IN_USE_STR "120MHz/15/16=500kHz"
 // Start with 120MHz "main" clock source (MAIN_CLOCK_SOURCE = GCLK_GENCTRL_SRC_DPLL0)
 // 120MHz / 15x clock source divider (GCLK_GENCTRL_DIV(15)) = 8MHz
@@ -202,9 +213,16 @@ sensors. This library provides a general software solution, without requiring
 // ticks/bit
 #define TICKS_PER_SECOND 500000
 
-// Espressif ESP32/ESP8266 boards or any boards faster than 48MHz not mentioned above
+// Espressif ESP32/ESP8266 boards, Particle boards, or any boards faster than 48MHz not
+// mentioned above
 // WARNING: I haven't actually tested the minimum speed that this will work at!
-#elif defined(ESP32) || defined(ESP8266) || F_CPU >= 48000000L
+#elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
+  defined(ARDUINO_GIGA) || F_CPU >= 48000000L
+
+#if defined(ARDUINO_GIGA)
+// The Giga doesn't define F_CPU, so we'll define it here
+#define F_CPU 480000000L
+#endif
 
 // Using the micros() function
 #define TIMER_IN_USE_STR "micros()"
@@ -291,14 +309,18 @@ sensors. This library provides a general software solution, without requiring
  * The 32-bit timer rolls over after 4294967296 ticks, or 4294.9673 seconds
  */
 #define TICKS_PER_BIT 833UL
+#if F_CPU == 48000000L
+#define RX_WINDOW_FUDGE 95
+#else
 #define RX_WINDOW_FUDGE 50
+#endif
 
 #else
 #error "Board timer is incorrectly configured!"
 #endif
 
 
-/** The interger type (size) of the timer return value */
+/** The integer type (size) of the timer return value */
 typedef TIMER_INT_TYPE sdi12timer_t;
 
 /**

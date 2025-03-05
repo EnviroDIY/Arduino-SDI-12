@@ -168,3 +168,8 @@ lib/
 variants/
 docs/DoxygenLayout.xml_archive
 /pio_common_libdeps.ini
+src/SDI12_prints.print
+test/test_embedded/test_crc.hpp
+test/test_embedded/test_dtoa.hpp
+test/test_embedded/test_mbed_main.cpp
+test/test_snippet/test_snippet.cpp

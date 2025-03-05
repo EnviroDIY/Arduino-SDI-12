@@ -9,7 +9,7 @@
  *
  * Example sketch demonstrating how to implement an arduino as a slave on an SDI-12 bus.
  * This may be used, for example, as a middleman between an I2C sensor and an SDI-12
- * datalogger.
+ * data logger.
  *
  * Note that an SDI-12 slave must respond to M! or C! with the number of values it will
  * report and the max time until these values will be available.  This example uses 9
@@ -29,8 +29,15 @@
 
 #include <SDI12.h>
 
-int8_t dataPin       = 7;   /*!< The pin of the SDI-12 data bus */
-int8_t powerPin      = 22;  /*!< The sensor power pin (or -1 if not switching power) */
+#ifndef SDI12_DATA_PIN
+#define SDI12_DATA_PIN 7
+#endif
+#ifndef SDI12_POWER_PIN
+#define SDI12_POWER_PIN 22
+#endif
+
+int8_t dataPin       = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
+int8_t powerPin      = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
 char   sensorAddress = '5'; /*!< The address of the SDI-12 sensor */
 int    state         = 0;
 

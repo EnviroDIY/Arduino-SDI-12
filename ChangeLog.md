@@ -20,6 +20,30 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [2.3.0] - 2025-03-04
+
+### Added
+
+- Added support for Particle boards, thanks to @joaquinperaza
+  - These boards use millis() and default interrupts like other 48MHz boards, but without the `digitalPinToInterrupt()` macro.
+- Added (completely untested) support for Arduino Giga
+
+### Changed
+
+- **Breaking** Changed the `parseInt()`, `parseFloat()`, and `peekNextDigit()` functions so that they are better customized for reading from a data response request.
+  - Any LookupMode or ignore inputs will be ignored.
+- **Potentially Breaking** Parity checking can no longer be turned off. Characters that fail parity checks will not be returned from the buffer.
+- Change fudge for 48MHz boards using millis() from 50 to 95 based on comments in [#145](https://github.com/EnviroDIY/Arduino-SDI-12/issues/145)
+- Reset bit timer when entering listening state.
+- Verify that at least one bit time has passed before processing a pin change interrupt, where possible.
+
+### Fixed
+
+- Fixed un-setting of clocks and timers on SAMD (SAMD51 and SAMD21) boards.
+- Fix check for the LookaheadMode enum to use the Espressif Arduino core version instead of the IDF version.
+
+***
+
 ## [2.2.1] - 2024-12-09
 
 ### Added
@@ -191,6 +215,7 @@ The first "official" release of this interrupt-based SDI-12 library for AVR and 
 ***
 
 [Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.2.1...HEAD
+[2.3.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.0
 [2.2.1]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.2.1
 [2.2.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.2.0
 [2.1.4]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.1.4

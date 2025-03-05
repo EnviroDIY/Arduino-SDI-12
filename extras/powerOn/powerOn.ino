@@ -1,6 +1,10 @@
 #include <Arduino.h>
 
-int8_t powerPin = 22;
+#ifndef SDI12_POWER_PIN
+#define SDI12_POWER_PIN 22
+#endif
+
+int8_t powerPin = SDI12_POWER_PIN;
 
 void setup() {
     pinMode(powerPin, OUTPUT);
