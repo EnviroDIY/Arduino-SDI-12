@@ -302,11 +302,15 @@ void SDI12::setPinInterrupts(bool enable) {
   }
   // if using AVR with external interrupts, do nothing
 #elif defined(__AVR__)
-  if (enable) {
-    return;
-  } else {
-    return;
-  }
+  // Use the enableInterrupt function to attach the interrupt to the pin
+  // For AVR boards, this is defined in the EnableInterrupt library
+  // For other boards, this is defined in SDI12.h as a rename for attachInterrupt
+  if (enable) enableInterrupt(_dataPin, handleInterrupt, CHANGE);
+  // Use the disableInterrupt function to detach the interrupt function from the pin
+  // For AVR boards, this is defined in the EnableInterrupt library
+  // For other boards, this is defined in SDI12.h as a rename for detachInterrupt
+  else
+    disableInterrupt(_dataPin);
 // For the particle, or other boards without the digitalPinToInterrupt define, use bare
 // attachInterrupt and detachInterrupt functions
 #elif defined(PARTICLE) || !defined(digitalPinToInterrupt)
@@ -318,15 +322,11 @@ void SDI12::setPinInterrupts(bool enable) {
 // for other boards (SAMD/Espressif/??) use attachInterrupt and detachInterrupt
 // functions with digitalPinToInterrupt
 #else
-  // Use the enableInterrupt function to attach the interrupt to the pin
-  // For AVR boards, this is defined in the EnableInterrupt library
-  // For other boards, this is defined in SDI12.h as a rename for attachInterrupt
-  if (enable) enableInterrupt(_dataPin, handleInterrupt, CHANGE);
-  // Use the disableInterrupt function to detach the interrupt function from the pin
-  // For AVR boards, this is defined in the EnableInterrupt library
-  // For other boards, this is defined in SDI12.h as a rename for detachInterrupt
+  // Merely need to attach the interrupt function to the pin
+  if (enable) attachInterrupt(digitalPinToInterrupt(_dataPin), handleInterrupt, CHANGE);
+  // Merely need to detach the interrupt function from the pin
   else
-    disableInterrupt(_dataPin);
+    detachInterrupt(digitalPinToInterrupt(_dataPin));
 #endif
 }
 
@@ -391,9 +391,9 @@ void SDI12::wakeSensors(int8_t extraWakeTime) {
   // Interrupts on the pin are disabled for the entire transmitting state
   digitalWrite(_dataPin, HIGH);  // break is HIGH
   delayMicroseconds(
-    SDI12_LINE_BREAK_MICROS);   // Required break of 12 milliseconds (12,000 µs)
+    SDI12_LINE_BREAK_MICROS);  // Required break of 12 milliseconds (12,000 µs)
   delayMicroseconds(extraWakeTime * 1000);  // allow the sensors to wake
-  digitalWrite(_dataPin, LOW);  // marking is LOW
+  digitalWrite(_dataPin, LOW);              // marking is LOW
   delayMicroseconds(
     SDI12_LINE_MARK_MICROS);  // Required marking of 8.33 milliseconds(8,333 µs)
 }
