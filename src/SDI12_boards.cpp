@@ -23,7 +23,8 @@ SDI12Timer::SDI12Timer() {}
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || \
   defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) ||  \
   defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__) ||   \
-  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
+  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__) || \
+  defined(__AVR_ATmega640__)
 
 /**
  * @brief The value of timer control register 2A prior to being set for SDI-12.

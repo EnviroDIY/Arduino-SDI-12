@@ -62,7 +62,8 @@ class SDI12Timer {
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || \
   defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) ||  \
   defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__) ||   \
-  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
+  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__) || \
+  defined(__AVR_ATmega640__)
 
 /**
  * @brief A string description of the timer to use
