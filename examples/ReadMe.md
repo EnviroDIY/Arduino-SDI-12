@@ -1,4 +1,4 @@
-# Examples using the SDI-12 Library<!-- {#examples_page} -->
+# Examples using the SDI-12 Library<!--! {#examples_page} -->
 
 - Example A <!--! @subpage example_a_page -->
   - Gets sensor information from a single attached sensor and prints it to the serial port

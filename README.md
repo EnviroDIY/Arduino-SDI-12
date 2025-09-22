@@ -1,7 +1,7 @@
 
-# SDI-12 for Arduino<!-- {#mainpage} -->
+# SDI-12 for Arduino<!--! {#mainpage} -->
 
-## Introduction<!-- {#mainpage_intro} -->
+## Introduction<!--! {#mainpage_intro} -->
 
 This is an Arduino library for SDI-12 communication with a wide variety of environmental sensors.
 It provides a general software solution, without requiring any additional hardware, to implement the SDI-12 communication protocol between an Arduino-based data logger and SDI-12-enabled sensors.
@@ -11,22 +11,22 @@ It provides a general software solution, without requiring any additional hardwa
 
 This work is motivated by the [EnviroDIY community](http://envirodiy.org/) vision to create an open source hardware and software stack to deliver near real time environmental data from wireless sensor networks, such as the Arduino-compatible [EnviroDIY™ Mayfly Data Logger](http://envirodiy.org/mayfly/).
 
-[//]: # ( @cond GitHub )
+<!--! @cond GitHub -->
 
 ## Documentation
 
 Extensive documentation on the SDI-12 functions and classes is available here:  <https://envirodiy.github.io/Arduino-SDI-12/index.html>
 
-[//]: # ( @endcond )
+<!--! @endcond -->
 
-### Renaming Notice<!-- {#mainpage_rename} -->
+### Renaming Notice<!--! {#mainpage_rename} -->
 
 > [!IMPORTANT]
 > **As of version 2.0.0 this library was renamed from "Arduino-SDI-12" to simply "SDI-12" to comply with requirements for inclusion in the Arduino.cc's IDE and Library Manager.**
 
-[//]: # ( @tableofcontents )
+<!--! @tableofcontents -->
 
-[//]: # ( @cond GitHub )
+<!--! @cond GitHub -->
 
 - [SDI-12 for Arduino](#sdi-12-for-arduino)
   - [Introduction](#introduction)
@@ -43,9 +43,9 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
   - [License](#license)
   - [Credits](#credits)
 
-[//]: # ( @endcond )
+<!--! @endcond -->
 
-## Getting Started<!-- {#mainpage_getting_started} -->
+## Getting Started<!--! {#mainpage_getting_started} -->
 
 Learn more, below, about this library's:
 
@@ -57,7 +57,7 @@ Try running our [Example sketches](https://github.com/EnviroDIY/Arduino-SDI-12/t
 
 Full details on the library functionality can be found on github pages: <https://envirodiy.github.io/Arduino-SDI-12/>
 
-## Origins and Inherited Limitations<!-- {#mainpage_origins} -->
+## Origins and Inherited Limitations<!--! {#mainpage_origins} -->
 
 This library was developed from the [SoftwareSerial](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/SoftwareSerial) library that is a built-in [standard Arduino library](https://www.arduino.cc/en/Reference/Libraries).
 It was further modified to use a timer to improve read stability and decrease the amount of time universal interrupts are disabled using logic from [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
@@ -77,7 +77,7 @@ There will be no obvious compile error, but because SDI-12 and the tone library 
 All 8MHz AVR boards will also have unresolvable prescaler conflicts with [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
 The pre-scaler values needed for the SDI-12 functionality are set in the begin() function and reset to their original values in the end() function.
 
-## Compatibility Considerations<!-- {#mainpage_compatibility} -->
+## Compatibility Considerations<!--! {#mainpage_compatibility} -->
 
 This library has been tested with an Arduino Uno (AtMega328p), EnviroDIY Mayfly (AtMega1284p), Adafruit Feather 32u4 (AtMega32u4, identical to Arduino Leonardo), an Adafruit Feather M0 (SAMD21G18, identical to Arduino Zero), the ESP8266, and the ESP32.
 It should also work on an Arduino Mega (AtMega2560), Gemma/AtTiny board, and most other AVR processors running on the Arduino framework.
@@ -127,18 +127,18 @@ The known compatibile pins for common variants are shown below:
 
 Note that not all of these pins are available with our [Variants and Branches](https://github.com/EnviroDIY/Arduino-SDI-12#variants-and-branches), below.
 
-## Variants and Branches<!-- {#mainpage_variants} -->
+## Variants and Branches<!--! {#mainpage_variants} -->
 
 As we've described, the default "master" branch of this library will conflict with SoftwareSerial and any other library that monopolizes all pin change interrupt vectors for all AVR boards.
 To allow simultaneous use of SDI-12 and SoftwareSerial, we have created additional variants of these libraries that we maintain as separate branches of this repository.
 For background information, my be helpful to read our [Overview of Interrupts](https://github.com/EnviroDIY/Arduino-SDI-12/wiki/2b.-Overview-of-Interrupts) wiki page or this [Arduino Pin Change Interrupts article](https://thewanderingengineer.com/2014/08/11/arduino-pin-change-interrupts/).
 
-### EnviroDIY_SDI12<!-- {#mainpage_master} -->
+### EnviroDIY_SDI12<!--! {#mainpage_master} -->
 
 EnviroDIY_SDI12 is the default master branch of this repository.
 It controls and monopolizes all pin change interrupt vectors, and can therefore have conflicts with any variant of SoftwareSerial and other libraries that use interrupts.
 
-### EnviroDIY_SDI12_PCINT3<!-- {#mainpage_pcint3} -->
+### EnviroDIY_SDI12_PCINT3<!--! {#mainpage_pcint3} -->
 
 EnviroDIY_SDI12_PCINT3 is in the Mayfly branch of this repository, and was historically was called "SDI12_mod".
 It's been cropped to only control interrupt vector 3, or PCINT3 (D), which on the Mayfly (or Sodaq Mbili) corresponds to Pins D0-D7.
@@ -146,7 +146,7 @@ It is designed to be compatible with [EnviroDIY_SoftwareSerial_PCINT12](https://
 Note that different AtMega1284p boards have a different mapping from the physical PIN numbers to the listed digital PIN numbers that are printed on the board.
 One of the most helpful lists of pins and interrupts vectors is in the the [Pin/Port Bestiary wiki page for the Enable Interrupt library](https://github.com/GreyGnome/EnableInterrupt/wiki/Usage#PIN__PORT_BESTIARY).
 
-### EnviroDIY_SDI12_ExtInts<!-- {#mainpage_extints} -->
+### EnviroDIY_SDI12_ExtInts<!--! {#mainpage_extints} -->
 
 EnviroDIY_SDI12_ExtInts is the ExtInt branch of this repository.
 It doesn't control any of the interrupts, but instead relies on an external interrupt management library (like [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt)) to assign the SDI-12 receive data function to the right pin.
@@ -158,7 +158,7 @@ If you would like to use a different pin change interrupt library, uncomment the
 Then, in your own code call `SDI12::handleInterrupt()` as the interrupt for the SDI12 pin using the other interrupt library.
 Example j shows doing this in GreyGnome's [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) library.
 
-## Contribute<!-- {#mainpage_contribute} -->
+## Contribute<!--! {#mainpage_contribute} -->
 
 Open an [issue](https://github.com/EnviroDIY/Arduino-SDI-12/issues) to suggest and discuss potential changes/additions.
 
@@ -170,7 +170,7 @@ For power contributors:
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
-## License<!-- {#mainpage_license} -->
+## License<!--! {#mainpage_license} -->
 
 The SDI12 library code is released under the GNU Lesser Public License (LGPL 2.1) -- See [LICENSE-examples.md](https://github.com/EnviroDIY/Arduino-SDI-12/blob/master/LICENSE) file for details.
 
@@ -178,7 +178,7 @@ Example Arduino sketches are released under the BSD 3-Clause License -- See [LIC
 
 Documentation is licensed as [Creative Commons Attribution-ShareAlike 4.0](https://creativecommons.org/licenses/by-sa/4.0/) (CC-BY-SA) copyright.
 
-## Credits<!-- {#mainpage_credits} -->
+## Credits<!--! {#mainpage_credits} -->
 
 [EnviroDIY](http://envirodiy.org/)™ is presented by the Stroud Water Research Center, with contributions from a community of enthusiasts sharing do-it-yourself ideas for environmental science and monitoring.
 
@@ -186,7 +186,7 @@ Documentation is licensed as [Creative Commons Attribution-ShareAlike 4.0](https
 
 [Sara Damiano](https://github.com/SRGDamia1) is now the primary maintainer, with input from many [other contributors](https://github.com/EnviroDIY/Arduino-SDI-12/graphs/contributors).
 
-This project has benefited from the support from the following funders:
+This project has benefited from the support from the following funding sources:
 
 - National Science Foundation, awards [EAR-0724971](http://www.nsf.gov/awardsearch/showAward?AWD_ID=0724971), [EAR-1331856](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1331856), [ACI-1339834](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1339834)
 - William Penn Foundation, grant 158-15

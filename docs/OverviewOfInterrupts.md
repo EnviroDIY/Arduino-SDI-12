@@ -1,8 +1,8 @@
-# Overview of Interrupts<!-- {#interrupts_page} -->
+# Overview of Interrupts<!--! {#interrupts_page} -->
 
-[//]: # ( @tableofcontents )
+<!--! @tableofcontents -->
 
-[//]: # ( @cond GitHub )
+<!--! @cond GitHub -->
 
 - [Overview of Interrupts](#overview-of-interrupts)
   - [What is an Interrupt?](#what-is-an-interrupt)
@@ -11,9 +11,9 @@
     - [Enabling an Interrupt](#enabling-an-interrupt)
     - [Disabling an Interrupt](#disabling-an-interrupt)
 
-[//]: # ( @endcond )
+<!--! @endcond -->
 
-## What is an Interrupt?<!-- {#interrupts_what} -->
+## What is an Interrupt?<!--! {#interrupts_what} -->
 
 An interrupt is a signal that causes the microcontroller to halt execution of the program, and perform a subroutine known as an interrupt handler or Interrupt Service Routine (ISR).
 After the ISR, program execution continues where it left off.
@@ -27,9 +27,9 @@ Obviously, we don't want the processor to be halting operation every time any pi
 For Atmel SAMD or Espressif processors the processor has dedicated control registers for each pin and the Arduino core provides us with a handy "attachInterrupt" function to use to tie our ISR to that pin.
 For AVR processors, like the Arduino Uno or the EnviroDIY Mayfly, we have to use a get a bit fancier to control the interrupts.
 
-## Directly Controlling Interrupts on an AVR Board<!-- {#interrupts_avr} -->
+## Directly Controlling Interrupts on an AVR Board<!--! {#interrupts_avr} -->
 
-### Some Vocabulary:<!-- {#interrupts_vocab} -->
+### Some Vocabulary:<!--! {#interrupts_vocab} -->
 
 **Registers**: small 1-byte (8-bit) stores of memory directly accessible by processor
 PCMSK0, PCMSK1, PCMSK2, PCMSK3
@@ -56,7 +56,7 @@ On an Arduino Uno:
 
 - interrupts will only occur if the requisite registers are set (e.g. PCMSK and PCICR).
 
-### Enabling an Interrupt<!-- {#interrupts_enable} -->
+### Enabling an Interrupt<!--! {#interrupts_enable} -->
 
 Initially, no interrupts are enabled, so PCMSK0 looks like: `{00000000}`.
 If we were to use pin 9 as the data pin, we would set the bit in the pin 9 position to 1, like so: `{00000010}`.
@@ -136,7 +136,7 @@ So now:
 
 By using a bitmask and bitwise operation, we have successfully enabled pin 9 without effecting the state of pin 13.
 
-### Disabling an Interrupt<!-- {#interrupts_disable} -->
+### Disabling an Interrupt<!--! {#interrupts_disable} -->
 
 When the we would like to put the SDI-12 object in the DISABLED state, (e.g. the destructor is called), we need to make sure the bit corresponding to the data pin is unset.
 
