@@ -1,5 +1,5 @@
 {
-  "version": "1.12.0",
+  "version": "1.14.0",
   "compound": {
     "kind": "class",
     "id": "class_s_d_i12_timer",
@@ -270,7 +270,7 @@
         "name": "SDI12TimerRead",
         "brief": "A function to read the timer value, where a multi-step function is needed.",
         "description": "",
-        "return_value": "<strong>sdi12timer_t</strong> The current timer value",
+        "return_value": "<strong><a href=\"_s_d_i12__boards_8h.html#ab4bb1ac90b8fb685621951664af46a2a\" class=\"m-doc\">sdi12timer_<wbr />t</a></strong> The current timer value",
         "return_values": [],
         "exceptions": [],
         "deprecated": null,

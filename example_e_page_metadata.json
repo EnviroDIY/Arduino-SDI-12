@@ -1,0 +1,17 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "example_e_page",
+  "kind": "page",
+  "name": "Example E: Check all Addresses for Active Sensors and Start Continuous Measurements",
+  "url": "example_e_page.html",
+  "brief": "",
+  "has_details": 8,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}

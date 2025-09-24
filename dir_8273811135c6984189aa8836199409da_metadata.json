@@ -1,0 +1,17 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "dir_8273811135c6984189aa8836199409da",
+  "kind": "dir",
+  "name": "examples/g_terminal_window",
+  "url": "dir_8273811135c6984189aa8836199409da.html",
+  "brief": "Contains the g_terminal_window example.",
+  "has_details": true,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}

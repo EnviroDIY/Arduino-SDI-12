@@ -1,5 +1,5 @@
 {
-  "version": "1.12.0",
+  "version": "1.14.0",
   "index": {
     "symbols": [
       {
@@ -263,10 +263,10 @@
         "has_nestable_children": false
       },
       {
-        "id": "license",
+        "id": "md__l_i_c_e_n_s_e",
         "kind": "page",
         "name": "LICENSE",
-        "url": "license.html",
+        "url": "md__l_i_c_e_n_s_e.html",
         "brief": "",
         "children": [],
         "deprecated": null,

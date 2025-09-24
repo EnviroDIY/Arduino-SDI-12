@@ -1,0 +1,18 @@
+{
+  "is_final": null,
+  "parent": "dir_68267d1309a1af8e8297ef4c3efbcdba",
+  "parentGroup": null,
+  "id": "_s_d_i12__boards_8cpp",
+  "kind": "file",
+  "name": "SDI12_boards.cpp",
+  "url": "_s_d_i12__boards_8cpp.html",
+  "brief": "This file implements the setting and unsetting of the proper prescalers for the timers for SDI-12.",
+  "has_details": true,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "SDI12_boards.cpp"
+}

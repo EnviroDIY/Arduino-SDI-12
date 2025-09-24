@@ -4200,7 +4200,7 @@ article section:last-child {
 .m-code-arduino .vm { color: #434f54 }
 .m-code-arduino .il { color: #8A7B52 }
 
-.m-code-arduino { #f7f7f7; }
+.m-code-pygments-default { #f7f7f7; }
 .m-code-pygments-default .hll { background-color: #ffffcc }
 .m-code-pygments-default .c { color: #3D7B7B; font-style: italic }
 .m-code-pygments-default .err { border: 1px solid #FF0000 }

@@ -1,0 +1,18 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "specifications",
+  "kind": "page",
+  "name": "Notes on SDI-12, Specification v1.4",
+  "url": "specifications.html",
+  "brief": "",
+  "has_details": 2,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "Notes on SDI-12, Specification v1.4"
+}

@@ -1,0 +1,18 @@
+{
+  "is_final": null,
+  "parent": "dir_d28a4824dc47e487b107a5db32ef43c4",
+  "parentGroup": null,
+  "id": "dir_2a830da7d9520261e5b67047cb531416",
+  "kind": "dir",
+  "name": "examples/e_continuous_measurement",
+  "url": "dir_2a830da7d9520261e5b67047cb531416.html",
+  "brief": "Contains the e_continuous_measurement example.",
+  "has_details": true,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "e_continuous_measurement"
+}

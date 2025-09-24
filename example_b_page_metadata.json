@@ -1,0 +1,17 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "example_b_page",
+  "kind": "page",
+  "name": "Example B: Changing the Address of your SDI-12 Sensor",
+  "url": "example_b_page.html",
+  "brief": "",
+  "has_details": 11,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}

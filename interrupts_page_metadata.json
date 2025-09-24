@@ -1,0 +1,17 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "interrupts_page",
+  "kind": "page",
+  "name": "Overview of Interrupts",
+  "url": "interrupts_page.html",
+  "brief": "",
+  "has_details": 3,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}

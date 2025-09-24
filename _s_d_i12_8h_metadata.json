@@ -1,0 +1,17 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "_s_d_i12_8h",
+  "kind": "file",
+  "name": "SDI12.h",
+  "url": "_s_d_i12_8h.html",
+  "brief": "This file contains the main class for the SDI-12 implementation.",
+  "has_details": true,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}

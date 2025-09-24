@@ -1,5 +1,5 @@
 {
-  "version": "1.12.0",
+  "version": "1.14.0",
   "compound": {
     "kind": "file",
     "id": "_s_d_i12__boards_8h",
@@ -124,6 +124,21 @@
         "name": "READTIME",
         "initializer": "TCNT2",
         "brief": "The function or macro used to read the clock timer value.",
+        "description": "",
+        "return_value": null,
+        "deprecated": null,
+        "since": null,
+        "has_param_details": false,
+        "params": null
+      },
+      {
+        "base_url": "_s_d_i12__boards_8h.html",
+        "id": "a76c0c846e4ab1db8c9245674022cd124",
+        "include": null,
+        "has_details": false,
+        "name": "PRESCALE_IN_USE",
+        "initializer": "256",
+        "brief": "The prescaler value in use.",
         "description": "",
         "return_value": null,
         "deprecated": null,

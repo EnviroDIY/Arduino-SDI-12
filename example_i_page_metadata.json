@@ -1,0 +1,17 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "example_i_page",
+  "kind": "page",
+  "name": "Example I:  SDI-12 PC Interface",
+  "url": "example_i_page.html",
+  "brief": "",
+  "has_details": 6,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}

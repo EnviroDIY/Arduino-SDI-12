@@ -1,0 +1,31 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "dir_d28a4824dc47e487b107a5db32ef43c4",
+  "kind": "dir",
+  "name": "examples",
+  "url": "dir_d28a4824dc47e487b107a5db32ef43c4.html",
+  "brief": "",
+  "has_details": false,
+  "children": [
+    "dir_63b0498ffd8e18ad850da04609a3505d",
+    "dir_484e25917c19faea28f12c720613bb23",
+    "dir_46f9e870c985bca3440696d95d035d62",
+    "dir_678edf24194fa3bed42bac4574ae15c0",
+    "dir_2a830da7d9520261e5b67047cb531416",
+    "dir_6ee794970ad91d020e62e43fb423ec61",
+    "dir_8273811135c6984189aa8836199409da",
+    "dir_a6047ef04a066816423aaaf634a5174d",
+    "dir_4913f2841ad966239883f0437e4d8615",
+    "dir_5a13c36f88731f58c7492b63524e472c",
+    "dir_8d3d0576ababb548529722c531be022a",
+    "dir_8dafc79526cda79ecd7e1294abcbe8ba"
+  ],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "examples"
+}

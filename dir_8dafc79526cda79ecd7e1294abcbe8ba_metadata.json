@@ -1,0 +1,17 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "dir_8dafc79526cda79ecd7e1294abcbe8ba",
+  "kind": "dir",
+  "name": "examples/l_verify_crc",
+  "url": "dir_8dafc79526cda79ecd7e1294abcbe8ba.html",
+  "brief": "Contains the l_verify_crc example.",
+  "has_details": true,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}

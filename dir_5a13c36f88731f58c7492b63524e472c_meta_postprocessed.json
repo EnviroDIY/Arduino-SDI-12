@@ -1,0 +1,18 @@
+{
+  "is_final": null,
+  "parent": "dir_d28a4824dc47e487b107a5db32ef43c4",
+  "parentGroup": null,
+  "id": "dir_5a13c36f88731f58c7492b63524e472c",
+  "kind": "dir",
+  "name": "examples/j_external_pcint_library",
+  "url": "dir_5a13c36f88731f58c7492b63524e472c.html",
+  "brief": "Contains the j_external_pcint_library example.",
+  "has_details": true,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "j_external_pcint_library"
+}

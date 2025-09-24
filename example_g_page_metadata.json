@@ -1,0 +1,17 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "example_g_page",
+  "kind": "page",
+  "name": "Example G: Using the Arduino as a Command Terminal for SDI-12 Sensors",
+  "url": "example_g_page.html",
+  "brief": "",
+  "has_details": 5,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}

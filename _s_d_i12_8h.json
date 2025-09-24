@@ -1,5 +1,5 @@
 {
-  "version": "1.12.0",
+  "version": "1.14.0",
   "compound": {
     "kind": "file",
     "id": "_s_d_i12_8h",
@@ -139,7 +139,7 @@
         "name": "SDI12_DATA_STR_SIZE",
         "initializer": "35",
         "brief": "The maximum length of a standard data command response.",
-        "description": "<p>From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses: The maximum number of characters that can be returned in the &lt;values&gt; part of the response to a D command is either 35 or 75. If the D command is issued to retrieve data in response to a concurrent measurement command, or in response to a high-volume ASCII measurement command, the maximum is 75. The maximum is also 75 in response to a continuous measurement command. Otherwise, the maximum is 35.</p>",
+        "description": "<p>From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses: The maximum number of characters that can be returned in the [values] part of the response to a D command is either 35 or 75. If the D command is issued to retrieve data in response to a concurrent measurement command, or in response to a high-volume ASCII measurement command, the maximum is 75. The maximum is also 75 in response to a continuous measurement command. Otherwise, the maximum is 35.</p>",
         "return_value": null,
         "deprecated": null,
         "since": null,
@@ -228,7 +228,7 @@
         "has_details": true,
         "name": "WAITING_FOR_START_BIT",
         "initializer": "0xFF",
-        "brief": "A mask for the #rxState while waiting for a start bit; 0b11111111.",
+        "brief": "A mask for the rxState while waiting for a start bit; 0b11111111.",
         "description": "<p>Possible SDI-12 States</p><p>WAITING_FOR_BREAK:</p><ul><li>Sensor (slave) is asleep, waiting for the data recorder (master) to hold the line high for &gt;= 12ms. Or the data recorder has not initiated communication with a sensor in too long and needs to re-alert it.</li><li>Starts:<ul><li>After a sensor receives an invalid address (return to sleep)</li><li>When the master wants to address a different sensor</li><li>After line has been in marking (LOW) for &gt; 100 ms (sensor returns to sleep)</li><li>After the line has been in marking (LOW) for &gt; 87 ms (sensor awaits break without sleeping, recorder must send break)</li></ul></li><li>Ends:<ul><li>After 12 ms break has finished</li></ul></li></ul><p>WAITING_FOR_MARKING:</p><ul><li>Sensor has received a &gt;= 12ms HIGH break and is waiting for the data recorder to send &gt;= 8.33 ms of LOW marking.</li><li>Data recorder has finished sending a command, has relinquished the line, and is waiting for the sensor to hold the line LOW for &gt;= 8.33 ms of marking</li><li>Starts:<ul><li>After line has been held continuously HIGH for &gt;= 12ms</li></ul></li><li>Ends:<ul><li>After the line has been in marking (LOW) for &gt; 87 ms</li></ul></li></ul><p>WAITING_FOR_START_BIT:</p><ul><li>Line has been held low for &gt;= 8.33 ms of marking</li><li>Ends:<ul><li>&gt; 15 ms after the last stop bit of a command (for the recorder/master)</li><li>&gt; 1.66 ms after the last stop bit between characters within a command or response</li></ul></li></ul>",
         "return_value": null,
         "deprecated": null,
@@ -295,6 +295,21 @@
         "since": null,
         "has_param_details": false,
         "params": []
+      },
+      {
+        "base_url": "_s_d_i12_8h.html",
+        "id": "a59846bf9da08d7b3a62401372a86683e",
+        "include": null,
+        "has_details": false,
+        "name": "NEED_LOOKAHEAD_ENUM",
+        "initializer": null,
+        "brief": "This macro is defined if lookahead options are needed.",
+        "description": "",
+        "return_value": null,
+        "deprecated": null,
+        "since": null,
+        "has_param_details": false,
+        "params": null
       }
     ],
     "public_types": [],

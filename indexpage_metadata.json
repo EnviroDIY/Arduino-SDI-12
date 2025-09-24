@@ -1,0 +1,17 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "indexpage",
+  "kind": "page",
+  "name": "SDI-12 for Arduino",
+  "url": "index.html",
+  "brief": "",
+  "has_details": 9,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}

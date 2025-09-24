@@ -1,0 +1,21 @@
+{
+  "is_final": false,
+  "parent": null,
+  "parentGroup": null,
+  "id": "class_stream",
+  "kind": "class",
+  "name": "Stream",
+  "url": "class_stream.html",
+  "brief": "",
+  "has_details": false,
+  "children": [
+    "class_s_d_i12"
+  ],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "templates": null,
+  "leaf_name": "Stream"
+}

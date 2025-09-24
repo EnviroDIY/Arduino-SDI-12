@@ -2,9 +2,34 @@
 <html lang="en-US">
 <head>
   <meta charset="UTF-8" />
-  <title>Examples using the SDI-12 Library &raquo; e_continuous_measurement.ino example | SDI-12 for Arduino2.3.0</title>
+  <title>Examples using the SDI-12 Library &raquo; e_continuous_measurement.ino example | SDI-12 for Arduino2.3.1</title>
   <link rel="stylesheet" href="m-EnviroDIY+documentation.compiled.css" />
 
+<!-- clean talk scripts -->
+<!-- clean talk scripts -->
+<!-- clean talk scripts -->
+<!-- clean talk scripts -->
+<!-- clean talk scripts -->
+<!-- emoji scripts -->
+<!-- emoji scripts -->
+<!-- emoji scripts -->
+<!-- emoji scripts -->
+<!-- emoji scripts -->
+<!-- highlighter stylesheet -->
+<!-- highlighter stylesheet -->
+<!-- highlighter stylesheet -->
+<!-- highlighter stylesheet -->
+<!-- highlighter stylesheet -->
+<!-- post query stylesheets -->
+<!-- post query stylesheets -->
+<!-- post query stylesheets -->
+<!-- post query stylesheets -->
+<!-- post query stylesheets -->
+<!-- emoji in-line css -->
+<!-- emoji in-line css -->
+<!-- emoji in-line css -->
+<!-- emoji in-line css -->
+<!-- emoji in-line css -->
 <style id="wp-emoji-styles-inline-css" type="text/css">
   img.wp-smiley,
   img.emoji {
@@ -19,10 +44,517 @@
     padding: 0 !important;
   }
 </style>
+<!-- block stylesheets -->
+<!-- block stylesheets -->
+<!-- block stylesheets -->
+<!-- block stylesheets -->
+<!-- block stylesheets -->
+<link
+  rel="stylesheet"
+  id="wp-block-library-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/block-library/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<style id="classic-theme-styles-inline-css" type="text/css">
+  /*! This file is auto-generated */
+  .wp-block-button__link {
+    color: #fff;
+    background-color: #32373c;
+    border-radius: 9999px;
+    box-shadow: none;
+    text-decoration: none;
+    padding: calc(0.667em + 2px) calc(1.333em + 2px);
+    font-size: 1.125em;
+  }
+  .wp-block-file__button {
+    background: #32373c;
+    color: #fff;
+    text-decoration: none;
+  }
+</style>
+<!-- buddypress stylesheets -->
+<!-- buddypress stylesheets -->
+<!-- buddypress stylesheets -->
+<!-- buddypress stylesheets -->
+<!-- buddypress stylesheets -->
+<!-- heroic knowledge base stylesheets -->
+<!-- heroic knowledge base stylesheets -->
+<!-- heroic knowledge base stylesheets -->
+<!-- heroic knowledge base stylesheets -->
+<!-- heroic knowledge base stylesheets -->
+<!-- word press stylesheets -->
+<!-- word press stylesheets -->
+<!-- word press stylesheets -->
+<!-- word press stylesheets -->
+<!-- word press stylesheets -->
+<link
+  rel="stylesheet"
+  id="wp-components-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/components/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="wp-preferences-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/preferences/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="wp-block-editor-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/block-editor/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="wp-reusable-blocks-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/reusable-blocks/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="wp-patterns-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/patterns/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="wp-editor-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/editor/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="ht-formatting-blocks-modules-styles-css"
+  href="https://www.envirodiy.org/wp-content/plugins/ht-knowledge-base/formatting-blocks/dist/css/ht-formatting-blocks-modules-styles.css?ver=4.0.0"
+  type="text/css"
+  media="all"
+/>
+<!-- word press stylesheets -->
+<!-- word press stylesheets -->
+<!-- word press stylesheets -->
+<!-- word press stylesheets -->
+<!-- word press stylesheets -->
+<link
+  rel="stylesheet"
+  id="wp-components-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/components/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="wp-preferences-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/preferences/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="wp-block-editor-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/block-editor/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="wp-reusable-blocks-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/reusable-blocks/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="wp-patterns-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/patterns/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="wp-editor-css"
+  href="https://www.envirodiy.org/wp-includes/css/dist/editor/style.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="ht-formatting-blocks-modules-styles-css"
+  href="https://www.envirodiy.org/wp-content/plugins/ht-knowledge-base/formatting-blocks/dist/css/ht-formatting-blocks-modules-styles.css?ver=4.0.0"
+  type="text/css"
+  media="all"
+/>
+<!-- word press global inline styles -->
+<!-- word press global inline styles -->
+<!-- word press global inline styles -->
+<!-- word press global inline styles -->
+<!-- word press global inline styles -->
+<style id="global-styles-inline-css" type="text/css">
+  :root {
+    --wp--preset--aspect-ratio--square: 1;
+    --wp--preset--aspect-ratio--4-3: 4/3;
+    --wp--preset--aspect-ratio--3-4: 3/4;
+    --wp--preset--aspect-ratio--3-2: 3/2;
+    --wp--preset--aspect-ratio--2-3: 2/3;
+    --wp--preset--aspect-ratio--16-9: 16/9;
+    --wp--preset--aspect-ratio--9-16: 9/16;
+    --wp--preset--color--black: #000000;
+    --wp--preset--color--cyan-bluish-gray: #abb8c3;
+    --wp--preset--color--white: #ffffff;
+    --wp--preset--color--pale-pink: #f78da7;
+    --wp--preset--color--vivid-red: #cf2e2e;
+    --wp--preset--color--luminous-vivid-orange: #ff6900;
+    --wp--preset--color--luminous-vivid-amber: #fcb900;
+    --wp--preset--color--light-green-cyan: #7bdcb5;
+    --wp--preset--color--vivid-green-cyan: #00d084;
+    --wp--preset--color--pale-cyan-blue: #8ed1fc;
+    --wp--preset--color--vivid-cyan-blue: #0693e3;
+    --wp--preset--color--vivid-purple: #9b51e0;
+    --wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(
+      135deg,
+      rgba(6, 147, 227, 1) 0%,
+      rgb(155, 81, 224) 100%
+    );
+    --wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(
+      135deg,
+      rgb(122, 220, 180) 0%,
+      rgb(0, 208, 130) 100%
+    );
+    --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(
+      135deg,
+      rgba(252, 185, 0, 1) 0%,
+      rgba(255, 105, 0, 1) 100%
+    );
+    --wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(
+      135deg,
+      rgba(255, 105, 0, 1) 0%,
+      rgb(207, 46, 46) 100%
+    );
+    --wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(
+      135deg,
+      rgb(238, 238, 238) 0%,
+      rgb(169, 184, 195) 100%
+    );
+    --wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(
+      135deg,
+      rgb(74, 234, 220) 0%,
+      rgb(151, 120, 209) 20%,
+      rgb(207, 42, 186) 40%,
+      rgb(238, 44, 130) 60%,
+      rgb(251, 105, 98) 80%,
+      rgb(254, 248, 76) 100%
+    );
+    --wp--preset--gradient--blush-light-purple: linear-gradient(
+      135deg,
+      rgb(255, 206, 236) 0%,
+      rgb(152, 150, 240) 100%
+    );
+    --wp--preset--gradient--blush-bordeaux: linear-gradient(
+      135deg,
+      rgb(254, 205, 165) 0%,
+      rgb(254, 45, 45) 50%,
+      rgb(107, 0, 62) 100%
+    );
+    --wp--preset--gradient--luminous-dusk: linear-gradient(
+      135deg,
+      rgb(255, 203, 112) 0%,
+      rgb(199, 81, 192) 50%,
+      rgb(65, 88, 208) 100%
+    );
+    --wp--preset--gradient--pale-ocean: linear-gradient(
+      135deg,
+      rgb(255, 245, 203) 0%,
+      rgb(182, 227, 212) 50%,
+      rgb(51, 167, 181) 100%
+    );
+    --wp--preset--gradient--electric-grass: linear-gradient(
+      135deg,
+      rgb(202, 248, 128) 0%,
+      rgb(113, 206, 126) 100%
+    );
+    --wp--preset--gradient--midnight: linear-gradient(
+      135deg,
+      rgb(2, 3, 129) 0%,
+      rgb(40, 116, 252) 100%
+    );
+    --wp--preset--font-size--small: 13px;
+    --wp--preset--font-size--medium: 20px;
+    --wp--preset--font-size--large: 36px;
+    --wp--preset--font-size--x-large: 42px;
+    --wp--preset--spacing--20: 0.44rem;
+    --wp--preset--spacing--30: 0.67rem;
+    --wp--preset--spacing--40: 1rem;
+    --wp--preset--spacing--50: 1.5rem;
+    --wp--preset--spacing--60: 2.25rem;
+    --wp--preset--spacing--70: 3.38rem;
+    --wp--preset--spacing--80: 5.06rem;
+    --wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);
+    --wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);
+    --wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);
+    --wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1),
+      6px 6px rgba(0, 0, 0, 1);
+    --wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);
+  }
+  :where(.is-layout-flex) {
+    gap: 0.5em;
+  }
+  :where(.is-layout-grid) {
+    gap: 0.5em;
+  }
+  body .is-layout-flex {
+    display: flex;
+  }
+  .is-layout-flex {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .is-layout-flex > :is(*, div) {
+    margin: 0;
+  }
+  body .is-layout-grid {
+    display: grid;
+  }
+  .is-layout-grid > :is(*, div) {
+    margin: 0;
+  }
+  :where(.wp-block-columns.is-layout-flex) {
+    gap: 2em;
+  }
+  :where(.wp-block-columns.is-layout-grid) {
+    gap: 2em;
+  }
+  :where(.wp-block-post-template.is-layout-flex) {
+    gap: 1.25em;
+  }
+  :where(.wp-block-post-template.is-layout-grid) {
+    gap: 1.25em;
+  }
+  .has-black-color {
+    color: var(--wp--preset--color--black) !important;
+  }
+  .has-cyan-bluish-gray-color {
+    color: var(--wp--preset--color--cyan-bluish-gray) !important;
+  }
+  .has-white-color {
+    color: var(--wp--preset--color--white) !important;
+  }
+  .has-pale-pink-color {
+    color: var(--wp--preset--color--pale-pink) !important;
+  }
+  .has-vivid-red-color {
+    color: var(--wp--preset--color--vivid-red) !important;
+  }
+  .has-luminous-vivid-orange-color {
+    color: var(--wp--preset--color--luminous-vivid-orange) !important;
+  }
+  .has-luminous-vivid-amber-color {
+    color: var(--wp--preset--color--luminous-vivid-amber) !important;
+  }
+  .has-light-green-cyan-color {
+    color: var(--wp--preset--color--light-green-cyan) !important;
+  }
+  .has-vivid-green-cyan-color {
+    color: var(--wp--preset--color--vivid-green-cyan) !important;
+  }
+  .has-pale-cyan-blue-color {
+    color: var(--wp--preset--color--pale-cyan-blue) !important;
+  }
+  .has-vivid-cyan-blue-color {
+    color: var(--wp--preset--color--vivid-cyan-blue) !important;
+  }
+  .has-vivid-purple-color {
+    color: var(--wp--preset--color--vivid-purple) !important;
+  }
+  .has-black-background-color {
+    background-color: var(--wp--preset--color--black) !important;
+  }
+  .has-cyan-bluish-gray-background-color {
+    background-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+  }
+  .has-white-background-color {
+    background-color: var(--wp--preset--color--white) !important;
+  }
+  .has-pale-pink-background-color {
+    background-color: var(--wp--preset--color--pale-pink) !important;
+  }
+  .has-vivid-red-background-color {
+    background-color: var(--wp--preset--color--vivid-red) !important;
+  }
+  .has-luminous-vivid-orange-background-color {
+    background-color: var(--wp--preset--color--luminous-vivid-orange) !important;
+  }
+  .has-luminous-vivid-amber-background-color {
+    background-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+  }
+  .has-light-green-cyan-background-color {
+    background-color: var(--wp--preset--color--light-green-cyan) !important;
+  }
+  .has-vivid-green-cyan-background-color {
+    background-color: var(--wp--preset--color--vivid-green-cyan) !important;
+  }
+  .has-pale-cyan-blue-background-color {
+    background-color: var(--wp--preset--color--pale-cyan-blue) !important;
+  }
+  .has-vivid-cyan-blue-background-color {
+    background-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+  }
+  .has-vivid-purple-background-color {
+    background-color: var(--wp--preset--color--vivid-purple) !important;
+  }
+  .has-black-border-color {
+    border-color: var(--wp--preset--color--black) !important;
+  }
+  .has-cyan-bluish-gray-border-color {
+    border-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+  }
+  .has-white-border-color {
+    border-color: var(--wp--preset--color--white) !important;
+  }
+  .has-pale-pink-border-color {
+    border-color: var(--wp--preset--color--pale-pink) !important;
+  }
+  .has-vivid-red-border-color {
+    border-color: var(--wp--preset--color--vivid-red) !important;
+  }
+  .has-luminous-vivid-orange-border-color {
+    border-color: var(--wp--preset--color--luminous-vivid-orange) !important;
+  }
+  .has-luminous-vivid-amber-border-color {
+    border-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+  }
+  .has-light-green-cyan-border-color {
+    border-color: var(--wp--preset--color--light-green-cyan) !important;
+  }
+  .has-vivid-green-cyan-border-color {
+    border-color: var(--wp--preset--color--vivid-green-cyan) !important;
+  }
+  .has-pale-cyan-blue-border-color {
+    border-color: var(--wp--preset--color--pale-cyan-blue) !important;
+  }
+  .has-vivid-cyan-blue-border-color {
+    border-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+  }
+  .has-vivid-purple-border-color {
+    border-color: var(--wp--preset--color--vivid-purple) !important;
+  }
+  .has-vivid-cyan-blue-to-vivid-purple-gradient-background {
+    background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;
+  }
+  .has-light-green-cyan-to-vivid-green-cyan-gradient-background {
+    background: var(
+      --wp--preset--gradient--light-green-cyan-to-vivid-green-cyan
+    ) !important;
+  }
+  .has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background {
+    background: var(
+      --wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange
+    ) !important;
+  }
+  .has-luminous-vivid-orange-to-vivid-red-gradient-background {
+    background: var(
+      --wp--preset--gradient--luminous-vivid-orange-to-vivid-red
+    ) !important;
+  }
+  .has-very-light-gray-to-cyan-bluish-gray-gradient-background {
+    background: var(
+      --wp--preset--gradient--very-light-gray-to-cyan-bluish-gray
+    ) !important;
+  }
+  .has-cool-to-warm-spectrum-gradient-background {
+    background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;
+  }
+  .has-blush-light-purple-gradient-background {
+    background: var(--wp--preset--gradient--blush-light-purple) !important;
+  }
+  .has-blush-bordeaux-gradient-background {
+    background: var(--wp--preset--gradient--blush-bordeaux) !important;
+  }
+  .has-luminous-dusk-gradient-background {
+    background: var(--wp--preset--gradient--luminous-dusk) !important;
+  }
+  .has-pale-ocean-gradient-background {
+    background: var(--wp--preset--gradient--pale-ocean) !important;
+  }
+  .has-electric-grass-gradient-background {
+    background: var(--wp--preset--gradient--electric-grass) !important;
+  }
+  .has-midnight-gradient-background {
+    background: var(--wp--preset--gradient--midnight) !important;
+  }
+  .has-small-font-size {
+    font-size: var(--wp--preset--font-size--small) !important;
+  }
+  .has-medium-font-size {
+    font-size: var(--wp--preset--font-size--medium) !important;
+  }
+  .has-large-font-size {
+    font-size: var(--wp--preset--font-size--large) !important;
+  }
+  .has-x-large-font-size {
+    font-size: var(--wp--preset--font-size--x-large) !important;
+  }
+  :where(.wp-block-post-template.is-layout-flex) {
+    gap: 1.25em;
+  }
+  :where(.wp-block-post-template.is-layout-grid) {
+    gap: 1.25em;
+  }
+  :where(.wp-block-columns.is-layout-flex) {
+    gap: 2em;
+  }
+  :where(.wp-block-columns.is-layout-grid) {
+    gap: 2em;
+  }
+  :root :where(.wp-block-pullquote) {
+    font-size: 1.5em;
+    line-height: 1.6;
+  }
+</style>
+<!-- more buddy press stylesheets -->
+<!-- more buddy press stylesheets -->
+<!-- more buddy press stylesheets -->
+<!-- more buddy press stylesheets -->
+<!-- more buddy press stylesheets -->
+<!-- cleantalk stylesheets -->
+<!-- cleantalk stylesheets -->
+<!-- cleantalk stylesheets -->
+<!-- cleantalk stylesheets -->
+<!-- cleantalk stylesheets -->
+<!-- woocommerce stylesheets -->
+<!-- woocommerce stylesheets -->
+<!-- woocommerce stylesheets -->
+<!-- woocommerce stylesheets -->
+<!-- woocommerce stylesheets -->
+<!-- more stylesheets -->
+<!-- more stylesheets -->
+<!-- more stylesheets -->
+<!-- more stylesheets -->
+<!-- more stylesheets -->
+<link
+  rel="stylesheet"
+  id="dashicons-css"
+  href="https://www.envirodiy.org/wp-includes/css/dashicons.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="brands-styles-css"
+  href="https://www.envirodiy.org/wp-content/plugins/woocommerce/assets/css/brands.css?ver=9.9.5"
+  type="text/css"
+  media="all"
+/>
 <link
   rel="stylesheet"
   id="gp-parent-style-css"
-  href="https://www.envirodiy.org/wp-content/themes/socialize/style.css?ver=6.7.1"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/style.css?ver=6.8.1"
   type="text/css"
   media="all"
 />
@@ -30,6 +562,13 @@
   rel="stylesheet"
   id="redux-extendify-styles-css"
   href="https://www.envirodiy.org/wp-content/themes/socialize/lib/framework/redux/assets/css/extendify-utilities.css?ver=4.4.11"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="ghostpool-style-css"
+  href="https://www.envirodiy.org/wp-content/themes/socialize-child/style.css?ver=6.8.1"
   type="text/css"
   media="all"
 />
@@ -139,10 +678,41 @@
 <link
   rel="stylesheet"
   id="fontawesome-css"
-  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=6.7.1"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=6.8.1"
   type="text/css"
   media="all"
 />
+<link
+  rel="stylesheet"
+  id="prettyphoto-css"
+  href="https://www.envirodiy.org/wp-content/plugins/js_composer/assets/lib/vendor/prettyphoto/css/prettyPhoto.min.css?ver=8.5"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="mediaelement-css"
+  href="https://www.envirodiy.org/wp-includes/js/mediaelement/mediaelementplayer-legacy.min.css?ver=4.2.17"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="wp-mediaelement-css"
+  href="https://www.envirodiy.org/wp-includes/js/mediaelement/wp-mediaelement.min.css?ver=6.8.1"
+  type="text/css"
+  media="all"
+/>
+<!-- more buddy press and woo commerce stylesheets -->
+<!-- more buddy press and woo commerce stylesheets -->
+<!-- more buddy press and woo commerce stylesheets -->
+<!-- more buddy press and woo commerce stylesheets -->
+<!-- more buddy press and woo commerce stylesheets -->
+<!-- google font stylesheets -->
+<!-- google font stylesheets -->
+<!-- google font stylesheets -->
+<!-- google font stylesheets -->
+<!-- google font stylesheets -->
 <link
   rel="preload"
   as="style"
@@ -159,7 +729,70 @@
     rel="stylesheet"
     href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.7.1"
 /></noscript>
-
+<!-- jquery -->
+<!-- jquery -->
+<!-- jquery -->
+<!-- jquery -->
+<!-- jquery -->
+<script
+  type="text/javascript"
+  src="https://www.envirodiy.org/wp-includes/js/jquery/jquery.min.js?ver=3.7.1"
+  id="jquery-core-js"
+></script>
+<script
+  type="text/javascript"
+  src="https://www.envirodiy.org/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1"
+  id="jquery-migrate-js"
+></script>
+<!-- buddy press scripts -->
+<!-- buddy press scripts -->
+<!-- buddy press scripts -->
+<!-- buddy press scripts -->
+<!-- buddy press scripts -->
+<!-- woo commerce scripts -->
+<!-- woo commerce scripts -->
+<!-- woo commerce scripts -->
+<!-- woo commerce scripts -->
+<!-- woo commerce scripts -->
+<!-- woo commerce scripts -->
+<!-- more inclusions -->
+<!-- more inclusions -->
+<!-- more inclusions -->
+<!-- more inclusions -->
+<!-- more inclusions -->
+<!-- HKB CSS Variables -->
+<!-- HKB CSS Variables -->
+<!-- HKB CSS Variables -->
+<!-- HKB CSS Variables -->
+<!-- HKB CSS Variables -->
+<!-- Google tag (gtag.js) -->
+<!-- Google tag (gtag.js) -->
+<!-- Google tag (gtag.js) -->
+<!-- Google tag (gtag.js) -->
+<!-- Google tag (gtag.js) -->
+<!-- images and wp-custom-css -->
+<!-- images and wp-custom-css -->
+<!-- images and wp-custom-css -->
+<!-- images and wp-custom-css -->
+<!-- images and wp-custom-css -->
+<link
+  rel="icon"
+  href="https://www.envirodiy.org/wp-content/uploads/2016/05/cropped-EnviroDIY_LogoMaster_TrueSquare_V5_TwoTree_Trans_notext-32x32.png"
+  sizes="32x32"
+/>
+<link
+  rel="icon"
+  href="https://www.envirodiy.org/wp-content/uploads/2016/05/cropped-EnviroDIY_LogoMaster_TrueSquare_V5_TwoTree_Trans_notext-192x192.png"
+  sizes="192x192"
+/>
+<link
+  rel="apple-touch-icon"
+  href="https://www.envirodiy.org/wp-content/uploads/2016/05/cropped-EnviroDIY_LogoMaster_TrueSquare_V5_TwoTree_Trans_notext-180x180.png"
+/>
+<meta
+  name="msapplication-TileImage"
+  content="https://www.envirodiy.org/wp-content/uploads/2016/05/cropped-EnviroDIY_LogoMaster_TrueSquare_V5_TwoTree_Trans_notext-270x270.png"
+/>
 <style type="text/css" id="wp-custom-css">
   /* Print Styles */
   @media print {
@@ -267,31 +900,6 @@
     font-weight: 400;
     text-decoration: underline;
   }
-  /*BuddyPress styles*/
-  /*Make activity feed content darker*/
-  #buddypress .activity-list .activity-content .activity-inner p {
-    color: #000000;
-  }
-  /*Hide activity filter on activity page*/
-  #activity-filter-select.last {
-    display: none !important;
-  }
-  /*Hide disabled BuddyPress status updates on profile page, activity page*/
-  #latest-update {
-    display: none;
-  }
-  .item-title .update {
-    display: none;
-  }
-  /*Prevent display of comment/favorite links in activity stream. Because the comments do not get applied to posts or forum topics, they just confuse users*/
-  .gp-theme #buddypress .activity-list div.activity-meta a.button,
-  .gp-theme #buddypress .activity .acomment-options a,
-  .gp-theme #buddypress .activity-list li.load-newest a,
-  .widget.buddypress div.item-options a.selected {
-    color: #26a9e0;
-    display: none;
-  }
-  /*End BuddyPress styles*/
   /* Style print link */
   .pdfprnt-buttons > a > span {
     margin: 15px 0;
@@ -330,64 +938,11 @@
   tr:last-child td {
     border-width: 1px;
   }
-  /*bbPress*/
-  /* Make forum title and description larger, remove link underlining */
-  div.bbp-forum-content {
-    font-size: 22px;
-    line-height: 28px;
-  }
-  div.bbp-forum-content p {
-    font-size: 16px;
-    line-height: 22px;
-  }
-  #bbpress-forums a.bbp-forum-title {
-    text-decoration: none;
-  }
-  .widgettitle {
-    border-bottom: 3px solid #92d050 !important;
-  }
-  .bbp-author-name {
-    font-size: 14px;
-  }
-  /*End bbpress styles*/
   #gp-copyright-text,
   #gp-copyright-text a:link,
   #gp-copyright-text a:visited {
     color: #fff;
     font-weight: 400;
-  }
-  /*WooCommerce styles*/
-  bdi {
-    color: #538122;
-    font-weight: 500;
-  }
-  a.button.product_type_simple {
-    display: none;
-  }
-  p.stock.out-of-stock {
-    color: red;
-    font-weight: 500;
-  }
-  .products li * {
-    text-decoration: none !important;
-  }
-  div.gp-entry-cats {
-    color: #333333;
-  }
-  span.woocommerce-Price-amount.amount {
-    text-decoration: none !important;
-  }
-  /* Hide additional information tab */
-  div.woocommerce-tabs {
-    display: none !important;
-  }
-  /*End WooCommerce styles*/
-  /*The Events Calendar*/
-  #tribe-events-content a {
-    color: #0579bd;
-  }
-  #tribe-events-content .wp-block-button__link {
-    color: #ffffff;
   }
   #gp-sidebar-right
     > div
@@ -1201,13 +1756,20 @@
     color: #ffffff;
   }
 </style>
+<!-- other header scripts -->
+<!-- other header scripts -->
+<!-- other header scripts -->
+<!-- other header scripts -->
+<!-- other header scripts -->
   <link rel="icon" href="enviroDIY_Favicon.png" type="image/png" />
-  <link rel="prev" href="c_check_all_addresses_8ino-example.html" />
-  <link rel="next" href="g_terminal_window_8ino-example.html" />
+  <link rel="prev" href="a_wild_card_8ino-example.html" />
+  <link rel="next" href="k_concurrent_logger_8ino-example.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#cb4b16" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script type="text/javascript" src="clipboard.js"></script>
+  <script type="text/javascript" id="MathJax-script" async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
 </head>
 
 <body
@@ -1283,24 +1845,24 @@
     <header id="gp-main-header">
       <div class="gp-container">
         <div id="gp-logo">
-          <a href="index.html" title="SDI-12 for Arduino 2.3.0">
+          <a href="index.html" title="SDI-12 for Arduino 2.3.1">
             <img
               src="gp-desktop-logo.png"
-              alt="SDI-12 for Arduino 2.3.0"
+              alt="SDI-12 for Arduino 2.3.1"
               width="200"
               height="42"
               class="gp-desktop-logo"
             />
             <img
               src="gp-scrolling-logo.png"
-              alt="SDI-12 for Arduino 2.3.0"
+              alt="SDI-12 for Arduino 2.3.1"
               width="264"
               height="55"
               class="gp-scrolling-logo"
             />
             <img
               src="gp-mobile-logo.png"
-              alt="SDI-12 for Arduino 2.3.0"
+              alt="SDI-12 for Arduino 2.3.1"
               width="132"
               height="28"
               class="gp-mobile-logo"
@@ -1482,323 +2044,323 @@
                 </h1>
                 </header>
         <p>Example D: Check all Addresses for Active Sensors and Log Data.</p>
-        <p>Example D: Check all Addresses for Active Sensors and Log Data</p><aside class="m-note m-default"><h4>Copyright</h4><p>Stroud Water Research Center</p></aside><aside class="m-note m-default"><h4>License</h4><p>This example is published under the BSD-3 license.</p></aside><aside class="m-note m-default"><h4>Author</h4><p>Kevin M.Smith <a href="mailto:SDI12@ethosengineering.org">SDI12@ethosengineering.org</a></p></aside><aside class="m-note m-default"><h4>Date</h4><p>August 2013</p></aside><p>This is a simple demonstration of the SDI-12 library for Arduino.</p><p>It discovers the address of all sensors active on a single bus and takes continuous measurements from them.</p><div class="m-code-arduino"><div class="highlight"><div class="line"><a id="l-1" name="l-1"></a><span class="linenos">  1</span><span class="cm">/**</span>
-</div><div class="line"><a id="l-2" name="l-2"></a><span class="linenos">  2</span><span class="cm"> * @example{lineno} e_continuous_measurement.ino</span>
-</div><div class="line"><a id="l-3" name="l-3"></a><span class="linenos">  3</span><span class="cm"> * @copyright Stroud Water Research Center</span>
-</div><div class="line"><a id="l-4" name="l-4"></a><span class="linenos">  4</span><span class="cm"> * @license This example is published under the BSD-3 license.</span>
-</div><div class="line"><a id="l-5" name="l-5"></a><span class="linenos">  5</span><span class="cm"> * @author Kevin M.Smith &lt;SDI12@ethosengineering.org&gt;</span>
-</div><div class="line"><a id="l-6" name="l-6"></a><span class="linenos">  6</span><span class="cm"> * @date August 2013</span>
-</div><div class="line"><a id="l-7" name="l-7"></a><span class="linenos">  7</span><span class="cm"> *</span>
-</div><div class="line"><a id="l-8" name="l-8"></a><span class="linenos">  8</span><span class="cm"> * @brief Example D: Check all Addresses for Active Sensors and Log Data</span>
-</div><div class="line"><a id="l-9" name="l-9"></a><span class="linenos">  9</span><span class="cm"> *</span>
-</div><div class="line"><a id="l-10" name="l-10"></a><span class="linenos"> 10</span><span class="cm"> * This is a simple demonstration of the SDI-12 library for Arduino.</span>
-</div><div class="line"><a id="l-11" name="l-11"></a><span class="linenos"> 11</span><span class="cm"> *</span>
-</div><div class="line"><a id="l-12" name="l-12"></a><span class="linenos"> 12</span><span class="cm"> * It discovers the address of all sensors active on a single bus and takes continuous</span>
-</div><div class="line"><a id="l-13" name="l-13"></a><span class="linenos"> 13</span><span class="cm"> * measurements from them.</span>
-</div><div class="line"><a id="l-14" name="l-14"></a><span class="linenos"> 14</span><span class="cm"> */</span>
-</div><div class="line"><a id="l-15" name="l-15"></a><span class="linenos"> 15</span>
-</div><div class="line"><a id="l-16" name="l-16"></a><span class="linenos"> 16</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SDI12.h&gt;</span>
-</div><div class="line"><a id="l-17" name="l-17"></a><span class="linenos"> 17</span>
-</div><div class="line"><a id="l-18" name="l-18"></a><span class="linenos"> 18</span><span class="cp">#ifndef SDI12_DATA_PIN</span>
-</div><div class="line"><a id="l-19" name="l-19"></a><span class="linenos"> 19</span><span class="cp">#define SDI12_DATA_PIN 7</span>
-</div><div class="line"><a id="l-20" name="l-20"></a><span class="linenos"> 20</span><span class="cp">#endif</span>
-</div><div class="line"><a id="l-21" name="l-21"></a><span class="linenos"> 21</span><span class="cp">#ifndef SDI12_POWER_PIN</span>
-</div><div class="line"><a id="l-22" name="l-22"></a><span class="linenos"> 22</span><span class="cp">#define SDI12_POWER_PIN 22</span>
-</div><div class="line"><a id="l-23" name="l-23"></a><span class="linenos"> 23</span><span class="cp">#endif</span>
-</div><div class="line"><a id="l-24" name="l-24"></a><span class="linenos"> 24</span>
-</div><div class="line"><a id="l-25" name="l-25"></a><span class="linenos"> 25</span><span class="cm">/* connection information */</span>
-</div><div class="line"><a id="l-26" name="l-26"></a><span class="linenos"> 26</span><span class="kr">uint32_t</span><span class="w"> </span><span class="n">serialBaud</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">115200</span><span class="p">;</span><span class="w">         </span><span class="cm">/*!&lt; The baud rate for the output serial port */</span>
-</div><div class="line"><a id="l-27" name="l-27"></a><span class="linenos"> 27</span><span class="kr">int8_t</span><span class="w">   </span><span class="n">dataPin</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">SDI12_DATA_PIN</span><span class="p">;</span><span class="w"> </span><span class="cm">/*!&lt; The pin of the SDI-12 data bus */</span>
-</div><div class="line"><a id="l-28" name="l-28"></a><span class="linenos"> 28</span><span class="kr">int8_t</span><span class="w">   </span><span class="n">powerPin</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">SDI12_POWER_PIN</span><span class="p">;</span><span class="w"> </span><span class="cm">/*!&lt; The sensor power pin (or -1) */</span>
-</div><div class="line"><a id="l-29" name="l-29"></a><span class="linenos"> 29</span><span class="kr">uint32_t</span><span class="w"> </span><span class="n">wake_delay</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="cm">/*!&lt; Extra time needed for the sensor to wake (0-100ms) */</span>
-</div><div class="line"><a id="l-30" name="l-30"></a><span class="linenos"> 30</span><span class="kr">int8_t</span><span class="w">   </span><span class="n">firstAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="cm">/* The first address in the address space to check (0=&#39;0&#39;) */</span>
-</div><div class="line"><a id="l-31" name="l-31"></a><span class="linenos"> 31</span><span class="kr">int8_t</span><span class="w">   </span><span class="n">lastAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">61</span><span class="p">;</span><span class="w"> </span><span class="cm">/* The last address in the address space to check (61=&#39;z&#39;) */</span>
-</div><div class="line"><a id="l-32" name="l-32"></a><span class="linenos"> 32</span><span class="kr">bool</span><span class="w">     </span><span class="n">printIO</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
-</div><div class="line"><a id="l-33" name="l-33"></a><span class="linenos"> 33</span>
-</div><div class="line"><a id="l-34" name="l-34"></a><span class="linenos"> 34</span><span class="cm">/** Define the SDI-12 bus */</span>
-</div><div class="line"><a id="l-35" name="l-35"></a><span class="linenos"> 35</span><span class="n">SDI12</span><span class="w"> </span><span class="nf">mySDI12</span><span class="p">(</span><span class="n">dataPin</span><span class="p">);</span>
-</div><div class="line"><a id="l-36" name="l-36"></a><span class="linenos"> 36</span>
-</div><div class="line"><a id="l-37" name="l-37"></a><span class="linenos"> 37</span><span class="c1">// keeps track of active addresses</span>
-</div><div class="line"><a id="l-38" name="l-38"></a><span class="linenos"> 38</span><span class="kr">bool</span><span class="w"> </span><span class="n">isActive</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
-</div><div class="line"><a id="l-39" name="l-39"></a><span class="linenos"> 39</span>
-</div><div class="line"><a id="l-40" name="l-40"></a><span class="linenos"> 40</span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">numSensors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</div><div class="line"><a id="l-41" name="l-41"></a><span class="linenos"> 41</span>
-</div><div class="line"><a id="l-42" name="l-42"></a><span class="linenos"> 42</span><span class="cm">/**</span>
-</div><div class="line"><a id="l-43" name="l-43"></a><span class="linenos"> 43</span><span class="cm"> * @brief converts allowable address characters (&#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, &#39;A&#39;-&#39;Z&#39;) to a</span>
-</div><div class="line"><a id="l-44" name="l-44"></a><span class="linenos"> 44</span><span class="cm"> * decimal number between 0 and 61 (inclusive) to cover the 62 possible</span>
-</div><div class="line"><a id="l-45" name="l-45"></a><span class="linenos"> 45</span><span class="cm"> * addresses.</span>
-</div><div class="line"><a id="l-46" name="l-46"></a><span class="linenos"> 46</span><span class="cm"> */</span>
-</div><div class="line"><a id="l-47" name="l-47"></a><span class="linenos"> 47</span><span class="kr">byte</span><span class="w"> </span><span class="nf">charToDec</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-48" name="l-48"></a><span class="linenos"> 48</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;9&#39;</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span>
-</div><div class="line"><a id="l-49" name="l-49"></a><span class="linenos"> 49</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;z&#39;</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
-</div><div class="line"><a id="l-50" name="l-50"></a><span class="linenos"> 50</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;Z&#39;</span><span class="p">))</span>
-</div><div class="line"><a id="l-51" name="l-51"></a><span class="linenos"> 51</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">36</span><span class="p">;</span>
-</div><div class="line"><a id="l-52" name="l-52"></a><span class="linenos"> 52</span><span class="w">  </span><span class="k">else</span>
-</div><div class="line"><a id="l-53" name="l-53"></a><span class="linenos"> 53</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
-</div><div class="line"><a id="l-54" name="l-54"></a><span class="linenos"> 54</span><span class="p">}</span>
-</div><div class="line"><a id="l-55" name="l-55"></a><span class="linenos"> 55</span>
-</div><div class="line"><a id="l-56" name="l-56"></a><span class="linenos"> 56</span><span class="cm">/**</span>
-</div><div class="line"><a id="l-57" name="l-57"></a><span class="linenos"> 57</span><span class="cm"> * @brief maps a decimal number between 0 and 61 (inclusive) to allowable</span>
-</div><div class="line"><a id="l-58" name="l-58"></a><span class="linenos"> 58</span><span class="cm"> * address characters &#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, &#39;A&#39;-&#39;Z&#39;,</span>
-</div><div class="line"><a id="l-59" name="l-59"></a><span class="linenos"> 59</span><span class="cm"> *</span>
-</div><div class="line"><a id="l-60" name="l-60"></a><span class="linenos"> 60</span><span class="cm"> * THIS METHOD IS UNUSED IN THIS EXAMPLE, BUT IT MAY BE HELPFUL.</span>
-</div><div class="line"><a id="l-61" name="l-61"></a><span class="linenos"> 61</span><span class="cm"> */</span>
-</div><div class="line"><a id="l-62" name="l-62"></a><span class="linenos"> 62</span><span class="kr">char</span><span class="w"> </span><span class="nf">decToChar</span><span class="p">(</span><span class="kr">byte</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-63" name="l-63"></a><span class="linenos"> 63</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span>
-</div><div class="line"><a id="l-64" name="l-64"></a><span class="linenos"> 64</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">36</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
-</div><div class="line"><a id="l-65" name="l-65"></a><span class="linenos"> 65</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">36</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">62</span><span class="p">))</span>
-</div><div class="line"><a id="l-66" name="l-66"></a><span class="linenos"> 66</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">36</span><span class="p">;</span>
-</div><div class="line"><a id="l-67" name="l-67"></a><span class="linenos"> 67</span><span class="w">  </span><span class="k">else</span>
-</div><div class="line"><a id="l-68" name="l-68"></a><span class="linenos"> 68</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
-</div><div class="line"><a id="l-69" name="l-69"></a><span class="linenos"> 69</span><span class="p">}</span>
-</div><div class="line"><a id="l-70" name="l-70"></a><span class="linenos"> 70</span>
-</div><div class="line"><a id="l-71" name="l-71"></a><span class="linenos"> 71</span><span class="cm">/**</span>
-</div><div class="line"><a id="l-72" name="l-72"></a><span class="linenos"> 72</span><span class="cm"> * @brief gets identification information from a sensor, and prints it to the serial</span>
-</div><div class="line"><a id="l-73" name="l-73"></a><span class="linenos"> 73</span><span class="cm"> * port</span>
-</div><div class="line"><a id="l-74" name="l-74"></a><span class="linenos"> 74</span><span class="cm"> *</span>
-</div><div class="line"><a id="l-75" name="l-75"></a><span class="linenos"> 75</span><span class="cm"> * @param i a character between &#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, or &#39;A&#39;-&#39;Z&#39;.</span>
-</div><div class="line"><a id="l-76" name="l-76"></a><span class="linenos"> 76</span><span class="cm"> */</span>
-</div><div class="line"><a id="l-77" name="l-77"></a><span class="linenos"> 77</span><span class="kr">void</span><span class="w"> </span><span class="nf">printInfo</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-78" name="l-78"></a><span class="linenos"> 78</span><span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
-</div><div class="line"><a id="l-79" name="l-79"></a><span class="linenos"> 79</span><span class="w">  </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="kr">char</span><span class="p">)</span><span class="n">i</span><span class="p">;</span>
-</div><div class="line"><a id="l-80" name="l-80"></a><span class="linenos"> 80</span><span class="w">  </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;I!&quot;</span><span class="p">;</span>
-</div><div class="line"><a id="l-81" name="l-81"></a><span class="linenos"> 81</span><span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">command</span><span class="p">,</span><span class="w"> </span><span class="n">wake_delay</span><span class="p">);</span>
-</div><div class="line"><a id="l-82" name="l-82"></a><span class="linenos"> 82</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-83" name="l-83"></a><span class="linenos"> 83</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&gt;&gt;&gt;&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-84" name="l-84"></a><span class="linenos"> 84</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
-</div><div class="line"><a id="l-85" name="l-85"></a><span class="linenos"> 85</span><span class="w">  </span><span class="p">}</span>
-</div><div class="line"><a id="l-86" name="l-86"></a><span class="linenos"> 86</span><span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
-</div><div class="line"><a id="l-87" name="l-87"></a><span class="linenos"> 87</span>
-</div><div class="line"><a id="l-88" name="l-88"></a><span class="linenos"> 88</span><span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">sdiResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">readStringUntil</span><span class="p">(</span><span class="sc">&#39;\n&#39;</span><span class="p">);</span>
-</div><div class="line"><a id="l-89" name="l-89"></a><span class="linenos"> 89</span><span class="w">  </span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">trim</span><span class="p">();</span>
-</div><div class="line"><a id="l-90" name="l-90"></a><span class="linenos"> 90</span><span class="w">  </span><span class="c1">// allccccccccmmmmmmvvvxxx...xx&lt;CR&gt;&lt;LF&gt;</span>
-</div><div class="line"><a id="l-91" name="l-91"></a><span class="linenos"> 91</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-92" name="l-92"></a><span class="linenos"> 92</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt;&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-93" name="l-93"></a><span class="linenos"> 93</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">);</span>
-</div><div class="line"><a id="l-94" name="l-94"></a><span class="linenos"> 94</span><span class="w">  </span><span class="p">}</span>
-</div><div class="line"><a id="l-95" name="l-95"></a><span class="linenos"> 95</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span><span class="w">  </span><span class="c1">// address</span>
-</div><div class="line"><a id="l-96" name="l-96"></a><span class="linenos"> 96</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-97" name="l-97"></a><span class="linenos"> 97</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">).</span><span class="n">toFloat</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span><span class="w">  </span><span class="c1">// SDI-12 version number</span>
-</div><div class="line"><a id="l-98" name="l-98"></a><span class="linenos"> 98</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-99" name="l-99"></a><span class="linenos"> 99</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">));</span><span class="w">  </span><span class="c1">// vendor id</span>
-</div><div class="line"><a id="l-100" name="l-100"></a><span class="linenos">100</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-101" name="l-101"></a><span class="linenos">101</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">17</span><span class="p">));</span><span class="w">  </span><span class="c1">// sensor model</span>
-</div><div class="line"><a id="l-102" name="l-102"></a><span class="linenos">102</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-103" name="l-103"></a><span class="linenos">103</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">));</span><span class="w">  </span><span class="c1">// sensor version</span>
-</div><div class="line"><a id="l-104" name="l-104"></a><span class="linenos">104</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-105" name="l-105"></a><span class="linenos">105</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">20</span><span class="p">));</span><span class="w">  </span><span class="c1">// sensor id</span>
-</div><div class="line"><a id="l-106" name="l-106"></a><span class="linenos">106</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-107" name="l-107"></a><span class="linenos">107</span><span class="p">}</span>
-</div><div class="line"><a id="l-108" name="l-108"></a><span class="linenos">108</span>
-</div><div class="line"><a id="l-109" name="l-109"></a><span class="linenos">109</span><span class="kr">bool</span><span class="w"> </span><span class="nf">getContinuousResults</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">addr</span><span class="p">,</span><span class="w"> </span><span class="kr">int</span><span class="w"> </span><span class="n">resultsExpected</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-110" name="l-110"></a><span class="linenos">110</span><span class="w">  </span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</div><div class="line"><a id="l-111" name="l-111"></a><span class="linenos">111</span><span class="w">  </span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">cmd_number</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</div><div class="line"><a id="l-112" name="l-112"></a><span class="linenos">112</span><span class="w">  </span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">cmd_retries</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</div><div class="line"><a id="l-113" name="l-113"></a><span class="linenos">113</span><span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">resultsExpected</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">cmd_number</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">cmd_retries</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-114" name="l-114"></a><span class="linenos">114</span><span class="w">    </span><span class="kr">bool</span><span class="w">    </span><span class="n">gotResults</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
-</div><div class="line"><a id="l-115" name="l-115"></a><span class="linenos">115</span><span class="w">    </span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">cmd_results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</div><div class="line"><a id="l-116" name="l-116"></a><span class="linenos">116</span><span class="w">    </span><span class="c1">// Assemble the command based on how many commands we&#39;ve already sent,</span>
-</div><div class="line"><a id="l-117" name="l-117"></a><span class="linenos">117</span><span class="w">    </span><span class="c1">// starting with R0 and ending with R9</span>
-</div><div class="line"><a id="l-118" name="l-118"></a><span class="linenos">118</span><span class="w">    </span><span class="c1">// SDI-12 command to get data [address][R][dataOption][!]</span>
-</div><div class="line"><a id="l-119" name="l-119"></a><span class="linenos">119</span><span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
-</div><div class="line"><a id="l-120" name="l-120"></a><span class="linenos">120</span><span class="w">    </span><span class="kr">String</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
-</div><div class="line"><a id="l-121" name="l-121"></a><span class="linenos">121</span><span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">addr</span><span class="p">;</span>
-</div><div class="line"><a id="l-122" name="l-122"></a><span class="linenos">122</span><span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;R&quot;</span><span class="p">;</span>
-</div><div class="line"><a id="l-123" name="l-123"></a><span class="linenos">123</span><span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">cmd_number</span><span class="p">;</span>
-</div><div class="line"><a id="l-124" name="l-124"></a><span class="linenos">124</span><span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span>
-</div><div class="line"><a id="l-125" name="l-125"></a><span class="linenos">125</span><span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">command</span><span class="p">,</span><span class="w"> </span><span class="n">wake_delay</span><span class="p">);</span>
-</div><div class="line"><a id="l-126" name="l-126"></a><span class="linenos">126</span><span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
-</div><div class="line"><a id="l-127" name="l-127"></a><span class="linenos">127</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-128" name="l-128"></a><span class="linenos">128</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&gt;&gt;&gt;&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-129" name="l-129"></a><span class="linenos">129</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
-</div><div class="line"><a id="l-130" name="l-130"></a><span class="linenos">130</span><span class="w">    </span><span class="p">}</span>
-</div><div class="line"><a id="l-131" name="l-131"></a><span class="linenos">131</span>
-</div><div class="line"><a id="l-132" name="l-132"></a><span class="linenos">132</span><span class="w">    </span><span class="c1">// Wait for the first few characters to arrive.  The response from a continuous</span>
-</div><div class="line"><a id="l-133" name="l-133"></a><span class="linenos">133</span><span class="w">    </span><span class="c1">// measurement request should always have more than three characters</span>
-</div><div class="line"><a id="l-134" name="l-134"></a><span class="linenos">134</span><span class="w">    </span><span class="kr">uint32_t</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">millis</span><span class="p">();</span>
-</div><div class="line"><a id="l-135" name="l-135"></a><span class="linenos">135</span><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="nf">millis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1500</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
-</div><div class="line"><a id="l-136" name="l-136"></a><span class="linenos">136</span>
-</div><div class="line"><a id="l-137" name="l-137"></a><span class="linenos">137</span><span class="w">    </span><span class="c1">// read the returned address to remove it from the buffer</span>
-</div><div class="line"><a id="l-138" name="l-138"></a><span class="linenos">138</span><span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">returnedAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>
-</div><div class="line"><a id="l-139" name="l-139"></a><span class="linenos">139</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-140" name="l-140"></a><span class="linenos">140</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">returnedAddress</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">addr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-141" name="l-141"></a><span class="linenos">141</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Wrong address returned!&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-142" name="l-142"></a><span class="linenos">142</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;Expected &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-143" name="l-143"></a><span class="linenos">143</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span>
-</div><div class="line"><a id="l-144" name="l-144"></a><span class="linenos">144</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;but got data from&quot;</span><span class="p">));</span>
-</div><div class="line"><a id="l-145" name="l-145"></a><span class="linenos">145</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">returnedAddress</span><span class="p">);</span>
-</div><div class="line"><a id="l-146" name="l-146"></a><span class="linenos">146</span><span class="w">      </span><span class="p">}</span>
-</div><div class="line"><a id="l-147" name="l-147"></a><span class="linenos">147</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt;&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-148" name="l-148"></a><span class="linenos">148</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">returnedAddress</span><span class="p">);</span>
-</div><div class="line"><a id="l-149" name="l-149"></a><span class="linenos">149</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-150" name="l-150"></a><span class="linenos">150</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
-</div><div class="line"><a id="l-151" name="l-151"></a><span class="linenos">151</span><span class="w">    </span><span class="p">}</span>
-</div><div class="line"><a id="l-152" name="l-152"></a><span class="linenos">152</span>
-</div><div class="line"><a id="l-153" name="l-153"></a><span class="linenos">153</span><span class="w">    </span><span class="kr">bool</span><span class="w"> </span><span class="n">bad_read</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
-</div><div class="line"><a id="l-154" name="l-154"></a><span class="linenos">154</span><span class="w">    </span><span class="c1">// While there is any data left in the buffer</span>
-</div><div class="line"><a id="l-155" name="l-155"></a><span class="linenos">155</span><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="nf">millis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3000</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-156" name="l-156"></a><span class="linenos">156</span><span class="w">      </span><span class="kr">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">peek</span><span class="p">();</span>
-</div><div class="line"><a id="l-157" name="l-157"></a><span class="linenos">157</span><span class="w">      </span><span class="c1">// if there&#39;s a polarity sign, a number, or a decimal next in the</span>
-</div><div class="line"><a id="l-158" name="l-158"></a><span class="linenos">158</span><span class="w">      </span><span class="c1">// buffer, start reading it as a float.</span>
-</div><div class="line"><a id="l-159" name="l-159"></a><span class="linenos">159</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;-&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;+&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;9&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;.&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-160" name="l-160"></a><span class="linenos">160</span><span class="w">        </span><span class="kr">float</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">parseFloat</span><span class="p">();</span>
-</div><div class="line"><a id="l-161" name="l-161"></a><span class="linenos">161</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-162" name="l-162"></a><span class="linenos">162</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt;&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-163" name="l-163"></a><span class="linenos">163</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="kr">String</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">));</span>
-</div><div class="line"><a id="l-164" name="l-164"></a><span class="linenos">164</span><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-165" name="l-165"></a><span class="linenos">165</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="kr">String</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">));</span>
-</div><div class="line"><a id="l-166" name="l-166"></a><span class="linenos">166</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-167" name="l-167"></a><span class="linenos">167</span><span class="w">        </span><span class="p">}</span>
-</div><div class="line"><a id="l-168" name="l-168"></a><span class="linenos">168</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">-9999</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-169" name="l-169"></a><span class="linenos">169</span><span class="w">          </span><span class="n">gotResults</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
-</div><div class="line"><a id="l-170" name="l-170"></a><span class="linenos">170</span><span class="w">          </span><span class="n">cmd_results</span><span class="o">++</span><span class="p">;</span>
-</div><div class="line"><a id="l-171" name="l-171"></a><span class="linenos">171</span><span class="w">        </span><span class="p">}</span>
-</div><div class="line"><a id="l-172" name="l-172"></a><span class="linenos">172</span><span class="w">        </span><span class="c1">// if we get to a new line, we&#39;ve made it to the end of the response</span>
-</div><div class="line"><a id="l-173" name="l-173"></a><span class="linenos">173</span><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\r&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-174" name="l-174"></a><span class="linenos">174</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
-</div><div class="line"><a id="l-175" name="l-175"></a><span class="linenos">175</span><span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>
-</div><div class="line"><a id="l-176" name="l-176"></a><span class="linenos">176</span><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-177" name="l-177"></a><span class="linenos">177</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-178" name="l-178"></a><span class="linenos">178</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt; INVALID CHARACTER IN RESPONSE:&quot;</span><span class="p">));</span>
-</div><div class="line"><a id="l-179" name="l-179"></a><span class="linenos">179</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
-</div><div class="line"><a id="l-180" name="l-180"></a><span class="linenos">180</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
-</div><div class="line"><a id="l-181" name="l-181"></a><span class="linenos">181</span><span class="w">        </span><span class="p">}</span>
-</div><div class="line"><a id="l-182" name="l-182"></a><span class="linenos">182</span><span class="w">        </span><span class="c1">// Read the character to make sure it&#39;s removed from the buffer</span>
-</div><div class="line"><a id="l-183" name="l-183"></a><span class="linenos">183</span><span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span>
-</div><div class="line"><a id="l-184" name="l-184"></a><span class="linenos">184</span><span class="w">        </span><span class="n">bad_read</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
-</div><div class="line"><a id="l-185" name="l-185"></a><span class="linenos">185</span><span class="w">      </span><span class="p">}</span>
-</div><div class="line"><a id="l-186" name="l-186"></a><span class="linenos">186</span><span class="w">      </span><span class="nf">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="w">  </span><span class="c1">// 1 character ~ 7.5ms</span>
-</div><div class="line"><a id="l-187" name="l-187"></a><span class="linenos">187</span><span class="w">    </span><span class="p">}</span>
-</div><div class="line"><a id="l-188" name="l-188"></a><span class="linenos">188</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">gotResults</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-189" name="l-189"></a><span class="linenos">189</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-190" name="l-190"></a><span class="linenos">190</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;  No results received, will not continue requests!&quot;</span><span class="p">));</span>
-</div><div class="line"><a id="l-191" name="l-191"></a><span class="linenos">191</span><span class="w">        </span><span class="k">break</span><span class="p">;</span><span class="w">  </span><span class="c1">// don&#39;t do another loop if we got nothing</span>
-</div><div class="line"><a id="l-192" name="l-192"></a><span class="linenos">192</span><span class="w">      </span><span class="p">}</span>
-</div><div class="line"><a id="l-193" name="l-193"></a><span class="linenos">193</span><span class="w">    </span><span class="p">}</span>
-</div><div class="line"><a id="l-194" name="l-194"></a><span class="linenos">194</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">gotResults</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">bad_read</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-195" name="l-195"></a><span class="linenos">195</span><span class="w">      </span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cmd_results</span><span class="p">;</span>
-</div><div class="line"><a id="l-196" name="l-196"></a><span class="linenos">196</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-197" name="l-197"></a><span class="linenos">197</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;  Total Results Received: &quot;</span><span class="p">));</span>
-</div><div class="line"><a id="l-198" name="l-198"></a><span class="linenos">198</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">resultsReceived</span><span class="p">);</span>
-</div><div class="line"><a id="l-199" name="l-199"></a><span class="linenos">199</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;, Remaining: &quot;</span><span class="p">));</span>
-</div><div class="line"><a id="l-200" name="l-200"></a><span class="linenos">200</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">resultsExpected</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">resultsReceived</span><span class="p">);</span>
-</div><div class="line"><a id="l-201" name="l-201"></a><span class="linenos">201</span><span class="w">      </span><span class="p">}</span>
-</div><div class="line"><a id="l-202" name="l-202"></a><span class="linenos">202</span><span class="w">      </span><span class="n">cmd_number</span><span class="o">++</span><span class="p">;</span>
-</div><div class="line"><a id="l-203" name="l-203"></a><span class="linenos">203</span><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-204" name="l-204"></a><span class="linenos">204</span><span class="w">      </span><span class="c1">// if we got a bad charater in the response, add one to the retry</span>
-</div><div class="line"><a id="l-205" name="l-205"></a><span class="linenos">205</span><span class="w">      </span><span class="c1">// attempts but do not bump up the command number or transfer any</span>
-</div><div class="line"><a id="l-206" name="l-206"></a><span class="linenos">206</span><span class="w">      </span><span class="c1">// results because we want to retry the same data command to try get</span>
-</div><div class="line"><a id="l-207" name="l-207"></a><span class="linenos">207</span><span class="w">      </span><span class="c1">// a valid response</span>
-</div><div class="line"><a id="l-208" name="l-208"></a><span class="linenos">208</span><span class="w">      </span><span class="n">cmd_retries</span><span class="o">++</span><span class="p">;</span>
-</div><div class="line"><a id="l-209" name="l-209"></a><span class="linenos">209</span><span class="w">    </span><span class="p">}</span>
-</div><div class="line"><a id="l-210" name="l-210"></a><span class="linenos">210</span><span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
-</div><div class="line"><a id="l-211" name="l-211"></a><span class="linenos">211</span><span class="w">  </span><span class="p">}</span>
-</div><div class="line"><a id="l-212" name="l-212"></a><span class="linenos">212</span>
-</div><div class="line"><a id="l-213" name="l-213"></a><span class="linenos">213</span><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">resultsExpected</span><span class="p">;</span>
-</div><div class="line"><a id="l-214" name="l-214"></a><span class="linenos">214</span><span class="p">}</span>
-</div><div class="line"><a id="l-215" name="l-215"></a><span class="linenos">215</span>
-</div><div class="line"><a id="l-216" name="l-216"></a><span class="linenos">216</span><span class="c1">// this checks for activity at a particular address</span>
-</div><div class="line"><a id="l-217" name="l-217"></a><span class="linenos">217</span><span class="c1">// expects a char, &#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, or &#39;A&#39;-&#39;Z&#39;</span>
-</div><div class="line"><a id="l-218" name="l-218"></a><span class="linenos">218</span><span class="kr">bool</span><span class="w"> </span><span class="nf">checkActive</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-219" name="l-219"></a><span class="linenos">219</span><span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">myCommand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
-</div><div class="line"><a id="l-220" name="l-220"></a><span class="linenos">220</span><span class="w">  </span><span class="n">myCommand</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span>
-</div><div class="line"><a id="l-221" name="l-221"></a><span class="linenos">221</span><span class="w">  </span><span class="n">myCommand</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="kr">char</span><span class="p">)</span><span class="n">i</span><span class="p">;</span><span class="w">  </span><span class="c1">// sends basic &#39;acknowledge&#39; command [address][!]</span>
-</div><div class="line"><a id="l-222" name="l-222"></a><span class="linenos">222</span><span class="w">  </span><span class="n">myCommand</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span>
-</div><div class="line"><a id="l-223" name="l-223"></a><span class="linenos">223</span>
-</div><div class="line"><a id="l-224" name="l-224"></a><span class="linenos">224</span><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// goes through three rapid contact attempts</span>
-</div><div class="line"><a id="l-225" name="l-225"></a><span class="linenos">225</span><span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">myCommand</span><span class="p">,</span><span class="w"> </span><span class="n">wake_delay</span><span class="p">);</span>
-</div><div class="line"><a id="l-226" name="l-226"></a><span class="linenos">226</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-227" name="l-227"></a><span class="linenos">227</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&gt;&gt;&gt;&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-228" name="l-228"></a><span class="linenos">228</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">myCommand</span><span class="p">);</span>
-</div><div class="line"><a id="l-229" name="l-229"></a><span class="linenos">229</span><span class="w">    </span><span class="p">}</span>
-</div><div class="line"><a id="l-230" name="l-230"></a><span class="linenos">230</span><span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span>
-</div><div class="line"><a id="l-231" name="l-231"></a><span class="linenos">231</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// If we hear anything, assume we have an active sensor</span>
-</div><div class="line"><a id="l-232" name="l-232"></a><span class="linenos">232</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-233" name="l-233"></a><span class="linenos">233</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt;&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-234" name="l-234"></a><span class="linenos">234</span><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">());</span><span class="w"> </span><span class="p">}</span>
-</div><div class="line"><a id="l-235" name="l-235"></a><span class="linenos">235</span><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-236" name="l-236"></a><span class="linenos">236</span><span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
-</div><div class="line"><a id="l-237" name="l-237"></a><span class="linenos">237</span><span class="w">      </span><span class="p">}</span>
-</div><div class="line"><a id="l-238" name="l-238"></a><span class="linenos">238</span><span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span>
-</div><div class="line"><a id="l-239" name="l-239"></a><span class="linenos">239</span><span class="w">    </span><span class="p">}</span>
-</div><div class="line"><a id="l-240" name="l-240"></a><span class="linenos">240</span><span class="w">  </span><span class="p">}</span>
-</div><div class="line"><a id="l-241" name="l-241"></a><span class="linenos">241</span><span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span>
-</div><div class="line"><a id="l-242" name="l-242"></a><span class="linenos">242</span><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span>
-</div><div class="line"><a id="l-243" name="l-243"></a><span class="linenos">243</span><span class="p">}</span>
-</div><div class="line"><a id="l-244" name="l-244"></a><span class="linenos">244</span>
-</div><div class="line"><a id="l-245" name="l-245"></a><span class="linenos">245</span><span class="kr">void</span><span class="w"> </span><span class="nb">setup</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-246" name="l-246"></a><span class="linenos">246</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">begin</span><span class="p">(</span><span class="n">serialBaud</span><span class="p">);</span>
-</div><div class="line"><a id="l-247" name="l-247"></a><span class="linenos">247</span><span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">Serial</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nf">millis</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">10000L</span><span class="p">);</span>
-</div><div class="line"><a id="l-248" name="l-248"></a><span class="linenos">248</span>
-</div><div class="line"><a id="l-249" name="l-249"></a><span class="linenos">249</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Opening SDI-12 bus...&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-250" name="l-250"></a><span class="linenos">250</span><span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">begin</span><span class="p">();</span>
-</div><div class="line"><a id="l-251" name="l-251"></a><span class="linenos">251</span><span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span><span class="w">  </span><span class="c1">// allow things to settle</span>
-</div><div class="line"><a id="l-252" name="l-252"></a><span class="linenos">252</span>
-</div><div class="line"><a id="l-253" name="l-253"></a><span class="linenos">253</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Timeout value: &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-254" name="l-254"></a><span class="linenos">254</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="n">TIMEOUT</span><span class="p">);</span>
-</div><div class="line"><a id="l-255" name="l-255"></a><span class="linenos">255</span>
-</div><div class="line"><a id="l-256" name="l-256"></a><span class="linenos">256</span><span class="w">  </span><span class="c1">// Power the sensors;</span>
-</div><div class="line"><a id="l-257" name="l-257"></a><span class="linenos">257</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">powerPin</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-258" name="l-258"></a><span class="linenos">258</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Powering up sensors, wait...&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-259" name="l-259"></a><span class="linenos">259</span><span class="w">    </span><span class="nf">pinMode</span><span class="p">(</span><span class="n">powerPin</span><span class="p">,</span><span class="w"> </span><span class="kr">OUTPUT</span><span class="p">);</span>
-</div><div class="line"><a id="l-260" name="l-260"></a><span class="linenos">260</span><span class="w">    </span><span class="nf">digitalWrite</span><span class="p">(</span><span class="n">powerPin</span><span class="p">,</span><span class="w"> </span><span class="kr">HIGH</span><span class="p">);</span>
-</div><div class="line"><a id="l-261" name="l-261"></a><span class="linenos">261</span><span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mf">5000L</span><span class="p">);</span>
-</div><div class="line"><a id="l-262" name="l-262"></a><span class="linenos">262</span><span class="w">  </span><span class="p">}</span>
-</div><div class="line"><a id="l-263" name="l-263"></a><span class="linenos">263</span>
-</div><div class="line"><a id="l-264" name="l-264"></a><span class="linenos">264</span><span class="w">  </span><span class="c1">// Quickly scan the address space</span>
-</div><div class="line"><a id="l-265" name="l-265"></a><span class="linenos">265</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Scanning all addresses, please wait...&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-266" name="l-266"></a><span class="linenos">266</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Sensor Address, Protocol Version, Sensor Vendor, Sensor Model, &quot;</span>
-</div><div class="line"><a id="l-267" name="l-267"></a><span class="linenos">267</span><span class="w">                 </span><span class="s">&quot;Sensor Version, Sensor ID&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-268" name="l-268"></a><span class="linenos">268</span>
-</div><div class="line"><a id="l-269" name="l-269"></a><span class="linenos">269</span><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">int8_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">firstAddress</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">lastAddress</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-270" name="l-270"></a><span class="linenos">270</span><span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">decToChar</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-</div><div class="line"><a id="l-271" name="l-271"></a><span class="linenos">271</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">checkActive</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-272" name="l-272"></a><span class="linenos">272</span><span class="w">      </span><span class="n">numSensors</span><span class="o">++</span><span class="p">;</span>
-</div><div class="line"><a id="l-273" name="l-273"></a><span class="linenos">273</span><span class="w">      </span><span class="n">isActive</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-</div><div class="line"><a id="l-274" name="l-274"></a><span class="linenos">274</span><span class="w">      </span><span class="n">printInfo</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span>
-</div><div class="line"><a id="l-275" name="l-275"></a><span class="linenos">275</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
-</div><div class="line"><a id="l-276" name="l-276"></a><span class="linenos">276</span><span class="w">    </span><span class="p">}</span>
-</div><div class="line"><a id="l-277" name="l-277"></a><span class="linenos">277</span><span class="w">  </span><span class="p">}</span>
-</div><div class="line"><a id="l-278" name="l-278"></a><span class="linenos">278</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;Total number of sensors found:  &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-279" name="l-279"></a><span class="linenos">279</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">numSensors</span><span class="p">);</span>
-</div><div class="line"><a id="l-280" name="l-280"></a><span class="linenos">280</span>
-</div><div class="line"><a id="l-281" name="l-281"></a><span class="linenos">281</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">numSensors</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-282" name="l-282"></a><span class="linenos">282</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span>
-</div><div class="line"><a id="l-283" name="l-283"></a><span class="linenos">283</span><span class="w">      </span><span class="s">&quot;No sensors found, please check connections and restart the Arduino.&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-284" name="l-284"></a><span class="linenos">284</span><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="kr">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1">// do nothing forever</span>
-</div><div class="line"><a id="l-285" name="l-285"></a><span class="linenos">285</span><span class="w">  </span><span class="p">}</span>
-</div><div class="line"><a id="l-286" name="l-286"></a><span class="linenos">286</span>
-</div><div class="line"><a id="l-287" name="l-287"></a><span class="linenos">287</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
-</div><div class="line"><a id="l-288" name="l-288"></a><span class="linenos">288</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span>
-</div><div class="line"><a id="l-289" name="l-289"></a><span class="linenos">289</span><span class="w">    </span><span class="s">&quot;Time Elapsed (s), Sensor Address, Est Measurement Time (s), Number Measurements, &quot;</span>
-</div><div class="line"><a id="l-290" name="l-290"></a><span class="linenos">290</span><span class="w">    </span><span class="s">&quot;Real Measurement Time (ms), Measurement 1, Measurement 2, ... etc.&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-291" name="l-291"></a><span class="linenos">291</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span>
-</div><div class="line"><a id="l-292" name="l-292"></a><span class="linenos">292</span><span class="w">    </span><span class="s">&quot;-------------------------------------------------------------------------------&quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-293" name="l-293"></a><span class="linenos">293</span><span class="p">}</span>
-</div><div class="line"><a id="l-294" name="l-294"></a><span class="linenos">294</span>
-</div><div class="line"><a id="l-295" name="l-295"></a><span class="linenos">295</span><span class="kr">void</span><span class="w"> </span><span class="nb">loop</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-296" name="l-296"></a><span class="linenos">296</span><span class="w">  </span><span class="c1">// measure one at a time</span>
-</div><div class="line"><a id="l-297" name="l-297"></a><span class="linenos">297</span><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">int8_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">firstAddress</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">lastAddress</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-298" name="l-298"></a><span class="linenos">298</span><span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">decToChar</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-</div><div class="line"><a id="l-299" name="l-299"></a><span class="linenos">299</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isActive</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-300" name="l-300"></a><span class="linenos">300</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-301" name="l-301"></a><span class="linenos">301</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span>
-</div><div class="line"><a id="l-302" name="l-302"></a><span class="linenos">302</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot; - millis: &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-303" name="l-303"></a><span class="linenos">303</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="nf">millis</span><span class="p">());</span>
-</div><div class="line"><a id="l-304" name="l-304"></a><span class="linenos">304</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
-</div><div class="line"><a id="l-305" name="l-305"></a><span class="linenos">305</span><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-</div><div class="line"><a id="l-306" name="l-306"></a><span class="linenos">306</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="nf">millis</span><span class="p">());</span>
-</div><div class="line"><a id="l-307" name="l-307"></a><span class="linenos">307</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span>
-</div><div class="line"><a id="l-308" name="l-308"></a><span class="linenos">308</span><span class="w">      </span><span class="p">}</span>
-</div><div class="line"><a id="l-309" name="l-309"></a><span class="linenos">309</span><span class="w">      </span><span class="n">getContinuousResults</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
-</div><div class="line"><a id="l-310" name="l-310"></a><span class="linenos">310</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span>
-</div><div class="line"><a id="l-311" name="l-311"></a><span class="linenos">311</span><span class="w">    </span><span class="p">}</span>
-</div><div class="line"><a id="l-312" name="l-312"></a><span class="linenos">312</span><span class="w">  </span><span class="p">}</span>
-</div><div class="line"><a id="l-313" name="l-313"></a><span class="linenos">313</span>
-</div><div class="line"><a id="l-314" name="l-314"></a><span class="linenos">314</span><span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mf">10000L</span><span class="p">);</span><span class="w">  </span><span class="c1">// wait ten seconds between measurement attempts.</span>
-</div><div class="line"><a id="l-315" name="l-315"></a><span class="linenos">315</span><span class="p">}</span>
+        <p>Example D: Check all Addresses for Active Sensors and Log Data</p><aside class="m-note m-default"><h4>Copyright</h4><p>Stroud Water Research Center</p></aside><aside class="m-note m-default"><h4>License</h4><p>This example is published under the BSD-3 license.</p></aside><aside class="m-note m-default"><h4>Author</h4><p>Kevin M.Smith <a href="mailto:SDI12@ethosengineering.org">SDI12@ethosengineering.org</a></p></aside><aside class="m-note m-default"><h4>Date</h4><p>August 2013</p></aside><p>This is a simple demonstration of the SDI-12 library for Arduino.</p><p>It discovers the address of all sensors active on a single bus and takes continuous measurements from them.</p><div class="m-code-arduino"><div class="highlight"><div class="line"><a id="l-1" name="l-1"></a><span class="linenos">  1</span><span class="cm">/**</span></div>
+<div class="line"><a id="l-2" name="l-2"></a><span class="linenos">  2</span><span class="cm"> * @example{lineno} e_continuous_measurement.ino</span></div>
+<div class="line"><a id="l-3" name="l-3"></a><span class="linenos">  3</span><span class="cm"> * @copyright Stroud Water Research Center</span></div>
+<div class="line"><a id="l-4" name="l-4"></a><span class="linenos">  4</span><span class="cm"> * @license This example is published under the BSD-3 license.</span></div>
+<div class="line"><a id="l-5" name="l-5"></a><span class="linenos">  5</span><span class="cm"> * @author Kevin M.Smith &lt;SDI12@ethosengineering.org&gt;</span></div>
+<div class="line"><a id="l-6" name="l-6"></a><span class="linenos">  6</span><span class="cm"> * @date August 2013</span></div>
+<div class="line"><a id="l-7" name="l-7"></a><span class="linenos">  7</span><span class="cm"> *</span></div>
+<div class="line"><a id="l-8" name="l-8"></a><span class="linenos">  8</span><span class="cm"> * @brief Example D: Check all Addresses for Active Sensors and Log Data</span></div>
+<div class="line"><a id="l-9" name="l-9"></a><span class="linenos">  9</span><span class="cm"> *</span></div>
+<div class="line"><a id="l-10" name="l-10"></a><span class="linenos"> 10</span><span class="cm"> * This is a simple demonstration of the SDI-12 library for Arduino.</span></div>
+<div class="line"><a id="l-11" name="l-11"></a><span class="linenos"> 11</span><span class="cm"> *</span></div>
+<div class="line"><a id="l-12" name="l-12"></a><span class="linenos"> 12</span><span class="cm"> * It discovers the address of all sensors active on a single bus and takes continuous</span></div>
+<div class="line"><a id="l-13" name="l-13"></a><span class="linenos"> 13</span><span class="cm"> * measurements from them.</span></div>
+<div class="line"><a id="l-14" name="l-14"></a><span class="linenos"> 14</span><span class="cm"> */</span></div>
+<div class="line"><a id="l-15" name="l-15"></a><span class="linenos"> 15</span></div>
+<div class="line"><a id="l-16" name="l-16"></a><span class="linenos"> 16</span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;SDI12.h&gt;</span></div>
+<div class="line"><a id="l-17" name="l-17"></a><span class="linenos"> 17</span></div>
+<div class="line"><a id="l-18" name="l-18"></a><span class="linenos"> 18</span><span class="cp">#ifndef SDI12_DATA_PIN</span></div>
+<div class="line"><a id="l-19" name="l-19"></a><span class="linenos"> 19</span><span class="cp">#define SDI12_DATA_PIN 7</span></div>
+<div class="line"><a id="l-20" name="l-20"></a><span class="linenos"> 20</span><span class="cp">#endif</span></div>
+<div class="line"><a id="l-21" name="l-21"></a><span class="linenos"> 21</span><span class="cp">#ifndef SDI12_POWER_PIN</span></div>
+<div class="line"><a id="l-22" name="l-22"></a><span class="linenos"> 22</span><span class="cp">#define SDI12_POWER_PIN 22</span></div>
+<div class="line"><a id="l-23" name="l-23"></a><span class="linenos"> 23</span><span class="cp">#endif</span></div>
+<div class="line"><a id="l-24" name="l-24"></a><span class="linenos"> 24</span></div>
+<div class="line"><a id="l-25" name="l-25"></a><span class="linenos"> 25</span><span class="cm">/* connection information */</span></div>
+<div class="line"><a id="l-26" name="l-26"></a><span class="linenos"> 26</span><span class="kr">uint32_t</span><span class="w"> </span><span class="n">serialBaud</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">115200</span><span class="p">;</span><span class="w">         </span><span class="cm">/*!&lt; The baud rate for the output serial port */</span></div>
+<div class="line"><a id="l-27" name="l-27"></a><span class="linenos"> 27</span><span class="kr">int8_t</span><span class="w">   </span><span class="n">dataPin</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">SDI12_DATA_PIN</span><span class="p">;</span><span class="w"> </span><span class="cm">/*!&lt; The pin of the SDI-12 data bus */</span></div>
+<div class="line"><a id="l-28" name="l-28"></a><span class="linenos"> 28</span><span class="kr">int8_t</span><span class="w">   </span><span class="n">powerPin</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">SDI12_POWER_PIN</span><span class="p">;</span><span class="w"> </span><span class="cm">/*!&lt; The sensor power pin (or -1) */</span></div>
+<div class="line"><a id="l-29" name="l-29"></a><span class="linenos"> 29</span><span class="kr">uint32_t</span><span class="w"> </span><span class="n">wake_delay</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="cm">/*!&lt; Extra time needed for the sensor to wake (0-100ms) */</span></div>
+<div class="line"><a id="l-30" name="l-30"></a><span class="linenos"> 30</span><span class="kr">int8_t</span><span class="w">   </span><span class="n">firstAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="cm">/* The first address in the address space to check (0=&#39;0&#39;) */</span></div>
+<div class="line"><a id="l-31" name="l-31"></a><span class="linenos"> 31</span><span class="kr">int8_t</span><span class="w">   </span><span class="n">lastAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">61</span><span class="p">;</span><span class="w"> </span><span class="cm">/* The last address in the address space to check (61=&#39;z&#39;) */</span></div>
+<div class="line"><a id="l-32" name="l-32"></a><span class="linenos"> 32</span><span class="kr">bool</span><span class="w">     </span><span class="n">printIO</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span></div>
+<div class="line"><a id="l-33" name="l-33"></a><span class="linenos"> 33</span></div>
+<div class="line"><a id="l-34" name="l-34"></a><span class="linenos"> 34</span><span class="cm">/** Define the SDI-12 bus */</span></div>
+<div class="line"><a id="l-35" name="l-35"></a><span class="linenos"> 35</span><span class="n">SDI12</span><span class="w"> </span><span class="nf">mySDI12</span><span class="p">(</span><span class="n">dataPin</span><span class="p">);</span></div>
+<div class="line"><a id="l-36" name="l-36"></a><span class="linenos"> 36</span></div>
+<div class="line"><a id="l-37" name="l-37"></a><span class="linenos"> 37</span><span class="c1">// keeps track of active addresses</span></div>
+<div class="line"><a id="l-38" name="l-38"></a><span class="linenos"> 38</span><span class="kr">bool</span><span class="w"> </span><span class="n">isActive</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span></div>
+<div class="line"><a id="l-39" name="l-39"></a><span class="linenos"> 39</span></div>
+<div class="line"><a id="l-40" name="l-40"></a><span class="linenos"> 40</span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">numSensors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span></div>
+<div class="line"><a id="l-41" name="l-41"></a><span class="linenos"> 41</span></div>
+<div class="line"><a id="l-42" name="l-42"></a><span class="linenos"> 42</span><span class="cm">/**</span></div>
+<div class="line"><a id="l-43" name="l-43"></a><span class="linenos"> 43</span><span class="cm"> * @brief converts allowable address characters (&#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, &#39;A&#39;-&#39;Z&#39;) to a</span></div>
+<div class="line"><a id="l-44" name="l-44"></a><span class="linenos"> 44</span><span class="cm"> * decimal number between 0 and 61 (inclusive) to cover the 62 possible</span></div>
+<div class="line"><a id="l-45" name="l-45"></a><span class="linenos"> 45</span><span class="cm"> * addresses.</span></div>
+<div class="line"><a id="l-46" name="l-46"></a><span class="linenos"> 46</span><span class="cm"> */</span></div>
+<div class="line"><a id="l-47" name="l-47"></a><span class="linenos"> 47</span><span class="kr">byte</span><span class="w"> </span><span class="nf">charToDec</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-48" name="l-48"></a><span class="linenos"> 48</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;9&#39;</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span></div>
+<div class="line"><a id="l-49" name="l-49"></a><span class="linenos"> 49</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;z&#39;</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></div>
+<div class="line"><a id="l-50" name="l-50"></a><span class="linenos"> 50</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;Z&#39;</span><span class="p">))</span></div>
+<div class="line"><a id="l-51" name="l-51"></a><span class="linenos"> 51</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">36</span><span class="p">;</span></div>
+<div class="line"><a id="l-52" name="l-52"></a><span class="linenos"> 52</span><span class="w">  </span><span class="k">else</span></div>
+<div class="line"><a id="l-53" name="l-53"></a><span class="linenos"> 53</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="p">;</span></div>
+<div class="line"><a id="l-54" name="l-54"></a><span class="linenos"> 54</span><span class="p">}</span></div>
+<div class="line"><a id="l-55" name="l-55"></a><span class="linenos"> 55</span></div>
+<div class="line"><a id="l-56" name="l-56"></a><span class="linenos"> 56</span><span class="cm">/**</span></div>
+<div class="line"><a id="l-57" name="l-57"></a><span class="linenos"> 57</span><span class="cm"> * @brief maps a decimal number between 0 and 61 (inclusive) to allowable</span></div>
+<div class="line"><a id="l-58" name="l-58"></a><span class="linenos"> 58</span><span class="cm"> * address characters &#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, &#39;A&#39;-&#39;Z&#39;,</span></div>
+<div class="line"><a id="l-59" name="l-59"></a><span class="linenos"> 59</span><span class="cm"> *</span></div>
+<div class="line"><a id="l-60" name="l-60"></a><span class="linenos"> 60</span><span class="cm"> * THIS METHOD IS UNUSED IN THIS EXAMPLE, BUT IT MAY BE HELPFUL.</span></div>
+<div class="line"><a id="l-61" name="l-61"></a><span class="linenos"> 61</span><span class="cm"> */</span></div>
+<div class="line"><a id="l-62" name="l-62"></a><span class="linenos"> 62</span><span class="kr">char</span><span class="w"> </span><span class="nf">decToChar</span><span class="p">(</span><span class="kr">byte</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-63" name="l-63"></a><span class="linenos"> 63</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">;</span></div>
+<div class="line"><a id="l-64" name="l-64"></a><span class="linenos"> 64</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">36</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sc">&#39;a&#39;</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></div>
+<div class="line"><a id="l-65" name="l-65"></a><span class="linenos"> 65</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">36</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">62</span><span class="p">))</span></div>
+<div class="line"><a id="l-66" name="l-66"></a><span class="linenos"> 66</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">36</span><span class="p">;</span></div>
+<div class="line"><a id="l-67" name="l-67"></a><span class="linenos"> 67</span><span class="w">  </span><span class="k">else</span></div>
+<div class="line"><a id="l-68" name="l-68"></a><span class="linenos"> 68</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="p">;</span></div>
+<div class="line"><a id="l-69" name="l-69"></a><span class="linenos"> 69</span><span class="p">}</span></div>
+<div class="line"><a id="l-70" name="l-70"></a><span class="linenos"> 70</span></div>
+<div class="line"><a id="l-71" name="l-71"></a><span class="linenos"> 71</span><span class="cm">/**</span></div>
+<div class="line"><a id="l-72" name="l-72"></a><span class="linenos"> 72</span><span class="cm"> * @brief gets identification information from a sensor, and prints it to the serial</span></div>
+<div class="line"><a id="l-73" name="l-73"></a><span class="linenos"> 73</span><span class="cm"> * port</span></div>
+<div class="line"><a id="l-74" name="l-74"></a><span class="linenos"> 74</span><span class="cm"> *</span></div>
+<div class="line"><a id="l-75" name="l-75"></a><span class="linenos"> 75</span><span class="cm"> * @param i a character between &#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, or &#39;A&#39;-&#39;Z&#39;.</span></div>
+<div class="line"><a id="l-76" name="l-76"></a><span class="linenos"> 76</span><span class="cm"> */</span></div>
+<div class="line"><a id="l-77" name="l-77"></a><span class="linenos"> 77</span><span class="kr">void</span><span class="w"> </span><span class="nf">printInfo</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-78" name="l-78"></a><span class="linenos"> 78</span><span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span></div>
+<div class="line"><a id="l-79" name="l-79"></a><span class="linenos"> 79</span><span class="w">  </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="kr">char</span><span class="p">)</span><span class="n">i</span><span class="p">;</span></div>
+<div class="line"><a id="l-80" name="l-80"></a><span class="linenos"> 80</span><span class="w">  </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;I!&quot;</span><span class="p">;</span></div>
+<div class="line"><a id="l-81" name="l-81"></a><span class="linenos"> 81</span><span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">command</span><span class="p">,</span><span class="w"> </span><span class="n">wake_delay</span><span class="p">);</span></div>
+<div class="line"><a id="l-82" name="l-82"></a><span class="linenos"> 82</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-83" name="l-83"></a><span class="linenos"> 83</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&gt;&gt;&gt;&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-84" name="l-84"></a><span class="linenos"> 84</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">command</span><span class="p">);</span></div>
+<div class="line"><a id="l-85" name="l-85"></a><span class="linenos"> 85</span><span class="w">  </span><span class="p">}</span></div>
+<div class="line"><a id="l-86" name="l-86"></a><span class="linenos"> 86</span><span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span></div>
+<div class="line"><a id="l-87" name="l-87"></a><span class="linenos"> 87</span></div>
+<div class="line"><a id="l-88" name="l-88"></a><span class="linenos"> 88</span><span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">sdiResponse</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">readStringUntil</span><span class="p">(</span><span class="sc">&#39;\n&#39;</span><span class="p">);</span></div>
+<div class="line"><a id="l-89" name="l-89"></a><span class="linenos"> 89</span><span class="w">  </span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">trim</span><span class="p">();</span></div>
+<div class="line"><a id="l-90" name="l-90"></a><span class="linenos"> 90</span><span class="w">  </span><span class="c1">// allccccccccmmmmmmvvvxxx...xx&lt;CR&gt;&lt;LF&gt;</span></div>
+<div class="line"><a id="l-91" name="l-91"></a><span class="linenos"> 91</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-92" name="l-92"></a><span class="linenos"> 92</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt;&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-93" name="l-93"></a><span class="linenos"> 93</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">);</span></div>
+<div class="line"><a id="l-94" name="l-94"></a><span class="linenos"> 94</span><span class="w">  </span><span class="p">}</span></div>
+<div class="line"><a id="l-95" name="l-95"></a><span class="linenos"> 95</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">));</span><span class="w">  </span><span class="c1">// address</span></div>
+<div class="line"><a id="l-96" name="l-96"></a><span class="linenos"> 96</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-97" name="l-97"></a><span class="linenos"> 97</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">).</span><span class="n">toFloat</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span><span class="w">  </span><span class="c1">// SDI-12 version number</span></div>
+<div class="line"><a id="l-98" name="l-98"></a><span class="linenos"> 98</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-99" name="l-99"></a><span class="linenos"> 99</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">11</span><span class="p">));</span><span class="w">  </span><span class="c1">// vendor id</span></div>
+<div class="line"><a id="l-100" name="l-100"></a><span class="linenos">100</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-101" name="l-101"></a><span class="linenos">101</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="w"> </span><span class="mi">17</span><span class="p">));</span><span class="w">  </span><span class="c1">// sensor model</span></div>
+<div class="line"><a id="l-102" name="l-102"></a><span class="linenos">102</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-103" name="l-103"></a><span class="linenos">103</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="p">));</span><span class="w">  </span><span class="c1">// sensor version</span></div>
+<div class="line"><a id="l-104" name="l-104"></a><span class="linenos">104</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-105" name="l-105"></a><span class="linenos">105</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">sdiResponse</span><span class="p">.</span><span class="n">substring</span><span class="p">(</span><span class="mi">20</span><span class="p">));</span><span class="w">  </span><span class="c1">// sensor id</span></div>
+<div class="line"><a id="l-106" name="l-106"></a><span class="linenos">106</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-107" name="l-107"></a><span class="linenos">107</span><span class="p">}</span></div>
+<div class="line"><a id="l-108" name="l-108"></a><span class="linenos">108</span></div>
+<div class="line"><a id="l-109" name="l-109"></a><span class="linenos">109</span><span class="kr">bool</span><span class="w"> </span><span class="nf">getContinuousResults</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">addr</span><span class="p">,</span><span class="w"> </span><span class="kr">int</span><span class="w"> </span><span class="n">resultsExpected</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-110" name="l-110"></a><span class="linenos">110</span><span class="w">  </span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span></div>
+<div class="line"><a id="l-111" name="l-111"></a><span class="linenos">111</span><span class="w">  </span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">cmd_number</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span></div>
+<div class="line"><a id="l-112" name="l-112"></a><span class="linenos">112</span><span class="w">  </span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">cmd_retries</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span></div>
+<div class="line"><a id="l-113" name="l-113"></a><span class="linenos">113</span><span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">resultsExpected</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">cmd_number</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">9</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">cmd_retries</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-114" name="l-114"></a><span class="linenos">114</span><span class="w">    </span><span class="kr">bool</span><span class="w">    </span><span class="n">gotResults</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span></div>
+<div class="line"><a id="l-115" name="l-115"></a><span class="linenos">115</span><span class="w">    </span><span class="kr">uint8_t</span><span class="w"> </span><span class="n">cmd_results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span></div>
+<div class="line"><a id="l-116" name="l-116"></a><span class="linenos">116</span><span class="w">    </span><span class="c1">// Assemble the command based on how many commands we&#39;ve already sent,</span></div>
+<div class="line"><a id="l-117" name="l-117"></a><span class="linenos">117</span><span class="w">    </span><span class="c1">// starting with R0 and ending with R9</span></div>
+<div class="line"><a id="l-118" name="l-118"></a><span class="linenos">118</span><span class="w">    </span><span class="c1">// SDI-12 command to get data [address][R][dataOption][!]</span></div>
+<div class="line"><a id="l-119" name="l-119"></a><span class="linenos">119</span><span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span></div>
+<div class="line"><a id="l-120" name="l-120"></a><span class="linenos">120</span><span class="w">    </span><span class="kr">String</span><span class="w"> </span><span class="n">command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span></div>
+<div class="line"><a id="l-121" name="l-121"></a><span class="linenos">121</span><span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">addr</span><span class="p">;</span></div>
+<div class="line"><a id="l-122" name="l-122"></a><span class="linenos">122</span><span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;R&quot;</span><span class="p">;</span></div>
+<div class="line"><a id="l-123" name="l-123"></a><span class="linenos">123</span><span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">cmd_number</span><span class="p">;</span></div>
+<div class="line"><a id="l-124" name="l-124"></a><span class="linenos">124</span><span class="w">    </span><span class="n">command</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span></div>
+<div class="line"><a id="l-125" name="l-125"></a><span class="linenos">125</span><span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">command</span><span class="p">,</span><span class="w"> </span><span class="n">wake_delay</span><span class="p">);</span></div>
+<div class="line"><a id="l-126" name="l-126"></a><span class="linenos">126</span><span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span></div>
+<div class="line"><a id="l-127" name="l-127"></a><span class="linenos">127</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-128" name="l-128"></a><span class="linenos">128</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&gt;&gt;&gt;&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-129" name="l-129"></a><span class="linenos">129</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">command</span><span class="p">);</span></div>
+<div class="line"><a id="l-130" name="l-130"></a><span class="linenos">130</span><span class="w">    </span><span class="p">}</span></div>
+<div class="line"><a id="l-131" name="l-131"></a><span class="linenos">131</span></div>
+<div class="line"><a id="l-132" name="l-132"></a><span class="linenos">132</span><span class="w">    </span><span class="c1">// Wait for the first few characters to arrive.  The response from a continuous</span></div>
+<div class="line"><a id="l-133" name="l-133"></a><span class="linenos">133</span><span class="w">    </span><span class="c1">// measurement request should always have more than three characters</span></div>
+<div class="line"><a id="l-134" name="l-134"></a><span class="linenos">134</span><span class="w">    </span><span class="kr">uint32_t</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">millis</span><span class="p">();</span></div>
+<div class="line"><a id="l-135" name="l-135"></a><span class="linenos">135</span><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="nf">millis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">1500</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span></div>
+<div class="line"><a id="l-136" name="l-136"></a><span class="linenos">136</span></div>
+<div class="line"><a id="l-137" name="l-137"></a><span class="linenos">137</span><span class="w">    </span><span class="c1">// read the returned address to remove it from the buffer</span></div>
+<div class="line"><a id="l-138" name="l-138"></a><span class="linenos">138</span><span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">returnedAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span></div>
+<div class="line"><a id="l-139" name="l-139"></a><span class="linenos">139</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-140" name="l-140"></a><span class="linenos">140</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">returnedAddress</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">addr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-141" name="l-141"></a><span class="linenos">141</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Wrong address returned!&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-142" name="l-142"></a><span class="linenos">142</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;Expected &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-143" name="l-143"></a><span class="linenos">143</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span></div>
+<div class="line"><a id="l-144" name="l-144"></a><span class="linenos">144</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;but got data from&quot;</span><span class="p">));</span></div>
+<div class="line"><a id="l-145" name="l-145"></a><span class="linenos">145</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">returnedAddress</span><span class="p">);</span></div>
+<div class="line"><a id="l-146" name="l-146"></a><span class="linenos">146</span><span class="w">      </span><span class="p">}</span></div>
+<div class="line"><a id="l-147" name="l-147"></a><span class="linenos">147</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt;&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-148" name="l-148"></a><span class="linenos">148</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">returnedAddress</span><span class="p">);</span></div>
+<div class="line"><a id="l-149" name="l-149"></a><span class="linenos">149</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-150" name="l-150"></a><span class="linenos">150</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span></div>
+<div class="line"><a id="l-151" name="l-151"></a><span class="linenos">151</span><span class="w">    </span><span class="p">}</span></div>
+<div class="line"><a id="l-152" name="l-152"></a><span class="linenos">152</span></div>
+<div class="line"><a id="l-153" name="l-153"></a><span class="linenos">153</span><span class="w">    </span><span class="kr">bool</span><span class="w"> </span><span class="n">bad_read</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span></div>
+<div class="line"><a id="l-154" name="l-154"></a><span class="linenos">154</span><span class="w">    </span><span class="c1">// While there is any data left in the buffer</span></div>
+<div class="line"><a id="l-155" name="l-155"></a><span class="linenos">155</span><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="nf">millis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3000</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-156" name="l-156"></a><span class="linenos">156</span><span class="w">      </span><span class="kr">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">peek</span><span class="p">();</span></div>
+<div class="line"><a id="l-157" name="l-157"></a><span class="linenos">157</span><span class="w">      </span><span class="c1">// if there&#39;s a polarity sign, a number, or a decimal next in the</span></div>
+<div class="line"><a id="l-158" name="l-158"></a><span class="linenos">158</span><span class="w">      </span><span class="c1">// buffer, start reading it as a float.</span></div>
+<div class="line"><a id="l-159" name="l-159"></a><span class="linenos">159</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;-&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;+&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="sc">&#39;9&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;.&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-160" name="l-160"></a><span class="linenos">160</span><span class="w">        </span><span class="kr">float</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">parseFloat</span><span class="p">();</span></div>
+<div class="line"><a id="l-161" name="l-161"></a><span class="linenos">161</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-162" name="l-162"></a><span class="linenos">162</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt;&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-163" name="l-163"></a><span class="linenos">163</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="kr">String</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">));</span></div>
+<div class="line"><a id="l-164" name="l-164"></a><span class="linenos">164</span><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-165" name="l-165"></a><span class="linenos">165</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="kr">String</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="w"> </span><span class="mi">7</span><span class="p">));</span></div>
+<div class="line"><a id="l-166" name="l-166"></a><span class="linenos">166</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-167" name="l-167"></a><span class="linenos">167</span><span class="w">        </span><span class="p">}</span></div>
+<div class="line"><a id="l-168" name="l-168"></a><span class="linenos">168</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">-9999</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-169" name="l-169"></a><span class="linenos">169</span><span class="w">          </span><span class="n">gotResults</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span></div>
+<div class="line"><a id="l-170" name="l-170"></a><span class="linenos">170</span><span class="w">          </span><span class="n">cmd_results</span><span class="o">++</span><span class="p">;</span></div>
+<div class="line"><a id="l-171" name="l-171"></a><span class="linenos">171</span><span class="w">        </span><span class="p">}</span></div>
+<div class="line"><a id="l-172" name="l-172"></a><span class="linenos">172</span><span class="w">        </span><span class="c1">// if we get to a new line, we&#39;ve made it to the end of the response</span></div>
+<div class="line"><a id="l-173" name="l-173"></a><span class="linenos">173</span><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\r&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;\n&#39;</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-174" name="l-174"></a><span class="linenos">174</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">c</span><span class="p">);</span><span class="w"> </span><span class="p">}</span></div>
+<div class="line"><a id="l-175" name="l-175"></a><span class="linenos">175</span><span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span></div>
+<div class="line"><a id="l-176" name="l-176"></a><span class="linenos">176</span><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-177" name="l-177"></a><span class="linenos">177</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-178" name="l-178"></a><span class="linenos">178</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt; INVALID CHARACTER IN RESPONSE:&quot;</span><span class="p">));</span></div>
+<div class="line"><a id="l-179" name="l-179"></a><span class="linenos">179</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">c</span><span class="p">);</span></div>
+<div class="line"><a id="l-180" name="l-180"></a><span class="linenos">180</span><span class="w">          </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span></div>
+<div class="line"><a id="l-181" name="l-181"></a><span class="linenos">181</span><span class="w">        </span><span class="p">}</span></div>
+<div class="line"><a id="l-182" name="l-182"></a><span class="linenos">182</span><span class="w">        </span><span class="c1">// Read the character to make sure it&#39;s removed from the buffer</span></div>
+<div class="line"><a id="l-183" name="l-183"></a><span class="linenos">183</span><span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">();</span></div>
+<div class="line"><a id="l-184" name="l-184"></a><span class="linenos">184</span><span class="w">        </span><span class="n">bad_read</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span></div>
+<div class="line"><a id="l-185" name="l-185"></a><span class="linenos">185</span><span class="w">      </span><span class="p">}</span></div>
+<div class="line"><a id="l-186" name="l-186"></a><span class="linenos">186</span><span class="w">      </span><span class="nf">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="w">  </span><span class="c1">// 1 character ~ 7.5ms</span></div>
+<div class="line"><a id="l-187" name="l-187"></a><span class="linenos">187</span><span class="w">    </span><span class="p">}</span></div>
+<div class="line"><a id="l-188" name="l-188"></a><span class="linenos">188</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">gotResults</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-189" name="l-189"></a><span class="linenos">189</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-190" name="l-190"></a><span class="linenos">190</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;  No results received, will not continue requests!&quot;</span><span class="p">));</span></div>
+<div class="line"><a id="l-191" name="l-191"></a><span class="linenos">191</span><span class="w">        </span><span class="k">break</span><span class="p">;</span><span class="w">  </span><span class="c1">// don&#39;t do another loop if we got nothing</span></div>
+<div class="line"><a id="l-192" name="l-192"></a><span class="linenos">192</span><span class="w">      </span><span class="p">}</span></div>
+<div class="line"><a id="l-193" name="l-193"></a><span class="linenos">193</span><span class="w">    </span><span class="p">}</span></div>
+<div class="line"><a id="l-194" name="l-194"></a><span class="linenos">194</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">gotResults</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">bad_read</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-195" name="l-195"></a><span class="linenos">195</span><span class="w">      </span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">cmd_results</span><span class="p">;</span></div>
+<div class="line"><a id="l-196" name="l-196"></a><span class="linenos">196</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-197" name="l-197"></a><span class="linenos">197</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;  Total Results Received: &quot;</span><span class="p">));</span></div>
+<div class="line"><a id="l-198" name="l-198"></a><span class="linenos">198</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">resultsReceived</span><span class="p">);</span></div>
+<div class="line"><a id="l-199" name="l-199"></a><span class="linenos">199</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">F</span><span class="p">(</span><span class="s">&quot;, Remaining: &quot;</span><span class="p">));</span></div>
+<div class="line"><a id="l-200" name="l-200"></a><span class="linenos">200</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">resultsExpected</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">resultsReceived</span><span class="p">);</span></div>
+<div class="line"><a id="l-201" name="l-201"></a><span class="linenos">201</span><span class="w">      </span><span class="p">}</span></div>
+<div class="line"><a id="l-202" name="l-202"></a><span class="linenos">202</span><span class="w">      </span><span class="n">cmd_number</span><span class="o">++</span><span class="p">;</span></div>
+<div class="line"><a id="l-203" name="l-203"></a><span class="linenos">203</span><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-204" name="l-204"></a><span class="linenos">204</span><span class="w">      </span><span class="c1">// if we got a bad charater in the response, add one to the retry</span></div>
+<div class="line"><a id="l-205" name="l-205"></a><span class="linenos">205</span><span class="w">      </span><span class="c1">// attempts but do not bump up the command number or transfer any</span></div>
+<div class="line"><a id="l-206" name="l-206"></a><span class="linenos">206</span><span class="w">      </span><span class="c1">// results because we want to retry the same data command to try get</span></div>
+<div class="line"><a id="l-207" name="l-207"></a><span class="linenos">207</span><span class="w">      </span><span class="c1">// a valid response</span></div>
+<div class="line"><a id="l-208" name="l-208"></a><span class="linenos">208</span><span class="w">      </span><span class="n">cmd_retries</span><span class="o">++</span><span class="p">;</span></div>
+<div class="line"><a id="l-209" name="l-209"></a><span class="linenos">209</span><span class="w">    </span><span class="p">}</span></div>
+<div class="line"><a id="l-210" name="l-210"></a><span class="linenos">210</span><span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span></div>
+<div class="line"><a id="l-211" name="l-211"></a><span class="linenos">211</span><span class="w">  </span><span class="p">}</span></div>
+<div class="line"><a id="l-212" name="l-212"></a><span class="linenos">212</span></div>
+<div class="line"><a id="l-213" name="l-213"></a><span class="linenos">213</span><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">resultsReceived</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">resultsExpected</span><span class="p">;</span></div>
+<div class="line"><a id="l-214" name="l-214"></a><span class="linenos">214</span><span class="p">}</span></div>
+<div class="line"><a id="l-215" name="l-215"></a><span class="linenos">215</span></div>
+<div class="line"><a id="l-216" name="l-216"></a><span class="linenos">216</span><span class="c1">// this checks for activity at a particular address</span></div>
+<div class="line"><a id="l-217" name="l-217"></a><span class="linenos">217</span><span class="c1">// expects a char, &#39;0&#39;-&#39;9&#39;, &#39;a&#39;-&#39;z&#39;, or &#39;A&#39;-&#39;Z&#39;</span></div>
+<div class="line"><a id="l-218" name="l-218"></a><span class="linenos">218</span><span class="kr">bool</span><span class="w"> </span><span class="nf">checkActive</span><span class="p">(</span><span class="kr">char</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-219" name="l-219"></a><span class="linenos">219</span><span class="w">  </span><span class="kr">String</span><span class="w"> </span><span class="n">myCommand</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span></div>
+<div class="line"><a id="l-220" name="l-220"></a><span class="linenos">220</span><span class="w">  </span><span class="n">myCommand</span><span class="w">        </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;&quot;</span><span class="p">;</span></div>
+<div class="line"><a id="l-221" name="l-221"></a><span class="linenos">221</span><span class="w">  </span><span class="n">myCommand</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="p">(</span><span class="kr">char</span><span class="p">)</span><span class="n">i</span><span class="p">;</span><span class="w">  </span><span class="c1">// sends basic &#39;acknowledge&#39; command [address][!]</span></div>
+<div class="line"><a id="l-222" name="l-222"></a><span class="linenos">222</span><span class="w">  </span><span class="n">myCommand</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s">&quot;!&quot;</span><span class="p">;</span></div>
+<div class="line"><a id="l-223" name="l-223"></a><span class="linenos">223</span></div>
+<div class="line"><a id="l-224" name="l-224"></a><span class="linenos">224</span><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// goes through three rapid contact attempts</span></div>
+<div class="line"><a id="l-225" name="l-225"></a><span class="linenos">225</span><span class="w">    </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">sendCommand</span><span class="p">(</span><span class="n">myCommand</span><span class="p">,</span><span class="w"> </span><span class="n">wake_delay</span><span class="p">);</span></div>
+<div class="line"><a id="l-226" name="l-226"></a><span class="linenos">226</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-227" name="l-227"></a><span class="linenos">227</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&gt;&gt;&gt;&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-228" name="l-228"></a><span class="linenos">228</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">myCommand</span><span class="p">);</span></div>
+<div class="line"><a id="l-229" name="l-229"></a><span class="linenos">229</span><span class="w">    </span><span class="p">}</span></div>
+<div class="line"><a id="l-230" name="l-230"></a><span class="linenos">230</span><span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mi">30</span><span class="p">);</span></div>
+<div class="line"><a id="l-231" name="l-231"></a><span class="linenos">231</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// If we hear anything, assume we have an active sensor</span></div>
+<div class="line"><a id="l-232" name="l-232"></a><span class="linenos">232</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-233" name="l-233"></a><span class="linenos">233</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;&lt;&lt;&lt;&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-234" name="l-234"></a><span class="linenos">234</span><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">available</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">read</span><span class="p">());</span><span class="w"> </span><span class="p">}</span></div>
+<div class="line"><a id="l-235" name="l-235"></a><span class="linenos">235</span><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-236" name="l-236"></a><span class="linenos">236</span><span class="w">        </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span></div>
+<div class="line"><a id="l-237" name="l-237"></a><span class="linenos">237</span><span class="w">      </span><span class="p">}</span></div>
+<div class="line"><a id="l-238" name="l-238"></a><span class="linenos">238</span><span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="kr">true</span><span class="p">;</span></div>
+<div class="line"><a id="l-239" name="l-239"></a><span class="linenos">239</span><span class="w">    </span><span class="p">}</span></div>
+<div class="line"><a id="l-240" name="l-240"></a><span class="linenos">240</span><span class="w">  </span><span class="p">}</span></div>
+<div class="line"><a id="l-241" name="l-241"></a><span class="linenos">241</span><span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="n">clearBuffer</span><span class="p">();</span></div>
+<div class="line"><a id="l-242" name="l-242"></a><span class="linenos">242</span><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="kr">false</span><span class="p">;</span></div>
+<div class="line"><a id="l-243" name="l-243"></a><span class="linenos">243</span><span class="p">}</span></div>
+<div class="line"><a id="l-244" name="l-244"></a><span class="linenos">244</span></div>
+<div class="line"><a id="l-245" name="l-245"></a><span class="linenos">245</span><span class="kr">void</span><span class="w"> </span><span class="nb">setup</span><span class="p">()</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-246" name="l-246"></a><span class="linenos">246</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">begin</span><span class="p">(</span><span class="n">serialBaud</span><span class="p">);</span></div>
+<div class="line"><a id="l-247" name="l-247"></a><span class="linenos">247</span><span class="w">  </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="nf">Serial</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nf">millis</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">10000L</span><span class="p">);</span></div>
+<div class="line"><a id="l-248" name="l-248"></a><span class="linenos">248</span></div>
+<div class="line"><a id="l-249" name="l-249"></a><span class="linenos">249</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Opening SDI-12 bus...&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-250" name="l-250"></a><span class="linenos">250</span><span class="w">  </span><span class="n">mySDI12</span><span class="p">.</span><span class="nf">begin</span><span class="p">();</span></div>
+<div class="line"><a id="l-251" name="l-251"></a><span class="linenos">251</span><span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mi">500</span><span class="p">);</span><span class="w">  </span><span class="c1">// allow things to settle</span></div>
+<div class="line"><a id="l-252" name="l-252"></a><span class="linenos">252</span></div>
+<div class="line"><a id="l-253" name="l-253"></a><span class="linenos">253</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Timeout value: &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-254" name="l-254"></a><span class="linenos">254</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">mySDI12</span><span class="p">.</span><span class="n">TIMEOUT</span><span class="p">);</span></div>
+<div class="line"><a id="l-255" name="l-255"></a><span class="linenos">255</span></div>
+<div class="line"><a id="l-256" name="l-256"></a><span class="linenos">256</span><span class="w">  </span><span class="c1">// Power the sensors;</span></div>
+<div class="line"><a id="l-257" name="l-257"></a><span class="linenos">257</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">powerPin</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-258" name="l-258"></a><span class="linenos">258</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Powering up sensors, wait...&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-259" name="l-259"></a><span class="linenos">259</span><span class="w">    </span><span class="nf">pinMode</span><span class="p">(</span><span class="n">powerPin</span><span class="p">,</span><span class="w"> </span><span class="kr">OUTPUT</span><span class="p">);</span></div>
+<div class="line"><a id="l-260" name="l-260"></a><span class="linenos">260</span><span class="w">    </span><span class="nf">digitalWrite</span><span class="p">(</span><span class="n">powerPin</span><span class="p">,</span><span class="w"> </span><span class="kr">HIGH</span><span class="p">);</span></div>
+<div class="line"><a id="l-261" name="l-261"></a><span class="linenos">261</span><span class="w">    </span><span class="nf">delay</span><span class="p">(</span><span class="mf">5000L</span><span class="p">);</span></div>
+<div class="line"><a id="l-262" name="l-262"></a><span class="linenos">262</span><span class="w">  </span><span class="p">}</span></div>
+<div class="line"><a id="l-263" name="l-263"></a><span class="linenos">263</span></div>
+<div class="line"><a id="l-264" name="l-264"></a><span class="linenos">264</span><span class="w">  </span><span class="c1">// Quickly scan the address space</span></div>
+<div class="line"><a id="l-265" name="l-265"></a><span class="linenos">265</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Scanning all addresses, please wait...&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-266" name="l-266"></a><span class="linenos">266</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="s">&quot;Sensor Address, Protocol Version, Sensor Vendor, Sensor Model, &quot;</span></div>
+<div class="line"><a id="l-267" name="l-267"></a><span class="linenos">267</span><span class="w">                 </span><span class="s">&quot;Sensor Version, Sensor ID&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-268" name="l-268"></a><span class="linenos">268</span></div>
+<div class="line"><a id="l-269" name="l-269"></a><span class="linenos">269</span><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">int8_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">firstAddress</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">lastAddress</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-270" name="l-270"></a><span class="linenos">270</span><span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">decToChar</span><span class="p">(</span><span class="n">i</span><span class="p">);</span></div>
+<div class="line"><a id="l-271" name="l-271"></a><span class="linenos">271</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">checkActive</span><span class="p">(</span><span class="n">addr</span><span class="p">))</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-272" name="l-272"></a><span class="linenos">272</span><span class="w">      </span><span class="n">numSensors</span><span class="o">++</span><span class="p">;</span></div>
+<div class="line"><a id="l-273" name="l-273"></a><span class="linenos">273</span><span class="w">      </span><span class="n">isActive</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span></div>
+<div class="line"><a id="l-274" name="l-274"></a><span class="linenos">274</span><span class="w">      </span><span class="n">printInfo</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span></div>
+<div class="line"><a id="l-275" name="l-275"></a><span class="linenos">275</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span></div>
+<div class="line"><a id="l-276" name="l-276"></a><span class="linenos">276</span><span class="w">    </span><span class="p">}</span></div>
+<div class="line"><a id="l-277" name="l-277"></a><span class="linenos">277</span><span class="w">  </span><span class="p">}</span></div>
+<div class="line"><a id="l-278" name="l-278"></a><span class="linenos">278</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;Total number of sensors found:  &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-279" name="l-279"></a><span class="linenos">279</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span><span class="n">numSensors</span><span class="p">);</span></div>
+<div class="line"><a id="l-280" name="l-280"></a><span class="linenos">280</span></div>
+<div class="line"><a id="l-281" name="l-281"></a><span class="linenos">281</span><span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">numSensors</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-282" name="l-282"></a><span class="linenos">282</span><span class="w">    </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span></div>
+<div class="line"><a id="l-283" name="l-283"></a><span class="linenos">283</span><span class="w">      </span><span class="s">&quot;No sensors found, please check connections and restart the Arduino.&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-284" name="l-284"></a><span class="linenos">284</span><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="kr">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nf">delay</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="w"> </span><span class="p">}</span><span class="w">  </span><span class="c1">// do nothing forever</span></div>
+<div class="line"><a id="l-285" name="l-285"></a><span class="linenos">285</span><span class="w">  </span><span class="p">}</span></div>
+<div class="line"><a id="l-286" name="l-286"></a><span class="linenos">286</span></div>
+<div class="line"><a id="l-287" name="l-287"></a><span class="linenos">287</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span></div>
+<div class="line"><a id="l-288" name="l-288"></a><span class="linenos">288</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span></div>
+<div class="line"><a id="l-289" name="l-289"></a><span class="linenos">289</span><span class="w">    </span><span class="s">&quot;Time Elapsed (s), Sensor Address, Est Measurement Time (s), Number Measurements, &quot;</span></div>
+<div class="line"><a id="l-290" name="l-290"></a><span class="linenos">290</span><span class="w">    </span><span class="s">&quot;Real Measurement Time (ms), Measurement 1, Measurement 2, ... etc.&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-291" name="l-291"></a><span class="linenos">291</span><span class="w">  </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">(</span></div>
+<div class="line"><a id="l-292" name="l-292"></a><span class="linenos">292</span><span class="w">    </span><span class="s">&quot;-------------------------------------------------------------------------------&quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-293" name="l-293"></a><span class="linenos">293</span><span class="p">}</span></div>
+<div class="line"><a id="l-294" name="l-294"></a><span class="linenos">294</span></div>
+<div class="line"><a id="l-295" name="l-295"></a><span class="linenos">295</span><span class="kr">void</span><span class="w"> </span><span class="nb">loop</span><span class="p">()</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-296" name="l-296"></a><span class="linenos">296</span><span class="w">  </span><span class="c1">// measure one at a time</span></div>
+<div class="line"><a id="l-297" name="l-297"></a><span class="linenos">297</span><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kr">int8_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">firstAddress</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">lastAddress</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-298" name="l-298"></a><span class="linenos">298</span><span class="w">    </span><span class="kr">char</span><span class="w"> </span><span class="n">addr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">decToChar</span><span class="p">(</span><span class="n">i</span><span class="p">);</span></div>
+<div class="line"><a id="l-299" name="l-299"></a><span class="linenos">299</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isActive</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-300" name="l-300"></a><span class="linenos">300</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">printIO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-301" name="l-301"></a><span class="linenos">301</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="n">addr</span><span class="p">);</span></div>
+<div class="line"><a id="l-302" name="l-302"></a><span class="linenos">302</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot; - millis: &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-303" name="l-303"></a><span class="linenos">303</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="nf">millis</span><span class="p">());</span></div>
+<div class="line"><a id="l-304" name="l-304"></a><span class="linenos">304</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span></div>
+<div class="line"><a id="l-305" name="l-305"></a><span class="linenos">305</span><span class="w">      </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span></div>
+<div class="line"><a id="l-306" name="l-306"></a><span class="linenos">306</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="nf">millis</span><span class="p">());</span></div>
+<div class="line"><a id="l-307" name="l-307"></a><span class="linenos">307</span><span class="w">        </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">print</span><span class="p">(</span><span class="s">&quot;, &quot;</span><span class="p">);</span></div>
+<div class="line"><a id="l-308" name="l-308"></a><span class="linenos">308</span><span class="w">      </span><span class="p">}</span></div>
+<div class="line"><a id="l-309" name="l-309"></a><span class="linenos">309</span><span class="w">      </span><span class="n">getContinuousResults</span><span class="p">(</span><span class="n">addr</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span></div>
+<div class="line"><a id="l-310" name="l-310"></a><span class="linenos">310</span><span class="w">      </span><span class="nf">Serial</span><span class="p">.</span><span class="nf">println</span><span class="p">();</span></div>
+<div class="line"><a id="l-311" name="l-311"></a><span class="linenos">311</span><span class="w">    </span><span class="p">}</span></div>
+<div class="line"><a id="l-312" name="l-312"></a><span class="linenos">312</span><span class="w">  </span><span class="p">}</span></div>
+<div class="line"><a id="l-313" name="l-313"></a><span class="linenos">313</span></div>
+<div class="line"><a id="l-314" name="l-314"></a><span class="linenos">314</span><span class="w">  </span><span class="nf">delay</span><span class="p">(</span><span class="mf">10000L</span><span class="p">);</span><span class="w">  </span><span class="c1">// wait ten seconds between measurement attempts.</span></div>
+<div class="line"><a id="l-315" name="l-315"></a><span class="linenos">315</span><span class="p">}</span>
 </div></div></div>
-        <div class="m-note m-dim m-thin m-text-center"><a href="c_check_all_addresses_8ino-example.html" class="m-doc">&laquo; c_check_all_addresses.ino</a> | <a href="examples_page.html" class="m-doc">Examples using the SDI-12 Library</a> | <a href="g_terminal_window_8ino-example.html" class="m-doc">g_terminal_window.ino &raquo;</a></div>
+        <div class="m-note m-dim m-thin m-text-center"><a href="a_wild_card_8ino-example.html" class="m-doc">&laquo; a_wild_card.ino</a> | <a href="examples_page.html" class="m-doc">Examples using the SDI-12 Library</a> | <a href="k_concurrent_logger_8ino-example.html" class="m-doc">k_concurrent_logger.ino &raquo;</a></div>
               </article>
             </main>
 
@@ -1865,7 +2427,7 @@
               >
             </p>
             <p>
-              Created with <a href="https://doxygen.org/">Doxygen</a> 1.12.0 and <a href="https://mcss.mosra.cz/">m.css</a>.
+              Created with <a href="https://doxygen.org/">Doxygen</a> 1.14.0 and <a href="https://mcss.mosra.cz/">m.css</a>.
             </p>
           </div>
         </div>

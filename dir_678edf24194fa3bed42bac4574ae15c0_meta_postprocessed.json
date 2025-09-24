@@ -1,0 +1,18 @@
+{
+  "is_final": null,
+  "parent": "dir_d28a4824dc47e487b107a5db32ef43c4",
+  "parentGroup": null,
+  "id": "dir_678edf24194fa3bed42bac4574ae15c0",
+  "kind": "dir",
+  "name": "examples/d_simple_logger",
+  "url": "dir_678edf24194fa3bed42bac4574ae15c0.html",
+  "brief": "Contains the d_simple_logger example.",
+  "has_details": true,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "d_simple_logger"
+}

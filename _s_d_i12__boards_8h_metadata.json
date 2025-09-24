@@ -1,0 +1,17 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "_s_d_i12__boards_8h",
+  "kind": "file",
+  "name": "SDI12_boards.h",
+  "url": "_s_d_i12__boards_8h.html",
+  "brief": "This file defines the timing units needed for various Arduino boards.",
+  "has_details": true,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}
