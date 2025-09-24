@@ -392,9 +392,9 @@ void SDI12::wakeSensors(int8_t extraWakeTime) {
   // Interrupts on the pin are disabled for the entire transmitting state
   digitalWrite(_dataPin, HIGH);  // break is HIGH
   delayMicroseconds(
-    SDI12_LINE_BREAK_MICROS);   // Required break of 12 milliseconds (12,000 µs)
+    SDI12_LINE_BREAK_MICROS);  // Required break of 12 milliseconds (12,000 µs)
   delayMicroseconds(extraWakeTime * 1000);  // allow the sensors to wake
-  digitalWrite(_dataPin, LOW);  // marking is LOW
+  digitalWrite(_dataPin, LOW);              // marking is LOW
   delayMicroseconds(
     SDI12_LINE_MARK_MICROS);  // Required marking of 8.33 milliseconds(8,333 µs)
 }
@@ -445,7 +445,7 @@ void SDI12::writeChar(uint8_t outChar) {
   // sent with interrupts enabled.
   // This calculation should also finish while writing the start bit
   // This takes at least 10+13 clock cycles, and up to 10+(13*9)= 127 clock cycles (at
-  // 8MHz, that's 15.875µsec)
+  // 8MHz, that's 15.875 µsec)
 
   uint8_t lastHighBit =
     9;  // The position of the last bit that is a 0 (ie, HIGH, not marking)
@@ -692,6 +692,14 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     // If we're not waiting for a start bit, it's because we're in the middle of an
     // incomplete character and therefore this change in the pin state must be from a
     // data, parity, or stop bit.
+
+#if TIMER_INT_SIZE > 8
+    if (rxBits > 12) {
+      rxState =
+        WAITING_FOR_START_BIT;  // reset the rx state if more than 12 bits have passed
+      return;
+    }
+#endif
 
     // Calculate how many *data+parity* bits should be left in the current character
     //      - Each character has a total of 10 bits, 1 start bit, 7 data bits, 1 parity
