@@ -1,4 +1,4 @@
-# Example B: Changing the Address of your SDI-12 Sensor<!-- {#example_b_page} -->
+# Example B: Changing the Address of your SDI-12 Sensor<!--! {#example_b_page} -->
 
 Communication with an SDI-12 sensor depends on its 1-character alphanumeric address (1-9, A-Z, a-z).  A sensor can also be programmed with an address of 0, but that address cannot always be used to get measurements from the sensor.  This sketch enables you to find and change the address of your sensor.
 
@@ -13,14 +13,14 @@ Set the pin to provide power to your sensor in line 25 (`int8_t powerPin = SDI12
 
 Upload the sketch to your board.  After the upload finishes, open up the serial port monitor at a baud rate of 115200 on line 53.
 
-In the serial monitor you will see it begin scanning through all possible SDI-12 addresses.  Once it has found an occupied address, it will stop and ask you to enter a new address.  Send your desired address to the serial port.  On the screen you should see "Readdressing Sensor." followed by "Success.  Rescanning for verification."  The scan will begin again, stopping at your new address.  If you are now happy with the address you've selected, smile and close the serial port monitor.
+In the serial monitor you will see it begin scanning through all possible SDI-12 addresses.  Once it has found an occupied address, it will stop and ask you to enter a new address.  Send your desired address to the serial port.  On the screen you should see "Readdressing Sensor." followed by "Success.  Re-scanning for verification."  The scan will begin again, stopping at your new address.  If you are now happy with the address you've selected, smile and close the serial port monitor.
 
 If you are using a Meter Group Hydros 21 CTD sensor, change the channel to 1 in the serial monitor where prompted.
 
-[//]: # ( @section b_address_change_pio PlatformIO Configuration )
+<!--! @section b_address_change_pio PlatformIO Configuration -->
 
-[//]: # ( @include{lineno} b_address_change/platformio.ini )
+<!--! @include{lineno} b_address_change/platformio.ini -->
 
-[//]: # ( @section b_address_change_code The Complete Example )
+<!--! @section b_address_change_code The Complete Example -->
 
-[//]: # ( @include{lineno} b_address_change/b_address_change.ino )
+<!--! @include{lineno} b_address_change/b_address_change.ino -->
