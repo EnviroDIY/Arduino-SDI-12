@@ -161,7 +161,7 @@ typedef const __FlashStringHelper* FlashString;
  * @brief The maximum length of a standard data command response
  *
  * From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses:
- * The maximum number of characters that can be returned in the <values> part of the
+ * The maximum number of characters that can be returned in the [values] part of the
  * response to a D command is either 35 or 75. If the D command is issued to retrieve
  * data in response to a concurrent measurement command, or in response to a high-volume
  * ASCII measurement command, the maximum is 75. The maximum is also 75 in response to a
@@ -243,7 +243,7 @@ typedef const __FlashStringHelper* FlashString;
  */
 
 /**
- * @brief A mask for the #rxState while waiting for a start bit; 0b11111111
+ * @brief A mask for the rxState while waiting for a start bit; 0b11111111
  */
 #define WAITING_FOR_START_BIT 0xFF
 
@@ -295,6 +295,8 @@ typedef const __FlashStringHelper* FlashString;
   { delay(SDI12_YIELD_MS); }
 #endif
 
+/// @def NEED_LOOKAHEAD_ENUM
+/// @brief This macro is defined if lookahead options are needed.
 #if defined(PARTICLE) || defined(ESP8266) ||          \
   (defined(ESP32) && !defined(ESP_ARDUINO_VERSION) && \
    !defined(ESP_ARDUINO_VERSION_VAL))
@@ -542,8 +544,8 @@ class SDI12 : public Stream {
    * This function is customized to only return numbers as they are passed in the data
    * command responses.
    *
-   * A data command response is structured <addr><values><CR><LF> or
-   * <addr><values><CRC><CR><LF> the value portion must be structred as pd.d
+   * A data command response is structured [addr][values][CR][LF] or
+   * [addr][values][CRC][CR][LF] the value portion must be structred as pd.d
    * - p - the polarity sign (+ or -)
    * - d - numeric digits before the decimal place
    * - . - the decimal point (optional)
@@ -559,10 +561,11 @@ class SDI12 : public Stream {
    * accept a + or - only as the first character, and we should not ignore any other
    * characters.
    *
-   * @param warning Any input LookaheadMode or ignore character will be ignored by this
-   * function!
    * @return The next valid integer in the stream or -9999 if there is a timeout or the
    * next character is not part of an integer.
+   *
+   * @warning Any input LookaheadMode or ignore character will be ignored by this
+   * function!
    *
    * @note This function _hides_ the Stream class function to allow a custom value to be
    * returned on timeout.  It cannot overwrite the Stream function because it is not

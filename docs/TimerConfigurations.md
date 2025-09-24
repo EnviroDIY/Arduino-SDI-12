@@ -2,7 +2,7 @@
 
 <!--! @tableofcontents -->
 
-<!--! @cond GitHub -->
+<!--! @if GITHUB -->
 
 - [Timer Configurations](#timer-configurations)
   - [SDI-12 Timing Rules](#sdi-12-timing-rules)
@@ -32,7 +32,7 @@
       - [Selected SAMD51 Timers for SDI-12](#selected-samd51-timers-for-sdi-12)
   - [Other Boards](#other-boards)
 
-<!--! @endcond -->
+<!--! @endif -->
 
 This library listens for pin level changes and then use a timer to calculate how many data bits have been sent since the last change and to convert that to a character.
 The speed of the timer is dependent on the speed of the processor and "dividers" and "prescalers" used to slow the effective clock.

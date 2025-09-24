@@ -2,7 +2,7 @@
 
 <!--! @tableofcontents -->
 
-<!--! @cond GitHub -->
+<!--! @if GITHUB -->
 
 - [Overview of Interrupts](#overview-of-interrupts)
   - [What is an Interrupt?](#what-is-an-interrupt)
@@ -11,7 +11,7 @@
     - [Enabling an Interrupt](#enabling-an-interrupt)
     - [Disabling an Interrupt](#disabling-an-interrupt)
 
-<!--! @endcond -->
+<!--! @endif -->
 
 ## What is an Interrupt?<!--! {#interrupts_what} -->
 

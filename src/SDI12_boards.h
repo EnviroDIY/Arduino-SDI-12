@@ -44,6 +44,9 @@ sensors. This library provides a general software solution, without requiring
  * @def READTIME
  * @brief The function or macro used to read the clock timer value.
  *
+ * @def PRESCALE_IN_USE
+ * @brief The prescaler value in use.
+ *
  * @def PRESCALE_IN_USE_STR
  * @brief A string description of the prescaler in use.
  *

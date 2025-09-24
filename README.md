@@ -11,13 +11,13 @@ It provides a general software solution, without requiring any additional hardwa
 
 This work is motivated by the [EnviroDIY community](http://envirodiy.org/) vision to create an open source hardware and software stack to deliver near real time environmental data from wireless sensor networks, such as the Arduino-compatible [EnviroDIY™ Mayfly Data Logger](http://envirodiy.org/mayfly/).
 
-<!--! @cond GitHub -->
+<!--! @if GITHUB -->
 
 ## Documentation
 
 Extensive documentation on the SDI-12 functions and classes is available here:  <https://envirodiy.github.io/Arduino-SDI-12/index.html>
 
-<!--! @endcond -->
+<!--! @endif -->
 
 ### Renaming Notice<!--! {#mainpage_rename} -->
 
@@ -26,7 +26,7 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
 
 <!--! @tableofcontents -->
 
-<!--! @cond GitHub -->
+<!--! @if GITHUB -->
 
 - [SDI-12 for Arduino](#sdi-12-for-arduino)
   - [Introduction](#introduction)
@@ -43,7 +43,7 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
   - [License](#license)
   - [Credits](#credits)
 
-<!--! @endcond -->
+<!--! @endif -->
 
 ## Getting Started<!--! {#mainpage_getting_started} -->
 

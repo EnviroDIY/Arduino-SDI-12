@@ -2,7 +2,7 @@
 
 <!--! @tableofcontents -->
 
-<!--! @cond GitHub -->
+<!--! @if GITHUB -->
 
 - [Creating a Character - Stepping through the Rx ISR](#creating-a-character---stepping-through-the-rx-isr)
   - [How a Character Looks in SDI-12](#how-a-character-looks-in-sdi-12)
@@ -18,7 +18,7 @@
     - [A Finished Character](#a-finished-character)
   - [The Full Interrupt Function](#the-full-interrupt-function)
 
-<!--! @endcond -->
+<!--! @endif -->
 
 Here we'll walk step-by-step through how the SDI-12 library (and NeoSWSerial) create a character from the ISR.
 Unlike SoftwareSerial which listens for a start bit and then halts all program and other ISR execution until the end of the character, this library grabs the time of the interrupt, does some quick math, and lets the processor move on.
