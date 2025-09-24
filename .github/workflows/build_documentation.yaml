@@ -33,7 +33,9 @@ jobs:
     name: Build documentation
     uses: EnviroDIY/workflows/.github/workflows/build_documentation.yaml@main
     with:
+      use_latex: false
       use_graphviz: false
       publish: ${{ (github.event_name == 'release' && github.event.action == 'published') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')  || (github.event_name == 'workflow_dispatch' && github.event.inputs.publish == 'true')}}
       rebuild_cache_number: 1
+      doxygen_version: 1.14.0
     secrets: inherit

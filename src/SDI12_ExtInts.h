@@ -46,80 +46,6 @@
  * this library; if not, write to the Free Software Foundation, Inc., 51 Franklin
  * Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
-/**
- * @page specifications Notes on SDI-12, Specification v1.4
- *
- * @tableofcontents
- *
- * @section overview Overview
- *
- * SDI-12 is a communications protocol that uses a single data wire to communicate with
- * up to 62 uniquely addressed sensors.  So long as each sensor supports SDI-12, mixed
- * sensor types can appear on the same data bus.  Each address is a single character.
- * The valid ranges are 0-9, a-z, and A-Z. Only the data logger can initiate
- * communications on the data bus.
- *
- * It does so by pulling the data line into a 5v state for at least 12 milliseconds to
- * wake up all the sensors, before returning the line into a 0v state for 8 milliseconds
- * announce an outgoing command.  The command contains both the action to be taken, and
- * the address of the device who should respond.  If there is a sensor on the bus with
- * that address, it is responsible for responding to the command.  Sensors should ignore
- * commands that were not issued to them, and should return to a sleep state until the
- * data logger again issues the wakeup sequence.
- *
- * @section connection_details Connection Details
- *
- * **Physical Connections:**
- *   - 1 data line (0v - 5.5v)
- *   - 1 12v power line (9.6v - 16v)
- *   - 1 ground line
- *
- * **Baud Rate:**
- *   - 1200 bits per second
- *
- * **Data Frame Format:**
- *   - 10 bits per data frame
- *   - 1 start bit
- *   - 7 data bits (least significant bit first)
- *   - 1 even parity bit
- *   - 1 stop bit
- *
- * Data Line:  SDI-12 communication uses a single bi-directional data line with
- * three-state, inverse logic.
- *
- * | LINE CONDITION | BINARY STATE | VOLTAGE RANGE     |
- * |----------------|--------------|-------------------|
- * | marking        |      1       | -0.5 to 1.0 volts |
- * | spacing        |      0       | 3.5 to 5.5 volts  |
- * | transition     |  undefined   | 1.0 to 3.5 volts  |
- *
- * While a series of bits is being transmitted on the dataline, the voltage level on
- * that line might look something like this:
- *
- * @code
- *       _____       _____       _____       _____       _____     spacing
- * 5v   |     |     |     |     |     |     |     |     |     |
- *      |  0  |  1  |  0  |  1  |  0  |  1  |  0  |  1  |  0  | transition
- * Ov___|     |_____|     |_____|     |_____|     |_____|     |___ marking
- * @endcode
- *
- * @note Although the specification gives these voltages, some manufacturers chose to
- * implement SDI-12 at other logic levels - ie, with spacing voltages lower or higher
- * than the specified ~5V.
- *
- * For more information, and for a list of commands and responses, please see
- * SDI-12.org, official site of the SDI-12 Support Group.
- */
-/*** ==================== Code Organization ======================
- * - Includes, Defines, & Variable Declarations
- * - Buffer Setup
- * - Reading from the SDI-12 Buffer
- * - Constructor, Destructor, Begins, and Setters
- * - Using more than one SDI-12 object, isActive() and setActive()
- * - Setting Proper Data Line States
- * - Waking up and Talking to the Sensors
- * - Interrupt Service Routine (getting the data into the buffer)
- */
 
 
 #ifndef SRC_SDI12_EXTINTS_H_
@@ -161,7 +87,7 @@ typedef const __FlashStringHelper* FlashString;
  * @brief The maximum length of a standard data command response
  *
  * From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses:
- * The maximum number of characters that can be returned in the <values> part of the
+ * The maximum number of characters that can be returned in the [values] part of the
  * response to a D command is either 35 or 75. If the D command is issued to retrieve
  * data in response to a concurrent measurement command, or in response to a high-volume
  * ASCII measurement command, the maximum is 75. The maximum is also 75 in response to a
@@ -243,7 +169,7 @@ typedef const __FlashStringHelper* FlashString;
  */
 
 /**
- * @brief A mask for the #rxState while waiting for a start bit; 0b11111111
+ * @brief A mask for the rxState while waiting for a start bit; 0b11111111
  */
 #define WAITING_FOR_START_BIT 0xFF
 
@@ -295,6 +221,8 @@ typedef const __FlashStringHelper* FlashString;
   { delay(SDI12_YIELD_MS); }
 #endif
 
+/// @def NEED_LOOKAHEAD_ENUM
+/// @brief This macro is defined if lookahead options are needed.
 #if defined(PARTICLE) || defined(ESP8266) ||          \
   (defined(ESP32) && !defined(ESP_ARDUINO_VERSION) && \
    !defined(ESP_ARDUINO_VERSION_VAL))
@@ -542,8 +470,8 @@ class SDI12 : public Stream {
    * This function is customized to only return numbers as they are passed in the data
    * command responses.
    *
-   * A data command response is structured <addr><values><CR><LF> or
-   * <addr><values><CRC><CR><LF> the value portion must be structred as pd.d
+   * A data command response is structured [addr][values][CR][LF] or
+   * [addr][values][CRC][CR][LF] the value portion must be structred as pd.d
    * - p - the polarity sign (+ or -)
    * - d - numeric digits before the decimal place
    * - . - the decimal point (optional)
@@ -559,10 +487,11 @@ class SDI12 : public Stream {
    * accept a + or - only as the first character, and we should not ignore any other
    * characters.
    *
-   * @param warning Any input LookaheadMode or ignore character will be ignored by this
-   * function!
    * @return The next valid integer in the stream or -9999 if there is a timeout or the
    * next character is not part of an integer.
+   *
+   * @warning Any input LookaheadMode or ignore character will be ignored by this
+   * function!
    *
    * @note This function _hides_ the Stream class function to allow a custom value to be
    * returned on timeout.  It cannot overwrite the Stream function because it is not

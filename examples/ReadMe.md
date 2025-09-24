@@ -1,4 +1,4 @@
-# Examples using the SDI-12 Library<!-- {#examples_page} -->
+# Examples using the SDI-12 Library<!--! {#examples_page} -->
 
 - Example A <!--! @subpage example_a_page -->
   - Gets sensor information from a single attached sensor and prints it to the serial port
@@ -31,8 +31,8 @@
   - Shows how to use an external PCInt library to call the interrupts for this library.
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/j_external_pcint_library)
 - Example K <!--! @subpage example_k_page -->
-  -  Shows how to request concurrent measurements
+  - Shows how to request concurrent measurements
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/k_concurrent_logger)
 - Example L <!--! @subpage example_l_page -->
-  -  Shows how to verify the CRC of received data
+  - Shows how to verify the CRC of received data
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/l_verify_crc)

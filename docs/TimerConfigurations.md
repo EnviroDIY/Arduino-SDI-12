@@ -1,8 +1,8 @@
 # Timer Configurations
 
-[//]: # ( @tableofcontents )
+<!--! @tableofcontents -->
 
-[//]: # ( @cond GitHub )
+<!--! @if GITHUB -->
 
 - [Timer Configurations](#timer-configurations)
   - [SDI-12 Timing Rules](#sdi-12-timing-rules)
@@ -32,10 +32,9 @@
       - [Selected SAMD51 Timers for SDI-12](#selected-samd51-timers-for-sdi-12)
   - [Other Boards](#other-boards)
 
+<!--! @endif -->
 
-[//]: # ( @endcond )
-
-This library listens for pin level changes and then use a timer to calculate how many databits have been sent since the last change and to convert that to a character.
+This library listens for pin level changes and then use a timer to calculate how many data bits have been sent since the last change and to convert that to a character.
 The speed of the timer is dependent on the speed of the processor and "dividers" and "prescalers" used to slow the effective clock.
 Unfortunately, the "ticks" of the processor clock aren't perfectly aligned with the times of the level changes from the SDI-12 device.
 With the clocks not perfectly aligned, we can't know exactly the time that a bit started or ended, just the time of the last readable tick.
@@ -67,7 +66,7 @@ SDI-12 Communicates at 1200 baud (bits/s) and sends each character using 10 bits
   - Inner Retries (*without* breaks between)
     - Response window before a retry = 16.67ms - 87ms (< 87ms = time before a break is required)
     - A minimum of 3 "inner" retries are required.
-    - At least one of the "inner" retries must start >100ms after the falling edge (end) of the break that started the innter retry loop.
+    - At least one of the "inner" retries must start >100ms after the falling edge (end) of the break that started the inner retry loop.
   - Outer Retries (*with* breaks between)
     - Outer retries are used after >112.5ms of inner retries have been attempted
     - A minimum of 3 "outer" retries are required.
@@ -162,14 +161,15 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 >
 > – Up to 16 MIPS Throughput at 16MHz
 > – One 8-bit Timer/Counter with Separate Prescaler and Compare Mode
->   - Timer 0
->   - Prescalers available at 8/64/256/1024 on Timer 0
+>
+> - Timer 0
+> - Prescalers available at 8/64/256/1024 on Timer 0
 > – Two 16-bit Timer/Counter with Separate Prescaler, Compare- and Capture Mode
->   - Timers 1 and 3
->   - Prescalers available at 8/64/256/1024 on Timer 1 and 3
+> - Timers 1 and 3
+> - Prescalers available at 8/64/256/1024 on Timer 1 and 3
 > – One 10-bit High-Speed Timer/Counter with PLL (64MHz) and Compare Mode
->   - Timer 4
->   - Prescalers available at 2/4/8/16/32/64/128/256/512/1024/2048/8192/169384 on Timer 4
+> - Timer 4
+> - Prescalers available at 2/4/8/16/32/64/128/256/512/1024/2048/8192/169384 on Timer 4
 
 > [!NOTE]
 > There is no Timer 2 on the 16U4 or the 32U4
@@ -223,7 +223,7 @@ On the ATTiny series (ATtiny25/V / ATtiny45/V / ATtiny85/V) boards, we use Timer
 
 >
 > The Timer/Counter1 features a high resolution and a high accuracy usage with the lower prescaling opportunities.
-> It can also support two accurate, high speed, 8-bit pulse width modulators using clock speeds up to 64MHz (or 32MHz in low speedmode).
+> It can also support two accurate, high speed, 8-bit pulse width modulators using clock speeds up to 64MHz (or 32MHz in low speed mode).
 
 #### ATmegaXU Selected Timers
 
@@ -281,9 +281,9 @@ On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
 >
 > - Selectable configuration
 >   – Up to five 16-bit Timer/Counters (TC) including one low-power TC, each configurable as:
->     - 8-bit TC with two compare/capture channels
->     - 16-bit TC with two compare/capture channels
->     - 32-bit TC with two compare/capture channels, by using two TCs
+>   - 8-bit TC with two compare/capture channels
+>   - 16-bit TC with two compare/capture channels
+>   - 32-bit TC with two compare/capture channels, by using two TCs
 > - Waveform generation
 >     – Frequency generation
 >     – Single-slope pulse-width modulation
@@ -303,7 +303,6 @@ On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
 The Adafruit Arduino core uses:
 
 - 0 as GENERIC_CLOCK_GENERATOR_MAIN (the main clock)
-
 
 The Adafruit Arduino core uses:
 
@@ -383,7 +382,6 @@ The Adafruit Arduino core uses:
 - 4 as GENERIC_CLOCK_GENERATOR_12M (12MHz clock for DAC, sourced from GCLK_GENCTRL_SRC_DPLL0)
 - 5 as GENERIC_CLOCK_GENERATOR_1M (??, sourced from  CLK_GENCTRL_SRC_DPLL0)
 
-
 The Adafruit Arduino core uses:
 
 - TC0 for Tone (though any other timer may be used, if another pin is selected)
@@ -397,10 +395,10 @@ For SDI-12, we'll use Generic Clock Generator 6 and Timer Controller 2
 
 For sufficiently fast boards, instead of using a dedicated processor timer, we can use the built-in `micros()` function as the timer.
 
-From calculations using https://github.com/SRGDamia1/avrcycle, the micros() function takes about 60 (!!) clock cycles on a Mayfly.
+From calculations using <https://github.com/SRGDamia1/avrcycle>, the micros() function takes about 60 (!!) clock cycles on a Mayfly.
 We're going to blindly assume that the micros() function takes up about the same number of clock cycles for all Arduino boards.
 This is probably a huge assumption, but go with it.
-If we're going to use micros() fortiming, lets set a minimum usable CPU speed of the micros() function being accurate to 1µs.
+If we're going to use micros() for timing, lets set a minimum usable CPU speed of the micros() function being accurate to 1µs.
 That means we need to get 60 ticks/1µs or 60MHz.
 Ehh.. Maybe we'll be generous and allow it down to 48MHz in the code.
 That will allow Rensas AVR processors to attempt SDI-12.

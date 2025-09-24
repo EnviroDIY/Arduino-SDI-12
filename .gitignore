@@ -173,3 +173,5 @@ test/test_embedded/test_crc.hpp
 test/test_embedded/test_dtoa.hpp
 test/test_embedded/test_mbed_main.cpp
 test/test_snippet/test_snippet.cpp
+clang_format_all.bat
+clang-format-all.py

@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Wait on Workflow
-        uses: ArcticLampyrid/action-wait-for-workflow@v1.2.0
+        uses: ArcticLampyrid/action-wait-for-workflow@v1.3.0
         with:
           workflow: ${{ matrix.req_workflow }}
           sha: ${{ github.sha || github.event.pull_request.head.sha || github.event.pull_request.head.ref }} # optional
