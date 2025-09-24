@@ -314,7 +314,7 @@ static inline void resetTC(Tc* TCx) {
   // If the timer has no set configuration and is stopped, activating the software reset
   // will cause a hang.
   if (TCx->COUNT16.CTRLA.reg == 0 && TCx->COUNT16.STATUS.bit.STOP == 1) { return; }
-
+  // Disable TCx
   TCx->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;  // unset enable bit
   while (TCx->COUNT16.SYNCBUSY.bit.ENABLE);    // wait for enable sync busy bit to clear
 

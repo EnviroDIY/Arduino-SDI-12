@@ -19,8 +19,8 @@
 
 /* connection information */
 uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port */
-int8_t   dataPin       = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
-char     sensorAddress = '0';    /*!< The address of the SDI-12 sensor */
+int8_t   dataPin       = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
+char     sensorAddress = '0';             /*!< The address of the SDI-12 sensor */
 int8_t   powerPin      = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
 
 /** Define the SDI-12 bus */
@@ -136,12 +136,14 @@ void setup() {
 
 void loop() {
   while (wake_delay <= max_wake_delay) {
+    Serial.println("-------------------------------------------------------------------"
+                   "------------");
     // Power the sensors;
     if (powerPin >= 0) {
       Serial.println("Powering down sensors...");
       pinMode(powerPin, OUTPUT);
       digitalWrite(powerPin, LOW);
-      delay(300000L);
+      delay(5000L);
     }
 
     // Power the sensors;
@@ -162,8 +164,7 @@ void loop() {
       if (printInfo(sensorAddress, true)) {
         // if we got sensor info, stop
         Serial.println("Looks good.  Stopping.");
-        while (1)
-          ;
+        while (1);
       } else {
         Serial.println("Sensor info not valid!");
       }
@@ -174,12 +175,18 @@ void loop() {
       Serial.print(wake_delay);
       Serial.println("ms with wake delay");
     }
-    Serial.println("-------------------------------------------------------------------"
-                   "------------");
-  }
-  power_delay = power_delay + increment_power;
-  if (power_delay > max_power_delay) {
-    Serial.println("FINISHED!!");
-    while (1) {}
+
+    Serial.print("Increasing the power delay by ");
+    Serial.print(increment_power);
+    Serial.println("ms");
+    power_delay += increment_power;
+    Serial.print("The next delay will be ");
+    Serial.print(power_delay);
+    Serial.println("ms");
+    if (power_delay > max_power_delay) {
+      Serial.println("Reached maximum power delay!");
+      Serial.println("FINISHED!!");
+      while (1);
+    }
   }
 }

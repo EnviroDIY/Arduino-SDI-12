@@ -40,7 +40,7 @@
 
 int8_t dataPin       = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
 int8_t powerPin      = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
-char   sensorAddress = '5'; /*!< The address of the SDI-12 sensor */
+char   sensorAddress = '5';             /*!< The address of the SDI-12 sensor */
 int    state         = 0;
 
 #define WAIT 0
@@ -92,9 +92,9 @@ void parseSdi12Cmd(String command, String* dValues) {
         // Slave should immediately respond with: "tttnn":
         //    3-digit (seconds until measurement is available) +
         //    2-digit (number of values that will be available)
-        // Slave should also start a measurment and relinquish control of the data line
+        // Slave should also start a measurement and relinquish control of the data line
         responseStr =
-          "02109";  // 9 values ready in 21 sec; Substitue sensor-specific values here
+          "02109";  // 9 values ready in 21 sec; Substitute sensor-specific values here
         // It is not preferred for the actual measurement to occur in this subfunction,
         // because doing to would hold the main program hostage until the measurement
         // is complete.  Instead, we'll just set a flag and handle the measurement
@@ -108,11 +108,11 @@ void parseSdi12Cmd(String command, String* dValues) {
         // Slave should immediately respond with: "tttnn":
         //    3-digit (seconds until measurement is available) +
         //    1-digit (number of values that will be available)
-        // Slave should also start a measurment but may keep control of the data line
+        // Slave should also start a measurement but may keep control of the data line
         // until advertised time elapsed OR measurement is complete and service request
         // sent
         responseStr =
-          "0219";  // 9 values ready in 21 sec; Substitue sensor-specific values here
+          "0219";  // 9 values ready in 21 sec; Substitute sensor-specific values here
         // It is not preferred for the actual measurement to occur in this subfunction,
         // because doing to would hold the main program hostage until the measurement is
         // complete.  Instead, we'll just set a flag and handle the measurement
@@ -158,11 +158,11 @@ void formatOutputSDI(float* measurementValues, String* dValues, unsigned int max
 
   // upper limit on i should be number of elements in measurementValues
   for (int i = 0; i < 9; i++) {
-    // Read float value "i" as a String with 6 deceimal digits
+    // Read float value "i" as a String with 6 decimal digits
     // (NOTE: SDI-12 specifies max of 7 digits per value; we can only use 6
     //  decimal place precision if integer part is one digit)
     String valStr = String(measurementValues[i], 6);
-    // Explictly add implied + sign if non-negative
+    // Explicitly add implied + sign if non-negative
     if (valStr.charAt(0) != '-') { valStr = '+' + valStr; }
     // Append dValues[j] if it will not exceed 35 (aM!) or 75 (aC!) characters
     if (dValues[j].length() + valStr.length() < maxChar) {
@@ -192,7 +192,7 @@ void loop() {
 
 
   // If a byte is available, an SDI message is queued up. Read in the entire message
-  // before proceding.  It may be more robust to add a single character per loop()
+  // before proceeding.  It may be more robust to add a single character per loop()
   // iteration to a static char buffer; however, the SDI-12 spec requires a precise
   // response time, and this method is invariant to the remaining loop() contents.
   int avail = slaveSDI12.available();

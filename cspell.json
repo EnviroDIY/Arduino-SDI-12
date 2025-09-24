@@ -1,0 +1,95 @@
+{
+  "language": "en-US",
+  "ignoreRegExpList": [
+    "header-defines",
+    "debug-defines",
+    "doxygen-commands",
+    "doxygen-commands-custom",
+    "example_tags"
+  ],
+  "patterns": [
+    {
+      "name": "header-defines",
+      "pattern": "/SRC_[A-Z0-9_]+_H_/g"
+    },
+    {
+      "name": "debug-defines",
+      "pattern": "/MS_[A-Z0-9_]+_DEBUG/g"
+    },
+    {
+      "name": "latex-command",
+      "pattern": "/\\\\\\\\[a-z_]+/g"
+    },
+    {
+      "name": "javadoc-command",
+      "pattern": "/@[a-z_]+/g"
+    },
+    {
+      "name": "doxygen-commands",
+      "pattern": ["latex-command", "javadoc-command"]
+    },
+    {
+      "name": "hash-reference",
+      "pattern": "/#[a-z0-9_]+/g"
+    },
+    {
+      "name": "ref-command",
+      "pattern": "/@ref\\s[a-z0-9_]+/g"
+    },
+    {
+      "name": "anchor-command",
+      "pattern": "/@anchor\\s[a-z0-9_]+/g"
+    },
+    {
+      "name": "group-command",
+      "pattern": "/@(?:def|in)group\\s[a-z0-9_]+/g"
+    },
+    {
+      "name": "section-command",
+      "pattern": "/@(?:sub)*section\\s[a-z0-9_]+/g"
+    },
+    {
+      "name": "doxygen-commands-custom",
+      "pattern": [
+        "hash-reference",
+        "menusnip-command",
+        "ref-command",
+        "anchor-command",
+        "group-command",
+        "section-command"
+      ]
+    },
+    {
+      "name": "example_tags",
+      "pattern": "/BUILD_[A-Z0-9_]+/g"
+    }
+  ],
+  "words": [
+    "Adafruit",
+    "allccccccccmmmmmmvvvxxx",
+    "Atmel",
+    "Aufdenkampe",
+    "Damiano",
+    "enviro_diy",
+    "EnviroDIY",
+    "espressif",
+    "examplenavigation",
+    "footernavigation",
+    "Geleskie",
+    "microcontroller",
+    "millis",
+    "READTIME",
+    "Rensas",
+    "SAMD",
+    "sdamiano",
+    "SRGD",
+    "SRGDamia1",
+    "TCNT",
+    "TCNTX",
+    "µsec",
+    "PCINT",
+    "PCMSK"
+  ],
+  "ignoreWords": [],
+  "ignorePaths": ["platformio.ini", "*doxyfile*", ".vscode"]
+}

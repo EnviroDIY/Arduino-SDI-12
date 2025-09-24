@@ -25,7 +25,7 @@
 uint32_t serialBaud = 57600;           /*!< The baud rate for the output serial port */
 int8_t   dataPin    = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin   = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
-uint32_t wake_delay = 0;  /*!< Extra time needed for the sensor to wake (0-100ms) */
+uint32_t wake_delay = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(dataPin);
@@ -180,6 +180,6 @@ void loop() {
     delay(300);
     mySDI12.clearBuffer();
 
-    Serial.println("Success. Rescanning for verification.");
+    Serial.println("Success. Re-scanning for verification.");
   }
 }

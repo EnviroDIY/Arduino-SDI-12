@@ -331,11 +331,18 @@ void SDI12::setPinInterrupts(bool enable) {
 }
 
 // sets the state of the SDI-12 object.
+// NOTE: For AVR boards, pinMode(INPUT) turns off the pull-up resistor and
+// pinMode(INPUT_PULLUP) turns it on.
+// For other boards, pinMode(INPUT) changes the pin to input *without changing* the
+// pull-up or pull-down configuration.
+// To disable both resistors on these other boards, we need to do a digitalWrite(pin,
+// LOW) after pinMode(INPUT).
 void SDI12::setState(SDI12_STATES state) {
   switch (state) {
     case SDI12_HOLDING:
       {
-        pinMode(_dataPin, INPUT);     // Turn off the pull-up resistor
+        pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
+        digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
         pinMode(_dataPin, OUTPUT);    // Pin mode = output
         digitalWrite(_dataPin, LOW);  // Pin state = low - marking
         setPinInterrupts(false);      // Interrupts disabled on data pin
@@ -343,9 +350,10 @@ void SDI12::setState(SDI12_STATES state) {
       }
     case SDI12_TRANSMITTING:
       {
-        pinMode(_dataPin, INPUT);   // Turn off the pull-up resistor
-        pinMode(_dataPin, OUTPUT);  // Pin mode = output
-        setPinInterrupts(false);    // Interrupts disabled on data pin
+        pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
+        digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
+        pinMode(_dataPin, OUTPUT);    // Pin mode = output
+        setPinInterrupts(false);      // Interrupts disabled on data pin
 #ifdef SDI12_CHECK_PARITY
         _parityFailure = false;  // reset the parity failure flag
 #endif
@@ -353,18 +361,18 @@ void SDI12::setState(SDI12_STATES state) {
       }
     case SDI12_LISTENING:
       {
-        digitalWrite(_dataPin, LOW);          // Pin state = low (turns off pull-up)
-        pinMode(_dataPin, INPUT);             // Pin mode = input, pull-up resistor off
-        interrupts();                         // Enable general interrupts
-        setPinInterrupts(true);               // Enable Rx interrupts on data pin
-        prevBitTCNT = READTIME;               // Set the last interrupt time to now
+        pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
+        digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
+        interrupts();                 // Enable general interrupts
+        setPinInterrupts(true);       // Enable Rx interrupts on data pin
+        prevBitTCNT = READTIME;       // Set the last interrupt time to now
         rxState     = WAITING_FOR_START_BIT;  // Set state to ready for new start bit
         break;
       }
     default:  // SDI12_DISABLED or SDI12_ENABLED
       {
-        digitalWrite(_dataPin, LOW);  // Pin state = low (turns off pull-up)
-        pinMode(_dataPin, INPUT);     // Pin mode = input, pull-up resistor off
+        pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
+        digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
         setPinInterrupts(false);      // Interrupts disabled on data pin
         break;
       }
@@ -444,7 +452,7 @@ void SDI12::writeChar(uint8_t outChar) {
   // sent with interrupts enabled.
   // This calculation should also finish while writing the start bit
   // This takes at least 10+13 clock cycles, and up to 10+(13*9)= 127 clock cycles (at
-  // 8MHz, that's 15.875µsec)
+  // 8MHz, that's 15.875 µsec)
 
   uint8_t lastHighBit =
     9;  // The position of the last bit that is a 0 (ie, HIGH, not marking)
@@ -691,6 +699,14 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     // If we're not waiting for a start bit, it's because we're in the middle of an
     // incomplete character and therefore this change in the pin state must be from a
     // data, parity, or stop bit.
+
+#if TIMER_INT_SIZE > 8
+    if (rxBits > 12) {
+      rxState =
+        WAITING_FOR_START_BIT;  // reset the rx state if more than 12 bits have passed
+      return;
+    }
+#endif
 
     // Calculate how many *data+parity* bits should be left in the current character
     //      - Each character has a total of 10 bits, 1 start bit, 7 data bits, 1 parity

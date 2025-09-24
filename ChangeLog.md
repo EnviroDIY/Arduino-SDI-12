@@ -22,6 +22,23 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [2.3.1]
+
+### Changed
+
+- Increased fudge time for SAMD51 processors and those with matching clocks.
+- Changed order of pinMode/digitalWrite to correctly disable resistors.
+
+### Added
+
+- Added a check for too-many-bits for devices that use > 8 bit timers.
+
+### Fixed
+
+- Corrected spelling and formatting errors.
+
+***
+
 ## [2.3.0] - 2025-03-04
 
 ### Added
@@ -95,7 +112,7 @@ _CRC and SAMD51 Support_
 
 - Offloaded some internal header file documentation to markdown files
 - Consolidated redundant `READTIME` and `TCNTX` macros, removing `TCNTX`
-- Removed documation m_span commands
+- Removed documentation m_span commands
 
 ### Fixed
 
@@ -217,6 +234,7 @@ The first "official" release of this interrupt-based SDI-12 library for AVR and 
 ***
 
 [Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.2.1...HEAD
+[2.3.1]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.1
 [2.3.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.0
 [2.2.1]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.2.1
 [2.2.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.2.0

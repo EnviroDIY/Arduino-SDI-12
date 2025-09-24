@@ -24,7 +24,7 @@
 #define SDI12_POWER_PIN 22
 #endif
 
-uint32_t serialBaud = 115200; /*!< The baud rate for the output serial port */
+uint32_t serialBaud = 115200;          /*!< The baud rate for the output serial port */
 int8_t   dataPin    = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin   = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
 
