@@ -1,4 +1,4 @@
-## Example D: Check all Addresses for Active Sensors and Log Data<!--! {#example_d_page} -->
+# Example D: Check all Addresses for Active Sensors and Log Data<!--! {#example_d_page} -->
 
 This is a simple demonstration of the SDI-12 library for Arduino.
 

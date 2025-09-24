@@ -134,7 +134,7 @@ So now:
                                               {00100010}
 ```
 
-By using a bitmask and bitwise operation, we have successfully enabled pin 9 without effecting the state of pin 13.
+By using a bit mask and bitwise operation, we have successfully enabled pin 9 without effecting the state of pin 13.
 
 ### Disabling an Interrupt<!--! {#interrupts_disable} -->
 

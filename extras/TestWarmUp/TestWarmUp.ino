@@ -134,12 +134,14 @@ void setup() {
 
 void loop() {
   while (wake_delay <= max_wake_delay) {
+    Serial.println("-------------------------------------------------------------------"
+                   "------------");
     // Power the sensors;
     if (powerPin >= 0) {
       Serial.println("Powering down sensors...");
       pinMode(powerPin, OUTPUT);
       digitalWrite(powerPin, LOW);
-      delay(300000L);
+      delay(5000L);
     }
 
     // Power the sensors;
@@ -160,8 +162,7 @@ void loop() {
       if (printInfo(sensorAddress, true)) {
         // if we got sensor info, stop
         Serial.println("Looks good.  Stopping.");
-        while (1)
-          ;
+        while (1);
       } else {
         Serial.println("Sensor info not valid!");
       }

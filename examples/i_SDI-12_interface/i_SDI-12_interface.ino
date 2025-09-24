@@ -28,7 +28,7 @@
  * Known issues:
  *  - Backspace adds a "backspace character" into the serialMsgStr (which gets sent
  *    out on the SDI-12 interface) instead of removing the previous char from it
- *  - Suceptible to noise on the SDI-12 data line; consider hardware filtering or
+ *  - Susceptible to noise on the SDI-12 data line; consider hardware filtering or
  *    software error-checking
  */
 
@@ -56,7 +56,7 @@
 uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port */
 int8_t   dataPin       = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin      = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
-char     sensorAddress = '1'; /*!< The address of the SDI-12 sensor */
+char     sensorAddress = '1';             /*!< The address of the SDI-12 sensor */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(dataPin);

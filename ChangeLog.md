@@ -93,7 +93,7 @@ _CRC and SAMD51 Support_
 
 - Offloaded some internal header file documentation to markdown files
 - Consolidated redundant `READTIME` and `TCNTX` macros, removing `TCNTX`
-- Removed documation m_span commands
+- Removed documentation m_span commands
 
 ### Fixed
 

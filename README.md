@@ -92,38 +92,24 @@ These pins will work on those processors:
 This library requires the use of pin change interrupts (PCINT).
 
 Not all Arduino boards have the same pin capabilities.
-The known compatibile pins for common variants are shown below:
+The known compatible pins for common variants are shown below:
 
-**AtMega328p / Arduino Uno:**
-
-- Any pin
-
-**AtMega1284p / EnviroDIY Mayfly**
-
-- Any pin
-
-**ATmega2560 / Arduino Mega or Mega 2560:**
-
-- 0, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69)
-
-**AtMega32u4 / Arduino Leonardo or Adafruit Feather 32u4:**
-
-- 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
-
-**SAMD21G18 / Arduino Zero:**
-
-- Any pin (except 4 on the zero)
-
-**ESP8266:**
-
-- Any GPIO, except GPIO16
-
-**ESP32:**
-
-- Any GPIO
-
-**Particle (Boron LTE):**
-- Any digital GPIO
+- **AtMega328p / Arduino Uno:**
+  - Any pin
+- **AtMega1284p / EnviroDIY Mayfly**
+  - Any pin
+- **ATmega2560 / Arduino Mega or Mega 2560:**
+  - 0, 11, 12, 13, 14, 15, 50, 51, 52, 53, A8 (62), A9 (63), A10 (64), A11 (65), A12 (66), A13 (67), A14 (68), A15 (69)
+- **AtMega32u4 / Arduino Leonardo or Adafruit Feather 32u4:**
+  - 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
+- **SAMD21G18 / Arduino Zero:**
+  - Any pin (except 4 on the zero)
+- **ESP8266:**
+  - Any GPIO, except GPIO16
+- **ESP32:**
+  - Any GPIO
+- **Particle (Boron LTE):**
+  - Any digital GPIO
 
 Note that not all of these pins are available with our [Variants and Branches](https://github.com/EnviroDIY/Arduino-SDI-12#variants-and-branches), below.
 

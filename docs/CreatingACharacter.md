@@ -135,7 +135,6 @@ After 8 bit times have passed, we should have a fully formed character with 8 bi
 The `rxMask`  will have the one in the top bit.
 And the rxState will be filled - which just happens to be the value of `WAITING-FOR-START-BIT` for the next character.
 
-
 ```unparsed
 | rxValue: | ?   ?   ?   ?   ?   ?   ?   ? |
 | -------- | ----------------------------- |
@@ -201,7 +200,7 @@ void SDI12::receiveISR() {
     // and stop bits.
     //      - If the total number of bits in this frame is more than the number of
     // data+parity bits remaining in the character, then the number of data+parity bits
-    // is equal to the number of bits remaining for the character and partiy.
+    // is equal to the number of bits remaining for the character and parity.
     //      - If the total number of bits in this frame is less than the number of data
     // bits left for the character and parity, then the number of data+parity bits
     // received in this frame is equal to the total number of bits received in this
