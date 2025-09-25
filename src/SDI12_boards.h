@@ -302,7 +302,7 @@ sensors. This library provides a general software solution, without requiring
  * (65536 ticks/roll-over) * (1 sec/500000 ticks) = 131.07 milliseconds
  */
 #define TICKS_PER_BIT 416
-#define RX_WINDOW_FUDGE 40
+#define RX_WINDOW_FUDGE 45
 
 #elif TICKS_PER_SECOND == 1000000 && TIMER_INT_SIZE == 32
 /**
