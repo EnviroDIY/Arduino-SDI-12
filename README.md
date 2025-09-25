@@ -33,6 +33,7 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
   - [Documentation](#documentation)
     - [Renaming Notice](#renaming-notice)
   - [Getting Started](#getting-started)
+  - [Library installation](#library-installation)
   - [Origins and Inherited Limitations](#origins-and-inherited-limitations)
   - [Compatibility Considerations](#compatibility-considerations)
   - [Variants and Branches](#variants-and-branches)
@@ -56,6 +57,19 @@ Learn more, below, about this library's:
 Try running our [Example sketches](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples) with your Arduino board and SDI-12 sensor.
 
 Full details on the library functionality can be found on github pages: <https://envirodiy.github.io/Arduino-SDI-12/>
+
+## Library installation
+
+This library is available through both the Arduino and PlatformIO library registries.
+
+Within the Arduino IDE, you can find the library in the library registry using the library search tool.
+The build and ingest logs for this library into the Arduino library registry are available [here](https://downloads.arduino.cc/libraries/logs/github.com/EnviroDIY/Arduino-SDI-12/).
+The Arduino library registry should show newly available versions of this library within a few hours of a new release.
+
+[Here is the PlatformIO registry page.](https://registry.platformio.org/libraries/envirodiy/SDI-12)
+The library can be installed using the PlatformIO command `pio pkg install --library "envirodiy/SDI-12"`,
+You can also include this SDI-12 library as a dependency for a project by adding `envirodiy/SDI-12` to the [lib_deps](https://docs.platformio.org/en/latest/projectconf/sections/env/options/library/lib_deps.html) section of your platformio.ini configuration file.
+The PlatformIO library registry will should newly available versions of this library within minutes of a new release.
 
 ## Origins and Inherited Limitations<!--! {#mainpage_origins} -->
 
