@@ -17,16 +17,16 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "c_check_all_addresses_8ino-example.html",
-        "c_check_all_addresses.ino"
+        "h__s_d_i-12_slave_implementation_8ino-example.html",
+        "h_SDI-12_slave_implementation.ino"
       ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "f_basic_data_request_8ino-example.html",
-        "f_basic_data_request.ino"
+        "k_concurrent_logger_8ino-example.html",
+        "k_concurrent_logger.ino"
       ]
     ],
     "topics": [],

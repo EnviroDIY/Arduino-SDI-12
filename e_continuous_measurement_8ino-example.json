@@ -17,16 +17,16 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "a_wild_card_8ino-example.html",
-        "a_wild_card.ino"
+        "k_concurrent_logger_8ino-example.html",
+        "k_concurrent_logger.ino"
       ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "k_concurrent_logger_8ino-example.html",
-        "k_concurrent_logger.ino"
+        "d_simple_logger_8ino-example.html",
+        "d_simple_logger.ino"
       ]
     ],
     "topics": [],

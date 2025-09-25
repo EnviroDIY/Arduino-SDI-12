@@ -17,16 +17,16 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "_test_sensor_timing_8ino-example.html",
-        "TestSensorTiming.ino"
+        "b_address_change_8ino-example.html",
+        "b_address_change.ino"
       ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "_test_commands_8ino-example.html",
-        "TestCommands.ino"
+        "_test_sensor_timing_8ino-example.html",
+        "TestSensorTiming.ino"
       ]
     ],
     "topics": [],

@@ -17,16 +17,16 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "i__s_d_i-12_interface_8ino-example.html",
-        "i_SDI-12_interface.ino"
+        "e_continuous_measurement_8ino-example.html",
+        "e_continuous_measurement.ino"
       ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "_test_sensor_timing_8ino-example.html",
-        "TestSensorTiming.ino"
+        "g_terminal_window_8ino-example.html",
+        "g_terminal_window.ino"
       ]
     ],
     "topics": [],

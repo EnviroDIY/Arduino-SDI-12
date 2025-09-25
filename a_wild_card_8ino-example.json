@@ -17,16 +17,16 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "f_basic_data_request_8ino-example.html",
-        "f_basic_data_request.ino"
+        "l_verify_crc_8ino-example.html",
+        "l_verify_crc.ino"
       ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "e_continuous_measurement_8ino-example.html",
-        "e_continuous_measurement.ino"
+        "f_basic_data_request_8ino-example.html",
+        "f_basic_data_request.ino"
       ]
     ],
     "topics": [],

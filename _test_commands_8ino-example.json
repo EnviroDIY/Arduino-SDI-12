@@ -17,8 +17,8 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "_test_warm_up_8ino-example.html",
-        "TestWarmUp.ino"
+        "_test_sensor_timing_8ino-example.html",
+        "TestSensorTiming.ino"
       ],
       [
         "examples_page.html",

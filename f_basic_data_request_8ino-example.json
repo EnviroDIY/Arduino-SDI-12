@@ -17,16 +17,16 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "j_external_pcint_library_8ino-example.html",
-        "j_external_pcint_library.ino"
+        "a_wild_card_8ino-example.html",
+        "a_wild_card.ino"
       ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "a_wild_card_8ino-example.html",
-        "a_wild_card.ino"
+        "i__s_d_i-12_interface_8ino-example.html",
+        "i_SDI-12_interface.ino"
       ]
     ],
     "topics": [],

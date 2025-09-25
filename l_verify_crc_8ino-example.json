@@ -16,14 +16,17 @@
     "since": null,
     "example_navigation": null,
     "footer_navigation": [
-      null,
+      [
+        "g_terminal_window_8ino-example.html",
+        "g_terminal_window.ino"
+      ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "b_address_change_8ino-example.html",
-        "b_address_change.ino"
+        "a_wild_card_8ino-example.html",
+        "a_wild_card.ino"
       ]
     ],
     "topics": [],

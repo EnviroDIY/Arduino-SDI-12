@@ -17,16 +17,16 @@
     "example_navigation": null,
     "footer_navigation": [
       [
-        "d_simple_logger_8ino-example.html",
-        "d_simple_logger.ino"
+        "_test_warm_up_8ino-example.html",
+        "TestWarmUp.ino"
       ],
       [
         "examples_page.html",
         "Examples using the SDI-12 Library"
       ],
       [
-        "_test_warm_up_8ino-example.html",
-        "TestWarmUp.ino"
+        "_test_commands_8ino-example.html",
+        "TestCommands.ino"
       ]
     ],
     "topics": [],
