@@ -20,6 +20,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [2.3.2]
+
+### Changed
+
+- Increased fudge time again for processors at TICKS_PER_SECOND == 500000 && TIMER_INT_SIZE == 16
+
+***
+
 ## [2.3.1]
 
 ### Changed
@@ -231,7 +239,8 @@ The first "official" release of this interrupt-based SDI-12 library for AVR and 
 
 ***
 
-[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.2.1...HEAD
+[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.3.2...HEAD
+[2.3.2]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.2
 [2.3.1]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.1
 [2.3.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.0
 [2.2.1]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.2.1
