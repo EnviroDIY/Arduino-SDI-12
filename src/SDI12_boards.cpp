@@ -524,8 +524,13 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 // Espressif ESP32/ESP8266 boards, Particle boards, or any boards faster than 48MHz not
 // mentioned above
 // WARNING: I haven't tested the minimum speed that this will work at!
-#elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
-  defined(ARDUINO_GIGA) || F_CPU >= 48000000L
+// #elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
+//   defined(ARDUINO_GIGA) || F_CPU >= 48000000L
+
+#elif defined(ARDUINO_ARCH_STM32) || defined(STM32L4xx) || \
+      defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
+      defined(ARDUINO_GIGA) || F_CPU >= 48000000L
+
 
 void SDI12Timer::configSDI12TimerPrescale(void) {}
 
