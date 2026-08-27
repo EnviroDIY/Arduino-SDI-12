@@ -422,7 +422,7 @@ void SDI12::writeChar(uint8_t outChar) {
   // functions like micros(), millis() and any real-time clocks, so we don't want to
   // disable them if we don't really have to.
 
-#if F_CPU < 48000000UL
+#if F_CPU < 48000000UL || defined(SDI12_TX_DISABLE_INTERRUPTS)
   noInterrupts();  // _ALL_ interrupts disabled
 #endif
 
@@ -482,7 +482,7 @@ void SDI12::writeChar(uint8_t outChar) {
   // Set the line low for the all remaining 1's and the stop bit
   digitalWrite(_dataPin, LOW);
 
-#if F_CPU < 48000000UL
+#if F_CPU < 48000000UL || defined(SDI12_TX_DISABLE_INTERRUPTS)
   interrupts();  // Re-enable universal interrupts as soon as critical timing is past
 #endif
 

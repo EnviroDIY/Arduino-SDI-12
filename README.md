@@ -24,6 +24,29 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
 > [!IMPORTANT]
 > **As of version 2.0.0 this library was renamed from "Arduino-SDI-12" to simply "SDI-12" to comply with requirements for inclusion in the Arduino.cc's IDE and Library Manager.**
 
+### Fork Notes<!--! {#mainpage_fork} -->
+
+> [!NOTE]
+> This is [similie/Arduino-SDI-12](https://github.com/similie/Arduino-SDI-12), a fork of the EnviroDIY library maintained for the Similie Hyphen environmental stations.
+>
+> ESP32 recorders that read our older sensors reliably on v2.1.4 stopped reading them on v2.2.0 and later.
+> Release v2.3.3 keeps everything upstream has added since v2.1.4 and restores the receive tolerance and transmit timing guarantee that v2.1.4 had, both of which are now adjustable at build time.
+> The analysis is in [ChangeLog.md](https://github.com/similie/Arduino-SDI-12/blob/master/ChangeLog.md), and `extras/rx_window_model/rx_window_model.py` models the receive ISR so the effect of a given window can be checked without hardware.
+>
+> To use it with PlatformIO:
+>
+> ```ini
+> lib_deps = https://github.com/similie/Arduino-SDI-12.git#v2.3.3
+> ```
+>
+> Build flags added by this fork, none of which change behavior unless you set them:
+>
+> | Flag | Effect |
+> |---|---|
+> | `SDI12_RX_WINDOW_FUDGE=<ticks>` | Override the receive window for the board.  `50` restores the v2.3.2 value on a `micros()` board. |
+> | `SDI12_TX_DISABLE_INTERRUPTS` | Hold off interrupts while transmitting on processors ≥48MHz, as v2.1.4 did.  Useful on an RTOS board where a task switch can stretch a bit. |
+> | `SDI12_LINE_BREAK_MICROS=<µs>` / `SDI12_LINE_MARK_MICROS=<µs>` | Override the break and marking durations (v2.1.4 used `12300` and `8500`). |
+
 <!--! @tableofcontents -->
 
 <!--! @if GITHUB -->
@@ -32,6 +55,7 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
   - [Introduction](#introduction)
   - [Documentation](#documentation)
     - [Renaming Notice](#renaming-notice)
+    - [Fork Notes](#fork-notes)
   - [Getting Started](#getting-started)
   - [Library installation](#library-installation)
   - [Origins and Inherited Limitations](#origins-and-inherited-limitations)
