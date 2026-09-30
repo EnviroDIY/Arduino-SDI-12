@@ -3,20 +3,32 @@ name: Build Examples
 # Triggers the workflow on push or pull request events
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   build_examples:
-    name: Build standard examples with PlatformIO and the Arduino CLI
+    name: Build Examples
     if: ${{ ! contains(github.event.head_commit.message, 'ci skip') }}
     uses: EnviroDIY/workflows/.github/workflows/build_examples.yaml@main
     with:
-      boards_to_build: 'mayfly,envirodiy_stonefly_m4,uno,megaatmega2560,leonardo,zeroUSB,arduino_nano_esp32,feather328p,feather32u4,adafruit_feather_m0,adafruit_feather_m4,huzzah,featheresp32,esp32-c3-devkitm-1,esp32-s3-devkitm-1'
-      examples_to_build: 'examples/a_wild_card,examples/b_address_change,examples/c_check_all_addresses,examples/d_simple_logger,examples/e_continuous_measurement,examples/f_basic_data_request,examples/g_terminal_window,examples/h_SDI-12_slave_implementation,examples/i_SDI-12_interface,examples/k_concurrent_logger,examples/l_verify_crc'
-    secrets: inherit
+      # # Comma-separated list of examples to build or "all" for all (default: all)
+      examples_to_build: "examples/a_wild_card,examples/b_address_change,examples/c_check_all_addresses,examples/d_simple_logger,examples/e_continuous_measurement,examples/f_basic_data_request,examples/g_terminal_window,examples/h_SDI-12_slave_implementation,examples/i_SDI-12_interface,examples/k_concurrent_logger,examples/l_verify_crc"
 
+      # # Comma-separated list of examples to ignore (mutually exclusive with examples_to_build)
+      # examples_to_ignore: "examples/example_to_skip"
+
+      # # Comma-separated list of boards to build with all compilers "all" for all (default: all)
+      # # Mutually exclusive with boards_to_ignore
+      boards_to_build: "mayfly,envirodiy_stonefly_m4,uno,megaatmega2560,leonardo,zeroUSB,arduino_nano_esp32,feather328p,feather32u4,adafruit_feather_m0,adafruit_feather_m4,huzzah,featheresp32,esp32-c3-devkitm-1,esp32-s3-devkitm-1"
+      # # Comma-separated list of boards to skip with any compiler (default: empty)
+      # # Mutually exclusive with boards_to_build
+      # boards_to_ignore: ""
+    secrets: inherit
 
   build_ext_ints:
     name: Build the External Interrupt Example

@@ -369,6 +369,10 @@ sensors. This library provides a general software solution, without requiring
 
 // Sanity-check the receive window, which is worth doing because it can be overridden
 // from a build flag and the units are per-board.
+#if RX_WINDOW_FUDGE < 0
+#error \
+  "RX_WINDOW_FUDGE must not be negative; dt is unsigned in bitTimes() and a negative fudge wraps around instead of shrinking the window!"
+#endif
 #if RX_WINDOW_FUDGE >= TICKS_PER_BIT
 #error \
   "RX_WINDOW_FUDGE must be smaller than TICKS_PER_BIT; a window of a whole bit or more shifts every character by a bit!"

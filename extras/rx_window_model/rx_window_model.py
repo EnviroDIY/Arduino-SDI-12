@@ -23,8 +23,8 @@ def even_parity(v):
     return bin(v & 0x7F).count("1") & 1
 
 def frame_edges(text, baud_pct=0.0, idle_us=0.0):
-    """Return (edges, levels): times of level changes for a 7E1 inverted-logic stream.
-    Line idle = LOW. Start bit = HIGH. data 1 = LOW, 0 = HIGH. Stop = LOW."""
+    """Return a list of (time, level) pairs marking level changes for a 7E1 inverted-logic
+    stream. Line idle = LOW. Start bit = HIGH. data 1 = LOW, 0 = HIGH. Stop = LOW."""
     bit = BIT / (1 + baud_pct / 100.0)
     t = 0.0
     level = 0  # LOW idle

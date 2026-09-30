@@ -175,3 +175,9 @@ test/test_embedded/test_mbed_main.cpp
 test/test_snippet/test_snippet.cpp
 clang_format_all.bat
 clang-format-all.py
+.bumpversion.toml
+.clang-tidy
+.markdownlint-cli2.yaml
+AGENTS.md
+buildCI.bat
+installWorkingDependencies.bat

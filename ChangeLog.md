@@ -20,6 +20,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [2.3.4]
+
+This is a re-release on the main repository of tag 2.3.3 from the [similie/Arduino-SDI-12](https://github.com/similie/Arduino-SDI-12) fork with only very minor changes.
+
+### Changed
+
+- Updated GitHub workflows
+- Reject negative `RX_WINDOW_FUDGE`
+
+***
+
 ## [2.3.3]
 
 _Restore reception on slow-edged buses (Similie fork)_
@@ -29,7 +40,7 @@ This is a fork release from [similie/Arduino-SDI-12](https://github.com/similie/
 ### Changed
 
 - **Widened the default receive window on processors that use `micros()`** (ESP32, ESP8266, Particle, Giga, and anything else at or above 48MHz) from 50 ticks (95 on 48MHz boards) to 416 - half of one bit.
-  - `SDI12Timer::bitTimes()` counts bits as `(dt + RX_WINDOW_FUDGE) / TICKS_PER_BIT`, so the fudge is exactly how early a level change may arrive, while `TICKS_PER_BIT - RX_WINDOW_FUDGE` is how late it may arrive.  At 50 the window was +783/-50 µs, which is why a bus with slow edges failed: an RC-loaded line delays the rising edge, shortening the interval that starts on it, and an interval that is more than 50 µs short counts as zero bits.  The ISR returns on a zero-bit interval *without* advancing `prevBitTCNT`, so the remainder of that character is assembled from the wrong level, which then trips the parity check and (because `_parityFailure` is only cleared when the next command is sent) discards the rest of the response.
+  - `SDI12Timer::bitTimes()` counts bits as `(dt + RX_WINDOW_FUDGE) / TICKS_PER_BIT`, so the fudge is exactly how early a level change may arrive, while `TICKS_PER_BIT - RX_WINDOW_FUDGE` is how late it may arrive.  At 50 the window was +783/-50 µs, which is why a bus with slow edges failed: an RC-loaded line delays the rising edge, shortening the interval that starts on it, and an interval that is more than 50 µs short counts as zero bits.  The ISR returns on a zero-bit interval _without_ advancing `prevBitTCNT`, so the remainder of that character is assembled from the wrong level, which then trips the parity check and (because `_parityFailure` is only cleared when the next command is sent) discards the rest of the response.
   - Half of a bit centers the window, giving ±416 µs.  v2.1.4 tolerated about -128 µs here, so this is more forgiving than the version it is meant to restore.
   - AVR and SAMD defaults are unchanged.
 
@@ -124,7 +135,7 @@ _CRC and SAMD51 Support_
 - Moved defines to the top of the SDI12_boards.h file
 - Renamed the "tools" directory to "extras" in compliance with Arduino library standards.
 - Updated copyright and license texts
-- SAMD boards now *partially* revert clock and prescaler settings when an SDI-12 instance is ended.
+- SAMD boards now _partially_ revert clock and prescaler settings when an SDI-12 instance is ended.
   - Prescalers are reset to factory settings, the clock divisor is not reset
 
 ### Added
@@ -262,7 +273,9 @@ The first "official" release of this interrupt-based SDI-12 library for AVR and 
 
 ***
 
-[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.3.2...HEAD
+[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.3.4...HEAD
+[2.3.4]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.4
+[2.3.3]: https://github.com/similie/Arduino-SDI-12/releases/tag/v2.3.3
 [2.3.2]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.2
 [2.3.1]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.1
 [2.3.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.0
