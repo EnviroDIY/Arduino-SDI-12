@@ -742,6 +742,7 @@ class SDI12 : public Stream {
    */
   void setDataPin(int8_t dataPin);
 #ifdef SDI12_CHECK_PARITY
+  /// Flag to denote a parity failure in the SDI-12 communication.
   bool _parityFailure;
 #endif
   /**@}*/
