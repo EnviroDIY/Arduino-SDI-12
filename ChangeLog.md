@@ -20,6 +20,29 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [2.3.3]
+
+_Restore reception on slow-edged buses (Similie fork)_
+
+This is a fork release from [similie/Arduino-SDI-12](https://github.com/similie/Arduino-SDI-12), made because ESP32 recorders that talked to older sensors reliably on v2.1.4 stopped reading them on v2.2.0 and later.  Everything added since v2.1.4 is kept; the changes here restore the receive tolerance and the transmit timing guarantee that v2.1.4 had, and make both adjustable at build time.
+
+### Changed
+
+- **Widened the default receive window on processors that use `micros()`** (ESP32, ESP8266, Particle, Giga, and anything else at or above 48MHz) from 50 ticks (95 on 48MHz boards) to 416 - half of one bit.
+  - `SDI12Timer::bitTimes()` counts bits as `(dt + RX_WINDOW_FUDGE) / TICKS_PER_BIT`, so the fudge is exactly how early a level change may arrive, while `TICKS_PER_BIT - RX_WINDOW_FUDGE` is how late it may arrive.  At 50 the window was +783/-50 µs, which is why a bus with slow edges failed: an RC-loaded line delays the rising edge, shortening the interval that starts on it, and an interval that is more than 50 µs short counts as zero bits.  The ISR returns on a zero-bit interval *without* advancing `prevBitTCNT`, so the remainder of that character is assembled from the wrong level, which then trips the parity check and (because `_parityFailure` is only cleared when the next command is sent) discards the rest of the response.
+  - Half of a bit centers the window, giving ±416 µs.  v2.1.4 tolerated about -128 µs here, so this is more forgiving than the version it is meant to restore.
+  - AVR and SAMD defaults are unchanged.
+
+### Added
+
+- `SDI12_RX_WINDOW_FUDGE` build flag to override `RX_WINDOW_FUDGE` on any board (`-D SDI12_RX_WINDOW_FUDGE=50` restores the v2.3.2 value).
+- `SDI12_TX_DISABLE_INTERRUPTS` build flag to disable interrupts while transmitting on processors at or above 48MHz, where v2.2.0 stopped doing so.  This restores the v2.1.4 behavior for boards running an RTOS, where a task switch can stretch a bit past tolerance.  Off by default.
+- `SDI12_LINE_BREAK_MICROS` and `SDI12_LINE_MARK_MICROS` are now overridable at build time (v2.1.4 used 12300 and 8500; the defaults remain 12100 and 8400).
+- A compile-time check that rejects an `RX_WINDOW_FUDGE` of a whole bit or wider, which would otherwise silently shift every character by one bit.
+- `extras/rx_window_model/rx_window_model.py`, a model of the receive ISR for the v2.1.4, v2.3.2, and v2.3.3 bit-assembly logic.  It reports how often a response decodes against edge skew, ISR jitter, and sensor baud error, so the effect of a window width can be checked without hardware.
+
+***
+
 ## [2.3.2]
 
 ### Changed

@@ -201,12 +201,16 @@ typedef const __FlashStringHelper* FlashString;
  * @brief The required "break" before sending commands, >= 12ms.  The line level is HIGH
  * for the break.
  */
+#ifndef SDI12_LINE_BREAK_MICROS
 #define SDI12_LINE_BREAK_MICROS static_cast<uint16_t>(12100)
+#endif
 /**
  * @brief The required mark before a command or response, >= 8.33ms.  The line level is
  * LOW for the marking.
  */
+#ifndef SDI12_LINE_MARK_MICROS
 #define SDI12_LINE_MARK_MICROS static_cast<uint16_t>(8400)
+#endif
 
 /**
  * Possible SDI-12 States
@@ -283,6 +287,25 @@ typedef const __FlashStringHelper* FlashString;
 #define SDI12_YIELD_MS 0
 #endif
 #endif
+
+/**
+ * Define SDI12_TX_DISABLE_INTERRUPTS at build time to disable *all* interrupts while
+ * transmitting each character, on a processor where this library would otherwise leave
+ * them enabled.
+ *
+ * Processors running at 48MHz or faster are fast enough that a typical interrupt
+ * service routine cannot shift the bit timing past the SDI-12 tolerance, so since
+ * version 2.2.0 interrupts are left enabled while transmitting on those boards.  On a
+ * board running an RTOS - an ESP32 running FreeRTOS alongside WiFi or a cellular modem,
+ * for instance - a task switch or another driver's long ISR can still stretch a bit far
+ * enough to garble a command.  Defining this macro restores the pre-2.2.0 behavior of
+ * holding interrupts off for the time-critical part of every character.
+ *
+ * @warning On an ESP32 `noInterrupts()` masks interrupts for the entire core.  Each
+ * character takes ~8.33ms, so a short command holds them off for ~35ms.  Do not define
+ * this if something else on the board cannot tolerate that.
+ */
+// #define SDI12_TX_DISABLE_INTERRUPTS
 
 #ifndef SDI12_YIELD
 /**

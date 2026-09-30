@@ -64,8 +64,27 @@ sensors. This library provides a general software solution, without requiring
  * @brief A "fudge factor" to get the Rx to work well. It mostly works to ensure that
  * uneven tick increments get rounded up.
  *
+ * This is the width of the receive window *before* the expected bit boundary:
+ * #SDI12Timer::bitTimes() counts bits as `(dt + RX_WINDOW_FUDGE) / TICKS_PER_BIT`, so a
+ * level change may arrive up to `RX_WINDOW_FUDGE` ticks **early** and up to
+ * `TICKS_PER_BIT - RX_WINDOW_FUDGE` ticks **late** and still be counted in the correct
+ * bit.  A value of half of #TICKS_PER_BIT therefore centers the window and gives the
+ * largest tolerance for a bus whose timing error can go either way.
+ *
+ * Define SDI12_RX_WINDOW_FUDGE at build time to override the value selected for your
+ * board.
+ *
  * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
  */
+
+/**
+ * Define SDI12_RX_WINDOW_FUDGE at build time (ie, `-D SDI12_RX_WINDOW_FUDGE=416`) to
+ * override the #RX_WINDOW_FUDGE selected for your board.  The value is in timer ticks,
+ * which is *not* the same unit on every board - see the per-board sections below.  This
+ * is a tuning knob for an unusual bus (long cable, slow edges, a sensor with a sloppy
+ * baud rate); the default is right for a bus that meets the SDI-12 specification.
+ */
+// #define SDI12_RX_WINDOW_FUDGE 416
 
 
 // Most 'standard' AVR boards
@@ -242,6 +261,10 @@ sensors. This library provides a general software solution, without requiring
 #endif
 
 
+#ifdef SDI12_RX_WINDOW_FUDGE
+#define RX_WINDOW_FUDGE SDI12_RX_WINDOW_FUDGE
+#endif
+
 #if TICKS_PER_SECOND == 15625 && TIMER_INT_SIZE == 8
 /**
  * 15625 'ticks'/sec = 64 µs / 'tick'
@@ -256,7 +279,9 @@ sensors. This library provides a general software solution, without requiring
  * 1/(13.0208 ticks/bit) * 2^10 = 78.6432
  */
 #define BITS_PER_TICK_Q10 79
+#ifndef RX_WINDOW_FUDGE
 #define RX_WINDOW_FUDGE 2
+#endif
 
 #elif TICKS_PER_SECOND == 11719 && TIMER_INT_SIZE == 8
 /**
@@ -272,7 +297,9 @@ sensors. This library provides a general software solution, without requiring
  * 1/(9.765625 ticks/bit) * 2^10 = 104.8576
  */
 #define BITS_PER_TICK_Q10 105
+#ifndef RX_WINDOW_FUDGE
 #define RX_WINDOW_FUDGE 2
+#endif
 
 #elif TICKS_PER_SECOND == 31250 && TIMER_INT_SIZE == 8
 /**
@@ -289,7 +316,9 @@ sensors. This library provides a general software solution, without requiring
  * 1/(26.04166667 ticks/bit) * 2^10 = 39.3216
  */
 #define BITS_PER_TICK_Q10 39
+#ifndef RX_WINDOW_FUDGE
 #define RX_WINDOW_FUDGE 10
+#endif
 
 
 #elif TICKS_PER_SECOND == 500000 && TIMER_INT_SIZE == 16
@@ -302,7 +331,9 @@ sensors. This library provides a general software solution, without requiring
  * (65536 ticks/roll-over) * (1 sec/500000 ticks) = 131.07 milliseconds
  */
 #define TICKS_PER_BIT 416
+#ifndef RX_WINDOW_FUDGE
 #define RX_WINDOW_FUDGE 45
+#endif
 
 #elif TICKS_PER_SECOND == 1000000 && TIMER_INT_SIZE == 32
 /**
@@ -312,14 +343,35 @@ sensors. This library provides a general software solution, without requiring
  * The 32-bit timer rolls over after 4294967296 ticks, or 4294.9673 seconds
  */
 #define TICKS_PER_BIT 833UL
-#if F_CPU == 48000000L
-#define RX_WINDOW_FUDGE 95
-#else
-#define RX_WINDOW_FUDGE 50
+/**
+ * The fudge is half of a bit, which centers the receive window on the expected bit
+ * boundary and allows a level change to be up to ±416 µs away from where it was
+ * expected.
+ *
+ * This matters most on a bus with slow edges.  An RC-loaded line delays the *rising*
+ * edge (the HIGH/spacing level) relative to the falling edge, which makes the interval
+ * that *ends* on that edge longer and the interval that *starts* on it shorter by the
+ * same amount.  A window that is generous late but tight early - as the previous
+ * defaults of 50 and 95 were - counts the short interval as zero bits, and because the
+ * ISR returns without advancing SDI12::prevBitTCNT when that happens, the rest of the
+ * character is assembled from the wrong level.
+ *
+ * Versions 2.2.0 through 2.3.2 of this library used 50 here (95 for 48MHz boards).
+ * Define SDI12_RX_WINDOW_FUDGE to restore one of those values.
+ */
+#ifndef RX_WINDOW_FUDGE
+#define RX_WINDOW_FUDGE 416
 #endif
 
 #else
 #error "Board timer is incorrectly configured!"
+#endif
+
+// Sanity-check the receive window, which is worth doing because it can be overridden
+// from a build flag and the units are per-board.
+#if RX_WINDOW_FUDGE >= TICKS_PER_BIT
+#error \
+  "RX_WINDOW_FUDGE must be smaller than TICKS_PER_BIT; a window of a whole bit or more shifts every character by a bit!"
 #endif
 
 
