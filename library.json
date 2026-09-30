@@ -5,7 +5,7 @@
   "description": "An Arduino library for SDI-12 communication with a wide variety of environmental sensors.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/similie/Arduino-SDI-12.git"
+    "url": "https://github.com/EnviroDIY/Arduino-SDI-12.git"
   },
   "authors": [
     {
