@@ -1,0 +1,105 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+early_access: false
+enable_free_tier: true
+language: en
+tone_instructions: ''
+knowledge_base:
+  learnings:
+    scope: auto
+  issues:
+    scope: auto
+  jira:
+    project_keys: []
+  linear:
+    team_keys: []
+chat:
+  auto_reply: true
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_placeholder: '@coderabbitai summary'
+  poem: false
+  review_status: true
+  collapse_walkthrough: true
+  path_filters:
+    - '!**/dependencies.json'
+    - '!**/cspell.json'
+    - '!**/platformio.ini'
+  path_instructions:
+    - path: '**/*.md'
+      instructions: >-
+        Review for grammar, spelling, and clarity.
+        Each sentence should be on a new line.
+        Markdown files should follow rules of markdownlint.
+        Check C++ and Arduino code snippets as C++ code.
+    - path: '**/*.dox'
+      instructions: >-
+        Review for grammar, spelling, and clarity.
+        Ensure that Doxygen comments are clear and follow Doxygen conventions, using java-style @commands rather than Qt-style \commands.
+        Check C++ and Arduino code snippets as C++ code.
+    - path: '**/*.ino'
+      instructions: >-
+        Treat Arduino code in ino files as C++ code.
+        Review the C++ code, point out issues relative to principles of clean code, expressiveness, and performance.
+        Since this is an Arduino project, never suggest using the standard library (std::).
+        For memory savings, prefer defines to const variables, and prefer using the F() macro for string literals longer than a single character.
+        Files should be formatted according to the .clang-format file in the repo.
+        Template files used as includes should have the .tpp extension, and should not be included directly by the user.
+        Credential information should be removed by local smudge filters in the filters folder.
+    - path: '**/*.h'
+      instructions: >-
+        Review the C++ code, point out issues relative to principles of clean code, expressiveness, and performance.
+        C++ code should be C++11 compatible, and should not use later features.
+        Since this is an Arduino project, never suggest using the standard library (std::).
+        For memory savings, prefer defines to const variables, and prefer using the F() macro for string literals longer than a single character.
+        Defines should be in the headers.
+        Unique functions, defines, and parameters must be documented with Doxygen comments in the header files.
+        Ensure that Doxygen comments are clear and follow Doxygen conventions, using java-style @commands rather than Qt-style \commands.
+        Override functions don't need Doxygen comments in the header files, unless they have unique parameters or behavior that needs to be documented.
+        Files should be formatted according to the .clang-format file in the repo.
+        Don't suggest making getter functions const.
+    - path: '**/*.cpp'
+      instructions: >-
+        Review the C++ code, point out issues relative to principles of clean code, expressiveness, and performance.
+        C++ code should be C++11 compatible, and should not use later features.
+        Since this is an Arduino project, never suggest using the standard library (std::).
+        For memory savings, prefer defines to const variables, and prefer using the F() macro for string literals longer than a single character.
+        Defines should be in the headers.
+        Doxygen documentation should be in the header files.
+        Files should be formatted according to the .clang-format file in the repo.
+        Don't suggest making getter functions const.
+  tools:
+    shellcheck:
+      enabled: true
+    ruff:
+      enabled: true
+    markdownlint:
+      enabled: true
+    github-checks:
+      enabled: true
+      timeout_ms: 90000
+    languagetool:
+      enabled: true
+      disabled_rules:
+        - EN_UNPAIRED_BRACKETS
+      disabled_categories:
+        - TYPOS
+        - TYPOGRAPHY
+        - CASING
+      enabled_only: false
+      level: default
+    biome:
+      enabled: true
+    hadolint:
+      enabled: true
+  auto_review:
+    enabled: true
+    ignore_title_keywords:
+      - WIP
+    labels: []
+    drafts: true
+    base_branches:
+      - main
+      - master
+      - develop
