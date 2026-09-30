@@ -11,7 +11,10 @@ jobs:
   verify_library_structure:
     name: Validate library structure
     if: ${{ ! contains(github.event.head_commit.message, 'ci skip') }}
+    # write permissions needed to create a commit comment with validation failures
+    permissions:
+      contents: write
     uses: EnviroDIY/workflows/.github/workflows/verify_library_structure.yaml@main
     with:
-      library-manager: 'update'
-      library-compliance: 'strict'
+      library-manager: "update"
+      library-compliance: "strict"
