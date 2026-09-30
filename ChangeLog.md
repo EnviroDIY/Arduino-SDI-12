@@ -27,7 +27,7 @@ This is a re-release on the main repository of tag 2.3.3 from the [similie/Ardui
 ### Changed
 
 - Updated GitHub workflows
-- Check that `RX_WINDOW_FUDGE` is > 0
+- Reject negative `RX_WINDOW_FUDGE`
 
 ***
 
