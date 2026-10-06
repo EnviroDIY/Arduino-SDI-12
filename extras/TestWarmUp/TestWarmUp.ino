@@ -46,33 +46,75 @@ int32_t wake_delay  = min_wake_delay;
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-bool checkActive(char address, int8_t numPings = 3, bool printCommands = false) {
+bool checkActive(char address, int8_t numPings = 3, bool printIO = true) {
+  mySDI12.clearBuffer();
   String command = "";
   command += (char)address;  // sends basic 'acknowledge' command [address][!]
   command += "!";
 
-  for (int j = 0; j < numPings; j++) {  // goes through three rapid contact attempts
-    if (printCommands) {
+  for (int j = 0; j < numPings; j++) {  // goes through rapid contact attempts
+    if (printIO) {
       Serial.print(">>>");
       Serial.println(command);
     }
     mySDI12.sendCommand(command, wake_delay);
+    // wait for a response; the sensor must return within 100ms
+    uint32_t waitStart = millis();
+    while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
 
-    // the sensor should just return its address
-    String sdiResponse = mySDI12.readStringUntil('\n');
-    sdiResponse.trim();
-    if (printCommands) {
-      Serial.print("<<<");
-      Serial.println(sdiResponse);
+    // the sensor should just return its address followed by '\r\n'
+    if (mySDI12.available()) {
+      String sdiResponse_r = mySDI12.readStringUntil('\n');
+      String sdiResponse   = sdiResponse_r;
+      sdiResponse_r.replace("\r", "←");
+      sdiResponse_r.replace("\n", "↓");
+      if (printIO) {
+        Serial.print("<<< '");
+        Serial.print(sdiResponse_r);
+        Serial.print("' (");
+        Serial.print(sdiResponse_r.length());
+        Serial.println(")");
+      }
+      sdiResponse.trim();
+      sdiResponse.replace("\r", "←");
+      sdiResponse.replace("\n", "↓");
+      if (printIO) {
+        Serial.print("<<< Trimmed: '");
+        Serial.print(sdiResponse);
+        Serial.print("' (");
+        Serial.print(sdiResponse.length());
+        Serial.println(")");
+      }
+      mySDI12.clearBuffer();
+
+      // check the address, return false if it's incorrect
+      String returnedAddress = sdiResponse.substring(0, 1);
+      Serial.print("returnedAddress '");
+      Serial.print(returnedAddress);
+      Serial.print("' (");
+      Serial.print(returnedAddress.length());
+      Serial.println(")");
+      if (returnedAddress == String(address)) {
+        if (printIO) {
+          Serial.print("Got response from '");
+          Serial.print(String(returnedAddress));
+          Serial.println("'");
+        }
+        return true;
+      } else {
+        if (printIO) {
+          Serial.println("Wrong address returned!");
+          Serial.print("Expected '");
+          Serial.print(String(address));
+          Serial.print("' Got '");
+          Serial.print(returnedAddress);
+          Serial.println("'");
+          // Serial.println(sdiResponse);
+        }
+      }
     }
-    mySDI12.clearBuffer();
-
-    // check the address, return false if it's incorrect
-    String returned_address = sdiResponse.substring(0, 1);
-    char   ret_addr_array[2];
-    returned_address.toCharArray(ret_addr_array, sizeof(ret_addr_array));
-    if (returned_address == String(address)) { return true; }
   }
+
   mySDI12.clearBuffer();
   return false;
 }
@@ -82,22 +124,22 @@ bool checkActive(char address, int8_t numPings = 3, bool printCommands = false) 
  * port
  *
  * @param i a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
+ * @param printIO true to print the raw output and input from the command
  */
-bool printInfo(char i, bool printCommands = true) {
+bool printInfo(char address, bool printIO = true) {
   String command = "";
-  command += (char)i;
+  command += (char)address;
   command += "I!";
   mySDI12.sendCommand(command, wake_delay);
-  if (printCommands) {
+  if (printIO) {
     Serial.print(">>>");
     Serial.println(command);
   }
-  delay(100);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
   // allccccccccmmmmmmvvvxxx...xx<CR><LF>
-  if (printCommands) {
+  if (printIO) {
     Serial.print("<<<");
     Serial.println(sdiResponse);
   }
@@ -124,7 +166,9 @@ void setup() {
   Serial.begin(serialBaud);
   while (!Serial && millis() < 10000L);
 
-  Serial.println("Opening SDI-12 bus...");
+  Serial.print("Opening SDI-12 bus on pin ");
+  Serial.print(dataPin);
+  Serial.println("...");
   mySDI12.begin();
   delay(500);  // allow things to settle
 

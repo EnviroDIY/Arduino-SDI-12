@@ -36,28 +36,42 @@ char   oldAddress = '!';  // invalid address as placeholder
  * port
  *
  * @param i a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
+ * @param printIO true to print the raw output and input from the command
  */
-void printInfo(char i) {
+bool printInfo(char address, bool printIO = true) {
   String command = "";
-  command += (char)i;
+  command += (char)address;
   command += "I!";
   mySDI12.sendCommand(command, wake_delay);
+  if (printIO) {
+    Serial.print(">>>");
+    Serial.println(command);
+  }
 
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
   // allccccccccmmmmmmvvvxxx...xx<CR><LF>
+  if (printIO) {
+    Serial.print("<<<");
+    Serial.println(sdiResponse);
+  }
+
+  Serial.print("Address: ");
   Serial.print(sdiResponse.substring(0, 1));  // address
-  Serial.print(", ");
+  Serial.print(", SDI-12 Version: ");
   Serial.print(sdiResponse.substring(1, 3).toFloat() / 10);  // SDI-12 version number
-  Serial.print(", ");
+  Serial.print(", Vendor ID: ");
   Serial.print(sdiResponse.substring(3, 11));  // vendor id
-  Serial.print(", ");
+  Serial.print(", Sensor Model: ");
   Serial.print(sdiResponse.substring(11, 17));  // sensor model
-  Serial.print(", ");
+  Serial.print(", Sensor Version: ");
   Serial.print(sdiResponse.substring(17, 20));  // sensor version
-  Serial.print(", ");
+  Serial.print(", Sensor ID: ");
   Serial.print(sdiResponse.substring(20));  // sensor id
-  Serial.print(", ");
+  Serial.println();
+
+  if (sdiResponse.length() < 3) { return false; };
+  return true;
 }
 
 // this checks for activity at a particular address
@@ -88,7 +102,9 @@ void setup() {
   Serial.begin(serialBaud);
   while (!Serial && millis() < 10000L);
 
-  Serial.println("Opening SDI-12 bus...");
+  Serial.print("Opening SDI-12 bus on pin ");
+  Serial.print(dataPin);
+  Serial.println("...");
   mySDI12.begin();
   delay(500);  // allow things to settle
 

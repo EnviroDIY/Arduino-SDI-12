@@ -83,29 +83,42 @@ char decToChar(byte i) {
  * port
  *
  * @param i a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
+ * @param printIO true to print the raw output and input from the command
  */
-void printInfo(char i) {
+bool printInfo(char address, bool printIO = true) {
   String command = "";
-  command += (char)i;
+  command += (char)address;
   command += "I!";
   mySDI12.sendCommand(command, wake_delay);
-  delay(30);
+  if (printIO) {
+    Serial.print(">>>");
+    Serial.println(command);
+  }
 
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
   // allccccccccmmmmmmvvvxxx...xx<CR><LF>
+  if (printIO) {
+    Serial.print("<<<");
+    Serial.println(sdiResponse);
+  }
+
+  Serial.print("Address: ");
   Serial.print(sdiResponse.substring(0, 1));  // address
-  Serial.print(", ");
+  Serial.print(", SDI-12 Version: ");
   Serial.print(sdiResponse.substring(1, 3).toFloat() / 10);  // SDI-12 version number
-  Serial.print(", ");
+  Serial.print(", Vendor ID: ");
   Serial.print(sdiResponse.substring(3, 11));  // vendor id
-  Serial.print(", ");
+  Serial.print(", Sensor Model: ");
   Serial.print(sdiResponse.substring(11, 17));  // sensor model
-  Serial.print(", ");
+  Serial.print(", Sensor Version: ");
   Serial.print(sdiResponse.substring(17, 20));  // sensor version
-  Serial.print(", ");
+  Serial.print(", Sensor ID: ");
   Serial.print(sdiResponse.substring(20));  // sensor id
-  Serial.print(", ");
+  Serial.println();
+
+  if (sdiResponse.length() < 3) { return false; };
+  return true;
 }
 
 bool getResults(char address, int resultsExpected) {
@@ -132,7 +145,7 @@ bool getResults(char address, int resultsExpected) {
     command += cmd_number;
     command += "!";
     mySDI12.sendCommand(command, wake_delay);
-        if (printIO) {
+    if (printIO) {
       Serial.print(">>>");
       Serial.println(command);
     }
@@ -289,29 +302,75 @@ bool takeMeasurement(char i, String meas_type = "") {
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-bool checkActive(char i) {
-  String myCommand = "";
-  myCommand        = "";
-  myCommand += (char)i;  // sends basic 'acknowledge' command [address][!]
-  myCommand += "!";
+bool checkActive(char address, int8_t numPings = 3, bool printIO = true) {
+  mySDI12.clearBuffer();
+  String command = "";
+  command += (char)address;  // sends basic 'acknowledge' command [address][!]
+  command += "!";
 
-  for (int j = 0; j < 3; j++) {  // goes through three rapid contact attempts
-    mySDI12.sendCommand(myCommand, wake_delay);
+  for (int j = 0; j < numPings; j++) {  // goes through rapid contact attempts
     if (printIO) {
       Serial.print(">>>");
-      Serial.println(myCommand);
+      Serial.println(command);
     }
-    delay(30);
-    if (mySDI12.available()) {  // If we hear anything, assume we have an active sensor
+    mySDI12.sendCommand(command, wake_delay);
+    // wait for a response; the sensor must return within 100ms
+    uint32_t waitStart = millis();
+    while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
+
+    // the sensor should just return its address followed by '\r\n'
+    if (mySDI12.available()) {
+      String sdiResponse_r = mySDI12.readStringUntil('\n');
+      String sdiResponse   = sdiResponse_r;
+      sdiResponse_r.replace("\r", "←");
+      sdiResponse_r.replace("\n", "↓");
       if (printIO) {
-        Serial.print("<<<");
-        while (mySDI12.available()) { Serial.write(mySDI12.read()); }
-      } else {
-        mySDI12.clearBuffer();
+        Serial.print("<<< '");
+        Serial.print(sdiResponse_r);
+        Serial.print("' (");
+        Serial.print(sdiResponse_r.length());
+        Serial.println(")");
       }
-      return true;
+      sdiResponse.trim();
+      sdiResponse.replace("\r", "←");
+      sdiResponse.replace("\n", "↓");
+      if (printIO) {
+        Serial.print("<<< Trimmed: '");
+        Serial.print(sdiResponse);
+        Serial.print("' (");
+        Serial.print(sdiResponse.length());
+        Serial.println(")");
+      }
+      mySDI12.clearBuffer();
+
+      // check the address, return false if it's incorrect
+      String returnedAddress = sdiResponse.substring(0, 1);
+      Serial.print("returnedAddress '");
+      Serial.print(returnedAddress);
+      Serial.print("' (");
+      Serial.print(returnedAddress.length());
+      Serial.println(")");
+      if (returnedAddress == String(address)) {
+        if (printIO) {
+          Serial.print("Got response from '");
+          Serial.print(String(returnedAddress));
+          Serial.println("'");
+        }
+        return true;
+      } else {
+        if (printIO) {
+          Serial.println("Wrong address returned!");
+          Serial.print("Expected '");
+          Serial.print(String(address));
+          Serial.print("' Got '");
+          Serial.print(returnedAddress);
+          Serial.println("'");
+          // Serial.println(sdiResponse);
+        }
+      }
     }
   }
+
   mySDI12.clearBuffer();
   return false;
 }
@@ -320,7 +379,9 @@ void setup() {
   Serial.begin(serialBaud);
   while (!Serial && millis() < 10000L);
 
-  Serial.println("Opening SDI-12 bus...");
+  Serial.print("Opening SDI-12 bus on pin ");
+  Serial.print(dataPin);
+  Serial.println("...");
   mySDI12.begin();
   delay(500);  // allow things to settle
 
