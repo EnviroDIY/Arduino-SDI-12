@@ -1,171 +1,80 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# Folder config file
-Desktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
-
-# Windows shortcuts
-*.lnk
-
-# Microsoft Office temp files
-~$*
-
-# =========================
-# Operating System Files
-# =========================
-
-# OSX
-# =========================
-
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-# PyCharm
-.idea/
-
-# Python
-__pycache__/
-
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
+# Compiled files, executables
 *.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
 *.a
-*.lib
-
-# Executables
 *.exe
 *.out
 *.app
 
-# Ignore list for Eagle, a PCB layout tool
+# Junk
+*.orig
+*.log
+*.bak
 
-# Backup files
-*.s#?
-*.b#?
-*.l#?
-*.b$?
-*.s$?
-*.l$?
-
-# Eagle project file
-# It contains a serial number and references to the file structure
-# on your computer.
-# comment the following line if you want to have your project file included.
-eagle.epf
-
-# Autorouter files
-*.pro
-*.job
-
-# CAM files
-*.$$$
-*.cmp
-*.ly2
-*.l15
-*.sol
-*.plc
-*.stc
-*.sts
-*.crc
-*.crs
-
-*.dri
-*.drl
-*.gpi
-*.pls
-*.ger
-*.xln
-
-*.drd
-*.drd.*
-
-*.s#*
-*.b#*
-
-*.info
-
-*.eps
-
-# file locks introduced since 7.x
-*.lck
-
-# PlatformIO
-.pio
+# IDE project files
+.settings
 .pioenvs
 .piolibdeps
+.pio/*
 .clang_complete
 .gcc-flags.json
+platformio.ini
+extra_envs.ini
 lib/readme.txt
-/platformio.ini
-tests/*
+include/readme.txt
+.history
 
 # VSCode
 .vscode
-.history
-compile_commands.json
 
-# Other Stuff
-pioScripts
-runDoxygen.bat
+# Filters
+.gitconfig
+filters/*
+
+# Certificates
+*.cert
+*.crt
+*.pem
+*.key
+
+# PlatformIO
+pioScripts/*
+variants/*
+boards/*
+tests/*
+lib/*
+platformio_extra_envs.ini
+pio_common_libdeps.ini
+
+# Arduino CLI
+continuous_integration/arduino_cli_local.yaml
+
+# Local CI and Build Artifacts
+home/arduino/*
+continuous_integration_artifacts/*
+clang_format_all.bat
 generateKeywords.bat
-output_*.log
-sync.ffs_db
+installWorkingDependencies.bat
+clang-format-all.py
+runDoxygen.bat
+compile_commands.json
+buildCI.bat
+
+# Other stuff
+pioScripts
 docs/Doxyfile.bak
 SDI12 Repo Token.txt
-boards/
-lib/
-variants/
+*.tar.gz
+archive/*
+src/wakeUp.h
+**/__pycache__/**
+AGENTS.md
+.github/copilot-instructions.md
+.bumpversion.toml
+.clang-tidy
+.markdownlint-cli2.yaml
+.github/workflows/LibraryBuild.yml
+datasheets/*
+Datasheets.md
 docs/DoxygenLayout.xml_archive
 /pio_common_libdeps.ini
 src/SDI12_prints.print
@@ -173,11 +82,3 @@ test/test_embedded/test_crc.hpp
 test/test_embedded/test_dtoa.hpp
 test/test_embedded/test_mbed_main.cpp
 test/test_snippet/test_snippet.cpp
-clang_format_all.bat
-clang-format-all.py
-.bumpversion.toml
-.clang-tidy
-.markdownlint-cli2.yaml
-AGENTS.md
-buildCI.bat
-installWorkingDependencies.bat

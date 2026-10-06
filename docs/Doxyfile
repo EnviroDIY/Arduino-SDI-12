@@ -397,7 +397,7 @@ MARKDOWN_STRICT        = YES
 # Minimum value: 0, maximum value: 99, default value: 6.
 # This tag requires that the tag MARKDOWN_SUPPORT is set to YES.
 
-TOC_INCLUDE_HEADINGS   = 10
+TOC_INCLUDE_HEADINGS   = 6
 
 # The MARKDOWN_ID_STYLE tag can be used to specify the algorithm used to
 # generate identifiers for the Markdown headings. Note: Every identifier is
@@ -771,7 +771,7 @@ SORT_GROUP_NAMES       = NO
 # list.
 # The default value is: NO.
 
-SORT_BY_SCOPE_NAME     = YES
+SORT_BY_SCOPE_NAME     = NO
 
 # If the STRICT_PROTO_MATCHING option is enabled and Doxygen fails to do proper
 # type resolution of all parameters of a function it will reject a match between
@@ -1084,15 +1084,15 @@ INPUT_FILE_ENCODING    =
 FILE_PATTERNS          = *.c \
                          *.cc \
                          *.cxx \
-                         *.cpp \
-                         *.c++ \
-                         *.h \
+                                                  *.cpp \
+                                                  *.c++ \
+                                                  *.h \
                          *.hh \
                          *.hxx \
                          *.hpp \
                          *.h++ \
                          *.tpp \
-                         *.inc \
+                                                  *.inc \
                          *.m \
                          *.markdown \
                          *.md \
