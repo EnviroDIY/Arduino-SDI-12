@@ -80,17 +80,15 @@ void loop() {
     Serial.println(sdiResponse);  // write the response to the screen
   mySDI12.clearBuffer();
 
-
   delay(1000);       // delay between taking reading and requesting data
   sdiResponse = "";  // clear the response string
-
 
   // next command to request data from last measurement
   myCommand = String(sensorAddress) + "D0!";
   Serial.println(myCommand);  // echo command to terminal
 
   mySDI12.sendCommand(myCommand);
-  uint32_t waitStart = millis();  // the sensor must return within 100ms
+  waitStart = millis();  // the sensor must return within 100ms
   while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
 
   while (mySDI12.available()) {  // build string from response
