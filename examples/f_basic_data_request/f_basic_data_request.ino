@@ -104,3 +104,5 @@ void loop() {
 
   // now go back to top and wait until user hits enter on terminal window
 }
+
+// cSpell:ignore Kertesz ISCO

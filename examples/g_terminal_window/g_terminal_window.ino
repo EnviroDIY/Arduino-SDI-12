@@ -87,3 +87,5 @@ void loop() {
     sdiResponse = "";
   }
 }
+
+// cSpell:ignore Kertesz ISCO

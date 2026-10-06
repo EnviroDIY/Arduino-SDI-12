@@ -120,7 +120,6 @@ void loop() {
     }
   }
 
-
   // next command to request data from last measurement
   myCommand = String(sensorAddress) + "D0!";
   Serial.print(">>>");
@@ -140,3 +139,5 @@ void loop() {
   }
   mySDI12.clearBuffer();
 }
+
+// cSpell:ignore Kertesz

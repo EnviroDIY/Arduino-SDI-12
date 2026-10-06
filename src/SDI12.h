@@ -1142,3 +1142,5 @@ class SDI12 : public Stream {
 };
 
 #endif  // SRC_SDI12_H_
+
+// cSpell:ignore Buendia ladyada Mikal Stroffregen Hagman Stoffregen

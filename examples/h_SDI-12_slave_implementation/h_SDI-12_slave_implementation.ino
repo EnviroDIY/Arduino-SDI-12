@@ -46,7 +46,7 @@ int    state         = 0;
 #define INITIATE_MEASUREMENT 2
 #define PROCESS_COMMAND 3
 
-// Create object by which to communicate with the SDI-12 bus on SDIPIN
+// Create object by which to communicate with the SDI-12 bus on the data pin
 SDI12 slaveSDI12(dataPin);
 
 void pollSensor(float* measurementValues) {
@@ -179,7 +179,7 @@ void formatOutputSDI(float* measurementValues, String* dValues, unsigned int max
 void setup() {
   slaveSDI12.begin();
   delay(500);
-  slaveSDI12.forceListen();  // sets SDIPIN as input to prepare for incoming message
+  slaveSDI12.forceListen();  // sets data pin as input to prepare for incoming message
 }
 
 void loop() {
@@ -187,7 +187,6 @@ void loop() {
   static String
     dValues[10];  // 10 String objects to hold the responses to aD0!-aD9! commands
   static String commandReceived = "";  // String object to hold the incoming command
-
 
   // If a byte is available, an SDI message is queued up. Read in the entire message
   // before proceeding.  It may be more robust to add a single character per loop()
@@ -270,3 +269,5 @@ void loop() {
       }
   }
 }
+
+// cSpell:ignore Wasielewski tttnn unkn
