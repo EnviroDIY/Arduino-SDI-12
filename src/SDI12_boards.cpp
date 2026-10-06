@@ -9,11 +9,6 @@
  *
  */
 
-/* ======================== Arduino SDI-12 =================================
-An Arduino library for SDI-12 communication with a wide variety of environmental
-sensors. This library provides a general software solution, without requiring
-   ======================== Arduino SDI-12 =================================*/
-
 #include "SDI12_boards.h"
 
 SDI12Timer::SDI12Timer() {}

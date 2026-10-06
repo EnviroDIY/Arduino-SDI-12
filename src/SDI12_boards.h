@@ -8,11 +8,6 @@
  *
  */
 
-/* ======================== Arduino SDI-12 =================================
-An Arduino library for SDI-12 communication with a wide variety of environmental
-sensors. This library provides a general software solution, without requiring
-   ======================== Arduino SDI-12 =================================*/
-
 #ifndef SRC_SDI12_BOARDS_H_
 #define SRC_SDI12_BOARDS_H_
 
