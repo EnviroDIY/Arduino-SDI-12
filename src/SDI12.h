@@ -703,13 +703,11 @@ class SDI12 : public Stream {
    */
   int available() override;
   /**
-   * @brief Reveal a byte in the Rx buffer without consuming it.
+   * @brief Reveal the next byte in the Rx buffer without consuming it.
    *
    * @param use_parity True to verify parity and return a character that excludes the
    * parity bit.  If use_parity is set to true and the next character fails the parity
    * check, -1 will be returned.
-   * @param offset The position in the buffer of the character or byte to return.
-   * Optional with a default value of 0.
    *
    * @return The next byte in the character buffer.
    *
@@ -718,24 +716,19 @@ class SDI12 : public Stream {
    * the index addressed by _rxBufferHead is not changed). peek() returns -1 if there
    * are no characters to show.
    */
-  int peek(bool use_parity, uint8_t offset = 0);
+  int peek(bool use_parity);
   /**
-   * @brief Reveal next byte **(7E1)** in the Rx buffer without consuming it.
-   *
+   * @brief Reveal the next byte **(7E1)** in the Rx buffer without consuming it.   *
    * @return The next byte in the character buffer, or -1 if the buffer is empty or the
    * next byte in the buffer doesn't pass parity check.
    */
   int peek() override;
   /**
-   * @brief Reveals a byte **(8N1)** at a specific position in the buffer without
+   * @brief Reveals the next byte **(8N1)** at a specific position in the buffer without
    * consuming
-   *
-   * @param offset Offset position from the buffer head, offset=0 refers to the buffer
-   * head.
-   * @return int - uint8_t representation of byte if valid, -1 if offset is outside
-   * buffer range.
+   * @return int - uint8_t representation of byte if valid
    */
-  int peekBinary(uint8_t offset = 0);
+  int peekBinary(void);
   /**
    * @brief Clear the Rx buffer by setting the head and tail pointers to the same value.
    *

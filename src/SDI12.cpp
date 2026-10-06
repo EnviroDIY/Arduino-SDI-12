@@ -38,7 +38,7 @@ int SDI12::available() {
 }
 
 // reveals the next character in the buffer without consuming
-int SDI12::peek(bool use_parity, uint8_t offset) {
+int SDI12::peek(bool use_parity) {
   SDI12_YIELD()
   if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
 
@@ -56,12 +56,12 @@ int SDI12::peek(bool use_parity, uint8_t offset) {
 
 // reveals the next character in the buffer without consuming
 int SDI12::peek() {
-  return peek(true, 0);
+  return peek(true);
 }
 
 // Peek at byte from Rx buffer without consuming it.
-int SDI12::peekBinary(uint8_t offset) {
-  return peek(false, offset);
+int SDI12::peekBinary() {
+  return peek(false);
 }
 
 // a public function that clears the buffer contents and resets the status of the buffer
@@ -77,7 +77,7 @@ int SDI12::read(bool use_parity) {
   SDI12_YIELD()
   _bufferOverflow = false;                        // Reading makes room in the buffer
   if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
-  uint8_t nextChar = peek(use_parity, 0);         // Otherwise, grab char at head
+  uint8_t nextChar = peek(use_parity);            // Otherwise, grab char at head
   // ^^ Use peek to grab the character, because it already checks parity
   _rxBufferHead = (_rxBufferHead + 1) % SDI12_BUFFER_SIZE;  // increment head
   return nextChar;
