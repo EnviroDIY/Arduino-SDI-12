@@ -70,7 +70,7 @@ String  this_result[n_addresses];
 uint8_t numSensors = 0;
 
 struct startMeasurementResult {  // Structure declaration
-  String  returnedAddress;
+  String  returned_address;
   uint8_t meas_time_s;
   int     numberResults;
 };
@@ -129,7 +129,6 @@ bool printInfo(char address, bool printIO = true) {
     Serial.print(">>>");
     Serial.println(command);
   }
-  delay(30);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
@@ -206,7 +205,6 @@ getResultsResult getResults(char address, int resultsExpected, bool verify_crc =
     command += cmd_number;
     command += "!";
     mySDI12.sendCommand(command, wake_delay);
-    delay(30);
     if (printIO) {
       Serial.print(">>>");
       Serial.println(command);
@@ -242,7 +240,7 @@ getResultsResult getResults(char address, int resultsExpected, bool verify_crc =
     }
     mySDI12.clearBuffer();
 
-    // check the crc, break if it's incorrect
+    // check the crc, continue to the next attempt if it's incorrect
     if (verify_crc) {
       bool crcMatch = mySDI12.verifyCRC(sdiResponse);
       // subtract the 3 characters of the CRC from the total number of data values
@@ -264,7 +262,7 @@ getResultsResult getResults(char address, int resultsExpected, bool verify_crc =
       }
     }
 
-    // check the address, break if it's incorrect
+    // check the address, continue to the next attempt if it's incorrect
     // NOTE: If the address is wrong because the response is garbled, the CRC check
     // above should fail. But we still verify the address in case we're not checking the
     // CRC or we got a well formed response from the wrong sensor.
@@ -473,9 +471,9 @@ startMeasurementResult startMeasurement(char address, bool is_concurrent = false
                                         bool printIO = true) {
   // Create the return struct
   startMeasurementResult return_result;
-  return_result.returnedAddress = "";
-  return_result.meas_time_s     = 0;
-  return_result.numberResults   = 0;
+  return_result.returned_address = "";
+  return_result.meas_time_s      = 0;
+  return_result.numberResults    = 0;
 
   String command = "";
   command += address;                    // All commands start with the address
@@ -488,7 +486,6 @@ startMeasurementResult startMeasurement(char address, bool is_concurrent = false
     Serial.print(">>>");
     Serial.println(command);
   }
-  delay(30);
 
   // wait for acknowledgement with format [address][ttt (3 char, seconds)][number of
   // measurements available, 0-9]
@@ -504,7 +501,7 @@ startMeasurementResult startMeasurement(char address, bool is_concurrent = false
   String returnedAddress   = sdiResponse.substring(0, 1);
   char   ret_addr_array[2] = {'\0'};
   returnedAddress.toCharArray(ret_addr_array, sizeof(ret_addr_array));
-  return_result.returnedAddress = ret_addr_array[0];
+  return_result.returned_address = ret_addr_array[0];
   if (returnedAddress != String(address)) {
     if (printIO) {
       Serial.println("Wrong address returned!");
@@ -606,7 +603,9 @@ bool checkActive(char address, int8_t numPings = 3, bool printIO = true) {
       Serial.println(command);
     }
     mySDI12.sendCommand(command, wake_delay);
-    delay(30);
+    // wait for a response; the sensor must return within 100ms
+    uint32_t waitStart = millis();
+    while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
 
     // the sensor should just return its address followed by '\r\n'
     if (mySDI12.available()) {
@@ -660,6 +659,7 @@ bool checkActive(char address, int8_t numPings = 3, bool printIO = true) {
       }
     }
   }
+
   mySDI12.clearBuffer();
   return false;
 }
@@ -736,7 +736,7 @@ void setup() {
   if (numSensors == 0) {
     Serial.println(
       "No sensors found, please check connections and restart the Arduino.");
-    while (true) { delay(10); }  // do nothing forever
+    while (true);  // do nothing forever
   }
 
   Serial.println();

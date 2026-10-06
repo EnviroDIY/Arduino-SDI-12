@@ -64,7 +64,8 @@ void loop() {
   Serial.println(myCommand);  // echo command to terminal
 
   mySDI12.sendCommand(myCommand);
-  delay(30);  // wait a while for a response
+  uint32_t waitStart = millis();  // the sensor must return within 100ms
+  while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
 
   while (mySDI12.available()) {  // build response string
     char c = mySDI12.read();
@@ -87,7 +88,8 @@ void loop() {
   Serial.println(myCommand);  // echo command to terminal
 
   mySDI12.sendCommand(myCommand);
-  delay(30);  // wait a while for a response
+  uint32_t waitStart = millis();  // the sensor must return within 100ms
+  while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
 
   while (mySDI12.available()) {  // build string from response
     char c = mySDI12.read();

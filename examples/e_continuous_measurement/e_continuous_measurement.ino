@@ -83,7 +83,6 @@ void printInfo(char i) {
     Serial.print(">>>");
     Serial.println(command);
   }
-  delay(30);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
@@ -123,7 +122,6 @@ bool getContinuousResults(char addr, int resultsExpected) {
     command += cmd_number;
     command += "!";
     mySDI12.sendCommand(command, wake_delay);
-    delay(30);
     if (printIO) {
       Serial.print(">>>");
       Serial.println(command);
@@ -281,7 +279,7 @@ void setup() {
   if (numSensors == 0) {
     Serial.println(
       "No sensors found, please check connections and restart the Arduino.");
-    while (true) { delay(10); }  // do nothing forever
+    while (true);  // do nothing forever
   }
 
   Serial.println();

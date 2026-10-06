@@ -132,8 +132,7 @@ bool getResults(char address, int resultsExpected) {
     command += cmd_number;
     command += "!";
     mySDI12.sendCommand(command, wake_delay);
-    delay(30);
-    if (printIO) {
+        if (printIO) {
       Serial.print(">>>");
       Serial.println(command);
     }
@@ -141,7 +140,7 @@ bool getResults(char address, int resultsExpected) {
     // Wait for the first few characters to arrive.  The response from a data
     // request should always have more than three characters
     uint32_t start = millis();
-    while (mySDI12.available() < 3 && (millis() - start) < 1500) {}
+    while (mySDI12.available() < 3 && (millis() - start) < 150) {}
 
     // read the returned address to remove it from the buffer
     char returnedAddress = mySDI12.read();
@@ -230,7 +229,6 @@ bool takeMeasurement(char i, String meas_type = "") {
   command += meas_type;
   command += "!";  // SDI-12 measurement command format  [address]['M'][!]
   mySDI12.sendCommand(command, wake_delay);
-  delay(30);
 
   if (printIO) {
     Serial.print(">>>");
@@ -282,7 +280,6 @@ bool takeMeasurement(char i, String meas_type = "") {
     }
   }
   // Wait for anything else and clear it out
-  delay(30);
   mySDI12.clearBuffer();
 
   if (numResults > 0) { return getResults(i, numResults); }
@@ -358,7 +355,7 @@ void setup() {
   if (numSensors == 0) {
     Serial.println(
       "No sensors found, please check connections and restart the Arduino.");
-    while (true) { delay(10); }  // do nothing forever
+    while (true);  // do nothing forever
   }
 
   Serial.println();

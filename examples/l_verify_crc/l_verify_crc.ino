@@ -54,7 +54,6 @@ void setup() {
   mySDI12.sendCommand(command);
   Serial.print(">>>");
   Serial.println(command);
-  delay(30);
 
   sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
@@ -84,7 +83,6 @@ void loop() {
   Serial.println(myCommand);  // echo command to terminal
 
   mySDI12.sendCommand(myCommand);
-  delay(5);
 
   // wait for acknowledgement with format [address][ttt (3 char, seconds)][number of
   // measurements available, 0-9]
@@ -127,8 +125,6 @@ void loop() {
   Serial.println(myCommand);  // echo command to terminal
 
   mySDI12.sendCommand(myCommand);
-  delay(30);  // wait a while for a response
-
 
   sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();

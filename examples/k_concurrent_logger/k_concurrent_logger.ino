@@ -94,7 +94,6 @@ void printInfo(char i) {
   command += (char)i;
   command += "I!";
   mySDI12.sendCommand(command, wake_delay);
-  delay(30);
 
   String sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
@@ -138,7 +137,6 @@ bool getResults(char addr, int resultsExpected) {
     command += cmd_number;
     command += "!";
     mySDI12.sendCommand(command, wake_delay);
-    delay(30);
     if (printIO) {
       Serial.print(">>>");
       Serial.println(command);
@@ -236,7 +234,6 @@ int startConcurrentMeasurement(char i, String meas_type = "") {
   command += meas_type;
   command += "!";  // SDI-12 concurrent measurement command format  [address]['C'][!]
   mySDI12.sendCommand(command, wake_delay);
-  delay(30);
 
   if (printIO) {
     Serial.print(">>>");
@@ -349,7 +346,7 @@ void setup() {
   if (numSensors == 0) {
     Serial.println(
       "No sensors found, please check connections and restart the Arduino.");
-    while (true) { delay(10); }  // do nothing forever
+    while (true);  // do nothing forever
   }
 
   Serial.println();

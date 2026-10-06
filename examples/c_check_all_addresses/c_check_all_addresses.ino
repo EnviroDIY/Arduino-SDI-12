@@ -78,7 +78,6 @@ void printInfo(SDI12& sdi, char i) {
   command += "I!";
   sdi.clearBuffer();
   sdi.sendCommand(command, wake_delay);
-  delay(30);
 
   String sdiResponse = sdi.readStringUntil('\n');
   sdiResponse.trim();
