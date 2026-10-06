@@ -135,12 +135,17 @@
 /// Helper for strings stored in flash
 typedef const __FlashStringHelper* FlashString;
 
+/**
+ * @anchor sdi12_buffer_defines
+ * @name SDI-12 Data Buffer Defines
+ *
+ * @brief Defines for constants related to the buffer and messages sizes in SDI-12
+ *
+ * @note The following data buffer sizes does not include CR+LF and CRC
+ */
+/**@{*/
 /// a char not found in a valid ASCII numeric field
 #define NO_IGNORE_CHAR '\x01'
-
-/* SDI-12 Data Buffer Size Specification */
-// The following data buffer sizes does not include CR+LF and CRC
-
 /**
  * @brief The maximum number of characters in a single value in a data response.
  *
@@ -189,28 +194,86 @@ typedef const __FlashStringHelper* FlashString;
  */
 #define SDI12_BUFFER_SIZE 81
 #endif
+/**@}*/
 
-// SDI-12 Timing Specification
+/**
+ * @anchor sdi12_timing_defines
+ * @name SDI-12 Timing Defines
+ *
+ * @brief Defines for constants related to SDI-12 timing specifications
+ *
+ * @note Defines for timing and clocks for specific boards are in the SDI12_boards.h
+ * file.
+ */
+/**@{*/
 /**
  * @brief The size of a bit in microseconds
  *
  * 1200 baud = 1200 bits/second ~ 833.333 µs/bit
  */
 #define SDI12_BIT_WIDTH_MICROS static_cast<uint16_t>(833)
+
+#ifndef SDI12_LINE_BREAK_MICROS
 /**
+ * @def SDI12_LINE_BREAK_MICROS
  * @brief The required "break" before sending commands, >= 12ms.  The line level is HIGH
  * for the break.
  */
-#ifndef SDI12_LINE_BREAK_MICROS
 #define SDI12_LINE_BREAK_MICROS static_cast<uint16_t>(12100)
 #endif
+
+#ifndef SDI12_LINE_MARK_MICROS
 /**
+ * @def SDI12_LINE_MARK_MICROS
  * @brief The required mark before a command or response, >= 8.33ms.  The line level is
  * LOW for the marking.
  */
-#ifndef SDI12_LINE_MARK_MICROS
 #define SDI12_LINE_MARK_MICROS static_cast<uint16_t>(8400)
 #endif
+
+#ifndef SDI12_WAKE_DELAY
+/**
+ * @def SDI12_WAKE_DELAY
+ * @brief The amount of additional time in milliseconds that the sensor takes to wake
+ * before being ready to receive a command.  Default is 0ms - meaning the sensor is
+ * ready for a command by the end of the 12ms break.  Per protocol, the wake time must
+ * be less than 100 ms.
+ */
+#define SDI12_WAKE_DELAY 0
+#endif
+
+/**
+ * @def SDI12_YIELD_MS
+ * @brief The time to delay, in milliseconds, to allow the buffer to fill before
+ * returning the value from the buffer.
+ *
+ * This may be needed for faster processors to account for the slow baud rate of SDI-12.
+ * Without this, the available() function may return 0 while we're in the middle of
+ * reading a character.
+ *
+ * There are 8.33 ms/character, so we delay by 8ms for fast processors to allow one
+ * character to finish.
+ */
+#ifndef SDI12_YIELD_MS
+#if F_CPU >= 48000000L
+#define SDI12_YIELD_MS 8
+#else
+#define SDI12_YIELD_MS 0
+#endif
+#endif
+
+#ifndef SDI12_YIELD
+/**
+ * @def SDI12_YIELD
+ * @brief A delay function to allow the buffer to fill before returning the value from
+ * the buffer.
+ *
+ * This may be needed for faster processors to account for the slow baud rate of SDI-12.
+ */
+#define SDI12_YIELD() \
+  { delay(SDI12_YIELD_MS); }
+#endif
+/**@}*/
 
 /**
  * Possible SDI-12 States
@@ -259,35 +322,6 @@ typedef const __FlashStringHelper* FlashString;
 #define SDI12_CHECK_PARITY
 #endif
 
-#ifndef SDI12_WAKE_DELAY
-/**
- * @brief The amount of additional time in milliseconds that the sensor takes to wake
- * before being ready to receive a command.  Default is 0ms - meaning the sensor is
- * ready for a command by the end of the 12ms break.  Per protocol, the wake time must
- * be less than 100 ms.
- */
-#define SDI12_WAKE_DELAY 0
-#endif
-
-#ifndef SDI12_YIELD_MS
-/**
- * @brief The time to delay, in milliseconds, to allow the buffer to fill before
- * returning the value from the buffer.
- *
- * This may be needed for faster processors to account for the slow baud rate of SDI-12.
- * Without this, the available() function may return 0 while we're in the middle of
- * reading a character.
- *
- * There are 8.33 ms/character, so we delay by 8ms for fast processors to allow one
- * character to finish.
- */
-#if F_CPU >= 48000000L
-#define SDI12_YIELD_MS 8
-#else
-#define SDI12_YIELD_MS 0
-#endif
-#endif
-
 /**
  * Define SDI12_TX_DISABLE_INTERRUPTS at build time to disable *all* interrupts while
  * transmitting each character, on a processor where this library would otherwise leave
@@ -306,17 +340,6 @@ typedef const __FlashStringHelper* FlashString;
  * this if something else on the board cannot tolerate that.
  */
 // #define SDI12_TX_DISABLE_INTERRUPTS
-
-#ifndef SDI12_YIELD
-/**
- * @brief A delay function to allow the buffer to fill before returning the value from
- * the buffer.
- *
- * This may be needed for faster processors to account for the slow baud rate of SDI-12.
- */
-#define SDI12_YIELD() \
-  { delay(SDI12_YIELD_MS); }
-#endif
 
 /// @def NEED_LOOKAHEAD_ENUM
 /// @brief This macro is defined if lookahead options are needed.
