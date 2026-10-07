@@ -246,6 +246,11 @@ void SDI12::end() {
   sdi12timer.resetSDI12TimerPrescale();
 }
 
+// Get the timeout return
+int16_t SDI12::getTimeoutValue(void) {
+  return TIMEOUT;
+}
+
 // Set the timeout return
 void SDI12::setTimeoutValue(int16_t value) {
   TIMEOUT = value;
@@ -405,8 +410,10 @@ void SDI12::wakeSensors(int8_t extraWakeTime) {
   digitalWrite(_dataPin, HIGH);  // break is HIGH
   delayMicroseconds(
     SDI12_LINE_BREAK_MICROS);  // Required break of 12 milliseconds (12,000 µs)
-  delayMicroseconds(extraWakeTime * 1000);  // allow the sensors to wake
-  digitalWrite(_dataPin, LOW);              // marking is LOW
+  if (extraWakeTime > 0) {     // allow the sensors to wake, iff specified
+    delay(static_cast<unsigned long>(extraWakeTime));
+  }
+  digitalWrite(_dataPin, LOW);  // marking is LOW
   delayMicroseconds(
     SDI12_LINE_MARK_MICROS);  // Required marking of 8.33 milliseconds(8,333 µs)
 }

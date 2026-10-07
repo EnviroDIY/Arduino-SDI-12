@@ -9,11 +9,23 @@
   - [Ideal Timer Settings](#ideal-timer-settings)
   - [AVR Boards](#avr-boards)
     - [Available Timers on AVR Boards](#available-timers-on-avr-boards)
+      - [ATmega AVR Available Timers](#atmega-avr-available-timers)
+      - [ATtiny AVR Available Timers](#attiny-avr-available-timers)
+      - [ATmegaXU AVR Available Timers](#atmegaxu-avr-available-timers)
     - [Timers Used by Arduino AVR Core](#timers-used-by-arduino-avr-core)
     - [Selected AVR Timers for SDI-12](#selected-avr-timers-for-sdi-12)
+      - [ATmega AVR Selected Timers](#atmega-avr-selected-timers)
+      - [ATtiny AVR Selected Timers](#attiny-avr-selected-timers)
+      - [ATmegaXU Selected Timers](#atmegaxu-selected-timers)
   - [SAMD Boards](#samd-boards)
     - [SAMD21](#samd21)
+      - [Available Clocks and Timers on SAMD21 Boards](#available-clocks-and-timers-on-samd21-boards)
+      - [Timers Used by Arduino SAMD21 Core](#timers-used-by-arduino-samd21-core)
+      - [Selected SAMD21 Timers for SDI-12](#selected-samd21-timers-for-sdi-12)
     - [SAMD51/SAME51](#samd51same51)
+      - [Available Clocks and Timers on SAMD51 Boards](#available-clocks-and-timers-on-samd51-boards)
+      - [Timers Used by Arduino SAMD51 Core](#timers-used-by-arduino-samd51-core)
+      - [Selected SAMD51 Timers for SDI-12](#selected-samd51-timers-for-sdi-12)
   - [Other Boards](#other-boards)
 
 <!--! @endif -->
@@ -28,7 +40,9 @@ This means we need to do some averaging and "fudging" to align the two.
 
 ## SDI-12 Timing Rules
 
-SDI-12 Communicates at 1200 baud (bits/s) and sends each character using 10 bits (7E1).
+SDI-12 communicates at 1200 baud (bits/s) and sends each character using 10 bits (7E1).
+The specification gives a general timing tolerance of ±0.40 ms.
+The only stated exception is the inter-character marking limit, which has no tolerance.
 
 - Character Times:
   - 1 bit = 0.83333 ms (?? tolerance ??)
@@ -36,61 +50,67 @@ SDI-12 Communicates at 1200 baud (bits/s) and sends each character using 10 bits
   - maximum marking between character stop (LOW) and next character start (HIGH) = 1.66ms (**no tolerance**)
     - This is equivalent to 2 bits!
 
-- Break and Marking Times
-  - maximum sensor wake time (between a break and start bit) = 100ms ± 0.4ms
-  - minimum marking (LOW) return-to-sleep time = 100ms ± 0.4ms
-  - recorder break (HIGH) between commands =  >12ms ± 0.4ms (ie, >12.5ms)
-  - maximum recorder marking (LOW) before a start bit (HIGH) = >8.33ms ± 0.4ms (ie, >8.73ms)
-  - maximum time before relinquishing line control after stop bit = 7.5ms ± 0.4ms
-  - maximum marking (LOW) before a new waking break (HIGH) must be issued = 87ms ± 0.4ms
-    - A break is also required when switching between sensors
+- Break, marking, response, and release times
+  - A recorder sends a break by holding the line in spacing for at least 12 ms.
+  - A sensor must ignore spacing shorter than 6.5 ms and must recognize spacing longer than 12 ms as a break.
+  - After a break, a sensor must detect 8.33 ms of marking before looking for an address.
+  - A sensor must be capable of detecting a valid command start bit within 100 ms after detecting a break.
+  - After the final command stop bit, the recorder must release the line within 7.5 ms, with a +0.40 ms tolerance.
+  - The addressed sensor nominally marks for 8.33 ms before its response; this interval has a -0.40 ms tolerance. The first response start bit must begin within 15 ms of the final command stop bit, with a +0.40 ms tolerance.
+  - After the final response stop bit, the sensor must release the line within 7.5 ms, with a +0.40 ms tolerance.
+  - A sensor must return to low-power standby after an invalid address or after 100 ms of marking, with a +0.40 ms tolerance on the marking interval.
+  - A break is required before addressing a different sensor and after more than 87 ms of marking. A D0 command sent within 87 ms of a service request does not require another break.
 
 - Retry Times
-  - There are two retry "loops" - an "inner" loop of retries without breaks between and an "outer" loop of retries with breaks in between
-  - Inner Retries (*without* breaks between)
-    - Response window before a retry = 16.67ms - 87ms (< 87ms = time before a break is required)
-    - A minimum of 3 "inner" retries are required.
-    - At least one of the "inner" retries must start >100ms after the falling edge (end) of the break that started the inner retry loop.
-  - Outer Retries (*with* breaks between)
-    - Outer retries are used after >112.5ms of inner retries have been attempted
-    - A minimum of 3 "outer" retries are required.
+  - If no response arrives, the recorder must wait at least 16.67 ms, but no more than 87 ms, after the command's final stop bit and then retry without a break. The 87 ms includes the initial 16.67 ms response wait.
+  - The command must be retransmitted at least two times, giving at least three command attempts in the sequence. At least one retry must begin more than 100 ms after the falling edge at the end of the break.
+  - If those attempts do not produce a correct response, the complete sequence, including its break and retries, should be repeated at least two more times.  This gives at least three complete sequences.
+  - A retry is required for no response, 8.33 ms of marking after a response start bit, or an invalid response. The recorder must allow a response to finish before retrying.
+  - Appendix B's suggested recorder flow chart uses a 112.5 ms retry timer. This is flow-chart guidance, not a separate normative deadline for starting the next sequence or a required rollover period for the library's bit timer.
 
 ## Ideal Timer Settings
 
-When setting up our timers, the goal is to be able to have as many ticks as possible for each bit.
-The more ticks we have, the better job we can do with the needed averaging and fudging.
-With <10 ticks/bit, we probably won't be accurate enough to be functional.
-But, we also need to make sure that the clock timer doesn't roll over before the end of the 8.33ms required for each character.
-When acting as a recording device, it would be even better if the timer could last until the end of a 112.5ms retry timer before rolling over.
-There is no benefit to the timer lasting longer than 112.5ms before rolling over.
+The library timer measures intervals between data-line edges for character transmission and reception.
+Retry scheduling is an application-level task and does not require this timer to span a retry interval.
+
+More timer ticks per bit improve resolution.
+The timer period must also be long enough to prevent an edge interval from becoming ambiguous after counter rollover.
+A complete 7E1 character takes 10 bit times, but a valid stream can have a longer interval between detectable edges.
+For example, a character ending in a long run of marking followed by the permitted 1.66 ms inter-character marking can approach 11 bit times.
+Receive-window arithmetic such as `dt + RX_WINDOW_FUDGE` must also remain in range.
 
 Each timer has finite options for pre-scaling, often in powers of 2.
-To catch all the bits we need, when selecting the prescaler, we must round **UP** to the next closest available prescaler number (round **DOWN** the Hz) to give us *more* ticks than required.
+For a required rollover period, the timer frequency must not exceed the counter size divided by that period.
+To maximize resolution, select the fastest available timer frequency at or below that limit.
+This normally means rounding the required prescaler **up**, which rounds the resulting timer frequency **down**.
+A larger prescaler gives fewer ticks per bit, not more.
 
 Using a 16 bit counter, the counter rolls after 65536 ticks.
 
-- Going for the maximum retry time, 112.5ms / 65536 ticks
-  - 1.71661376953125 µsec/tick, 582.54222 kHz
-  - 485.25767 ticks/bit
-  - This is *plenty* of ticks per bit!  With a 16-bit timer, there's no reason to not use this whole period.
-- Going for the minimum 8.33ms per character, 8.33ms / 65536 ticks
-  - 0.127105712890625 µsec/tick, 7.86747 MHz
+- Using Appendix B's optional 112.5 ms retry-timer period as a design target:
+  - 1.71661376953125 µs/tick, or 582.54222 kHz
+  - 485.45185 ticks/bit
+- Using one nominal 8.33333 ms character as the period:
+  - 0.1271565755 µs/tick, or 7.86432 MHz
   - 6553.6 ticks/bit
-  - This is overkill.
 
-- Conclusion: With a 16-bit timer, select the smallest prescaler possible that keeps the speed *below* 582 kHz
+The current SAMD implementations use 500 kHz, giving 416 timer ticks per bit and a 131.072 ms rollover period.
 
 If we only have an 8 bit timer, the counter rolls after 256 ticks.
 
-- Going for the maximum retry time, 112.5ms / 256 ticks
-  - 0.439453125 msec/tick, 2.275 kHz
-  - 1.89554 ticks/bit
-  - This is no where near enough bits / tick for accuracy, so it is not possible to keep a timer running for the 112.5 ms retry with a 8-bit timer.
-- Going for the minimum 8.33ms per character, 8.33ms / 256 ticks = 25.6 ticks/bit
-  - 0.0325390625 msec/tick, 30.73229 kHz
+- Using Appendix B's optional 112.5 ms period:
+  - 0.439453125 ms/tick, or 2.27556 kHz
+  - 1.89630 ticks/bit, which is too little resolution for reliable decoding
+- Using one nominal 8.33333 ms character as the period:
+  - 0.0325520833 ms/tick, or 30.72 kHz
   - 25.6 ticks/bit
+- Covering 11 bit times requires a rollover period of at least 9.16667 ms:
+  - The timer frequency must be at most 27.92727 kHz before allowing additional margin for `RX_WINDOW_FUDGE`.
+  - This gives at most 23.27273 ticks/bit.
 
-- Conclusion: With a 8-bit timer, select the smallest prescaler possible that keeps the speed *below* 30 kHz
+The 8 MHz ATmega configuration in this library uses 31.25 kHz for better per-bit resolution and rolls over in 8.192 ms.
+The receive ISR has special handling for that configuration, but an 8-bit timestamp cannot distinguish every specification-valid edge interval.
+In particular, `0x7F` followed by a sufficiently long, but valid, inter-character mark can cross the rollover boundary and be decoded incorrectly.
 
 ## AVR Boards
 
@@ -181,7 +201,9 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 
 #### ATmega AVR Selected Timers
 
-For simplicity, we use Timer/Counter 2 for both ATmega164A/PA/324A/PA/644A/PA/1284/P and ATmega640/V-1280/V-1281/V-2560/V-2561/V series boards.
+The library selects either Timer/Counter 2 or Timer/Counter 3 according to the capabilities of the supported ATmega processor:
+
+- The ATmega168, ATmega328P, ATmega644, and ATmega644P use the 8-bit Timer/Counter 2.
 
 > Timer/Counter2 (TC2) is a general purpose, single channel, 8-bit Timer/Counter module.
 >
@@ -194,6 +216,22 @@ For simplicity, we use Timer/Counter 2 for both ATmega164A/PA/324A/PA/644A/PA/12
 > - 10-bit Clock Prescaler
 > - Overflow and Compare Match Interrupt Sources (TOV2, OCF2A, and OCF2B)
 > - Allows Clocking from External 32kHz Watch Crystal Independent of the I/O Clock
+
+- The ATmega1280, ATmega2560, ATmega1284, and ATmega1284P use the 16-bit Timer/Counter 3.
+
+> **Features of Timer/Counter 3**
+>
+> - True 16-bit design (that is, allows 16-bit PWM)
+> - Two independent Output Compare units
+> - Double Buffered Output Compare Registers
+> - One Input Capture unit
+> - Input Capture Noise Canceler
+> - Clear Timer on Compare Match (Auto Reload)
+> - Glitch-free, Phase Correct Pulse Width Modulator (PWM)
+> - Variable PWM Period
+> - Frequency Generator
+> - External Event Counter
+> - Four independent interrupt Sources (TOV3, OCF3A, OCF3B, and ICF3)
 
 #### ATtiny AVR Selected Timers
 

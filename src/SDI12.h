@@ -745,12 +745,12 @@ class SDI12 : public Stream {
   void flush() override {}
 
   /**
-   * @brief Get the current stream timeout value.   *
-   * @return The current timeout value in milliseconds.
+   * @brief Get the current stream timeout time.
+   * @return The current timeout time in milliseconds.
    * @note Some cores do not implement getTimeout(), this function _hides_ the Stream
    * class function on cores that do.
    */
-  unsigned long getTimeout(void) {
+  unsigned long getTimeout() {
     return _timeout;
   }
 
@@ -898,26 +898,33 @@ class SDI12 : public Stream {
    * @brief The value to return if a parse or read times out with no return from the
    * sensor.
    *
-   * The timeout return for an Arduino stream object when no character is available in
-   * the Rx buffer is "0."  For environmental sensors (the typical SDI-12 users) 0 is a
-   * common result value.  To better distinguish between a timeout because of no
-   * sensor response and a true zero return, the timeout should be set to some value
-   * that is NOT a possible return from that sensor.  If the timeout is not set, -9999
-   * is used.
+   * The timeout return for parseInt and parseFloat of an Arduino stream object when no
+   * character is available in the Rx buffer is "0."  For environmental sensors (the
+   * typical SDI-12 users) 0 is a common result value.  To better distinguish between a
+   * timeout because of no sensor response and a true zero return, the timeout should be
+   * set to some value that is NOT a possible return from that sensor.  If the timeout
+   * is not set, -9999 is used.
+   *
+   * @attention This **only** applies to the parseInt and parseFloat functions of the
+   * SDI-12 object; it does not affect other read functions.  Calling read() or peek()
+   * when nothing is available in the Rx buffer will still behave as usual, returning
+   * -1.
    */
   int16_t TIMEOUT;
+
+  /**
+   * @brief Get the current value that will be returned IF a parse int or parse float
+   * times out with no return from the sensor.
+   * @return The current timeout value
+   * @copydetails TIMEOUT
+   */
+  int16_t getTimeoutValue();
+
   /**
    * @brief Set the value to return if a parse int or parse float times out with no
-   * return from the sensor.
-   *
-   * The "standard" timeout return for an Arduino stream object when no character is
-   * available in the Rx buffer is "0."  For environmental sensors (the typical SDI-12
-   * users) 0 is a common result value.  To better distinguish between a timeout because
-   * of no sensor response and a true zero return, the timeout should be set to some
-   * value that is NOT a possible return from that sensor.  If the timeout is not set,
-   * -9999 is used.
-   *
+   * return from the sensor.   *
    * @param value the value to return on timeout
+   * @copydetails TIMEOUT
    */
   void setTimeoutValue(int16_t value);
   /**

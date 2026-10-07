@@ -15,6 +15,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added
 
 - Added support for reading and writing for bulk data commands
+- Added functions to get the time before a read or parse times out and the value that will be returned on a timeout.
 
 ### Removed
 
@@ -22,6 +23,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Removed the delay from the yield function.  This was an incorrect delay that should have been handled by timedRead or timedPeek.
 
 ### Fixed
+
+- Fixed the extra wake timing which was not delaying properly because of integer overflows.
 
 ***
 
