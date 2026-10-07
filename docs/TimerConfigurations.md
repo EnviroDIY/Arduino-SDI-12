@@ -9,27 +9,11 @@
   - [Ideal Timer Settings](#ideal-timer-settings)
   - [AVR Boards](#avr-boards)
     - [Available Timers on AVR Boards](#available-timers-on-avr-boards)
-      - [ATmega AVR Available Timers](#atmega-avr-available-timers)
-      - [ATtiny AVR Available Timers](#attiny-avr-available-timers)
-      - [ATmegaXU AVR Available Timers](#atmegaxu-avr-available-timers)
     - [Timers Used by Arduino AVR Core](#timers-used-by-arduino-avr-core)
     - [Selected AVR Timers for SDI-12](#selected-avr-timers-for-sdi-12)
-      - [ATmega AVR Selected Timers](#atmega-avr-selected-timers)
-      - [ATtiny AVR Selected Timers](#attiny-avr-selected-timers)
-      - [ATmegaXU Selected Timers](#atmegaxu-selected-timers)
   - [SAMD Boards](#samd-boards)
     - [SAMD21](#samd21)
-      - [Available Clocks and Timers on SAMD21 Boards](#available-clocks-and-timers-on-samd21-boards)
-        - [SAMD21 Generic Clock Generators](#samd21-generic-clock-generators)
-        - [SAMD21 Timer Controllers](#samd21-timer-controllers)
-      - [Timers Used by Arduino SAMD21 Core](#timers-used-by-arduino-samd21-core)
-      - [Selected SAMD21 Timers for SDI-12](#selected-samd21-timers-for-sdi-12)
     - [SAMD51/SAME51](#samd51same51)
-      - [Available Clocks and Timers on SAMD51 Boards](#available-clocks-and-timers-on-samd51-boards)
-        - [SAMD51 Generic Clock Generators](#samd51-generic-clock-generators)
-        - [SAMD51 Timer Controllers](#samd51-timer-controllers)
-      - [Timers Used by Arduino SAMD51 Core](#timers-used-by-arduino-samd51-core)
-      - [Selected SAMD51 Timers for SDI-12](#selected-samd51-timers-for-sdi-12)
   - [Other Boards](#other-boards)
 
 <!--! @endif -->
@@ -116,7 +100,6 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 
 [ATmega164A/PA/324A/PA/644A/PA/1284/P](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-8272-8-bit-AVR-microcontroller-ATmega164A_PA-324A_PA-644A_PA-1284_P_datasheet.pdf)
 
->
 > - Up to 20MIPS throughput at 20MHz
 >   - Most Arduino boards are run at 16 or 8 MHz with a few at 12 MHz
 > - Two 8-bit Timer/Counters with Separate Prescalers and Compare Modes
@@ -130,13 +113,12 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 
 [ATmega640/V-1280/V-1281/V-2560/V-2561/V](https://ww1.microchip.com/downloads/en/devicedoc/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf)
 
->
 > - Up to 16 MIPS Throughput at 16MHz
-> – Two 8-bit Timer/Counters with Separate Prescaler and Compare Mode
+> - Two 8-bit Timer/Counters with Separate Prescaler and Compare Mode
 >   - Timers 0 and 2
 >   - Prescalers available at 8/64/256/1024 on Timer 0
 >   - Prescalers available at 8/32/64/128/256/1024 on Timer 2
-> – Four 16-bit Timer/Counters with Separate Prescaler, Compare- and Capture Mode
+> - Four 16-bit Timer/Counters with Separate Prescaler, Compare- and Capture Mode
 >   - Timers 1, 3, 4, and 5
 >   - Prescalers available at 8/64/256/1024 on Timer 1, 3, 4, and 5
 
@@ -144,13 +126,12 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 
 [ATtiny25/V / ATtiny45/V / ATtiny85/V](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2586-AVR-8-bit-Microcontroller-ATtiny25-ATtiny45-ATtiny85_Datasheet.pdf)
 
->
 > - Up to 20MIPS throughput at 20MHz
 >   - Most Arduino boards are run at 16 or 8 MHz with a few at 12 MHz
-> – One 8-bit Timer/Counter with Prescaler and Two PWM Channels
+> - One 8-bit Timer/Counter with Prescaler and Two PWM Channels
 >   - Timer 0
 >   - Prescalers available at 8/64/256/1024
-> – One 8-bit High Speed Timer/Counter with Separate Prescaler
+> - One 8-bit High Speed Timer/Counter with Separate Prescaler
 >   - Timer 1
 >   - Prescalers available at 64/128/256/512/1024/2048/4096/8192/16384
 
@@ -158,19 +139,17 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 
 [ATmega16U4/ATmega32U4](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-7766-8-bit-AVR-ATmega16U4-32U4_Datasheet.pdf)
 
->
-> – Up to 16 MIPS Throughput at 16MHz
-> – One 8-bit Timer/Counter with Separate Prescaler and Compare Mode
->
-> - Timer 0
-> - Prescalers available at 8/64/256/1024 on Timer 0
-> – Two 16-bit Timer/Counter with Separate Prescaler, Compare- and Capture Mode
-> - Timers 1 and 3
-> - Prescalers available at 8/64/256/1024 on Timer 1 and 3
-> – One 10-bit High-Speed Timer/Counter with PLL (64MHz) and Compare Mode
-> - Timer 4
-> - Prescalers available at 2/4/8/16/32/64/128/256/512/1024/2048/8192/169384 on Timer 4
-
+> - Up to 16 MIPS Throughput at 16MHz
+> - One 8-bit Timer/Counter with Separate Prescaler and Compare Mode
+>   - Timer 0
+>   - Prescalers available at 8/64/256/1024 on Timer 0
+> - Two 16-bit Timer/Counter with Separate Prescaler, Compare- and Capture Mode
+>   - Timers 1 and 3
+>   - Prescalers available at 8/64/256/1024 on Timer 1 and 3
+> - One 10-bit High-Speed Timer/Counter with PLL (64MHz) and Compare Mode
+>   - Timer 4
+>   - Prescalers available at 2/4/8/16/32/64/128/256/512/1024/2048/8192/169384 on Timer 4
+<!-- separator -->
 > [!NOTE]
 > There is no Timer 2 on the 16U4 or the 32U4
 
@@ -204,7 +183,6 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 
 For simplicity, we use Timer/Counter 2 for both ATmega164A/PA/324A/PA/644A/PA/1284/P and ATmega640/V-1280/V-1281/V-2560/V-2561/V series boards.
 
->
 > Timer/Counter2 (TC2) is a general purpose, single channel, 8-bit Timer/Counter module.
 >
 > **Features of Timer/Counter 2**
@@ -221,7 +199,6 @@ For simplicity, we use Timer/Counter 2 for both ATmega164A/PA/324A/PA/644A/PA/12
 
 On the ATTiny series (ATtiny25/V / ATtiny45/V / ATtiny85/V) boards, we use Timer/Counter 1
 
->
 > The Timer/Counter1 features a high resolution and a high accuracy usage with the lower prescaling opportunities.
 > It can also support two accurate, high speed, 8-bit pulse width modulators using clock speeds up to 64MHz (or 32MHz in low speed mode).
 
@@ -229,7 +206,6 @@ On the ATTiny series (ATtiny25/V / ATtiny45/V / ATtiny85/V) boards, we use Timer
 
 On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
 
->
 > Timer/Counter4 is a general purpose high speed Timer/Counter module, with three independent Output Compare Units, and with enhanced PWM support.
 >
 > **Features of Timer/Counter 4**
@@ -245,7 +221,7 @@ On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
 > - Five Independent Interrupt Sources (TOV4, OCF4A, OCF4B, OCF4D, FPF4)
 > - High Speed Asynchronous and Synchronous Clocking Modes
 > - Separate Prescaler Unit
-
+<!-- separator -->
 > [!NOTE]
 > We only utilize the low byte register of Timer 4, effectively using the 10-bit timer as an 8-bit timer.
 
@@ -257,7 +233,6 @@ On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
 
 ##### SAMD21 Generic Clock Generators
 
->
 > The Generic Clock controller GCLK provides nine Generic Clock Generators that can provide a wide range of clock frequencies.
 > Generators can be set to use different external and internal oscillators as source.
 > The clock of each Generator can be divided.
@@ -271,7 +246,6 @@ On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
 
 ##### SAMD21 Timer Controllers
 
->
 > The TC consists of a counter, a prescaler, compare/capture channels and control logic.
 > The counter can be set to count events, or it can be configured to count clock pulses.
 > The counter, together with the compare/capture channels, can be configured to timestamp input events, allowing capture of frequency and pulse width.
@@ -280,21 +254,21 @@ On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
 > **Features of the Timer Controller**
 >
 > - Selectable configuration
->   – Up to five 16-bit Timer/Counters (TC) including one low-power TC, each configurable as:
+>   - Up to five 16-bit Timer/Counters (TC) including one low-power TC, each configurable as:
 >   - 8-bit TC with two compare/capture channels
 >   - 16-bit TC with two compare/capture channels
 >   - 32-bit TC with two compare/capture channels, by using two TCs
 > - Waveform generation
->     – Frequency generation
->     – Single-slope pulse-width modulation
+>   - Frequency generation
+>   - Single-slope pulse-width modulation
 > - Input capture
->     – Event capture
->     – Frequency capture
->     – Pulse-width capture
+>   - Event capture
+>   - Frequency capture
+>   - Pulse-width capture
 > - One input event
 > - Interrupts/output events on:
->     – Counter overflow/underflow
->     – Compare match or capture
+>   - Counter overflow/underflow
+>   - Compare match or capture
 > - Internal prescaler
 > - Can be used with DMA and to trigger DMA transactions
 
@@ -319,7 +293,6 @@ For SDI-12, we'll use Generic Clock Generator 4 and Timer Controller 3
 
 ##### SAMD51 Generic Clock Generators
 
->
 > Depending on the application, peripherals may require specific clock frequencies to operate correctly.
 > The Generic Clock controller (GCLK) features 12 Generic Clock Generators [11:0] that can provide a wide range of clock frequencies.
 >
@@ -339,7 +312,6 @@ For SDI-12, we'll use Generic Clock Generator 4 and Timer Controller 3
 
 ##### SAMD51 Timer Controllers
 
->
 > There are up to eight TC peripheral instances.
 >
 > Each TC consists of a counter, a prescaler, compare/capture channels and control logic.
