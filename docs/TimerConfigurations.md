@@ -388,3 +388,5 @@ Both the ESP8266 and ESP32 are definitely fast enough that this works.
 - The ESP32 runs at 160 or 240 MHz.
 
 All of the other processors using the Arduino core also have the micros function, but the rest are not fast enough to waste the processor cycles to use the micros function and must manually configure the processor timer and use the faster assembly macros to read that processor timer directly.
+
+<!-- cSpell:ignore GCLK_PERIPH -->

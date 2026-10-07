@@ -14,7 +14,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 
+- Added support for reading and writing for bulk data commands
+
 ### Removed
+
+- Removed ability to turn off parity checking
 
 ### Fixed
 
