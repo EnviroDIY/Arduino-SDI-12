@@ -71,7 +71,6 @@ AGENTS.md
 .github/copilot-instructions.md
 .bumpversion.toml
 .clang-tidy
-.markdownlint-cli2.yaml
 .github/workflows/LibraryBuild.yml
 datasheets/*
 Datasheets.md
