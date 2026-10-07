@@ -1117,6 +1117,11 @@ RECURSIVE              = YES
 EXCLUDE                = ../src/ReadMe.md \
                          ../docs/mermaidDiagrams.md \
                          ../docs/dotDiagrams.dox \
+                         ../AGENTS.md \
+                         ../.github \
+                         ../.pio \
+                         ../.vscode \
+                         ../keywords.txt \
                          ../tests \
                          ../lib \
                          ../boards \
