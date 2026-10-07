@@ -148,7 +148,7 @@ If we only have an 8 bit timer, the counter rolls after 256 ticks.
 >   - Prescalers available at 8/64/256/1024 on Timer 1 and 3
 > - One 10-bit High-Speed Timer/Counter with PLL (64MHz) and Compare Mode
 >   - Timer 4
->   - Prescalers available at 2/4/8/16/32/64/128/256/512/1024/2048/8192/169384 on Timer 4
+>   - Prescalers available at 2/4/8/16/32/64/128/256/512/1024/2048/8192/16384 on Timer 4
 <!-- separator -->
 > [!NOTE]
 > There is no Timer 2 on the 16U4 or the 32U4
