@@ -23,6 +23,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- Fixed the extra wake timing which was not delaying properly because of integer overflows.
+
 ***
 
 ## [2.3.4]
