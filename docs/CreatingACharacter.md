@@ -272,3 +272,5 @@ void SDI12::charToBuffer(uint8-t c) {
   }
 }
 ```
+
+<!-- cSpell:ignore sditimer_t -->

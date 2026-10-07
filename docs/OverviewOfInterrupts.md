@@ -181,3 +181,5 @@ if(!*digitalPinToPCMSK(_dataPin)){
       *digitalPinToPCICR(_dataPin) &= ~(1<<digitalPinToPCICRbit(_dataPin));
   }
 ```
+
+<!-- cSpell:ignore PCMSK PCICR PCINT XTAL -->
