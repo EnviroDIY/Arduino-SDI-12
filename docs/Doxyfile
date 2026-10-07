@@ -2598,12 +2598,8 @@ INCLUDE_FILE_PATTERNS  = *.c \
 
 PREDEFINED             = DOXYGEN=1 \
                          __attribute__((__progmem__))= \
-                         PLATFORMIO=60116 \
-                         ARDUINO_AVR_ENVIRODIY_MAYFLY \
-                         F_CPU=8000000L \
-                         ARDUINO_ARCH_AVR \
-                         ARDUINO=10808 \
-                         __AVR_ATmega1284P__ \
+                         __AVR_ATmega328P__ \
+                         F_CPU=16000000L \
                          NEOSWSERIAL_EXTERNAL_PCINT \
                          SDI12_EXTERNAL_PCINT \
                          SERIAL_PORT_USBVIRTUAL=0 \

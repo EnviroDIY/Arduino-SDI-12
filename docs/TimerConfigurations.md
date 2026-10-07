@@ -231,7 +231,7 @@ The library selects either Timer/Counter 2 or Timer/Counter 3 according to the c
 > - Variable PWM Period
 > - Frequency Generator
 > - External Event Counter
-> - Four independent interrupt Sources (TOV1, OCF1A, OCF1B, and ICF1)
+> - Four independent interrupt Sources (TOV3, OCF3A, OCF3B, and ICF3)
 
 #### ATtiny AVR Selected Timers
 

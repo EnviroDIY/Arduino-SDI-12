@@ -59,8 +59,10 @@ void loop() {
   do {  // wait for a response from the serial terminal to do anything
     delay(30);
   } while (!Serial.available());
-  Serial.read();  // simply hit enter in the terminal window or press send and the
-                  // characters get discarded but now the rest of the loop continues
+  while (Serial.available()) {
+    Serial.read();  // simply hit enter in the terminal window or press send and the
+                    // characters get discarded but now the rest of the loop continues
+  }
 
   // first command to take a measurement
   myCommand = String(sensorAddress) + "M!";
