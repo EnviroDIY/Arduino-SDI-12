@@ -135,6 +135,7 @@ bool getResults(char address, int resultsExpected) {
   while (resultsReceived < resultsExpected && cmd_number <= 9 && cmd_retries < 5) {
     bool    gotResults  = false;
     uint8_t cmd_results = 0;
+
     // Assemble the command based on how many commands we've already sent,
     // starting with D0 and ending with D9
     // SDI-12 command to get data [address][D][dataOption][!]
@@ -378,9 +379,13 @@ bool checkActive(char address, int8_t numPings = 3, bool printIO = true) {
 void setup() {
   Serial.begin(serialBaud);
   while (!Serial && millis() < 10000L);
+  char tbuf[3] = {'\0'};
 
   Serial.print("Opening SDI-12 bus on pin ");
   Serial.print(dataPin);
+  Serial.print(" (");
+  Serial.print(itoa(dataPin, tbuf, 10));
+  Serial.print(")");
   Serial.println("...");
   mySDI12.begin();
   delay(500);  // allow things to settle
@@ -390,16 +395,19 @@ void setup() {
 
   // Power the sensors;
   if (powerPin >= 0) {
-    Serial.println("Powering up sensors, wait...");
+    Serial.print("Powering up sensors with pin ");
+    Serial.print(String(powerPin));
+    Serial.println(", wait 10s...");
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
+    delay(10000L);
+  } else {
+    Serial.println("Wait 5s...");
     delay(5000L);
   }
 
   // Quickly scan the address space
-  Serial.println("Scanning all addresses, please wait...");
-  Serial.println("Sensor Address, Protocol Version, Sensor Vendor, Sensor Model, "
-                 "Sensor Version, Sensor ID");
+  Serial.println("\n\nScanning all addresses, please wait...");
 
   for (int8_t i = firstAddress; i <= lastAddress; i++) {
     char addr = decToChar(i);

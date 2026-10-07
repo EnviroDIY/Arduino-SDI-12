@@ -55,6 +55,7 @@ void setup() {
 }
 
 void loop() {
+  Serial.println("Press enter to start a new measurement...");
   do {  // wait for a response from the serial terminal to do anything
     delay(30);
   } while (!Serial.available());
