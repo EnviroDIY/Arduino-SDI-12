@@ -276,7 +276,7 @@ typedef const __FlashStringHelper* FlashString;
 /**@}*/
 
 /**
- * @brief A mask for the #rxState while waiting for a start bit; 0b11111111
+ * @brief A mask for the rxState while waiting for a start bit; 0b11111111
  */
 #define WAITING_FOR_START_BIT 0xFF
 
@@ -340,17 +340,17 @@ enum LookaheadMode {
  * for binary measurements
  */
 typedef enum SDI12BinaryDataType_e : uint8_t {
-  kInvalidDataType = 0,  // Invalid data or Empty data type
-  kInt8DataType    = 1,  // Signed 8-bit integer
-  kUint8DataType   = 2,  // Unsigned 8-bit integer
-  kInt16DataType   = 3,  // Signed 16-bit integer
-  kUint16DataType  = 4,  // Unsigned 16-bit integer
-  kInt32DataType   = 5,  // Signed 32-bit integer
-  kUint32DataType  = 6,  // Unsigned 32-bit integer
-  kInt64DataType   = 7,  // Signed 64-bit integer
-  kUint64DataType  = 8,  // Unsigned 64-bit integer
-  kFloatDataType   = 9,  // IEEE 32-bit floating point single precision
-  kDoubleDataType  = 10  // IEEE 64-bit floating point double precision
+  kInvalidDataType = 0,  ///< Invalid data or Empty data type
+  kInt8DataType    = 1,  ///< Signed 8-bit integer
+  kUint8DataType   = 2,  ///< Unsigned 8-bit integer
+  kInt16DataType   = 3,  ///< Signed 16-bit integer
+  kUint16DataType  = 4,  ///< Unsigned 16-bit integer
+  kInt32DataType   = 5,  ///< Signed 32-bit integer
+  kUint32DataType  = 6,  ///< Unsigned 32-bit integer
+  kInt64DataType   = 7,  ///< Signed 64-bit integer
+  kUint64DataType  = 8,  ///< Unsigned 64-bit integer
+  kFloatDataType   = 9,  ///< IEEE 32-bit floating point single precision
+  kDoubleDataType  = 10  ///< IEEE 64-bit floating point double precision
 } SDI12BinaryDataType_e;
 
 /**
