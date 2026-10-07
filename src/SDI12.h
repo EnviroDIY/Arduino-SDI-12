@@ -529,10 +529,6 @@ class SDI12 : public Stream {
    */
   /**@{*/
   /**
-   * @brief Tracks the current line state of the SDI-12 object.
-   */
-  SDI12_STATES lineState;
-  /**
    * @brief Stores the time of the previous RX transition in units of the specific board
    * timer.
    *

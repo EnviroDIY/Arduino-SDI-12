@@ -688,9 +688,7 @@ bool SDI12::verifyCRC(String& respWithCRC) {
 
 // Passes off responsibility for the interrupt to the active object.
 void ISR_MEM_ACCESS SDI12::handleInterrupt() {
-  if (_activeObject && _activeObject->lineState == SDI12_LISTENING) {
-    _activeObject->receiveISR();
-  }
+  if (_activeObject) { _activeObject->receiveISR(); }
 }
 
 // Creates a blank slate of bits for an incoming character
