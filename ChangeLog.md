@@ -19,6 +19,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Removed
 
 - Removed ability to turn off parity checking
+- Removed the delay from the yield function.  This was an incorrect delay that should have been handled by timedRead or timedPeek.
 
 ### Fixed
 

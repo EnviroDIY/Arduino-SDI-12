@@ -32,14 +32,12 @@ bool             SDI12::_bufferOverflow = false;  // whether the buffer has over
 
 // reveals the number of characters available in the buffer
 int SDI12::available() {
-  SDI12_YIELD()
   if (_bufferOverflow) return -1;
   return (_rxBufferTail + SDI12_BUFFER_SIZE - _rxBufferHead) % SDI12_BUFFER_SIZE;
 }
 
 // reveals the next character in the buffer without consuming
 int SDI12::peek(bool use_parity) {
-  SDI12_YIELD()
   if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
 
   int c = _rxBuffer[_rxBufferHead];  // check the next value in the buffer
@@ -74,7 +72,6 @@ void SDI12::clearBuffer() {
 
 // reads in the next character from the buffer (and moves the index ahead)
 int SDI12::read(bool use_parity) {
-  SDI12_YIELD()
   _bufferOverflow = false;                        // Reading makes room in the buffer
   if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
   int nextChar = peek(use_parity);                // Otherwise, grab char at head
