@@ -1321,9 +1321,9 @@ template<typename T>
 size_t SDI12::writeBytes(T value) {
   setState(SDI12_TRANSMITTING);
   size_t count = sizeof(T);
+  const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&value);
   for (size_t i = 0; i < count; i++) {
-    writeChar(value & 0xFF, false);  // write out lowest byte
-    value >>= 8;                     // shift the remaining bytes down
+    writeChar(bytes[i], false);  // write out lowest byte
   }
   setState(SDI12_LISTENING);
   return count;
