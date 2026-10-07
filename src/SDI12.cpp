@@ -246,6 +246,11 @@ void SDI12::end() {
   sdi12timer.resetSDI12TimerPrescale();
 }
 
+// Get the timeout return
+int16_t SDI12::getTimeoutValue(void) {
+  return TIMEOUT;
+}
+
 // Set the timeout return
 void SDI12::setTimeoutValue(int16_t value) {
   TIMEOUT = value;

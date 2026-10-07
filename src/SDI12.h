@@ -745,12 +745,12 @@ class SDI12 : public Stream {
   void flush() override {}
 
   /**
-   * @brief Get the current stream timeout value.   *
-   * @return The current timeout value in milliseconds.
+   * @brief Get the current stream timeout time.
+   * @return The current timeout time in milliseconds.
    * @note Some cores do not implement getTimeout(), this function _hides_ the Stream
    * class function on cores that do.
    */
-  unsigned long getTimeout(void) {
+  unsigned long getTimeout() {
     return _timeout;
   }
 
@@ -906,6 +906,17 @@ class SDI12 : public Stream {
    * is used.
    */
   int16_t TIMEOUT;
+
+  /**
+   * @brief Get the current value that will be returned IF a parse int or parse float
+   * times out with no return from the sensor.
+   * @return The current timeout value
+   *
+   * @caution This **only** applies to the parseInt and parseFloat functions of the
+   * SDI-12 object; it does not affect other read functions.
+   */
+  int16_t getTimeoutValue();
+
   /**
    * @brief Set the value to return if a parse int or parse float times out with no
    * return from the sensor.
@@ -918,6 +929,9 @@ class SDI12 : public Stream {
    * -9999 is used.
    *
    * @param value the value to return on timeout
+   *
+   * @caution This **only** applies to the parseInt and parseFloat functions of the
+   * SDI-12 object; it does not affect other read functions.
    */
   void setTimeoutValue(int16_t value);
   /**

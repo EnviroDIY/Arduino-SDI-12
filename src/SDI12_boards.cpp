@@ -106,9 +106,9 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   preSDI12_TCCR3A = TCCR3A;
   preSDI12_TCCR3B = TCCR3B;
   preSDI12_TCCR3C = TCCR3C;
-  TCCR3A = 0x00;  // Normal operation; OC3A, OC3B, and OC3C disconnected
-  TCCR3B = 0x03;  // Normal operation; prescaler set to CK/64
-  TCCR3C = 0x00;  // No force output compare
+  TCCR3A          = 0x00;  // Normal operation; OC3A, OC3B, and OC3C disconnected
+  TCCR3B          = 0x03;  // Normal operation; prescaler set to CK/64
+  TCCR3C          = 0x00;  // No force output compare
 }
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {
