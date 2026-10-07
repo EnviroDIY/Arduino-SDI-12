@@ -40,9 +40,7 @@ uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
 
 // Most 'standard' AVR boards
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || \
-  defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) ||  \
-  defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__) ||   \
-  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
+  defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__)
 
 /**
  * @brief The value of timer control register 2A prior to being set for SDI-12.
@@ -81,6 +79,42 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR2A = preSDI12_TCCR2A;
   TCCR2B = preSDI12_TCCR2B;
+}
+
+// AVR boards with a 16-bit Timer/Counter 3
+#elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
+  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
+
+/**
+ * @brief The value of timer control register 3A prior to being set for SDI-12.
+ */
+static uint8_t preSDI12_TCCR3A;
+/**
+ * @brief The value of timer control register 3B prior to being set for SDI-12.
+ */
+static uint8_t preSDI12_TCCR3B;
+/**
+ * @brief The value of timer control register 3C prior to being set for SDI-12.
+ */
+static uint8_t preSDI12_TCCR3C;
+
+sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
+  return TCNT3;
+}
+
+void SDI12Timer::configSDI12TimerPrescale(void) {
+  preSDI12_TCCR3A = TCCR3A;
+  preSDI12_TCCR3B = TCCR3B;
+  preSDI12_TCCR3C = TCCR3C;
+  TCCR3A = 0x00;  // Normal operation; OC3A, OC3B, and OC3C disconnected
+  TCCR3B = 0x03;  // Normal operation; prescaler set to CK/64
+  TCCR3C = 0x00;  // No force output compare
+}
+
+void SDI12Timer::resetSDI12TimerPrescale(void) {
+  TCCR3A = preSDI12_TCCR3A;
+  TCCR3B = preSDI12_TCCR3B;
+  TCCR3C = preSDI12_TCCR3C;
 }
 
 // ATtiny boards (ie, adafruit trinket)

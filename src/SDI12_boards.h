@@ -84,9 +84,7 @@
 
 // Most 'standard' AVR boards
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || \
-  defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) ||  \
-  defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__) ||   \
-  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
+  defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__)
 
 // Use Timer/Counter 2 on most AVR boards
 #define TIMER_IN_USE_STR "Timer2"
@@ -113,6 +111,34 @@
 // 8MHz / 256 prescaler = 31250 'ticks'/sec = 32 µs / 'tick'
 #define TICKS_PER_SECOND 31250
 
+#endif  // F_CPU
+
+
+// AVR boards with a 16-bit Timer/Counter 3
+#elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
+  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
+
+// Use Timer/Counter 3 on AVR boards that provide it
+#define TIMER_IN_USE_STR "Timer3"
+// Timer 3 on these ATmega boards is a 16-bit timer
+#define TIMER_INT_TYPE uint16_t
+#define TIMER_INT_SIZE 16
+#define READTIME TCNT3
+#define PRESCALE_IN_USE 64
+#if F_CPU == 16000000L
+#define PRESCALE_IN_USE_STR "16MHz/64=250kHz"
+// 16MHz / 64 prescaler = 250000 'ticks'/sec = 4 µs / 'tick'
+#define TICKS_PER_SECOND 250000
+
+#elif F_CPU == 12000000L
+#define PRESCALE_IN_USE_STR "12MHz/64=187.5kHz"
+// 12MHz / 64 prescaler = 187500 'ticks'/sec = 5.333 µs / 'tick'
+#define TICKS_PER_SECOND 187500
+
+#elif F_CPU == 8000000L
+#define PRESCALE_IN_USE_STR "8MHz/64=125kHz"
+// 8MHz / 64 prescaler = 125000 'ticks'/sec = 8 µs / 'tick'
+#define TICKS_PER_SECOND 125000
 #endif  // F_CPU
 
 
@@ -315,6 +341,42 @@
 #define RX_WINDOW_FUDGE 10
 #endif
 
+
+#elif TICKS_PER_SECOND == 125000 && TIMER_INT_SIZE == 16
+/**
+ * 125kHz = 125,000 'ticks'/sec = 8 µs / 'tick'
+ * (1 sec/1200 bits) * (1 tick/8 µs) = 104.16667 ticks/bit
+ *
+ * The 16-bit timer rolls over after 65536 ticks, 629.1456 bits, or 524.288 ms
+ */
+#define TICKS_PER_BIT 104
+#ifndef RX_WINDOW_FUDGE
+#define RX_WINDOW_FUDGE 52
+#endif
+
+#elif TICKS_PER_SECOND == 187500 && TIMER_INT_SIZE == 16
+/**
+ * 187.5kHz = 187,500 'ticks'/sec = 5.33333 µs / 'tick'
+ * (1 sec/1200 bits) * (1 tick/5.33333 µs) = 156.25 ticks/bit
+ *
+ * The 16-bit timer rolls over after 65536 ticks, 419.4304 bits, or 349.525 ms
+ */
+#define TICKS_PER_BIT 156
+#ifndef RX_WINDOW_FUDGE
+#define RX_WINDOW_FUDGE 78
+#endif
+
+#elif TICKS_PER_SECOND == 250000 && TIMER_INT_SIZE == 16
+/**
+ * 250kHz = 250,000 'ticks'/sec = 4 µs / 'tick'
+ * (1 sec/1200 bits) * (1 tick/4 µs) = 208.33333 ticks/bit
+ *
+ * The 16-bit timer rolls over after 65536 ticks, 314.5728 bits, or 262.144 ms
+ */
+#define TICKS_PER_BIT 208
+#ifndef RX_WINDOW_FUDGE
+#define RX_WINDOW_FUDGE 104
+#endif
 
 #elif TICKS_PER_SECOND == 500000 && TIMER_INT_SIZE == 16
 /**
