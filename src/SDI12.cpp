@@ -77,7 +77,7 @@ int SDI12::read(bool use_parity) {
   SDI12_YIELD()
   _bufferOverflow = false;                        // Reading makes room in the buffer
   if (_rxBufferHead == _rxBufferTail) return -1;  // Empty buffer? If yes, -1
-  uint8_t nextChar = peek(use_parity);            // Otherwise, grab char at head
+  int nextChar = peek(use_parity);                // Otherwise, grab char at head
   // ^^ Use peek to grab the character, because it already checks parity
   _rxBufferHead = (_rxBufferHead + 1) % SDI12_BUFFER_SIZE;  // increment head
   return nextChar;
