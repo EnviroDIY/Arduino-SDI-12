@@ -745,6 +745,16 @@ class SDI12 : public Stream {
   void flush() override {}
 
   /**
+   * @brief Get the current stream timeout value.   *
+   * @return The current timeout value in milliseconds.
+   * @note Some cores do not implement getTimeout(), this function _hides_ the Stream
+   * class function on cores that do.
+   */
+  unsigned long getTimeout(void) {
+    return _timeout;
+  }
+
+  /**
    * @brief Return the first valid (long) integer value from the current position.
    *
    * This function is customized to only return numbers as they are passed in the data
@@ -774,8 +784,7 @@ class SDI12 : public Stream {
    * function!
    *
    * @note This function _hides_ the Stream class function to allow a custom value to be
-   * returned on timeout.  It cannot overwrite the Stream function because it is not
-   * virtual.
+   * returned on timeout.
    */
   long parseInt(LookaheadMode = SKIP_NONE, char = '+');
 
@@ -789,8 +798,7 @@ class SDI12 : public Stream {
    * next character is not part of an float.
    *
    * @note This function _hides_ the Stream class function to allow a custom value to be
-   * returned on timeout.  It cannot overwrite the Stream function because it is not
-   * virtual.
+   * returned on timeout.
    * @see @ref SDI12::parseInt(LookaheadMode, char)
    */
   float parseFloat(LookaheadMode = SKIP_NONE, char = '+');
@@ -1288,7 +1296,7 @@ class SDI12 : public Stream {
 template<typename T>
 size_t SDI12::writeBytes(T value) {
   setState(SDI12_TRANSMITTING);
-  size_t count = sizeof(T);
+  size_t         count = sizeof(T);
   const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&value);
   for (size_t i = 0; i < count; i++) {
     writeChar(bytes[i], false);  // write out lowest byte
