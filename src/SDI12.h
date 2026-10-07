@@ -529,24 +529,6 @@ class SDI12 : public Stream {
    */
   /**@{*/
   /**
-   * @brief Stores the time of the previous line state transition in micros.
-   *
-   * This is used to track timing changes when not receiving characters. We need a
-   * separate timing tracker for mid-character receptions and outside-of-character
-   * receptions because the 8 and 16 bit timers used for character rx roll over in too
-   * short a period to track outside of rx.
-   */
-  uint32_t prevLineChange;
-  /**
-   * @brief Retry count, for retries spaced outside of a break.
-   */
-  int8_t outer_loop_ctrl = 3;
-  /**
-   * @brief Retry count, for retries spaced without needing a break before the new
-   * command.
-   */
-  int8_t inner_loop_ctrl = 3;
-  /**
    * @brief Tracks the current line state of the SDI-12 object.
    */
   SDI12_STATES lineState;
