@@ -485,7 +485,7 @@ size_t SDI12::writeChar(uint8_t outChar, bool use_parity) {
   // We've used up roughly 150 clock cycles messing with parity, but a bit is 833µs, so
   // we've got time.
 
-  while (static_cast<sdi12timer_t>(READTIME - t0) <
+  while (SDI12Timer::timerDelta(READTIME, t0) <
          static_cast<sdi12timer_t>(TICKS_PER_BIT)) {}
   t0 = READTIME;  // advance start time
 
@@ -498,7 +498,7 @@ size_t SDI12::writeChar(uint8_t outChar, bool use_parity) {
       digitalWrite(_dataPin, HIGH);  // set the pin state to HIGH for 0's
     }
     // Hold the line for this bit duration
-    while (static_cast<sdi12timer_t>(READTIME - t0) <
+    while (SDI12Timer::timerDelta(READTIME, t0) <
            static_cast<sdi12timer_t>(TICKS_PER_BIT)) {}
     t0 = READTIME;  // advance start time
 
@@ -515,7 +515,7 @@ size_t SDI12::writeChar(uint8_t outChar, bool use_parity) {
   // Hold the line low until the end of the 10th bit
   sdi12timer_t bitTimeRemaining = static_cast<sdi12timer_t>(TICKS_PER_BIT) *
     (10 - lastHighBit);
-  while (static_cast<sdi12timer_t>(READTIME - t0) < bitTimeRemaining) {}
+  while (SDI12Timer::timerDelta(READTIME, t0) < bitTimeRemaining) {}
 
   return 1;  // return the number of characters written - just one
 }
@@ -710,7 +710,8 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
   uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
 
   // Check how many bit times have passed since the last change
-  uint16_t rxBits = SDI12Timer::bitTimes(thisBitTCNT - prevBitTCNT);
+  uint16_t rxBits =
+    SDI12Timer::bitTimes(SDI12Timer::timerDelta(thisBitTCNT, prevBitTCNT));
 
 #if !(TICKS_PER_SECOND == 31250 && TIMER_INT_SIZE == 8)
   // if we haven't had a bit spacing between the last interrupt, just ignore and move on

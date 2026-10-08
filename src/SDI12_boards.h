@@ -37,7 +37,13 @@
  * @brief The integer type of the timer.
  *
  * @def TIMER_INT_SIZE
- * @brief The size in bits of the timer count value.
+ * @brief The size in bits of the C++ timer storage type.
+ *
+ * @def TIMER_COUNTER_BITS
+ * @brief The number of physically implemented timer counter bits.
+ *
+ * @def TIMER_COUNTER_MASK
+ * @brief A mask for the physically implemented timer counter bits.
  *
  * @def READTIME
  * @brief The function or macro used to read the clock timer value.
@@ -166,13 +172,12 @@
 #elif defined(ARDUINO_AVR_YUN) || defined(ARDUINO_AVR_LEONARDO) || \
   defined(__AVR_ATmega32U4__)
 
-// On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
+// On the AtMega16U4 and AtMega32U4, we use the full 10-bit Timer/Counter 4.
 #define TIMER_IN_USE_STR "Timer4"
-/**
- * Timer 4 on the U4 series is an 10-bit timer, but we're only using the lower 8 bits
- */
-#define TIMER_INT_TYPE uint8_t
-#define TIMER_INT_SIZE 8
+// To use the full 10-bits, we have to use a 16 bit integer and mask away the upper bits
+ #define TIMER_INT_TYPE uint16_t
+#define TIMER_INT_SIZE 16
+#define TIMER_COUNTER_BITS 10
 #define READTIME TCNT4
 
 #if F_CPU == 16000000L
@@ -277,12 +282,27 @@
 #error "Please define your board timer and prescaler!"
 #endif
 
+#ifndef TIMER_COUNTER_BITS
+#define TIMER_COUNTER_BITS TIMER_INT_SIZE
+#endif
+
+#if TIMER_COUNTER_BITS == 8
+#define TIMER_COUNTER_MASK 0xFFU
+#elif TIMER_COUNTER_BITS == 10
+#define TIMER_COUNTER_MASK 0x03FFU
+#elif TIMER_COUNTER_BITS == 16
+#define TIMER_COUNTER_MASK 0xFFFFU
+#elif TIMER_COUNTER_BITS == 32
+#define TIMER_COUNTER_MASK 0xFFFFFFFFUL
+#else
+#error "Board timer counter width is incorrectly configured!"
+#endif
 
 #ifdef SDI12_RX_WINDOW_FUDGE
 #define RX_WINDOW_FUDGE SDI12_RX_WINDOW_FUDGE
 #endif
 
-#if TICKS_PER_SECOND == 15625 && TIMER_INT_SIZE == 8
+#if TICKS_PER_SECOND == 15625 && TIMER_COUNTER_BITS == 8
 /**
  * 15625 'ticks'/sec = 64 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/64 µs) = 13.0208 ticks/bit
@@ -300,7 +320,7 @@
 #define RX_WINDOW_FUDGE 2
 #endif
 
-#elif TICKS_PER_SECOND == 11719 && TIMER_INT_SIZE == 8
+#elif TICKS_PER_SECOND == 11719 && TIMER_COUNTER_BITS == 8
 /**
  * 11719 'ticks'/sec = 85 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/85 µs) = 9.765625 ticks/bit
@@ -318,7 +338,7 @@
 #define RX_WINDOW_FUDGE 2
 #endif
 
-#elif TICKS_PER_SECOND == 31250 && TIMER_INT_SIZE == 8
+#elif TICKS_PER_SECOND == 31250 && TIMER_COUNTER_BITS == 8
 /**
  * 31250 'ticks'/sec = 32 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/32 µs) = 26.04166667 ticks/bit
@@ -338,7 +358,17 @@
 #endif
 
 
-#elif TICKS_PER_SECOND == 125000 && TIMER_INT_SIZE == 16
+#elif TICKS_PER_SECOND == 15625 && TIMER_COUNTER_BITS == 10
+/**
+ * 15625 'ticks'/sec = 64 us / 'tick'. The 10-bit Timer4 counter rolls over
+ * after 1024 ticks, or 65.536 ms.
+ */
+#define TICKS_PER_BIT 13
+#ifndef RX_WINDOW_FUDGE
+#define RX_WINDOW_FUDGE 2
+#endif
+
+#elif TICKS_PER_SECOND == 125000 && TIMER_COUNTER_BITS == 16
 /**
  * 125kHz = 125,000 'ticks'/sec = 8 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/8 µs) = 104.16667 ticks/bit
@@ -350,7 +380,7 @@
 #define RX_WINDOW_FUDGE 52
 #endif
 
-#elif TICKS_PER_SECOND == 187500 && TIMER_INT_SIZE == 16
+#elif TICKS_PER_SECOND == 187500 && TIMER_COUNTER_BITS == 16
 /**
  * 187.5kHz = 187,500 'ticks'/sec = 5.33333 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/5.33333 µs) = 156.25 ticks/bit
@@ -362,7 +392,7 @@
 #define RX_WINDOW_FUDGE 78
 #endif
 
-#elif TICKS_PER_SECOND == 250000 && TIMER_INT_SIZE == 16
+#elif TICKS_PER_SECOND == 250000 && TIMER_COUNTER_BITS == 16
 /**
  * 250kHz = 250,000 'ticks'/sec = 4 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/4 µs) = 208.33333 ticks/bit
@@ -374,7 +404,7 @@
 #define RX_WINDOW_FUDGE 104
 #endif
 
-#elif TICKS_PER_SECOND == 500000 && TIMER_INT_SIZE == 16
+#elif TICKS_PER_SECOND == 500000 && TIMER_COUNTER_BITS == 16
 /**
  * 500kHz = 500,000 'ticks'/sec = 2 µs / 'tick'
  * (1 sec/1200 bits) * (1 tick/2 µs) = 416.66667 ticks/bit
@@ -388,7 +418,7 @@
 #define RX_WINDOW_FUDGE 45
 #endif
 
-#elif TICKS_PER_SECOND == 1000000 && TIMER_INT_SIZE == 32
+#elif TICKS_PER_SECOND == 1000000 && TIMER_COUNTER_BITS == 32
 /**
  * Using `micros()` 1 "tick" is 1 µsec
  * (1 sec/1200 bits) * (1 tick/1 µs) * (1000000 µsec/sec)= 833.33333 ticks/bit
@@ -471,6 +501,15 @@ class SDI12Timer {
    * @see https://github.com/SlashDevin/NeoSWSerial/pull/13#issuecomment-315463522
    */
   static uint16_t bitTimes(sdi12timer_t dt);
+
+  /**
+   * @brief Calculate elapsed timer ticks using the counter's physical modulus.
+   *
+   * @param now The current timer count.
+   * @param previous The earlier timer count.
+   * @return Elapsed ticks, including one counter rollover.
+   */
+  static sdi12timer_t timerDelta(sdi12timer_t now, sdi12timer_t previous);
 
   /**
    * @brief Set the processor timer prescaler such that the 10 bits of an SDI-12
