@@ -180,6 +180,13 @@ typedef const __FlashStringHelper* FlashString;
  * @see SDI12_VALUE_STR_SIZE
  */
 #define SDI12_HV_STR_SIZE 75
+/**
+ * @brief The maximum number of bytes in a high volume binary data response.
+ *
+ * This does not include the 1 byte address, 2 byte packet size, 1 byte data type,
+ * and 2 byte CRC.  A high volume binary data response **does not** end with a CR+LF.
+ */
+#define SDI12_MAX_BINARY_BYTES 1000
 /**@}*/
 
 
