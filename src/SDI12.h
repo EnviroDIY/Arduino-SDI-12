@@ -218,6 +218,9 @@ typedef const __FlashStringHelper* FlashString;
  * @def SDI12_LINE_BREAK_MICROS
  * @brief The required "break" before sending commands, >= 12ms.  The line level is HIGH
  * for the break.
+ *
+ * SDI-12 v1.4 section 7.0 requires a data recorder to transmit at least 12 ms of
+ * continuous spacing. The default includes a 100 us margin above that nominal minimum.
  */
 #define SDI12_LINE_BREAK_MICROS static_cast<uint16_t>(12100)
 #endif
@@ -227,6 +230,10 @@ typedef const __FlashStringHelper* FlashString;
  * @def SDI12_LINE_MARK_MICROS
  * @brief The required mark before a command or response, >= 8.33ms.  The line level is
  * LOW for the marking.
+ *
+ * SDI-12 v1.4 section 7.0 specifies 8.33 ms of marking before a sensor looks for an
+ * address and before an addressed sensor sends an immediate response. The default
+ * includes a 70 us margin above that nominal duration.
  */
 #define SDI12_LINE_MARK_MICROS static_cast<uint16_t>(8400)
 #endif
@@ -234,10 +241,12 @@ typedef const __FlashStringHelper* FlashString;
 #ifndef SDI12_WAKE_DELAY
 /**
  * @def SDI12_WAKE_DELAY
- * @brief The amount of additional time in milliseconds that the sensor takes to wake
- * before being ready to receive a command.  Default is 0ms - meaning the sensor is
- * ready for a command by the end of the 12ms break.  Per protocol, the wake time must
- * be less than 100 ms.
+ * @brief The amount of additional break time in milliseconds before command marking.
+ *
+ * The default is 0 ms. SDI-12 v1.4 section 7.0 allows a sensor up to 100 ms after
+ * detecting a break to become capable of detecting a valid command. This value extends
+ * the transmitted break before the required marking; it must keep the command start
+ * within the specification's post-break window.
  */
 #define SDI12_WAKE_DELAY 0
 #endif
@@ -341,6 +350,37 @@ class SDI12 : public Stream {
    * @brief The SDI12Timer instance to use for checking bit reception times.
    */
   static SDI12Timer sdi12timer;
+
+  /**
+   * @brief Nominal SDI-12 v1.4 timing values in microseconds.
+   *
+   * Section 7.0 applies a +/-0.40 ms tolerance to SDI-12 timing except the 1.66 ms
+   * inter-character maximum, which has no tolerance. Section 7.2 limits a retry after
+   * no response to 16.67-87 ms after the command stop bit and requires at least one
+   * retry more than 100 ms after the break. Figure 3 supplies the response-completion
+   * limits. These constants are private implementation values and consume no storage in
+   * an `SDI12` instance.
+   */
+  static const uint32_t SDI12_TIMING_TOLERANCE_MICROS = 400UL;  ///< General tolerance
+  static const uint32_t SDI12_BREAK_MIN_MICROS =
+    12000UL;  ///< Minimum transmitted break
+  static const uint32_t SDI12_LINE_RELEASE_MAX_MICROS   = 7500UL;  ///< Line release
+  static const uint32_t SDI12_RESPONSE_MARKING_MICROS   = 8330UL;  ///< Response marking
+  static const uint32_t SDI12_RESPONSE_START_MAX_MICROS = 15000UL;    ///< Start limit
+  static const uint32_t SDI12_INTERCHAR_MARKING_MAX_MICROS = 1660UL;  ///< Gap limit
+  static const uint32_t SDI12_SENSOR_WAKE_MAX_MICROS = 100000UL;      ///< Wake interval
+  static const uint32_t SDI12_SENSOR_STANDBY_MARKING_MICROS =
+    100000UL;                                                       ///< Standby marking
+  static const uint32_t SDI12_RETRY_MIN_DELAY_MICROS   = 16670UL;   ///< Retry minimum
+  static const uint32_t SDI12_RETRY_MAX_DELAY_MICROS   = 87000UL;   ///< Retry maximum
+  static const uint32_t SDI12_RETRY_AFTER_BREAK_MICROS = 100000UL;  ///< Break threshold
+  static const uint32_t SDI12_RESPONSE_MAX_MICROS      = 380000UL;  ///< Most responses
+  static const uint32_t SDI12_CONCURRENT_RESPONSE_MAX_MICROS =
+    780000UL;  ///< Concurrent D response
+  static const uint32_t SDI12_CONCURRENT_CRC_RESPONSE_MAX_MICROS =
+    810000UL;  ///< CRC concurrent D response
+  static const uint32_t SDI12_BINARY_RESPONSE_MAX_MICROS = 10100000UL;  ///< DB response
+
   /**@}*/
 
   /**
