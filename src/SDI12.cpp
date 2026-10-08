@@ -350,7 +350,7 @@ void SDI12::setPinInterrupts(bool enable) {
 // pull-up or pull-down configuration.
 // To disable both resistors on these other boards, we need to do a digitalWrite(pin,
 // LOW) after pinMode(INPUT).
-void SDI12::setState(SDI12_STATES state) {
+void SDI12::setState(SDI12_LINE_STATE state) {
   switch (state) {
     case SDI12_HOLDING:
       {
@@ -379,7 +379,7 @@ void SDI12::setState(SDI12_STATES state) {
         rxState     = WAITING_FOR_START_BIT;  // Set state to ready for new start bit
         break;
       }
-    default:  // SDI12_DISABLED or SDI12_ENABLED
+    default:  // SDI12_DISABLED
       {
         pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
         digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
