@@ -17,6 +17,17 @@ uint16_t SDI12Timer::mul8x8to16(uint8_t x, uint8_t y) {
   return x * y;
 }
 
+sdi12timer_t SDI12Timer::timerDelta(sdi12timer_t now, sdi12timer_t previous) {
+#if TIMER_INT_SIZE != TIMER_COUNTER_BITS
+  // if the timer integer size is different from the counter bits, we need to mask the
+  // result
+  return static_cast<sdi12timer_t>((now - previous) & TIMER_COUNTER_MASK);
+#else
+  // otherwise, skip the masking
+  return static_cast<sdi12timer_t>(now - previous);
+#endif
+}
+
 // Using an 8-bit timer, we need to do fanciness to get proper 16 bit results
 #if TIMER_INT_SIZE == 8
 uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
@@ -149,6 +160,7 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   defined(__AVR_ATmega32U4__)
 
 sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
+  // TCNT4 reads both the high and low bytes of the 10-bit timer
   return TCNT4;
 }
 

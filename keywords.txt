@@ -54,6 +54,7 @@ resetSDI12TimerPrescale	KEYWORD2
 SDI12TimerRead	KEYWORD2
 mul8x8to16	KEYWORD2
 bitTimes	KEYWORD2
+timerDelta	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
