@@ -150,34 +150,33 @@ typedef const __FlashStringHelper* FlashString;
  * @brief The maximum number of characters in a single value in a data response.
  *
  * From SDI-12 Protocol v1.4, Table 11 The send data command (aD0!, aD1! . . . aD9!):
- * the value portion must be structred as pd.d
- * - p - the polarity sign (+ or -)
- * - d - numeric digits before the decimal place
- * - . - the decimal point (optional)
- * - d - numeric digits after the decimal point
- * - the maximum number of digits for a data value is 7, even without a decimal point
- * - the minimum number of digits for a data value (excluding the decimal point) is 1
- * - the maximum number of characters in a data value is 9 (the (polarity sign + 7
- * digits + the decimal point))
- * - The polarity symbol (+ or -) acts as a delimeter between the numeric values
+ * > the value portion must be structred as pd.d
+ * > - p - the polarity sign (+ or -)
+ * > - d - numeric digits before the decimal place
+ * > - . - the decimal point (optional)
+ * > - d - numeric digits after the decimal point
+ * > - the maximum number of digits for a data value is 7, even without a decimal point
+ * > - the minimum number of digits for a data value (excluding the decimal point) is 1
+ * > - the maximum number of characters in a data value is 9 (the (polarity sign + 7
+ * > digits + the decimal point))
+ * > - The polarity symbol (+ or -) acts as a delimeter between the numeric values
  */
 #define SDI12_VALUE_STR_SIZE 9
 /**
  * @brief The maximum length of a standard data command response
  *
  * From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses:
- * The maximum number of characters that can be returned in the [values] part of the
- * response to a D command is either 35 or 75. If the D command is issued to retrieve
- * data in response to a concurrent measurement command, or in response to a high-volume
- * ASCII measurement command, the maximum is 75. The maximum is also 75 in response to a
- * continuous measurement command. Otherwise, the maximum is 35.
+ * > The maximum number of characters that can be returned in the [values] part of the
+ * > response to a D command is either 35 or 75. If the D command is issued to retrieve
+ * > data in response to a concurrent measurement command, or in response to a
+ * > high-volume ASCII measurement command, the maximum is 75. The maximum is also 75 in
+ * > response to a continuous measurement command. Otherwise, the maximum is 35.
  */
 #define SDI12_DATA_STR_SIZE 35
 /**
- * @brief The maximum length of a data response to a concurrent, continuous, or high
- * volume ASCII
- *
- * @see SDI12_VALUE_STR_SIZE
+ * @brief The maximum length of a ASCII data in response to a concurrent, continuous, or
+ * high volume ASCII
+  * @see SDI12_VALUE_STR_SIZE
  */
 #define SDI12_HV_STR_SIZE 75
 
@@ -200,7 +199,7 @@ typedef const __FlashStringHelper* FlashString;
  * @anchor sdi12_timing_defines
  * @name SDI-12 Timing Defines
  *
- * @brief Defines for constants related to SDI-12 timing specifications
+ * @brief Defines for constants related to SDI-12 v1.4 timing specifications
  *
  * @note Defines for timing and clocks for specific boards are in the SDI12_boards.h
  * file.
@@ -315,6 +314,8 @@ enum LookaheadMode {
 /**
  * @brief Enumerated type to reference the type of supported binary data types
  * for binary measurements
+ *
+ * The least significant byte is transferred first for multi-byte binary numbers.
  */
 typedef enum SDI12BinaryDataType_e : uint8_t {
   kInvalidDataType = 0,  ///< Invalid data or Empty data type
@@ -383,11 +384,13 @@ class SDI12 : public Stream {
 
   /**@}*/
 
+
+ private:
   /**
    * @anchor line_states
    * @name Data Line States
    *
-   * @brief Functions for maintaining the proper data line state.
+   * @brief Possible SDI-12 States
    *
    * The Arduino is responsible for managing communication with the sensors.  Since all
    * the data transfer happens on the same line, the state of the data line is very
@@ -416,8 +419,7 @@ class SDI12 : public Stream {
    * | State               | Interrupts       | Pin Mode   | Pin Level |
    * |---------------------|------------------|------------|-----------|
    * | SDI12_DISABLED      | Pin Disable      | INPUT      | ---       |
-   * | SDI12_ENABLED       | Pin Disable      | INPUT      | ---       |
-   * | SDI12_HOLDING       | Pin Disable      | OUTPUT     | LOW       |
+      * | SDI12_HOLDING       | Pin Disable      | OUTPUT     | LOW       |
    * | SDI12_TRANSMITTING  | All/Pin Disable  | OUTPUT     | VARYING   |
    * | SDI12_LISTENING     | All Enable       | INPUT      | ---       |
    *
@@ -437,45 +439,46 @@ class SDI12 : public Stream {
    * @see For a detailed explanation of interrupts see @ref interrupts_page
    */
   /**@{*/
-
-
   /**
    * Possible SDI-12 States
    *
    * LOW_POWER:
-   * - Sensor (slave) is asleep, also waiting for a break
+   * - Sensor (slave) is asleep, waiting for the data recorder (master) to hold the line
+   * high for >= 12ms.
+   * - NOTE: A break of < 6.5 ms must be ignored!
    * - Starts:
    *   - After a sensor receives an invalid address (return to sleep)
    *   - After line has been in marking (LOW) for > 100 ms (sensor returns to sleep)
    * - Ends:
    *   - Within 100 ms of receiving a >= 12ms break
    * - Line State:
-   *   - Recorder: SDI12_HOLDING, SDI12_ENABLED, or SDI12_TRANSMITTING (to a different
-   * sensor)
+   *   - Recorder: SDI12_HOLDING, or SDI12_TRANSMITTING (to a different sensor)
    *   - Sensor: SDI12_LISTENING
+* - The recorder (master) does not have a LOW_POWER state - only the recorder
+   * (master) can initiate a break..
    *
    * WAITING_FOR_BREAK:
-   * - Sensor (slave) is asleep, waiting for the data recorder (master) to hold the line
+   * - Sensor (slave) is awake, waiting for the data recorder (master) to hold the line
    * high for >= 12ms.  Or the data recorder has not initiated communication with a
    * sensor in too long and needs to re-alert it.
    * - NOTE: A break of < 6.5 ms must be ignored!
    * - Starts:
-   *   - After a sensor receives an invalid address (return to sleep)
-   *   - When the master wants to address a different sensor
-   *   - After line has been in marking (LOW) for > 100 ms (sensor returns to sleep)
-   *   - After the line has been in marking (LOW) for > 87 ms  (sensor awaits break
+      *   - After the line has been in marking (LOW) for > 87 ms  (sensor awaits break
    * without sleeping, recorder must send break)
    * - Ends:
    *    - After 12 ms break has finished
    * - Line State:
-   *   - Recorder: SDI12_HOLDING, SDI12_ENABLED, or SDI12_TRANSMITTING (to a different
-   * sensor)
+   *   - Recorder: SDI12_HOLDING, or SDI12_TRANSMITTING (to a different sensor)
    *   - Sensor: SDI12_LISTENING
+* - The recorder (master) does not have a WAITING_FOR_BREAK state - only the recorder
+   * (master) can initiate a break.
    *
    * SENDING_BREAK:
    * - Line State:
    *   - Recorder: SDI12_TRANSMITTING, Line HIGH (spacing)
    *   - Sensor: SDI12_LISTENING (The sensor cannot issue a break!)
+* - The sensor (slave) does not have a SENDING_BREAK state - only the recorder
+   * (master) can initiate a break.
    *
    * WAITING_FOR_MARKING:
    * - Sensor has received a >= 12ms HIGH break and is waiting for the data recorder to
@@ -512,24 +515,22 @@ class SDI12 : public Stream {
    *   - Recorder: SDI12_TRANSMITTING
    *   - Sensor: SDI12_TRANSMITTING
    */
- private:
+ 
   /**
    * @brief The various SDI-12 line states.
    */
-  typedef enum SDI12_STATES {
+  typedef enum SDI12_LINE_STATE : uint8_t {
     /** SDI-12 is disabled, pin mode INPUT, interrupts disabled for the pin */
     SDI12_DISABLED,
-    /** SDI-12 is enabled, pin mode INPUT, interrupts disabled for the pin */
-    SDI12_ENABLED,
-    /** The line is being held LOW, pin mode OUTPUT, interrupts disabled for the pin */
+        /** The line is being held LOW, pin mode OUTPUT, interrupts disabled for the pin.
+       This state should only ever be used by the recorder (master) */
     SDI12_HOLDING,
-    /** Data is being transmitted by the SDI-12 master, pin mode OUTPUT, interrupts
-       disabled for the pin */
+    /** Data is being transmitted, pin mode OUTPUT, interrupts disabled for the pin */
     SDI12_TRANSMITTING,
-    /** The SDI-12 master is listening for a response from the slave, pin mode INPUT,
-       interrupts enabled for the pin */
+    /** Listening for incoming line changes, pin mode INPUT, interrupts enabled for the
+pin */
     SDI12_LISTENING
-  } SDI12_STATES;
+  } SDI12_LINE_STATE;
 
   /**
    * @brief Receive errors detected while capturing the current message.
@@ -1085,11 +1086,11 @@ class SDI12 : public Stream {
    * @brief Set the the state of the SDI12 object[s]
    *
    * @param state The state the SDI-12 object should be set to, from
-   * the SDI12_STATES enum.
+   * the SDI12_LINE_STATE enum.
    *
    * This is a private function, and only used internally.
    */
-  void setState(SDI12_STATES state);
+  void setState(SDI12_LINE_STATE state);
 
  public:
   /**
