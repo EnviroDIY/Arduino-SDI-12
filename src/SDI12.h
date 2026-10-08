@@ -450,10 +450,26 @@ class SDI12 : public Stream {
   } SDI12_STATES;
 
   /**
+   * @brief Receive errors detected while capturing the current message.
+   *
+   * A collision is observable only when it produces an illegal edge sequence, in
+   * which case it is reported as a framing error. A collision that happens to form a
+   * valid-looking frame cannot be distinguished from valid traffic by this receiver.
+   */
+  typedef enum SDI12_RECEIVE_ERRORS : uint8_t {
+    SDI12_RECEIVE_ERROR_NONE     = 0x00,
+    SDI12_RECEIVE_ERROR_FRAMING  = 0x01,
+    SDI12_RECEIVE_ERROR_OVERFLOW = 0x02
+  } SDI12_RECEIVE_ERRORS;
+
+  /**
    * @anchor sdi12_state_vars
    * @name Variables used to track the timing and state of the instance
    */
   /**@{*/
+  /** @brief Latched receive errors for the current message or transaction attempt. */
+  volatile uint8_t _receiveErrorFlags = 0;
+
   /**
    * @brief Stores the time of the previous RX transition in units of the specific board
    * timer.

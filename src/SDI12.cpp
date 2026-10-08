@@ -736,8 +736,9 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
 
 #if TIMER_INT_SIZE > 8
     if (rxBits > 12) {
-      rxState =
-        WAITING_FOR_START_BIT;  // reset the rx state if more than 12 bits have passed
+      // reset the rx state if more than 12 bits have passed and note a framing error
+      _receiveErrorFlags |= SDI12_RECEIVE_ERROR_FRAMING;
+      rxState = WAITING_FOR_START_BIT;
       return;
     }
 #endif
@@ -843,6 +844,7 @@ void SDI12::charToBuffer(uint8_t c) {
   // Check for a buffer overflow. If not, proceed.
   if ((_rxBufferTail + 1) % SDI12_BUFFER_SIZE == _rxBufferHead) {
     _bufferOverflow = true;
+_receiveErrorFlags |= SDI12_RECEIVE_ERROR_OVERFLOW;
   } else {
     // Save the character, advance buffer tail.
     _rxBuffer[_rxBufferTail] = c;
