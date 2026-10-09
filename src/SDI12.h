@@ -172,13 +172,6 @@ typedef const __FlashStringHelper* FlashString;
  * file.
  */
 /**@{*/
-/**
- * @brief The size of a bit in microseconds
- *
- * 1200 baud = 1200 bits/second ~ 833.333 µs/bit
- */
-#define SDI12_BIT_WIDTH_MICROS static_cast<uint16_t>(833)
-
 #ifndef SDI12_LINE_BREAK_MICROS
 /**
  * @def SDI12_LINE_BREAK_MICROS
@@ -318,37 +311,6 @@ class SDI12 : public Stream {
    * @brief The SDI12Timer instance to use for checking bit reception times.
    */
   static SDI12Timer sdi12timer;
-
-  /**
-   * @brief Nominal SDI-12 v1.4 timing values in microseconds.
-   *
-   * Section 7.0 applies a +/-0.40 ms tolerance to SDI-12 timing except the 1.66 ms
-   * inter-character maximum, which has no tolerance. Section 7.2 limits a retry after
-   * no response to 16.67-87 ms after the command stop bit and requires at least one
-   * retry more than 100 ms after the break. Figure 3 supplies the response-completion
-   * limits. These constants are private implementation values and consume no storage in
-   * an `SDI12` instance.
-   */
-  static const uint32_t SDI12_TIMING_TOLERANCE_MICROS = 400UL;  ///< General tolerance
-  static const uint32_t SDI12_BREAK_MIN_MICROS =
-    12000UL;  ///< Minimum transmitted break
-  static const uint32_t SDI12_LINE_RELEASE_MAX_MICROS   = 7500UL;  ///< Line release
-  static const uint32_t SDI12_RESPONSE_MARKING_MICROS   = 8330UL;  ///< Response marking
-  static const uint32_t SDI12_RESPONSE_START_MAX_MICROS = 15000UL;    ///< Start limit
-  static const uint32_t SDI12_INTERCHAR_MARKING_MAX_MICROS = 1660UL;  ///< Gap limit
-  static const uint32_t SDI12_SENSOR_WAKE_MAX_MICROS = 100000UL;      ///< Wake interval
-  static const uint32_t SDI12_SENSOR_STANDBY_MARKING_MICROS =
-    100000UL;                                                       ///< Standby marking
-  static const uint32_t SDI12_RETRY_MIN_DELAY_MICROS   = 16670UL;   ///< Retry minimum
-  static const uint32_t SDI12_RETRY_MAX_DELAY_MICROS   = 87000UL;   ///< Retry maximum
-  static const uint32_t SDI12_RETRY_AFTER_BREAK_MICROS = 100000UL;  ///< Break threshold
-  static const uint32_t SDI12_RESPONSE_MAX_MICROS      = 380000UL;  ///< Most responses
-  static const uint32_t SDI12_CONCURRENT_RESPONSE_MAX_MICROS =
-    780000UL;  ///< Concurrent D response
-  static const uint32_t SDI12_CONCURRENT_CRC_RESPONSE_MAX_MICROS =
-    810000UL;  ///< CRC concurrent D response
-  static const uint32_t SDI12_BINARY_RESPONSE_MAX_MICROS = 10100000UL;  ///< DB response
-
   /**@}*/
 
 
