@@ -45,6 +45,9 @@
  * @def TIMER_COUNTER_MASK
  * @brief A mask for the physically implemented timer counter bits.
  *
+ * @def TIMER_COUNTER_SPAN_MICROS
+ * @brief The selected timer counter's rollover interval in microseconds.
+ *
  * @def READTIME
  * @brief The function or macro used to read the clock timer value.
  *
@@ -175,7 +178,7 @@
 // On the AtMega16U4 and AtMega32U4, we use the full 10-bit Timer/Counter 4.
 #define TIMER_IN_USE_STR "Timer4"
 // To use the full 10-bits, we have to use a 16 bit integer and mask away the upper bits
- #define TIMER_INT_TYPE uint16_t
+#define TIMER_INT_TYPE uint16_t
 #define TIMER_INT_SIZE 16
 #define TIMER_COUNTER_BITS 10
 #define READTIME TCNT4
@@ -298,6 +301,10 @@
 #error "Board timer counter width is incorrectly configured!"
 #endif
 
+// calculate the roll-over time of the timer counter in microseconds from the number of
+// ticks per second and the timer counter width
+#define TIMER_COUNTER_SPAN_MICROS \
+  (((1ULL << TIMER_COUNTER_BITS) * 1000000ULL) / TICKS_PER_SECOND)
 #ifdef SDI12_RX_WINDOW_FUDGE
 #define RX_WINDOW_FUDGE SDI12_RX_WINDOW_FUDGE
 #endif
