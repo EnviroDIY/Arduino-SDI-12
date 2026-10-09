@@ -146,46 +146,6 @@ typedef const __FlashStringHelper* FlashString;
 /**@{*/
 /// a char not found in a valid ASCII numeric field
 #define NO_IGNORE_CHAR '\x01'
-/**
- * @brief The maximum number of characters in a single value in a data response.
- *
- * From SDI-12 Protocol v1.4, Table 11 The send data command (aD0!, aD1! . . . aD9!):
- * > the value portion must be structred as pd.d
- * > - p - the polarity sign (+ or -)
- * > - d - numeric digits before the decimal place
- * > - . - the decimal point (optional)
- * > - d - numeric digits after the decimal point
- * > - the maximum number of digits for a data value is 7, even without a decimal point
- * > - the minimum number of digits for a data value (excluding the decimal point) is 1
- * > - the maximum number of characters in a data value is 9 (the (polarity sign + 7
- * > digits + the decimal point))
- * > - The polarity symbol (+ or -) acts as a delimeter between the numeric values
- */
-#define SDI12_VALUE_STR_SIZE 9
-/**
- * @brief The maximum length of a standard data command response
- *
- * From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses:
- * > The maximum number of characters that can be returned in the [values] part of the
- * > response to a D command is either 35 or 75. If the D command is issued to retrieve
- * > data in response to a concurrent measurement command, or in response to a
- * > high-volume ASCII measurement command, the maximum is 75. The maximum is also 75 in
- * > response to a continuous measurement command. Otherwise, the maximum is 35.
- */
-#define SDI12_DATA_STR_SIZE 35
-/**
- * @brief The maximum length of a ASCII data in response to a concurrent, continuous, or
- * high volume ASCII
-  * @see SDI12_VALUE_STR_SIZE
- */
-#define SDI12_HV_STR_SIZE 75
-/**
- * @brief The maximum number of bytes in a high volume binary data response.
- *
- * This does not include the 1 byte address, 2 byte packet size, 1 byte data type,
- * and 2 byte CRC.  A high volume binary data response **does not** end with a CR+LF.
- */
-#define SDI12_MAX_BINARY_BYTES 1000
 
 #ifndef SDI12_BUFFER_SIZE
 /**
