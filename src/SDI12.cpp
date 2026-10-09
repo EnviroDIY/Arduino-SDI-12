@@ -226,7 +226,7 @@ void SDI12::begin() {
   attachInterrupt(digitalPinToInterrupt(_dataPin), nullptr, CHANGE);
   detachInterrupt(digitalPinToInterrupt(_dataPin));
 #endif
-  // setState(SDI12_HOLDING);
+  // setLineState(SDI12_HOLDING);
   setActive();
   // Set up the prescaler as needed for timers
   // This function is defined in SDI12_boards.h
@@ -240,7 +240,7 @@ void SDI12::begin(int8_t dataPin) {
 
 // End
 void SDI12::end() {
-  setState(SDI12_DISABLED);
+  setLineState(SDI12_DISABLED);
   if (isActive()) { _activeObject = nullptr; }
   // Set the timer prescalers back to original values
   sdi12timer.resetSDI12TimerPrescale();
@@ -270,7 +270,7 @@ int8_t SDI12::getDataPin() {
 // a method for setting the current object as the active object
 bool SDI12::setActive() {
   if (_activeObject != this) {
-    setState(SDI12_HOLDING);
+    setLineState(SDI12_HOLDING);
     _activeObject = this;
     return true;
   }
@@ -350,7 +350,7 @@ void SDI12::setPinInterrupts(bool enable) {
 // pull-up or pull-down configuration.
 // To disable both resistors on these other boards, we need to do a digitalWrite(pin,
 // LOW) after pinMode(INPUT).
-void SDI12::setState(SDI12_LINE_STATE state) {
+void SDI12::setLineState(SDI12_LINE_STATE state) {
   switch (state) {
     case SDI12_HOLDING:
       {
@@ -391,19 +391,19 @@ void SDI12::setState(SDI12_LINE_STATE state) {
 
 // forces a SDI12_HOLDING state.
 void SDI12::forceHold() {
-  setState(SDI12_HOLDING);
+  setLineState(SDI12_HOLDING);
 }
 
 // forces a SDI12_LISTENING state.
 void SDI12::forceListen() {
-  setState(SDI12_LISTENING);
+  setLineState(SDI12_LISTENING);
 }
 
 /* ================ Waking Up and Talking To Sensors ================================*/
 // this function wakes up the entire sensor bus by sending a 12ms break followed by 8.33
 // ms of marking
 void SDI12::wakeSensors(int8_t extraWakeTime) {
-  setState(SDI12_TRANSMITTING);
+  setLineState(SDI12_TRANSMITTING);
   // Universal interrupts can be on while the break and marking happen because
   // timings for break and from the recorder are not critical.
   // Interrupts on the pin are disabled for the entire transmitting state
@@ -524,21 +524,21 @@ size_t SDI12::writeChar(uint8_t outChar, bool use_parity) {
 // This allows you to use the stream print functions to send commands out on
 // the SDI-12, line, but it will not wake the sensors in advance of the command.
 size_t SDI12::write(uint8_t byte) {
-  setState(SDI12_TRANSMITTING);
-  writeChar(byte, true);      // write the character/byte
-  setState(SDI12_LISTENING);  // listen for reply
-  return 1;                   // 1 character sent
+  setLineState(SDI12_TRANSMITTING);
+  writeChar(byte, true);          // write the character/byte
+  setLineState(SDI12_LISTENING);  // listen for reply
+  return 1;                       // 1 character sent
 }
 
 // write multiple characters, only setting to transmitting and listening at the start
 // and end
 size_t SDI12::write(const uint8_t* buffer, size_t size) {
-  setState(SDI12_TRANSMITTING);
+  setLineState(SDI12_TRANSMITTING);
   size_t n = 0;
   while (size--) {
     n += writeChar(*buffer++, true);  // write the character/byte
   }
-  setState(SDI12_LISTENING);  // listen for reply
+  setLineState(SDI12_LISTENING);  // listen for reply
   return n;
 }
 
@@ -552,7 +552,7 @@ void SDI12::sendCommand(const char* cmd, int8_t extraWakeTime) {
   for (int unsigned i = 0; i < strlen(cmd); i++) {
     writeChar(cmd[i], true);  // write each character
   }
-  setState(SDI12_LISTENING);  // listen for reply
+  setLineState(SDI12_LISTENING);  // listen for reply
 }
 
 void SDI12::sendCommand(FlashString cmd, int8_t extraWakeTime) {
@@ -561,7 +561,7 @@ void SDI12::sendCommand(FlashString cmd, int8_t extraWakeTime) {
     // write each character
     writeChar(static_cast<char>(pgm_read_byte((const char*)cmd + i)), true);
   }
-  setState(SDI12_LISTENING);  // listen for reply
+  setLineState(SDI12_LISTENING);  // listen for reply
 }
 
 // This function sets up for a response to a separate data recorder by sending out a
@@ -573,7 +573,7 @@ void SDI12::sendResponse(String& resp, bool addCRC) {
 }
 
 void SDI12::sendResponse(const char* resp, bool addCRC) {
-  setState(SDI12_TRANSMITTING);               // Get ready to send data to the recorder
+  setLineState(SDI12_TRANSMITTING);           // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);                // marking is LOW
   delayMicroseconds(SDI12_LINE_MARK_MICROS);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen(resp); i++) {
@@ -586,11 +586,11 @@ void SDI12::sendResponse(const char* resp, bool addCRC) {
       writeChar(crc[i], true);  // write each character
     }
   }
-  setState(SDI12_LISTENING);  // return to listening state
+  setLineState(SDI12_LISTENING);  // return to listening state
 }
 
 void SDI12::sendResponse(FlashString resp, bool addCRC) {
-  setState(SDI12_TRANSMITTING);               // Get ready to send data to the recorder
+  setLineState(SDI12_TRANSMITTING);           // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);                // marking is LOW
   delayMicroseconds(SDI12_LINE_MARK_MICROS);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen_P((PGM_P)resp); i++) {
@@ -604,7 +604,7 @@ void SDI12::sendResponse(FlashString resp, bool addCRC) {
       writeChar(crc[i], true);  // write each character
     }
   }
-  setState(SDI12_LISTENING);  // return to listening state
+  setLineState(SDI12_LISTENING);  // return to listening state
 }
 
 /**

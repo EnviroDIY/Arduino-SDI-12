@@ -842,14 +842,14 @@ pin */
    */
   void setPinInterrupts(bool enable);
   /**
-   * @brief Set the the state of the SDI12 object[s]
+   * @brief Set the the state of the SDI12 object
    *
    * @param state The state the SDI-12 object should be set to, from
    * the SDI12_LINE_STATE enum.
    *
    * This is a private function, and only used internally.
    */
-  void setState(SDI12_LINE_STATE state);
+  void setLineState(SDI12_LINE_STATE state);
 
  public:
   /**
@@ -1113,13 +1113,13 @@ pin */
  */
 template<typename T>
 size_t SDI12::writeBytes(T value) {
-  setState(SDI12_TRANSMITTING);
+  setLineState(SDI12_TRANSMITTING);
   size_t         count = sizeof(T);
   const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&value);
   for (size_t i = 0; i < count; i++) {
     writeChar(bytes[i], false);  // write out lowest byte
   }
-  setState(SDI12_LISTENING);
+  setLineState(SDI12_LISTENING);
   return count;
 }
 
