@@ -136,59 +136,6 @@
 /// Helper for strings stored in flash
 typedef const __FlashStringHelper* FlashString;
 
-/**
- * @anchor sdi12_response_size_defines
- * @name SDI-12 Response Size Defines
- *
- * @brief Defines for constants related to messages sizes in SDI-12
- *
- * @note The following data response sizes does not include CR+LF and CRC
- */
-/**@{*/
-/// a char not found in a valid ASCII numeric field
-#define NO_IGNORE_CHAR '\x01'
-/**
- * @brief The maximum number of characters in a single value in a data response.
- *
- * From SDI-12 Protocol v1.4, Table 11 The send data command (aD0!, aD1! . . . aD9!):
- * > the value portion must be structred as pd.d
- * > - p - the polarity sign (+ or -)
- * > - d - numeric digits before the decimal place
- * > - . - the decimal point (optional)
- * > - d - numeric digits after the decimal point
- * > - the maximum number of digits for a data value is 7, even without a decimal point
- * > - the minimum number of digits for a data value (excluding the decimal point) is 1
- * > - the maximum number of characters in a data value is 9 (the (polarity sign + 7
- * > digits + the decimal point))
- * > - The polarity symbol (+ or -) acts as a delimeter between the numeric values
- */
-#define SDI12_VALUE_STR_SIZE 9
-/**
- * @brief The maximum length of a standard data command response
- *
- * From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses:
- * > The maximum number of characters that can be returned in the [values] part of the
- * > response to a D command is either 35 or 75. If the D command is issued to retrieve
- * > data in response to a concurrent measurement command, or in response to a
- * > high-volume ASCII measurement command, the maximum is 75. The maximum is also 75 in
- * > response to a continuous measurement command. Otherwise, the maximum is 35.
- */
-#define SDI12_DATA_STR_SIZE 35
-/**
- * @brief The maximum length of a ASCII data in response to a concurrent, continuous, or
- * high volume ASCII
- * @see SDI12_VALUE_STR_SIZE
- */
-#define SDI12_HV_STR_SIZE 75
-/**
- * @brief The maximum number of bytes in a high volume binary data response.
- *
- * This does not include the 1 byte address, 2 byte packet size, 1 byte data type,
- * and 2 byte CRC.  A high volume binary data response **does not** end with a CR+LF.
- */
-#define SDI12_MAX_BINARY_BYTES 1000
-/**@}*/
-
 
 /**
  * @brief The size of a bit in microseconds
@@ -199,6 +146,9 @@ typedef const __FlashStringHelper* FlashString;
 
 /// A mask for the rxState while waiting for a start bit; 0b11111111
 #define WAITING_FOR_START_BIT 0xFF
+
+/// a char not found in a valid ASCII numeric field
+#define NO_IGNORE_CHAR '\x01'
 
 /// @def NEED_LOOKAHEAD_ENUM
 /// @brief This macro is defined if lookahead options are needed.
@@ -276,37 +226,6 @@ class SDI12 : public Stream {
    * @brief The SDI12Timer instance to use for checking bit reception times.
    */
   static SDI12Timer sdi12timer;
-
-  /**
-   * @brief Nominal SDI-12 v1.4 timing values in microseconds.
-   *
-   * Section 7.0 applies a +/-0.40 ms tolerance to SDI-12 timing except the 1.66 ms
-   * inter-character maximum, which has no tolerance. Section 7.2 limits a retry after
-   * no response to 16.67-87 ms after the command stop bit and requires at least one
-   * retry more than 100 ms after the break. Figure 3 supplies the response-completion
-   * limits. These constants are private implementation values and consume no storage in
-   * an `SDI12` instance.
-   */
-  static const uint32_t SDI12_TIMING_TOLERANCE_MICROS = 400UL;  ///< General tolerance
-  static const uint32_t SDI12_BREAK_MIN_MICROS =
-    12000UL;  ///< Minimum transmitted break
-  static const uint32_t SDI12_LINE_RELEASE_MAX_MICROS   = 7500UL;  ///< Line release
-  static const uint32_t SDI12_RESPONSE_MARKING_MICROS   = 8330UL;  ///< Response marking
-  static const uint32_t SDI12_RESPONSE_START_MAX_MICROS = 15000UL;    ///< Start limit
-  static const uint32_t SDI12_INTERCHAR_MARKING_MAX_MICROS = 1660UL;  ///< Gap limit
-  static const uint32_t SDI12_SENSOR_WAKE_MAX_MICROS = 100000UL;      ///< Wake interval
-  static const uint32_t SDI12_SENSOR_STANDBY_MARKING_MICROS =
-    100000UL;                                                       ///< Standby marking
-  static const uint32_t SDI12_RETRY_MIN_DELAY_MICROS   = 16670UL;   ///< Retry minimum
-  static const uint32_t SDI12_RETRY_MAX_DELAY_MICROS   = 87000UL;   ///< Retry maximum
-  static const uint32_t SDI12_RETRY_AFTER_BREAK_MICROS = 100000UL;  ///< Break threshold
-  static const uint32_t SDI12_RESPONSE_MAX_MICROS      = 380000UL;  ///< Most responses
-  static const uint32_t SDI12_CONCURRENT_RESPONSE_MAX_MICROS =
-    780000UL;  ///< Concurrent D response
-  static const uint32_t SDI12_CONCURRENT_CRC_RESPONSE_MAX_MICROS =
-    810000UL;  ///< CRC concurrent D response
-  static const uint32_t SDI12_BINARY_RESPONSE_MAX_MICROS = 10100000UL;  ///< DB response
-
   /**@}*/
 
 
