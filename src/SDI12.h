@@ -311,11 +311,9 @@ class SDI12 : public Stream {
 
 
  private:
+
   /**
-   * @anchor line_states
-   * @name Data Line States
-   *
-   * @brief Possible SDI-12 States
+   * @brief Possible SDI-12 Data Line States
    *
    * The Arduino is responsible for managing communication with the sensors.  Since all
    * the data transfer happens on the same line, the state of the data line is very
@@ -360,89 +358,6 @@ class SDI12 : public Stream {
    *
    * `HOLDING --> TRANSMITTING --> LISTENING -->` done reading, forceHold() `--->
    * HOLDING`
-   *
-   * @see For a detailed explanation of interrupts see @ref interrupts_page
-   */
-  /**@{*/
-  /**
-   * Possible SDI-12 States
-   *
-   * LOW_POWER:
-   * - Sensor (slave) is asleep, waiting for the data recorder (master) to hold the line
-   * high for >= 12ms.
-   * - NOTE: A break of < 6.5 ms must be ignored!
-   * - Starts:
-   *   - After a sensor receives an invalid address (return to sleep)
-   *   - After line has been in marking (LOW) for > 100 ms (sensor returns to sleep)
-   * - Ends:
-   *   - Within 100 ms of receiving a >= 12ms break
-   * - Line State:
-   *   - Recorder: SDI12_HOLDING, or SDI12_TRANSMITTING (to a different sensor)
-   *   - Sensor: SDI12_LISTENING
-   * - The recorder (master) does not have a LOW_POWER state - only the recorder
-   * (master) can initiate a break..
-   *
-   * WAITING_FOR_BREAK:
-   * - Sensor (slave) is awake, waiting for the data recorder (master) to hold the line
-   * high for >= 12ms.  Or the data recorder has not initiated communication with a
-   * sensor in too long and needs to re-alert it.
-   * - NOTE: A break of < 6.5 ms must be ignored!
-   * - Starts:
-   *   - After the line has been in marking (LOW) for > 87 ms  (sensor awaits break
-   * without sleeping, recorder must send break)
-   * - Ends:
-   *    - After 12 ms break has finished
-   * - Line State:
-   *   - Recorder: SDI12_HOLDING, or SDI12_TRANSMITTING (to a different sensor)
-   *   - Sensor: SDI12_LISTENING
-   * - The recorder (master) does not have a WAITING_FOR_BREAK state - only the recorder
-   * (master) can initiate a break.
-   *
-   * SENDING_BREAK:
-   * - Line State:
-   *   - Recorder: SDI12_TRANSMITTING, Line HIGH (spacing)
-   *   - Sensor: SDI12_LISTENING (The sensor cannot issue a break!)
-   * - The sensor (slave) does not have a SENDING_BREAK state - only the recorder
-   * (master) can initiate a break.
-   *
-   * WAITING_FOR_MARKING:
-   * - Sensor has received a >= 12ms HIGH break and is waiting for the data recorder to
-   * send >= 8.33 ms of LOW marking.
-   * - Data recorder has finished sending a command, has relinquished the line, and is
-   * waiting for the sensor to hold the line LOW for >= 8.33 ms of marking
-   * - Starts:
-   *   - After line has been held continuously HIGH for >= 12ms
-   * - Ends:
-   *   - After the line has been in marking (LOW) for > 87 ms
-   * - Line State:
-   *   - Recorder: SDI12_LISTENING
-   *   - Sensor: SDI12_LISTENING
-   *
-   * SENDING_MARKING:
-   * - Line State:
-   *   - Recorder: SDI12_TRANSMITTING (LOW) or SDI12_LISTENING
-   *   - Sensor: SDI12_TRANSMITTING (LOW) or SDI12_LISTENING
-   *
-   * WAITING_FOR_START_BIT:
-   * - Line has been held low for >= 8.33 ms of marking
-   * - Starts:
-   *   - After >= 8.33 ms of marking
-   * - Ends:
-   *   - > 15 ms after the last stop bit of a command (for the recorder/master)
-   *   - > 1.66 ms after the last stop bit between characters within a command or
-   * response
-   * - Line State:
-   *   - Recorder: SDI12_LISTENING
-   *   - Sensor: SDI12_LISTENING
-   *
-   * TRANSMITTING_DATA:
-   * - Line State:
-   *   - Recorder: SDI12_TRANSMITTING
-   *   - Sensor: SDI12_TRANSMITTING
-   */
-
-  /**
-   * @brief The various SDI-12 line states.
    */
   typedef enum SDI12_LINE_STATE : uint8_t {
     /** SDI-12 is disabled, pin mode INPUT, interrupts disabled for the pin */
