@@ -212,7 +212,7 @@ typedef const __FlashStringHelper* FlashString;
 /**@}*/
 
 /**
- * @brief A mask for the rxState while waiting for a start bit; 0b11111111
+ * @brief A decoder bit-count value used while waiting for a start bit; 0b11111111
  */
 #define WAITING_FOR_START_BIT 0xFF
 
@@ -397,13 +397,20 @@ pin */
   /** @brief Latched receive errors for the current message or transaction attempt. */
   volatile uint8_t _receiveErrorFlags = 0;
 
+
   /**
-   * @brief Stores the time of the previous RX transition in units of the specific board
-   * timer.
+   * @brief Minimum state required to convert timed edges into one character.
+   */
+  struct CharacterDecoderState {
+  /**
+   * @brief Stores the time of the previous RX transition (decoder edge) in units of
+     * the specific board timer.
    *
    * This is used to track timing changes while actively receiving characters.
+*
+     * @remark Previously labeled prevBitTCNT
    */
-  sdi12timer_t prevBitTCNT;
+  sdi12timer_t previousEdge;
   /**
    * @brief Tracks how many bits are accounted for on an incoming character.
    *
@@ -421,22 +428,28 @@ pin */
    * 8 - got data bit 7 (parity)
    * 9 - got stop bit
    * 255 - waiting for next start bit
+*
+     * @remark Previously labeled rxState
    */
-  uint8_t rxState;
+  uint8_t bitCount;
   /**
    * @brief a bit mask for building a received character
    *
    * The mask has a single bit set, in the place of the active bit based on the
    * #rxState.
+*
+     * @remark Previously labeled rxMask
    */
-  uint8_t rxMask;
+  uint8_t mask;
   /**
-   * @brief the value of the character being built
+   * @brief the value of the character under construction
+     *
+     * @remark Previously labeled rxValue
    */
-  uint8_t rxValue;
-  /**@}*/
+  uint8_t value;
+  } _decoder = {0, WAITING_FOR_START_BIT, 0, 0};
 
-
+ private:
   /**
    * @anchor sdi12_buffer
    * @name Buffer Setup
@@ -460,7 +473,6 @@ pin */
    * http://en.wikipedia.org/wiki/Circular_buffer
    */
   /**@{*/
- private:
   /**
    * @brief A single incoming character buffer for ALL SDI-12 objects (Rx buffer)
    *
@@ -953,7 +965,6 @@ pin */
    * data line when not transmitting.
    */
   void forceListen();
-  /**@}*/
 
 
   /**
@@ -1082,6 +1093,23 @@ pin */
   void sendCommand(FlashString cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
 
   /**
+   * @brief Send a response out on the data line (for slave use)
+   *
+   * @param resp the response to send
+   * @param addCRC True to append a CRC to the outgoing response
+   *
+   * A publicly accessible function that sends out an 8.33 ms marking and a response
+   * byte by byte on the data line.  This is needed if the Arduino is acting as an
+   * SDI-12 device itself, not as a recorder for another SDI-12 device.
+   */
+  void sendResponse(String& resp, bool addCRC = false);
+  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
+  void sendResponse(const char* resp, bool addCRC = false);
+  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
+  void sendResponse(FlashString resp, bool addCRC = false);
+  ///@}
+
+  /**
    * @brief Calculates the 16-bit Cyclic Redundancy Check (CRC) for an SDI-12 message.
    *
    * @param resp The message to calculate the CRC for.
@@ -1118,23 +1146,6 @@ pin */
    * match and the message could be retried.
    */
   bool verifyCRC(String& respWithCRC);
-
-  /**
-   * @brief Send a response out on the data line (for slave use)
-   *
-   * @param resp the response to send
-   * @param addCRC True to append a CRC to the outgoing response
-   *
-   * A publicly accessible function that sends out an 8.33 ms marking and a response
-   * byte by byte on the data line.  This is needed if the Arduino is acting as an
-   * SDI-12 device itself, not as a recorder for another SDI-12 device.
-   */
-  void sendResponse(String& resp, bool addCRC = false);
-  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
-  void sendResponse(const char* resp, bool addCRC = false);
-  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
-  void sendResponse(FlashString resp, bool addCRC = false);
-  ///@}
 
   /**
    * @anchor interrupt_fxns

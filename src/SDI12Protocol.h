@@ -52,7 +52,7 @@ struct Timing {
  * @brief Normative size limits for SDI-12 data responses.
  *
  * From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses:
- * > The maximum number of characters that can be returned in the <values> part of the
+ * > The maximum number of characters that can be returned in the [values] part of the
  * > response to a D command is either 35 or 75. If the D command is issued to
  * > retrieve data in response to a concurrent measurement command, or in response to
  * > a high-volume ASCII measurement command, the maximum is 75. The maximum is also

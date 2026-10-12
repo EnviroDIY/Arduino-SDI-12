@@ -375,8 +375,9 @@ void SDI12::setLineState(SDI12_LINE_STATE state) {
         digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
         interrupts();                 // Enable general interrupts
         setPinInterrupts(true);       // Enable Rx interrupts on data pin
-        prevBitTCNT = READTIME;       // Set the last interrupt time to now
-        rxState     = WAITING_FOR_START_BIT;  // Set state to ready for new start bit
+        _decoder.previousEdge = READTIME;  // Set the last interrupt time to now
+        _decoder.bitCount =
+          WAITING_FOR_START_BIT;  // Set state to ready for new start bit
         break;
       }
     default:  // SDI12_DISABLED
@@ -697,9 +698,9 @@ void ISR_MEM_ACCESS SDI12::handleInterrupt() {
 
 // Creates a blank slate of bits for an incoming character
 void ISR_MEM_ACCESS SDI12::startChar() {
-  rxState = 0x00;  // 0b00000000, got a start bit
-  rxMask  = 0x01;  // 0b00000001, bit mask, lsb first
-  rxValue = 0x00;  // 0b00000000, RX character to be, a blank slate
+  _decoder.bitCount = 0x00;  // 0b00000000, got a start bit
+  _decoder.mask     = 0x01;  // 0b00000001, bit mask, lsb first
+  _decoder.value    = 0x00;  // 0b00000000, RX character to be, a blank slate
 }  // startChar
 
 // The actual interrupt service routine
@@ -711,7 +712,7 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
 
   // Check how many bit times have passed since the last change
   uint16_t rxBits =
-    SDI12Timer::bitTimes(SDI12Timer::timerDelta(thisBitTCNT, prevBitTCNT));
+    SDI12Timer::bitTimes(SDI12Timer::timerDelta(thisBitTCNT, _decoder.previousEdge));
 
 #if !(TICKS_PER_SECOND == 31250 && TIMER_INT_SIZE == 8)
   // if we haven't had a bit spacing between the last interrupt, just ignore and move on
@@ -721,13 +722,13 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
 #endif
 
   // Check if we're ready for a start bit, and if this could possibly be it.
-  if (rxState == WAITING_FOR_START_BIT) {
+  if (_decoder.bitCount == WAITING_FOR_START_BIT) {
     // If we are waiting for a start bit and the pin is low it's not a start bit, exit
     // Inverse logic start bit = HIGH
     if (pinLevel == LOW) { return; }
     // If the pin is HIGH, this should be a start bit.
-    // Thus call startChar(), which zeros the timer counter, sets the rxState to 0, and
-    // creates an empty character and a new mask with a 1 in the lowest place
+    // Thus call startChar(), which sets the decoder bit count to 0 and creates an empty
+    // character and a new mask with a 1 in the lowest place.
     startChar();
   } else {
     // If we're not waiting for a start bit, it's because we're in the middle of an
@@ -738,7 +739,7 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     if (rxBits > 12) {
       // reset the rx state if more than 12 bits have passed and note a framing error
       _receiveErrorFlags |= SDI12_RECEIVE_ERROR_FRAMING;
-      rxState = WAITING_FOR_START_BIT;
+      _decoder.bitCount = WAITING_FOR_START_BIT;
       return;
     }
 #endif
@@ -746,14 +747,14 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     // Calculate how many *data+parity* bits should be left in the current character
     //      - Each character has a total of 10 bits, 1 start bit, 7 data bits, 1 parity
     // bit, and 1 stop bit
-    //      - The #rxState holds record of how many of the data + parity bits we've
-    // gotten (up to 8)
+    //      - The decoder bit count records how many data + parity bits we've gotten (up
+    // to 8)
     //      - We have to treat the parity bit as a data bit because we don't know its
     // state
     //      - Since we're mid character, we know the start bit is past which knocks us
     // down to 9
     //      - There will always be one left over for the stop bit, which will be LOW/1
-    uint8_t bitsLeft = 9 - rxState;
+    uint8_t bitsLeft = 9 - _decoder.bitCount;
     // If the number of bits passed since the last transition is more than then number
     // of bits left on the character we were working on, a new character must have
     // started.
@@ -766,9 +767,9 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     // (1) even parity bit - 1 LOW stop bit, last level change before line idle is the
     // end of the start bit)  Because we cannot detect the end of the stop bit, in
     // sequential characters the next change will be the next start bit and it will
-    // arrive with the rxState set to the middle of the last character.  So, since we
-    // cannot depend on the rxState telling us if we're WAITING_FOR_START_BIT, we have
-    // to figure it out by the time passed.
+    // arrive with the decoder in the middle of the last character. Since we cannot
+    // depend on its bit count telling us if we're waiting for a start bit, we have to
+    // figure it out by the time passed.
     bool nextCharStarted = (rxBits > bitsLeft);
 
     // Check how many data+parity bits have been sent in this frame.  This will be
@@ -785,8 +786,8 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     //    if nextCharStarted then bitsThisFrame = bitsLeft
     //                       else bitsThisFrame = rxBits
     uint8_t bitsThisFrame = nextCharStarted ? bitsLeft : rxBits;
-    // Tick up the rxState by the number of data+parity bits received in the frame
-    rxState += bitsThisFrame;
+    // Count the data+parity bits received in the frame.
+    _decoder.bitCount += bitsThisFrame;
 
     // Set all the bits received between the last change and this change
     if (pinLevel == HIGH) {
@@ -796,37 +797,38 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
       while (bitsThisFrame-- > 0) {
         // for each of the bits that happened in this frame
 
-        rxValue |= rxMask;     // Add a 1 to the LSB/right-most place of our character
-                               // value from the mask
-        rxMask = rxMask << 1;  // Shift the 1 in the mask up by one position
+        _decoder.value |=
+          _decoder.mask;  // Add a 1 to the active place of our character value
+        _decoder.mask = _decoder.mask << 1;  // Shift the mask up one position
       }
       // And shift the 1 in the mask up by one more position for the current bit.
       // It's HIGH/0 now, so we don't use `|=` with the mask for this last one.
-      rxMask = rxMask << 1;
+      _decoder.mask = _decoder.mask << 1;
     } else {
       // If the current state is LOW (and it just became so), then this bit is LOW
       // but all bits between the last change and now must have been HIGH
 
       // pinLevel==LOW
       // previous bits were 0's so only this bit is a 1 (inverse logic - LOW = 1)
-      rxMask = rxMask << (bitsThisFrame -
-                          1);  // Shift the 1 in the mask up by the number of bits past
-      rxValue |= rxMask;  //  And add that shifted one to the character being created
+      _decoder.mask = _decoder.mask
+        << (bitsThisFrame - 1);  // Shift the mask up by the number of bits past
+      _decoder.value |=
+        _decoder.mask;  // Add that shifted one to the character being created
     }
 
     // If this was the 8th or more bit then the character and parity are complete.
     // The stop bit may still be outstanding
-    if (rxState > 7) {
+    if (_decoder.bitCount > 7) {
       // Mask out all but the least significant byte
       // parity handling will be taken care by respective read function
-      rxValue &= 0xFF;
-      charToBuffer(rxValue);  // Put the finished character into the buffer
+      _decoder.value &= 0xFF;
+      charToBuffer(_decoder.value);  // Put the finished character into the buffer
 
       // if this is LOW, or we haven't exceeded the number of bits in a
       // character (but have gotten all the data bits) then this should be a
       // stop bit and we can start looking for a new start bit.
       if ((pinLevel == LOW) || !nextCharStarted) {
-        rxState =
+        _decoder.bitCount =
           WAITING_FOR_START_BIT;  // reset the rx state, stop waiting for stop bit
       } else {
         // If we just switched to HIGH, or we've exceeded the total number of
@@ -836,7 +838,7 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
       }
     }
   }
-  prevBitTCNT = thisBitTCNT;  // finally remember time stamp of this change!
+  _decoder.previousEdge = thisBitTCNT;  // finally remember this edge timestamp
 }
 
 // Put a new character in the buffer
