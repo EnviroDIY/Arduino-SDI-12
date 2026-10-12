@@ -351,6 +351,7 @@ void SDI12::setPinInterrupts(bool enable) {
 // To disable both resistors on these other boards, we need to do a digitalWrite(pin,
 // LOW) after pinMode(INPUT).
 void SDI12::setLineState(SDI12_LINE_STATE state) {
+  _lineState = state;
   switch (state) {
     case SDI12_HOLDING:
       {
