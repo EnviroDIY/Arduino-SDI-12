@@ -313,45 +313,57 @@ pin */
   volatile uint8_t _receiveErrorFlags = 0;
 
   /**
-   * @brief Stores the time of the previous RX transition in units of the specific board
-   * timer.
-   *
-   * This is used to track timing changes while actively receiving characters.
+   * @brief Minimum state required to convert timed edges into one character.
    */
-  sdi12timer_t prevBitTCNT;
-  /**
-   * @brief Tracks how many bits are accounted for on an incoming character.
-   *
-   * - if 0: indicates that we got a start bit
-   * - if >0: indicates the number of bits received
-   *
-   * 0 - got start bit
-   * 1 - got data bit 0
-   * 2 - got data bit 1
-   * 3 - got data bit 2
-   * 4 - got data bit 3
-   * 5 - got data bit 4
-   * 6 - got data bit 5
-   * 7 - got data bit 6
-   * 8 - got data bit 7 (parity)
-   * 9 - got stop bit
-   * 255 - waiting for next start bit
-   */
-  uint8_t rxState;
-  /**
-   * @brief a bit mask for building a received character
-   *
-   * The mask has a single bit set, in the place of the active bit based on the
-   * #rxState.
-   */
-  uint8_t rxMask;
-  /**
-   * @brief the value of the character being built
-   */
-  uint8_t rxValue;
-  /**@}*/
+  struct CharacterDecoderState {
+    /**
+     * @brief Stores the time of the previous RX transition (decoder edge) in units of
+     * the specific board timer.
+     *
+     * This is used to track timing changes while actively receiving characters.
+     *
+     * @remark Previously labeled prevBitTCNT
+     */
+    sdi12timer_t previousEdge;
+    /**
+     * @brief Tracks how many bits are accounted for on an incoming character.
+     *
+     * - if 0: indicates that we got a start bit
+     * - if >0: indicates the number of bits received
+     *
+     * 0 - got start bit
+     * 1 - got data bit 0
+     * 2 - got data bit 1
+     * 3 - got data bit 2
+     * 4 - got data bit 3
+     * 5 - got data bit 4
+     * 6 - got data bit 5
+     * 7 - got data bit 6
+     * 8 - got data bit 7 (parity)
+     * 9 - got stop bit
+     * 255 - waiting for next start bit
+     *
+     * @remark Previously labeled rxState
+     */
+    uint8_t bitCount;
+    /**
+     * @brief a bit mask for building a received character
+     *
+     * The mask has a single bit set, in the place of the active bit based on the
+     * #rxState.
+     *
+     * @remark Previously labeled rxMask
+     */
+    uint8_t mask;
+    /**
+     * @brief the value of the character under construction
+     *
+     * @remark Previously labeled rxValue
+     */
+    uint8_t value;
+  } _decoder = {0, WAITING_FOR_START_BIT, 0, 0};
 
-
+ private:
   /**
    * @anchor sdi12_buffer
    * @name Buffer Setup
@@ -375,7 +387,6 @@ pin */
    * http://en.wikipedia.org/wiki/Circular_buffer
    */
   /**@{*/
- private:
   /**
    * @brief A single incoming character buffer for ALL SDI-12 objects (Rx buffer)
    *
@@ -868,7 +879,6 @@ pin */
    * data line when not transmitting.
    */
   void forceListen();
-  /**@}*/
 
 
   /**
@@ -997,6 +1007,23 @@ pin */
   void sendCommand(FlashString cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
 
   /**
+   * @brief Send a response out on the data line (for slave use)
+   *
+   * @param resp the response to send
+   * @param addCRC True to append a CRC to the outgoing response
+   *
+   * A publicly accessible function that sends out an 8.33 ms marking and a response
+   * byte by byte on the data line.  This is needed if the Arduino is acting as an
+   * SDI-12 device itself, not as a recorder for another SDI-12 device.
+   */
+  void sendResponse(String& resp, bool addCRC = false);
+  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
+  void sendResponse(const char* resp, bool addCRC = false);
+  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
+  void sendResponse(FlashString resp, bool addCRC = false);
+  ///@}
+
+  /**
    * @brief Calculates the 16-bit Cyclic Redundancy Check (CRC) for an SDI-12 message.
    *
    * @param resp The message to calculate the CRC for.
@@ -1033,23 +1060,6 @@ pin */
    * match and the message could be retried.
    */
   bool verifyCRC(String& respWithCRC);
-
-  /**
-   * @brief Send a response out on the data line (for slave use)
-   *
-   * @param resp the response to send
-   * @param addCRC True to append a CRC to the outgoing response
-   *
-   * A publicly accessible function that sends out an 8.33 ms marking and a response
-   * byte by byte on the data line.  This is needed if the Arduino is acting as an
-   * SDI-12 device itself, not as a recorder for another SDI-12 device.
-   */
-  void sendResponse(String& resp, bool addCRC = false);
-  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
-  void sendResponse(const char* resp, bool addCRC = false);
-  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
-  void sendResponse(FlashString resp, bool addCRC = false);
-  ///@}
 
   /**
    * @anchor interrupt_fxns
