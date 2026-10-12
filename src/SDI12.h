@@ -295,6 +295,38 @@ typedef enum SDI12BinaryDataType_e : uint8_t {
  * @brief The main class for SDI 12 instances
  */
 class SDI12 : public Stream {
+ public:
+  /**
+   * @brief Line-condition events published by the transport ISR.
+   *
+   * Events are coalescing flags. The ISR is the sole publisher and foreground code
+   * consumes all pending flags with takeLineEvents().
+   */
+  typedef enum SDI12_LINE_EVENT : uint8_t {
+    SDI12_LINE_EVENT_NONE = 0x00,  ///< No line event is pending
+    SDI12_LINE_EVENT_BREAK_COMPLETED =
+      0x01,  ///< A spacing interval reached the break minimum and ended
+    SDI12_LINE_EVENT_MARKING_COMPLETED =
+      0x02  ///< A marking interval reached the required minimum and ended
+  } SDI12_LINE_EVENT;
+
+  /**
+   * @brief Character-receive events published by the transport ISR.
+   *
+   * Events describe observed transport facts, not retry or protocol-role policy. They
+   * are coalescing flags consumed by takeReceiveEvents().
+   */
+  typedef enum SDI12_RECEIVE_EVENT : uint8_t {
+    SDI12_RECEIVE_EVENT_NONE                = 0x00,  ///< No receive event is pending
+    SDI12_RECEIVE_EVENT_START_BIT_OBSERVED  = 0x01,  ///< A start bit was observed
+    SDI12_RECEIVE_EVENT_CHARACTER_COMPLETED = 0x02,  ///< A character was reconstructed
+    SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED =
+      0x04,                                    ///< A command or response end was seen
+    SDI12_RECEIVE_EVENT_FRAMING_ERROR = 0x08,  ///< An incomplete character was reset
+    SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW =
+      0x10  ///< A character could not enter the buffer
+  } SDI12_RECEIVE_EVENT;
+
   /**
    * @anchor sdi12_statics
    * @name Static member variables
@@ -346,7 +378,7 @@ class SDI12 : public Stream {
    * | State               | Interrupts       | Pin Mode   | Pin Level |
    * |---------------------|------------------|------------|-----------|
    * | SDI12_DISABLED      | Pin Disable      | INPUT      | ---       |
-      * | SDI12_HOLDING       | Pin Disable      | OUTPUT     | LOW       |
+   * | SDI12_HOLDING       | Pin Disable      | OUTPUT     | LOW       |
    * | SDI12_TRANSMITTING  | All/Pin Disable  | OUTPUT     | VARYING   |
    * | SDI12_LISTENING     | All Enable       | INPUT      | ---       |
    *
@@ -366,8 +398,8 @@ class SDI12 : public Stream {
   typedef enum SDI12_LINE_STATE : uint8_t {
     /** SDI-12 is disabled, pin mode INPUT, interrupts disabled for the pin */
     SDI12_DISABLED,
-        /** The line is being held LOW, pin mode OUTPUT, interrupts disabled for the pin.
-       This state should only ever be used by the recorder (master) */
+    /** The line is being held LOW, pin mode OUTPUT, interrupts disabled for the pin.
+   This state should only ever be used by the recorder (master) */
     SDI12_HOLDING,
     /** Data is being transmitted, pin mode OUTPUT, interrupts disabled for the pin */
     SDI12_TRANSMITTING,
@@ -377,79 +409,78 @@ pin */
   } SDI12_LINE_STATE;
 
   /**
-   * @brief Receive errors detected while capturing the current message.
-   *
-   * A collision is observable only when it produces an illegal edge sequence, in
-   * which case it is reported as a framing error. A collision that happens to form a
-   * valid-looking frame cannot be distinguished from valid traffic by this receiver.
-   */
-  typedef enum SDI12_RECEIVE_ERRORS : uint8_t {
-    SDI12_RECEIVE_ERROR_NONE     = 0x00,
-    SDI12_RECEIVE_ERROR_FRAMING  = 0x01,
-    SDI12_RECEIVE_ERROR_OVERFLOW = 0x02
-  } SDI12_RECEIVE_ERRORS;
-
-  /**
    * @anchor sdi12_state_vars
    * @name Variables used to track the timing and state of the instance
    */
   /**@{*/
   /// The current electrical driver and data-pin state.
   SDI12_LINE_STATE _lineState = SDI12_DISABLED;
-  /// Latched receive errors for the current message or transaction attempt.
-  volatile uint8_t _receiveErrorFlags = 0;
-/**@}*/
+  /// Coalescing line events written by the ISR and consumed by foreground code.
+  volatile uint8_t _lineEventFlags = SDI12_LINE_EVENT_NONE;
+  /// Coalescing receive events written by the ISR and consumed by foreground code.
+  volatile uint8_t _receiveEventFlags = SDI12_RECEIVE_EVENT_NONE;
+  /**@}*/
+
+  /** @brief State used to classify completed spacing and marking intervals. */
+  struct LineObserverState {
+    sdi12timer_t previousEdge;   ///< Timer count at the preceding physical edge
+    bool         valid;          ///< Whether the preceding edge timestamp is valid
+    bool spacingMinimumReached;  ///< Whether the current spacing met the break minimum
+    bool markingMinimumReached;  ///< Whether the current marking met its minimum
+  } _lineObserver = {0, false, false, false};
 
   /**
    * @brief Minimum state required to convert timed edges into one character.
    */
   struct CharacterDecoderState {
-  /**
-   * @brief Stores the time of the previous RX transition (decoder edge) in units of
+    /**
+     * @brief Stores the time of the previous RX transition (decoder edge) in units of
      * the specific board timer.
-   *
-   * This is used to track timing changes while actively receiving characters.
-*
+     *
+     * This is used to track timing changes while actively receiving characters.
+     *
      * @remark Previously labeled prevBitTCNT
-   */
-  sdi12timer_t previousEdge;
-  /**
-   * @brief Tracks how many bits are accounted for on an incoming character.
-   *
-   * - if 0: indicates that we got a start bit
-   * - if >0: indicates the number of bits received
-   *
-   * 0 - got start bit
-   * 1 - got data bit 0
-   * 2 - got data bit 1
-   * 3 - got data bit 2
-   * 4 - got data bit 3
-   * 5 - got data bit 4
-   * 6 - got data bit 5
-   * 7 - got data bit 6
-   * 8 - got data bit 7 (parity)
-   * 9 - got stop bit
-   * 255 - waiting for next start bit
-*
+     */
+    sdi12timer_t previousEdge;
+    /**
+     * @brief Tracks how many bits are accounted for on an incoming character.
+     *
+     * - if 0: indicates that we got a start bit
+     * - if >0: indicates the number of bits received
+     *
+     * 0 - got start bit
+     * 1 - got data bit 0
+     * 2 - got data bit 1
+     * 3 - got data bit 2
+     * 4 - got data bit 3
+     * 5 - got data bit 4
+     * 6 - got data bit 5
+     * 7 - got data bit 6
+     * 8 - got data bit 7 (parity)
+     * 9 - got stop bit
+     * 255 - waiting for next start bit
+     *
      * @remark Previously labeled rxState
-   */
-  uint8_t bitCount;
-  /**
-   * @brief a bit mask for building a received character
-   *
-   * The mask has a single bit set, in the place of the active bit based on the
-   * #rxState.
-*
+     */
+    uint8_t bitCount;
+    /**
+     * @brief a bit mask for building a received character
+     *
+     * The mask has a single bit set in the active position selected by bitCount.
+     *
      * @remark Previously labeled rxMask
-   */
-  uint8_t mask;
-  /**
-   * @brief the value of the character under construction
+     */
+    uint8_t mask;
+    /**
+     * @brief the value of the character under construction
      *
      * @remark Previously labeled rxValue
-   */
-  uint8_t value;
+     */
+    uint8_t value;
   } _decoder = {0, WAITING_FOR_START_BIT, 0, 0};
+
+  /// Previous seven-bit character used to recognize a response-ending CR LF pair.
+  uint8_t _previousCharacter = 0;
 
  private:
   /**
@@ -949,6 +980,37 @@ pin */
    * This is a private function, and only used internally.
    */
   void setLineState(SDI12_LINE_STATE state);
+  /**
+   * @brief Reset edge-history state when listening begins or line ownership changes.
+   *
+   * @param listening True when a new listening interval is beginning.
+   * @param timerTime The selected timer count at the start of that interval.
+   */
+  void resetEdgeState(bool listening, sdi12timer_t timerTime);
+  /**
+   * @brief Atomically publish an ISR-owned event flag.
+   *
+   * @param flags The coalescing flag byte to update.
+   * @param event The event bits to publish.
+   */
+  static void publishEvent(volatile uint8_t& flags, uint8_t event);
+  /**
+   * @brief Atomically consume and clear a set of ISR-owned event flags.
+   *
+   * @param flags The coalescing flag byte to consume.
+   * @return The pending event bits before the flag byte was cleared.
+   */
+  static uint8_t takeEvents(volatile uint8_t& flags);
+  /**
+   * @brief Classify the line interval ending at one captured edge.
+   *
+   * @param timerTime The selected SDI-12 timer count at the edge.
+   * @param pinLevel The new physical data-line level.
+   * @return A bitwise combination of SDI12_LINE_EVENT values published for the edge.
+   */
+  uint8_t observeLineEdge(sdi12timer_t timerTime, uint8_t pinLevel);
+  /** @brief Route one captured edge to line observation and character decoding. */
+  void routeEdge();
 
  public:
   /**
@@ -967,6 +1029,26 @@ pin */
    * data line when not transmitting.
    */
   void forceListen();
+
+  /**
+   * @brief Atomically consume all pending line-condition events.
+   *
+   * Multiple occurrences of the same event coalesce until this method is called. Call
+   * only from foreground code, not from an ISR.
+   *
+   * @return A bitwise combination of SDI12_LINE_EVENT values.
+   */
+  uint8_t takeLineEvents();
+
+  /**
+   * @brief Atomically consume all pending character-receive events.
+   *
+   * Multiple occurrences of the same event coalesce until this method is called. Call
+   * only from foreground code, not from an ISR.
+   *
+   * @return A bitwise combination of SDI12_RECEIVE_EVENT values.
+   */
+  uint8_t takeReceiveEvents();
 
 
   /**
@@ -1165,18 +1247,11 @@ pin */
    */
   void startChar();
   /**
-   * @brief The interrupt service routine (ISR) - the function responding to changes in
-   * rx line state.
+   * @brief Compatibility ISR callback that delegates to the transport edge router.
    *
-   * This function checks which direction the change of the interrupt was and then uses
-   * that to populate the bits of the character. Unlike SoftwareSerial which listens for
-   * a start bit and then halts all program and other ISR execution until the end of the
-   * character, this library grabs the time of the interrupt, does some quick math, and
-   * lets the processor move on.  The logic of creating a character this way is harder
-   * for a person to follow, but it pays off because we're not tieing up the processor
-   * in an ISR that lasts for 8.33ms for each character. [10 bits @ 1200 bits/s] For a
-   * person, that 8.33ms is trivial, but for even a "slow" 8MHz processor, that's over
-   * 60,000 ticks sitting idle per character.
+   * The default implementation sends the edge to the private router, which records the
+   * edge timing and pin level needed by the character decoder. The virtual callback is
+   * retained for compatibility with existing subclasses.
    */
   virtual void receiveISR();
   /**
