@@ -309,7 +309,9 @@ pin */
    * @name Variables used to track the timing and state of the instance
    */
   /**@{*/
-  /** @brief Latched receive errors for the current message or transaction attempt. */
+  /// The current electrical driver and data-pin state.
+  SDI12_LINE_STATE _lineState = SDI12_DISABLED;
+  /// Latched receive errors for the current message or transaction attempt.
   volatile uint8_t _receiveErrorFlags = 0;
 
   /**
