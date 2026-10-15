@@ -187,8 +187,9 @@ float SDI12::parseFloat(LookaheadMode, char) {
 }
 
 /* ================ Constructor, Destructor, begin(), end(), and timeout ============*/
-void SDI12::resetEdgeState(bool listening, sdi12timer_t timerTime) {
-  _lineObserver.previousEdge          = timerTime;
+void SDI12::resetEdgeState(bool listening, sdi12timer_t timerTime, uint8_t pinLevel) {
+  _lineObserver.intervalStart         = timerTime;
+  _lineObserver.level                 = pinLevel;
   _lineObserver.valid                 = listening;
   _lineObserver.spacingMinimumReached = false;
   _lineObserver.markingMinimumReached = false;
@@ -200,8 +201,8 @@ void SDI12::resetEdgeState(bool listening, sdi12timer_t timerTime) {
 }
 
 void ISR_MEM_ACCESS SDI12::publishEvent(volatile uint8_t& flags, uint8_t event) {
-  // The ISR is the sole writer. Aligned byte reads and writes are atomic on all
-  // supported targets; foreground code disables interrupts for the read-clear pair.
+  // ISR publication is inherently serialized. Recorder or sensor application callers
+  // disable interrupts around this byte update and their event read-clear pair.
   flags |= event;
 }
 
@@ -211,7 +212,7 @@ uint8_t SDI12::takeEvents(volatile uint8_t& flags) {
   cli();
   const uint8_t events = flags;
   flags                = 0;
-  SREG                  = savedStatus;
+  SREG                 = savedStatus;
 #else
   noInterrupts();
   const uint8_t events = flags;
@@ -390,21 +391,21 @@ void SDI12::setLineState(SDI12_LINE_STATE state) {
   switch (state) {
     case SDI12_HOLDING:
       {
-        setPinInterrupts(false);      // Interrupts disabled on data pin
-        resetEdgeState(false, 0);     // Recorded receive edges are no longer valid
-        pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
-        digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
-        pinMode(_dataPin, OUTPUT);    // Pin mode = output
-        digitalWrite(_dataPin, LOW);  // Pin state = low - marking
+        setPinInterrupts(false);        // Interrupts disabled on data pin
+        resetEdgeState(false, 0, LOW);  // Recorded receive edges are no longer valid
+        pinMode(_dataPin, INPUT);       // Set to input so we can control the resistors
+        digitalWrite(_dataPin, LOW);    // When set to input, this turns off the pull-up
+        pinMode(_dataPin, OUTPUT);      // Pin mode = output
+        digitalWrite(_dataPin, LOW);    // Pin state = low - marking
         break;
       }
     case SDI12_TRANSMITTING:
       {
-        setPinInterrupts(false);      // Interrupts disabled on data pin
-        resetEdgeState(false, 0);     // Recorded receive edges are no longer valid
-        pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
-        digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
-        pinMode(_dataPin, OUTPUT);    // Pin mode = output
+        setPinInterrupts(false);        // Interrupts disabled on data pin
+        resetEdgeState(false, 0, LOW);  // Recorded receive edges are no longer valid
+        pinMode(_dataPin, INPUT);       // Set to input so we can control the resistors
+        digitalWrite(_dataPin, LOW);    // When set to input, this turns off the pull-up
+        pinMode(_dataPin, OUTPUT);      // Pin mode = output
         break;
       }
     case SDI12_LISTENING:
@@ -413,17 +414,18 @@ void SDI12::setLineState(SDI12_LINE_STATE state) {
         pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
         digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
         interrupts();                 // Enable general interrupts
+        const uint8_t      pinLevel  = digitalRead(_dataPin);
         const sdi12timer_t timerTime = READTIME;
-        resetEdgeState(true, timerTime);
-        setPinInterrupts(true);       // Enable Rx interrupts on data pin
+        resetEdgeState(true, timerTime, pinLevel);
+        setPinInterrupts(true);  // Enable Rx interrupts on data pin
         break;
       }
     default:  // SDI12_DISABLED
       {
-        setPinInterrupts(false);      // Interrupts disabled on data pin
-        resetEdgeState(false, 0);     // Recorded receive edges are no longer valid
-        pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
-        digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
+        setPinInterrupts(false);        // Interrupts disabled on data pin
+        resetEdgeState(false, 0, LOW);  // Recorded receive edges are no longer valid
+        pinMode(_dataPin, INPUT);       // Set to input so we can control the resistors
+        digitalWrite(_dataPin, LOW);    // When set to input, this turns off the pull-up
         break;
       }
   }
@@ -439,6 +441,16 @@ void SDI12::forceListen() {
   setLineState(SDI12_LISTENING);
 }
 
+void SDI12::startBreak() {
+  if (_lineState != SDI12_TRANSMITTING) { setLineState(SDI12_TRANSMITTING); }
+  digitalWrite(_dataPin, HIGH);
+}
+
+void SDI12::startMarking() {
+  if (_lineState != SDI12_TRANSMITTING) { setLineState(SDI12_TRANSMITTING); }
+  digitalWrite(_dataPin, LOW);
+}
+
 uint8_t SDI12::takeLineEvents() {
   return takeEvents(_lineEventFlags);
 }
@@ -447,21 +459,66 @@ uint8_t SDI12::takeReceiveEvents() {
   return takeEvents(_receiveEventFlags);
 }
 
+void SDI12::serviceLineConditions() {
+#if defined(__AVR__)
+  const uint8_t savedStatus = SREG;
+  cli();
+#else
+  noInterrupts();
+#endif
+
+  if (_lineState == SDI12_LISTENING && _lineObserver.valid) {
+    const uint8_t      pinLevel  = digitalRead(_dataPin);
+    const sdi12timer_t timerTime = READTIME;
+
+    // If an edge became pending while interrupts were disabled, leave it for the ISR.
+    if (pinLevel == _lineObserver.level) {
+      const uint32_t elapsedTicks = static_cast<uint32_t>(
+        SDI12Timer::timerDelta(timerTime, _lineObserver.intervalStart));
+      const uint32_t minimumBreakTicks = sdi12::internal::microsecondsToTicksCeil(
+        sdi12::protocol::Timing::kBreakMinMicros, TICKS_PER_SECOND);
+      const uint32_t minimumMarkingTicks = sdi12::internal::microsecondsToTicksCeil(
+        sdi12::protocol::Timing::kPreCharacterMarkingMinMicros, TICKS_PER_SECOND);
+
+      if (pinLevel == HIGH &&
+          sdi12::internal::minimumReached(elapsedTicks, minimumBreakTicks,
+                                          _lineObserver.spacingMinimumReached)) {
+        if (!_lineObserver.spacingMinimumReached) {
+          _lineObserver.spacingMinimumReached = true;
+          publishEvent(_lineEventFlags, SDI12_LINE_EVENT_BREAK_THRESHOLD_REACHED);
+        }
+      } else if (pinLevel == LOW &&
+                 sdi12::internal::minimumReached(elapsedTicks, minimumMarkingTicks,
+                                                 _lineObserver.markingMinimumReached)) {
+        if (!_lineObserver.markingMinimumReached) {
+          _lineObserver.markingMinimumReached = true;
+          publishEvent(_lineEventFlags, SDI12_LINE_EVENT_MARKING_THRESHOLD_REACHED);
+        }
+      }
+    }
+  }
+
+#if defined(__AVR__)
+  SREG = savedStatus;
+#else
+  interrupts();
+#endif
+}
+
 /* ================ Waking Up and Talking To Sensors ================================*/
 // this function wakes up the entire sensor bus by sending a 12ms break followed by 8.33
 // ms of marking
 void SDI12::wakeSensors(int8_t extraWakeTime) {
-  setLineState(SDI12_TRANSMITTING);
+  startBreak();
   // Universal interrupts can be on while the break and marking happen because
   // timings for break and from the recorder are not critical.
   // Interrupts on the pin are disabled for the entire transmitting state
-  digitalWrite(_dataPin, HIGH);  // break is HIGH
   delayMicroseconds(
     SDI12_LINE_BREAK_MICROS);  // Required break of 12 milliseconds (12,000 µs)
   if (extraWakeTime > 0) {     // allow the sensors to wake, iff specified
     delay(static_cast<unsigned long>(extraWakeTime));
   }
-  digitalWrite(_dataPin, LOW);  // marking is LOW
+  startMarking();
   delayMicroseconds(
     SDI12_LINE_MARK_MICROS);  // Required marking of 8.33 milliseconds(8,333 µs)
 }
@@ -759,49 +816,45 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
 uint8_t ISR_MEM_ACCESS SDI12::observeLineEdge(sdi12timer_t timerTime,
                                               uint8_t      pinLevel) {
   if (!_lineObserver.valid) {
-    _lineObserver.previousEdge = timerTime;
-    _lineObserver.valid        = true;
+    _lineObserver.intervalStart = timerTime;
+    _lineObserver.level         = pinLevel;
+    _lineObserver.valid         = true;
     return SDI12_LINE_EVENT_NONE;
   }
 
+  if (pinLevel == _lineObserver.level) { return SDI12_LINE_EVENT_NONE; }
+
   const uint32_t elapsedTicks = static_cast<uint32_t>(
-    SDI12Timer::timerDelta(timerTime, _lineObserver.previousEdge));
-  const uint32_t minimumBreakTicks = static_cast<uint32_t>(
-    (static_cast<uint64_t>(sdi12::protocol::Timing::kBreakMinMicros) *
-       TICKS_PER_SECOND +
-     999999ULL) /
-    1000000ULL);
-  const uint32_t minimumMarkingTicks = static_cast<uint32_t>(
-    (static_cast<uint64_t>(sdi12::protocol::Timing::kPreCharacterMarkingMinMicros) *
-       TICKS_PER_SECOND +
-     999999ULL) /
-    1000000ULL);
+    SDI12Timer::timerDelta(timerTime, _lineObserver.intervalStart));
+  const uint32_t minimumBreakTicks = sdi12::internal::microsecondsToTicksCeil(
+    sdi12::protocol::Timing::kBreakMinMicros, TICKS_PER_SECOND);
+  const uint32_t minimumMarkingTicks = sdi12::internal::microsecondsToTicksCeil(
+    sdi12::protocol::Timing::kPreCharacterMarkingMinMicros, TICKS_PER_SECOND);
 
   // On the deferred 8 MHz, 8-bit Timer2 configuration these minimums exceed one
   // counter cycle and therefore cannot be recognized here. Other supported timers span
-  // both thresholds; foreground latching for intervals with no ending edge belongs to
-  // the next phase.
+  // both thresholds; latching intervals with no ending edge from recorder or sensor
+  // application code belongs to the next phase.
 
   uint8_t events = SDI12_LINE_EVENT_NONE;
-  if (pinLevel == LOW) {
+  if (_lineObserver.level == HIGH) {
     // The falling edge ends a HIGH/spacing interval and begins marking.
-    if (elapsedTicks >= minimumBreakTicks) {
-      _lineObserver.spacingMinimumReached = true;
-    }
+    _lineObserver.spacingMinimumReached = sdi12::internal::minimumReached(
+      elapsedTicks, minimumBreakTicks, _lineObserver.spacingMinimumReached);
     if (_lineObserver.spacingMinimumReached) {
       events |= SDI12_LINE_EVENT_BREAK_COMPLETED;
     }
   } else {
     // The rising edge ends a LOW/marking interval and may also be a start bit.
-    if (elapsedTicks >= minimumMarkingTicks) {
-      _lineObserver.markingMinimumReached = true;
-    }
+    _lineObserver.markingMinimumReached = sdi12::internal::minimumReached(
+      elapsedTicks, minimumMarkingTicks, _lineObserver.markingMinimumReached);
     if (_lineObserver.markingMinimumReached) {
       events |= SDI12_LINE_EVENT_MARKING_COMPLETED;
     }
   }
 
-  _lineObserver.previousEdge          = timerTime;
+  _lineObserver.intervalStart         = timerTime;
+  _lineObserver.level                 = pinLevel;
   _lineObserver.spacingMinimumReached = false;
   _lineObserver.markingMinimumReached = false;
   if (events != SDI12_LINE_EVENT_NONE) { publishEvent(_lineEventFlags, events); }
@@ -813,7 +866,7 @@ void ISR_MEM_ACCESS SDI12::routeEdge() {
   // time of this data transition (plus ISR latency)
   const sdi12timer_t thisBitTCNT = READTIME;
 
-  const uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
+  const uint8_t pinLevel   = digitalRead(_dataPin);  // current RX data level
   const uint8_t lineEvents = observeLineEdge(thisBitTCNT, pinLevel);
 
   // A completed break invalidates any partial character. The same falling edge is
@@ -821,7 +874,9 @@ void ISR_MEM_ACCESS SDI12::routeEdge() {
   if ((lineEvents & SDI12_LINE_EVENT_BREAK_COMPLETED) != 0 &&
       _decoder.bitCount != WAITING_FOR_START_BIT) {
     publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_FRAMING_ERROR);
-    _decoder.bitCount = WAITING_FOR_START_BIT;
+    _lineObserver.spacingMinimumReached = false;
+    _lineObserver.markingMinimumReached = false;
+    _decoder.bitCount                   = WAITING_FOR_START_BIT;
   }
 
   // Check how many bit times have passed since the last change
@@ -854,7 +909,9 @@ void ISR_MEM_ACCESS SDI12::routeEdge() {
     if (rxBits > 12) {
       // reset the rx state if more than 12 bits have passed and note a framing error
       publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_FRAMING_ERROR);
-      _decoder.bitCount = WAITING_FOR_START_BIT;
+      _lineObserver.spacingMinimumReached = false;
+      _lineObserver.markingMinimumReached = false;
+      _decoder.bitCount                   = WAITING_FOR_START_BIT;
       return;
     }
 #endif
@@ -965,7 +1022,9 @@ void SDI12::charToBuffer(uint8_t c) {
       (_previousCharacter == static_cast<uint8_t>('\r') &&
        character == static_cast<uint8_t>('\n'))) {
     publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED);
-    _previousCharacter = 0;
+    _lineObserver.spacingMinimumReached = false;
+    _lineObserver.markingMinimumReached = false;
+    _previousCharacter                  = 0;
   } else {
     _previousCharacter = character;
   }
@@ -974,6 +1033,8 @@ void SDI12::charToBuffer(uint8_t c) {
   if ((_rxBufferTail + 1) % SDI12_BUFFER_SIZE == _rxBufferHead) {
     _bufferOverflow = true;
     publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW);
+    _lineObserver.spacingMinimumReached = false;
+    _lineObserver.markingMinimumReached = false;
   } else {
     // Save the character, advance buffer tail.
     _rxBuffer[_rxBufferTail] = c;

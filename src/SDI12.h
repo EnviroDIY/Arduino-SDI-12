@@ -299,15 +299,24 @@ class SDI12 : public Stream {
   /**
    * @brief Line-condition events published by the transport ISR.
    *
-   * Events are coalescing flags. The ISR is the sole publisher and foreground code
-   * consumes all pending flags with takeLineEvents().
+   * Events are coalescing flags.
+   * The basic SDI12 class publishes them, and recorder or sensor classes consume all
+   * pending flags with takeLineEvents().  The events do not carry timestamps:
+   * Completion events flags are set when the interrupt service routine catches an edge.
+   * Threshold events event flags are set when the sensor or recorder calls the
+   * serviceLineConditions() function to check for them.
    */
   typedef enum SDI12_LINE_EVENT : uint8_t {
-    SDI12_LINE_EVENT_NONE = 0x00,  ///< No line event is pending
-    SDI12_LINE_EVENT_BREAK_COMPLETED =
-      0x01,  ///< A spacing interval reached the break minimum and ended
-    SDI12_LINE_EVENT_MARKING_COMPLETED =
-      0x02  ///< A marking interval reached the required minimum and ended
+    /// No line event is pending
+    SDI12_LINE_EVENT_NONE = 0x00,
+    /// Continuous spacing reached the minimum break duration
+    SDI12_LINE_EVENT_BREAK_THRESHOLD_REACHED = 0x01,
+    /// A spacing interval reached the break minimum and ended
+    SDI12_LINE_EVENT_BREAK_COMPLETED = 0x02,
+    /// Continuous marking reached the pre-character minimum
+    SDI12_LINE_EVENT_MARKING_THRESHOLD_REACHED = 0x04,
+    /// A marking interval reached the required minimum and ended
+    SDI12_LINE_EVENT_MARKING_COMPLETED = 0x08
   } SDI12_LINE_EVENT;
 
   /**
@@ -317,14 +326,18 @@ class SDI12 : public Stream {
    * are coalescing flags consumed by takeReceiveEvents().
    */
   typedef enum SDI12_RECEIVE_EVENT : uint8_t {
-    SDI12_RECEIVE_EVENT_NONE                = 0x00,  ///< No receive event is pending
-    SDI12_RECEIVE_EVENT_START_BIT_OBSERVED  = 0x01,  ///< A start bit was observed
-    SDI12_RECEIVE_EVENT_CHARACTER_COMPLETED = 0x02,  ///< A character was reconstructed
-    SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED =
-      0x04,                                    ///< A command or response end was seen
-    SDI12_RECEIVE_EVENT_FRAMING_ERROR = 0x08,  ///< An incomplete character was reset
-    SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW =
-      0x10  ///< A character could not enter the buffer
+    /// No receive event is pending
+    SDI12_RECEIVE_EVENT_NONE = 0x00,
+    /// A start bit was observed
+    SDI12_RECEIVE_EVENT_START_BIT_OBSERVED = 0x01,
+    /// A character was reconstructed
+    SDI12_RECEIVE_EVENT_CHARACTER_COMPLETED = 0x02,
+    /// A command or response end was seen
+    SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED = 0x04,
+    /// An incomplete character was reset
+    SDI12_RECEIVE_EVENT_FRAMING_ERROR = 0x08,
+    /// A character could not enter the buffer
+    SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW = 0x10
   } SDI12_RECEIVE_EVENT;
 
   /**
@@ -415,19 +428,21 @@ pin */
   /**@{*/
   /// The current electrical driver and data-pin state.
   SDI12_LINE_STATE _lineState = SDI12_DISABLED;
-  /// Coalescing line events written by the ISR and consumed by foreground code.
+  /// Coalescing line events written by the ISR and consumed by recorder or sensor code.
   volatile uint8_t _lineEventFlags = SDI12_LINE_EVENT_NONE;
-  /// Coalescing receive events written by the ISR and consumed by foreground code.
+  /// Coalescing receive events written by the ISR and consumed by recorder or sensor
+  /// code.
   volatile uint8_t _receiveEventFlags = SDI12_RECEIVE_EVENT_NONE;
   /**@}*/
 
   /** @brief State used to classify completed spacing and marking intervals. */
   struct LineObserverState {
-    sdi12timer_t previousEdge;   ///< Timer count at the preceding physical edge
-    bool         valid;          ///< Whether the preceding edge timestamp is valid
+    sdi12timer_t intervalStart;  ///< Timer count when the current level was first seen
+    uint8_t      level;          ///< Current physical data-line level
+    bool         valid;          ///< Whether the interval start and level are valid
     bool spacingMinimumReached;  ///< Whether the current spacing met the break minimum
     bool markingMinimumReached;  ///< Whether the current marking met its minimum
-  } _lineObserver = {0, false, false, false};
+  } _lineObserver = {0, LOW, false, false, false};
 
   /**
    * @brief Minimum state required to convert timed edges into one character.
@@ -985,8 +1000,9 @@ pin */
    *
    * @param listening True when a new listening interval is beginning.
    * @param timerTime The selected timer count at the start of that interval.
+   * @param pinLevel The physical data-line level at the start of that interval.
    */
-  void resetEdgeState(bool listening, sdi12timer_t timerTime);
+  void resetEdgeState(bool listening, sdi12timer_t timerTime, uint8_t pinLevel);
   /**
    * @brief Atomically publish an ISR-owned event flag.
    *
@@ -1031,10 +1047,27 @@ pin */
   void forceListen();
 
   /**
+   * @brief Begin driving a recorder break without waiting for it to complete.
+   *
+   * This low-level operation takes ownership of the data line and drives spacing. The
+   * caller is responsible for maintaining the break for the required duration and
+   * following it with marking before transmitting a command.
+   */
+  void startBreak();
+
+  /**
+   * @brief Begin driving recorder marking without waiting for it to complete.
+   *
+   * This low-level operation takes ownership of the data line and drives marking. The
+   * caller is responsible for maintaining marking for the required duration.
+   */
+  void startMarking();
+
+  /**
    * @brief Atomically consume all pending line-condition events.
    *
-   * Multiple occurrences of the same event coalesce until this method is called. Call
-   * only from foreground code, not from an ISR.
+   * Multiple occurrences of the same event coalesce until this method is called. The
+   * recorder or sensor application must call this method outside an ISR.
    *
    * @return A bitwise combination of SDI12_LINE_EVENT values.
    */
@@ -1043,12 +1076,31 @@ pin */
   /**
    * @brief Atomically consume all pending character-receive events.
    *
-   * Multiple occurrences of the same event coalesce until this method is called. Call
-   * only from foreground code, not from an ISR.
+   * Multiple occurrences of the same event coalesce until this method is called. The
+   * recorder or sensor application must call this method outside an ISR.
    *
    * @return A bitwise combination of SDI12_RECEIVE_EVENT values.
    */
   uint8_t takeReceiveEvents();
+
+  /**
+   * @brief Service continuous line conditions that can reach a threshold without an
+   * edge.
+   *
+   * The recorder or sensor application calls this method outside the ISR. It reads
+   * only the board-selected bit timer. Call it often enough that the timer cannot
+   * complete an unobserved rollover after a threshold is reached. Once a break or
+   * marking minimum is latched, later timer rollover cannot undo it; the edge ending
+   * that interval consumes the latch.
+   *
+   * This method or the ending-edge classifier sets each latch. Latches are reset when
+   * listening begins, line ownership changes, an ending edge consumes them, a message
+   * completes, or a framing or buffer-overflow condition invalidates receive state.
+   *
+   * The 8 MHz, 8-bit Timer2 configuration cannot span either required minimum and
+   * remains a documented deferred exception.
+   */
+  void serviceLineConditions();
 
 
   /**
