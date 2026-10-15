@@ -11,9 +11,6 @@
 
 #include <stdint.h>
 
-namespace sdi12 {
-namespace protocol {
-
 /**
  * @brief Normative SDI-12 timing limits in microseconds.
  *
@@ -21,7 +18,7 @@ namespace protocol {
  * recorder, and sensor layers use the same limits when producing or validating
  * traffic.
  */
-struct Timing {
+struct SDI12Timing {
   enum : uint32_t {
     /** General timing tolerance, except where the specification disallows it. */
     kGeneralToleranceMicros = 400UL,
@@ -73,7 +70,7 @@ struct Timing {
  * - SRGD Note: The polarity symbol (+ or -) acts as a delimeter between the numeric
  * values
  * */
-struct ResponseLimits {
+struct SDI12ResponseLimits {
   enum : uint16_t {
     /** Maximum characters in one data value, including sign and decimal point. */
     kValueMaxCharacters = 9U,
@@ -97,7 +94,5 @@ struct ResponseLimits {
   };
 };
 
-}  // namespace protocol
-}  // namespace sdi12
 
 #endif  // SRC_SDI12PROTOCOL_H_

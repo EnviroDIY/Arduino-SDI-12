@@ -476,9 +476,9 @@ void SDI12::serviceLineConditions() {
       const uint32_t elapsedTicks = static_cast<uint32_t>(
         SDI12Timer::timerDelta(timerTime, _lineObserver.intervalStart));
       const uint32_t minimumBreakTicks = sdi12::internal::microsecondsToTicksCeil(
-        sdi12::protocol::Timing::kBreakMinMicros, TICKS_PER_SECOND);
+        SDI12Timing::kBreakMinMicros, TICKS_PER_SECOND);
       const uint32_t minimumMarkingTicks = sdi12::internal::microsecondsToTicksCeil(
-        sdi12::protocol::Timing::kPreCharacterMarkingMinMicros, TICKS_PER_SECOND);
+        SDI12Timing::kPreCharacterMarkingMinMicros, TICKS_PER_SECOND);
 
       if (pinLevel == HIGH &&
           sdi12::internal::minimumReached(elapsedTicks, minimumBreakTicks,
@@ -827,9 +827,9 @@ uint8_t ISR_MEM_ACCESS SDI12::observeLineEdge(sdi12timer_t timerTime,
   const uint32_t elapsedTicks = static_cast<uint32_t>(
     SDI12Timer::timerDelta(timerTime, _lineObserver.intervalStart));
   const uint32_t minimumBreakTicks = sdi12::internal::microsecondsToTicksCeil(
-    sdi12::protocol::Timing::kBreakMinMicros, TICKS_PER_SECOND);
+    SDI12Timing::kBreakMinMicros, TICKS_PER_SECOND);
   const uint32_t minimumMarkingTicks = sdi12::internal::microsecondsToTicksCeil(
-    sdi12::protocol::Timing::kPreCharacterMarkingMinMicros, TICKS_PER_SECOND);
+    SDI12Timing::kPreCharacterMarkingMinMicros, TICKS_PER_SECOND);
 
   // On the deferred 8 MHz, 8-bit Timer2 configuration these minimums exceed one
   // counter cycle and therefore cannot be recognized here. Other supported timers span
