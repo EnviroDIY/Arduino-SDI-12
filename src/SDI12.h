@@ -440,7 +440,7 @@ pin */
     sdi12timer_t intervalStart;  ///< Timer count when the current level was first seen
     uint8_t      level;          ///< Current physical data-line level
     bool         valid;          ///< Whether the interval start and level are valid
-    bool spacingMinimumReached;  ///< Whether the current spacing met the break minimum
+    bool breakMinimumReached;    ///< Whether the current spacing met the break minimum
     bool markingMinimumReached;  ///< Whether the current marking met its minimum
   } _lineObserver = {0, LOW, false, false, false};
 
