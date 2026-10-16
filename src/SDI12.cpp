@@ -16,6 +16,31 @@
 #include <util/parity.h>    // optimized parity bit handling
 #endif
 
+namespace {
+// Convert microseconds to timer ticks, rounding upward.
+constexpr uint32_t microsecondsToTicksCeil(uint32_t microseconds,
+                                           uint32_t ticksPerSecond) {
+  return static_cast<uint32_t>(
+    (static_cast<uint64_t>(microseconds) * ticksPerSecond + 999999ULL) / 1000000ULL);
+}
+
+// Return true once an interval reaches its inclusive minimum.
+inline bool minimumReached(uint32_t elapsedTicks, uint32_t minimumTicks,
+                           bool alreadyLatched = false) {
+  return alreadyLatched || elapsedTicks >= minimumTicks;
+}
+
+// Calculate the real number of timer ticks needed for the minimum break and marking
+// durations based on the actual timer and the protocol values
+// NOTE: This will be done by the compiler at compile time.
+enum : uint32_t {
+  kMinimumBreakTicks =
+    microsecondsToTicksCeil(SDI12Timing::kBreakMinMicros, TICKS_PER_SECOND),
+  kMinimumMarkingTicks = microsecondsToTicksCeil(
+    SDI12Timing::kPreCharacterMarkingMinMicros, TICKS_PER_SECOND)
+};
+}  // namespace
+
 /* ================  Set static constants ===========================================*/
 
 // Pointer to active SDI12 object
@@ -191,7 +216,7 @@ void SDI12::resetEdgeState(bool listening, sdi12timer_t timerTime, uint8_t pinLe
   _lineObserver.intervalStart         = timerTime;
   _lineObserver.level                 = pinLevel;
   _lineObserver.valid                 = listening;
-  _lineObserver.spacingMinimumReached = false;
+  _lineObserver.breakMinimumReached   = false;
   _lineObserver.markingMinimumReached = false;
   _decoder.previousEdge               = timerTime;
   _decoder.bitCount                   = WAITING_FOR_START_BIT;
@@ -460,6 +485,7 @@ uint8_t SDI12::takeReceiveEvents() {
 }
 
 void SDI12::serviceLineConditions() {
+  // turn off interrupts while we check the line conditions
 #if defined(__AVR__)
   const uint8_t savedStatus = SREG;
   cli();
@@ -471,25 +497,33 @@ void SDI12::serviceLineConditions() {
     const uint8_t      pinLevel  = digitalRead(_dataPin);
     const sdi12timer_t timerTime = READTIME;
 
+    // Only act if the current pin level matches the observer's last known level.
     // If an edge became pending while interrupts were disabled, leave it for the ISR.
     if (pinLevel == _lineObserver.level) {
       const uint32_t elapsedTicks = static_cast<uint32_t>(
         SDI12Timer::timerDelta(timerTime, _lineObserver.intervalStart));
-      const uint32_t minimumBreakTicks = sdi12::internal::microsecondsToTicksCeil(
-        SDI12Timing::kBreakMinMicros, TICKS_PER_SECOND);
-      const uint32_t minimumMarkingTicks = sdi12::internal::microsecondsToTicksCeil(
-        SDI12Timing::kPreCharacterMarkingMinMicros, TICKS_PER_SECOND);
 
+      // NOTE: We're checkout outside of the ISR. This pin levels here do not mean the
+      // line just became high or low; it's just the line's current level
+
+      // HIGH = break (spacing)
+      // if the line is currently high, check if the break minimum has been reached
       if (pinLevel == HIGH &&
-          sdi12::internal::minimumReached(elapsedTicks, minimumBreakTicks,
-                                          _lineObserver.spacingMinimumReached)) {
-        if (!_lineObserver.spacingMinimumReached) {
-          _lineObserver.spacingMinimumReached = true;
+          minimumReached(elapsedTicks, kMinimumBreakTicks,
+                         _lineObserver.breakMinimumReached)) {
+        // since we're now past the break minimum, set the breakMinimumReached flag if
+        // it wasn't already set
+        if (!_lineObserver.breakMinimumReached) {
+          _lineObserver.breakMinimumReached = true;
           publishEvent(_lineEventFlags, SDI12_LINE_EVENT_BREAK_THRESHOLD_REACHED);
         }
+        // LOW = marking
+        // if the line is currently low, check if the marking minimum has been reached
       } else if (pinLevel == LOW &&
-                 sdi12::internal::minimumReached(elapsedTicks, minimumMarkingTicks,
-                                                 _lineObserver.markingMinimumReached)) {
+                 minimumReached(elapsedTicks, kMinimumMarkingTicks,
+                                _lineObserver.markingMinimumReached)) {
+        // since we're now past the marking minimum, set the markingMinimumReached flag
+        // if it wasn't already set
         if (!_lineObserver.markingMinimumReached) {
           _lineObserver.markingMinimumReached = true;
           publishEvent(_lineEventFlags, SDI12_LINE_EVENT_MARKING_THRESHOLD_REACHED);
@@ -498,6 +532,7 @@ void SDI12::serviceLineConditions() {
     }
   }
 
+  // turn the interrupts back on
 #if defined(__AVR__)
   SREG = savedStatus;
 #else
@@ -813,8 +848,11 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
 }
 
 // Classify the interval that ended at this physical edge.
+// This is a helper called by the ISR.
 uint8_t ISR_MEM_ACCESS SDI12::observeLineEdge(sdi12timer_t timerTime,
                                               uint8_t      pinLevel) {
+  // If we haven't seen a valid interval yet, initialize the observer with the current
+  // time and pin level and then quit
   if (!_lineObserver.valid) {
     _lineObserver.intervalStart = timerTime;
     _lineObserver.level         = pinLevel;
@@ -822,32 +860,34 @@ uint8_t ISR_MEM_ACCESS SDI12::observeLineEdge(sdi12timer_t timerTime,
     return SDI12_LINE_EVENT_NONE;
   }
 
+  // if the line observer was valid but the pin level hasn't changed, there's no event
+  // to report
   if (pinLevel == _lineObserver.level) { return SDI12_LINE_EVENT_NONE; }
 
+  // check how long it's been since the last interrupt
   const uint32_t elapsedTicks = static_cast<uint32_t>(
     SDI12Timer::timerDelta(timerTime, _lineObserver.intervalStart));
-  const uint32_t minimumBreakTicks = sdi12::internal::microsecondsToTicksCeil(
-    SDI12Timing::kBreakMinMicros, TICKS_PER_SECOND);
-  const uint32_t minimumMarkingTicks = sdi12::internal::microsecondsToTicksCeil(
-    SDI12Timing::kPreCharacterMarkingMinMicros, TICKS_PER_SECOND);
 
   // On the deferred 8 MHz, 8-bit Timer2 configuration these minimums exceed one
   // counter cycle and therefore cannot be recognized here. Other supported timers span
   // both thresholds; latching intervals with no ending edge from recorder or sensor
   // application code belongs to the next phase.
 
+  // create a new event flag container for this edge
   uint8_t events = SDI12_LINE_EVENT_NONE;
+  // If the previous level (from the observer) was HIGH, we're looking at a falling
+  // edge; otherwise, it's a rising edge.
   if (_lineObserver.level == HIGH) {
     // The falling edge ends a HIGH/spacing interval and begins marking.
-    _lineObserver.spacingMinimumReached = sdi12::internal::minimumReached(
-      elapsedTicks, minimumBreakTicks, _lineObserver.spacingMinimumReached);
-    if (_lineObserver.spacingMinimumReached) {
+    _lineObserver.breakMinimumReached = minimumReached(
+      elapsedTicks, kMinimumBreakTicks, _lineObserver.breakMinimumReached);
+    if (_lineObserver.breakMinimumReached) {
       events |= SDI12_LINE_EVENT_BREAK_COMPLETED;
     }
   } else {
     // The rising edge ends a LOW/marking interval and may also be a start bit.
-    _lineObserver.markingMinimumReached = sdi12::internal::minimumReached(
-      elapsedTicks, minimumMarkingTicks, _lineObserver.markingMinimumReached);
+    _lineObserver.markingMinimumReached = minimumReached(
+      elapsedTicks, kMinimumMarkingTicks, _lineObserver.markingMinimumReached);
     if (_lineObserver.markingMinimumReached) {
       events |= SDI12_LINE_EVENT_MARKING_COMPLETED;
     }
@@ -855,18 +895,23 @@ uint8_t ISR_MEM_ACCESS SDI12::observeLineEdge(sdi12timer_t timerTime,
 
   _lineObserver.intervalStart         = timerTime;
   _lineObserver.level                 = pinLevel;
-  _lineObserver.spacingMinimumReached = false;
+  _lineObserver.breakMinimumReached   = false;
   _lineObserver.markingMinimumReached = false;
   if (events != SDI12_LINE_EVENT_NONE) { publishEvent(_lineEventFlags, events); }
   return events;
 }
 
-// Route the captured edge to line observation and the character decoder.
+// This ISR:
+//   - Stamps the time and current pin level,
+//   - Routes the captured edge to line observation to check for events
+//   - and the character decoder.
 void ISR_MEM_ACCESS SDI12::routeEdge() {
   // time of this data transition (plus ISR latency)
   const sdi12timer_t thisBitTCNT = READTIME;
-
-  const uint8_t pinLevel   = digitalRead(_dataPin);  // current RX data level
+  // current RX data level
+  const uint8_t pinLevel = digitalRead(_dataPin);
+  // pass the time and level to the observeLineEdge function which will determine if any
+  // line events occurred
   const uint8_t lineEvents = observeLineEdge(thisBitTCNT, pinLevel);
 
   // A completed break invalidates any partial character. The same falling edge is
@@ -874,7 +919,7 @@ void ISR_MEM_ACCESS SDI12::routeEdge() {
   if ((lineEvents & SDI12_LINE_EVENT_BREAK_COMPLETED) != 0 &&
       _decoder.bitCount != WAITING_FOR_START_BIT) {
     publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_FRAMING_ERROR);
-    _lineObserver.spacingMinimumReached = false;
+    _lineObserver.breakMinimumReached   = false;
     _lineObserver.markingMinimumReached = false;
     _decoder.bitCount                   = WAITING_FOR_START_BIT;
   }
@@ -909,7 +954,7 @@ void ISR_MEM_ACCESS SDI12::routeEdge() {
     if (rxBits > 12) {
       // reset the rx state if more than 12 bits have passed and note a framing error
       publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_FRAMING_ERROR);
-      _lineObserver.spacingMinimumReached = false;
+      _lineObserver.breakMinimumReached   = false;
       _lineObserver.markingMinimumReached = false;
       _decoder.bitCount                   = WAITING_FOR_START_BIT;
       return;
@@ -1022,7 +1067,7 @@ void SDI12::charToBuffer(uint8_t c) {
       (_previousCharacter == static_cast<uint8_t>('\r') &&
        character == static_cast<uint8_t>('\n'))) {
     publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED);
-    _lineObserver.spacingMinimumReached = false;
+    _lineObserver.breakMinimumReached   = false;
     _lineObserver.markingMinimumReached = false;
     _previousCharacter                  = 0;
   } else {
@@ -1033,7 +1078,7 @@ void SDI12::charToBuffer(uint8_t c) {
   if ((_rxBufferTail + 1) % SDI12_BUFFER_SIZE == _rxBufferHead) {
     _bufferOverflow = true;
     publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW);
-    _lineObserver.spacingMinimumReached = false;
+    _lineObserver.breakMinimumReached   = false;
     _lineObserver.markingMinimumReached = false;
   } else {
     // Save the character, advance buffer tail.
