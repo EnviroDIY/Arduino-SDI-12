@@ -85,8 +85,9 @@ That includes other pin-change interrupts, clock/timer interrupts, external inte
 This is particularly problematic for SDI-12, because SDI-12 operates at a very slow baud rate (only 1200 baud).
 This translates to ~8.3 mS of "radio silence" from the processor for each character that goes out via SDI-12, which adds up to ~380-810ms per command!  Interrupts are enabled for the majority of the time while the processor is listening for responses.
 
-For most AVR boards, this library will also conflict with the [tone](https://www.arduino.cc/reference/en/language/functions/advanced-io/tone/) function because of its utilization of timer 2.
+For ATmega168, ATmega328P, ATmega644P, and ATmega64 AVR boards, this library will also conflict with the [tone](https://www.arduino.cc/reference/en/language/functions/advanced-io/tone/) function because of its utilization of timer 2.
 There will be no obvious compile error, but because SDI-12 and the tone library may use different clock-prescaler functions, the results for both might be rather unexpected.
+For ATmega1284 and ATmega1284P boards, this library will silently conflict with the [Servo](https://docs.arduino.cc/libraries/servo/) library.
 All 8MHz AVR boards will also have unresolvable prescaler conflicts with [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
 The pre-scaler values needed for the SDI-12 functionality are set in the begin() function and reset to their original values in the end() function.
 

@@ -12,19 +12,30 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- Made `receiveISR()` virtual and protected so subclasses can customize receive handling.
+- Made the shared buffer-overflow state static and volatile across all `SDI12` instances.
+- Moved receive parity checking from the interrupt service routine into `read()` and `peek()` so standard 7E1 and high-volume binary 8N1 data can share the receive buffer.
+- Switched ATmega640, ATmega1280, ATmega2560, ATmega1284, and ATmega1284P boards from 8-bit Timer2 to 16-bit Timer3 for SDI-12 timing.
+- Updated examples and test sketches to use protocol response windows instead of fixed post-command delays and to improve address, CRC, and retry handling.
+- Updated the bundled SDI-12 specification to version 1.4 dated February 20, 2023, and removed superseded specification files.
+
 ### Added
 
-- Added support for reading and writing for bulk data commands
-- Added functions to get the time before a read or parse times out and the value that will be returned on a timeout.
+- Added support for high-volume binary data commands, including `peekBinary()`, `readBinary()`, `timedReadBinary()`, `writeBytes()`, and `SDI12BinaryDataType_e`.
+- Added `getTimeout()` and `getTimeoutValue()` to report the stream timeout and the value returned when `parseInt()` or `parseFloat()` times out.
+- Added the `write(const uint8_t*, size_t)` overload for writing multiple bytes.
+- Added STM32 support using `micros()`-based timing.
+- Added support for ATmega640 boards.
 
 ### Removed
 
-- Removed ability to turn off parity checking
-- Removed the delay from the yield function.  This was an incorrect delay that should have been handled by timedRead or timedPeek.
+- Removed the `SDI12_IGNORE_PARITY` option; standard character reads now always validate parity.
+- Removed the `SDI12_YIELD()` and `SDI12_YIELD_MS` configuration macros and their artificial read delay; timed reads and peeks provide the required waiting behavior.
 
 ### Fixed
 
-- Fixed the extra wake timing which was not delaying properly because of integer overflows.
+- Fixed extra sensor wake delays that could be shortened by integer overflow.
+- Fixed overflow in receive bit-time calculations on 16-bit timers near counter rollover.
 
 ***
 
