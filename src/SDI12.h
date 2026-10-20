@@ -664,15 +664,16 @@ class SDI12 : public Stream {
    */
   int peek(bool use_parity);
   /**
-   * @brief Reveal the next byte **(7E1)** in the Rx buffer without consuming it.   *
+   * @brief Reveal the next byte **(7E1)** in the Rx buffer without consuming it.
    * @return The next byte in the character buffer, or -1 if the buffer is empty or the
    * next byte in the buffer doesn't pass parity check.
    */
   int peek() override;
   /**
-   * @brief Reveals the next byte **(8N1)** at a specific position in the buffer without
-   * consuming
-   * @return int - uint8_t representation of byte if valid
+   * @brief Reveal the next byte **(8N1)** at the head of the Rx buffer without
+   * consuming it.
+   *
+   * @return The next byte in the character buffer, or -1 if the buffer is empty.
    */
   int peekBinary(void);
   /**
@@ -707,28 +708,24 @@ class SDI12 : public Stream {
   int read() override;
 
   /**
-   * @brief Return next byte in the Rx buffer **including 8th bit**, consuming it
+   * @brief Return the next byte in the Rx buffer **including the 8th bit**, consuming it.
    *
    * @return The next byte in the character buffer, **8N1, including 8th bit!**.
    */
   int readBinary(void);
 
   /**
-   * @brief Return the number of bytes given by @p length or until timeout,
-   * and store it at reference pointed to by @p buffer in little-endian format.
+   * @brief Return up to @p length bytes before timeout and store them in @p output.
    *
-   * @param[out] output Reference to location in memory to store the bytes read from
-   * buffer
-   * @param[in] length Max number of bytes to read from buffer
-   * @return size_t Number of bytes read from buffer
+   * @param[out] output Location in memory where the bytes will be stored.
+   * @param[in] length Maximum number of bytes to read from the buffer.
+   * @return The number of bytes read from the buffer.
    *
-   * readBytes() attempts to return the number of bytes up to the given @p length
-   * after incrementing the index of the buffer head using @see timedReadBinary().
-   * This action "consumes" the number of bytes requested by @p length, meaning
-   * it can not be used to read from the buffer again. If readBytes is unable to
-   * return to return the number of bytes before timeout, the number of bytes
-   * returned is less than the required @p length . The byte chunks are then
-   * stored at the location pointed to by @p buffer in little-endian format.
+   * readBinary(char* output, size_t length) attempts to read up to @p length bytes by
+   * incrementing the index of the buffer head using @see timedReadBinary().
+   * This action consumes the bytes, so they cannot be read from the buffer again.
+   * If the timeout expires first, the number of bytes returned is less than @p length.
+   * The bytes are stored at @p output in arrival order.
    */
   size_t readBinary(char* output, size_t length);
   /**
@@ -922,7 +919,7 @@ class SDI12 : public Stream {
 
   /**
    * @brief Set the value to return if a parse int or parse float times out with no
-   * return from the sensor.   *
+   * return from the sensor.
    * @param value the value to return on timeout
    * @copydetails TIMEOUT
    */
