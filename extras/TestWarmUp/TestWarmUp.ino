@@ -46,8 +46,7 @@ int32_t wake_delay  = min_wake_delay;
 
 // this checks for activity at a particular address
 // expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-bool checkActive(char address, int8_t numPings = 3, bool printIO = true) {
-  mySDI12.clearBuffer();
+bool checkActive(char address, int8_t numPings = 3, bool printIO = false) {
   String command = "";
   command += (char)address;  // sends basic 'acknowledge' command [address][!]
   command += "!";
@@ -57,6 +56,7 @@ bool checkActive(char address, int8_t numPings = 3, bool printIO = true) {
       Serial.print(">>>");
       Serial.println(command);
     }
+    mySDI12.clearBuffer();
     mySDI12.sendCommand(command, wake_delay);
     // wait for a response; the sensor must return within 100ms
     uint32_t waitStart = millis();
@@ -66,23 +66,14 @@ bool checkActive(char address, int8_t numPings = 3, bool printIO = true) {
     if (mySDI12.available()) {
       String sdiResponse_r = mySDI12.readStringUntil('\n');
       String sdiResponse   = sdiResponse_r;
-      sdiResponse_r.replace("\r", "←");
-      sdiResponse_r.replace("\n", "↓");
+      int    resLen        = sdiResponse.length();
       if (printIO) {
+        sdiResponse_r.replace("\r", "←");
+        sdiResponse_r.replace("\n", "↓");
         Serial.print("<<< '");
         Serial.print(sdiResponse_r);
         Serial.print("' (");
-        Serial.print(sdiResponse_r.length());
-        Serial.println(")");
-      }
-      sdiResponse.trim();
-      sdiResponse.replace("\r", "←");
-      sdiResponse.replace("\n", "↓");
-      if (printIO) {
-        Serial.print("<<< Trimmed: '");
-        Serial.print(sdiResponse);
-        Serial.print("' (");
-        Serial.print(sdiResponse.length());
+        Serial.print(resLen);
         Serial.println(")");
       }
       mySDI12.clearBuffer();
@@ -123,7 +114,7 @@ bool checkActive(char address, int8_t numPings = 3, bool printIO = true) {
  * @brief gets identification information from a sensor, and prints it to the serial
  * port
  *
- * @param i a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
+ * @param address a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
  * @param printIO true to print the raw output and input from the command
  */
 bool printInfo(char address, bool printIO = true) {
