@@ -291,10 +291,14 @@ typedef enum SDI12BinaryDataType_e : uint8_t {
   kDoubleDataType  = 10  ///< IEEE 64-bit floating point double precision
 } SDI12BinaryDataType_e;
 
+class SDI12Recorder;
+
 /**
  * @brief The main class for SDI 12 instances
  */
 class SDI12 : public Stream {
+  friend class SDI12Recorder;
+
  public:
   /**
    * @brief Line-condition events published by the transport ISR.
