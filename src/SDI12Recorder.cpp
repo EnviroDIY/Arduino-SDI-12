@@ -8,6 +8,8 @@
 
 #include "SDI12Recorder.h"
 
+#include <string.h>
+
 SDI12Recorder::SDI12Recorder(SDI12& sdi12)
   : _sdi12(sdi12),
     _address('0'),
@@ -20,7 +22,10 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
     _breakEndTime(0),
     _breakCount(0),
     _attemptCount(0),
-    _result(RESULT_NONE) {}
+    _responseLength(0),
+    _result(RESULT_NONE) {
+  _response[0] = '\0';
+}
 
 SDI12Recorder::~SDI12Recorder() {
   if (_sdi12.isActive()) { cancel(); }
@@ -34,8 +39,8 @@ void SDI12Recorder::startCommand(char address, const String& command) {
 
   _breakCount   = 0;
   _attemptCount = 0;
-  _response     = "";
-  _result       = RESULT_NONE;
+  clearResponse();
+  _result = RESULT_NONE;
 
   // Always start with the break phase; the phase skips the break when policy forbids
   // it.
@@ -89,6 +94,16 @@ const char* SDI12Recorder::resultDescription() const {
     case RESULT_CANCELLED: return "CANCELLED";
     default: return "UNKNOWN";
   }
+}
+
+size_t SDI12Recorder::copyResponse(char* destination, size_t capacity) const {
+  if (destination != nullptr && capacity > 0) {
+    const size_t copyLength = _responseLength < capacity - 1 ? _responseLength
+                                                             : capacity - 1;
+    memcpy(destination, _response, copyLength);
+    destination[copyLength] = '\0';
+  }
+  return _responseLength;
 }
 
 // ============================================================================
@@ -167,7 +182,7 @@ void SDI12Recorder::_phase_waiting_response() {
 
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_START_BIT_OBSERVED) {
     // Response has started; begin collecting characters
-    _response = "";  // Clear any previous response
+    clearResponse();
     _transitionTo(PHASE_RECEIVING);
     return;
   }
@@ -184,18 +199,26 @@ void SDI12Recorder::_phase_waiting_response() {
 
 void SDI12Recorder::_phase_receiving() {
   // Collect available characters from the transport buffer
-  while (_sdi12.available()) {
-    char c = _sdi12.read();
-    _response += c;
+  while (_sdi12.available() > 0) {
+    const int received = _sdi12.read();
+    if (received < 0) {
+      _setResult(RESULT_FRAMING_ERROR);
+      _transitionTo(PHASE_DECIDING_RETRY);
+      return;
+    }
+
+    if (_responseLength + 1 >= SDI12_RECORDER_RESPONSE_BUFFER_SIZE) {
+      _sdi12.clearBuffer();
+      _setResult(RESULT_BUFFER_OVERFLOW);
+      _transitionTo(PHASE_DECIDING_RETRY);
+      return;
+    }
+
+    _response[_responseLength++] = static_cast<char>(received);
+    _response[_responseLength]   = '\0';
   }
 
   uint8_t receiveEvents = _sdi12.takeReceiveEvents();
-
-  // Check for completion (CR LF)
-  if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED) {
-    _transitionTo(PHASE_VALIDATING);
-    return;
-  }
 
   // Check for errors
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_FRAMING_ERROR) {
@@ -207,6 +230,12 @@ void SDI12Recorder::_phase_receiving() {
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW) {
     _setResult(RESULT_BUFFER_OVERFLOW);
     _transitionTo(PHASE_DECIDING_RETRY);
+    return;
+  }
+
+  // Check for completion (CR LF) only after ruling out coalesced receive errors.
+  if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED) {
+    _transitionTo(PHASE_VALIDATING);
     return;
   }
 
@@ -224,7 +253,7 @@ void SDI12Recorder::_phase_receiving() {
 void SDI12Recorder::_phase_validating() {
   // Validate the response
   // 1. Check address matches
-  if (_response.length() < 1 || _response[0] != _address) {
+  if (_responseLength < 1 || _response[0] != _address) {
     _setResult(RESULT_WRONG_ADDRESS);
     _transitionTo(PHASE_DECIDING_RETRY);
     return;
@@ -235,6 +264,20 @@ void SDI12Recorder::_phase_validating() {
   // Future: validate specific response formats per command type
 
   // 3. Check CRC when the command-derived response policy requires one.
+
+  // Strip the response terminator after it has served its framing purpose.
+  if (_responseLength >= 2 && _response[_responseLength - 2] == '\r' &&
+      _response[_responseLength - 1] == '\n') {
+    _responseLength -= 2;
+    _response[_responseLength] = '\0';
+  }
+
+  // Once validated, the address is protocol envelope rather than response payload.
+  // Command-aware CRC validation will similarly remove the three CRC characters before
+  // exposing the payload.
+  _responseLength--;
+  memmove(_response, _response + 1, _responseLength);
+  _response[_responseLength] = '\0';
 
   // Success!
   _setResult(RESULT_SUCCESS);
@@ -265,7 +308,7 @@ void SDI12Recorder::_phase_deciding_retry() {
     if (elapsedMicrosSinceStop <= RETRY_NO_RESPONSE_MAX_MICROS && _attemptCount < 2) {
       // Yes; increment attempt counter and try again
       _attemptCount++;
-      _response = "";
+      clearResponse();
       _transitionTo(PHASE_PRECOMMAND_MARK);
       return;
     }
@@ -273,7 +316,7 @@ void SDI12Recorder::_phase_deciding_retry() {
     // Too late in the window, or too many attempts. Need a new break.
     if (_shouldTransmitBreak() && _breakCount < 3) {
       _attemptCount = 0;
-      _response     = "";
+      clearResponse();
       _transitionTo(PHASE_BREAK);
       return;
     }
@@ -286,7 +329,7 @@ void SDI12Recorder::_phase_deciding_retry() {
   // For other failures (framing, wrong address, etc.), retry without a new break
   if (_attemptCount < 2) {
     _attemptCount++;
-    _response = "";
+    clearResponse();
     _transitionTo(PHASE_PRECOMMAND_MARK);
     return;
   }
@@ -294,7 +337,7 @@ void SDI12Recorder::_phase_deciding_retry() {
   // Too many attempts without break; need a new break
   if (_shouldTransmitBreak() && _breakCount < 3) {
     _attemptCount = 0;
-    _response     = "";
+    clearResponse();
     _transitionTo(PHASE_BREAK);
     return;
   }
