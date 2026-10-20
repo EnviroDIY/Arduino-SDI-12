@@ -59,8 +59,8 @@ void loop() {
   mySDI12.sendCommand(myCommand);
   uint32_t waitStart = millis();  // the sensor must return within 100ms
   while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
-  while (mySDI12.available()) {  // write the response to the screen
-    Serial.write(mySDI12.read());
-  }
+  String sdiResponse = mySDI12.readStringUntil('\n');
+  Serial.print(sdiResponse);
+  Serial.write('\n');
   delay(3000);  // print again in three seconds
 }

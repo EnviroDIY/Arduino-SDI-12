@@ -105,11 +105,13 @@ bool checkActive(char address, int8_t numPings = 3, bool printIO = false) {
 
       // check the address, return false if it's incorrect
       String returnedAddress = sdiResponse.substring(0, 1);
-      Serial.print("returnedAddress '");
-      Serial.print(returnedAddress);
-      Serial.print("' (");
-      Serial.print(returnedAddress.length());
-      Serial.println(")");
+      if (printIO) {
+        Serial.print("returnedAddress '");
+        Serial.print(returnedAddress);
+        Serial.print("' (");
+        Serial.print(returnedAddress.length());
+        Serial.println(")");
+      }
       if (returnedAddress == String(address)) {
         if (printIO) {
           Serial.print("Got response from '");
@@ -349,11 +351,12 @@ getResultsResult getResults(char address, int resultsExpected, bool verify_crc =
         // add how many results we have
         if (result != -9999) {
           gotResults = true;
-          resultsReceived++;
+          cmd_results++;
         }
         // check for a failure error code at the end
         if (error_result_number >= 1) {
-          if (resultsReceived == error_result_number && result != no_error_value) {
+          if (resultsReceived + cmd_results == error_result_number &&
+              result != no_error_value) {
             success                 = false;
             return_result.errorCode = true;
             if (printIO) {
@@ -371,6 +374,10 @@ getResultsResult getResults(char address, int resultsExpected, bool verify_crc =
       // if we're mid-number and there's a digit, a decimal, or a negative sign in the
       // sdi12 response buffer, add it to the current float buffer
       if (c == '-' || (c >= '0' && c <= '9') || (c == '.' && !got_decimal)) {
+        if (fb_pos >= max_sdi_digits - 1) {
+          bad_read = true;
+          continue;
+        }
         float_buffer[fb_pos] = c;
         fb_pos++;
         float_buffer[fb_pos] = '\0';  // null terminate the buffer
@@ -686,7 +693,7 @@ void loop() {
     }
   }
   if (testWakeDelay) {
-    if (wake_delay > max_wake_delay) {
+    if (wake_delay + increment_wake > max_wake_delay) {
       wake_delay = min_wake_delay;
     } else {
       wake_delay = wake_delay + increment_wake;

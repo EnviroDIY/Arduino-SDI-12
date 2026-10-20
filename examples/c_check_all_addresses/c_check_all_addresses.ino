@@ -101,11 +101,13 @@ bool checkActive(SDI12& sdi, char address, int8_t numPings = 3, bool printIO = f
 
       // check the address, return false if it's incorrect
       String returnedAddress = sdiResponse.substring(0, 1);
-      Serial.print("returnedAddress '");
-      Serial.print(returnedAddress);
-      Serial.print("' (");
-      Serial.print(returnedAddress.length());
-      Serial.println(")");
+      if (printIO) {
+        Serial.print("returnedAddress '");
+        Serial.print(returnedAddress);
+        Serial.print("' (");
+        Serial.print(returnedAddress.length());
+        Serial.println(")");
+      }
       if (returnedAddress == String(address)) {
         if (printIO) {
           Serial.print("Got response from '");
