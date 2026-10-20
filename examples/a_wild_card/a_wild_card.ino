@@ -40,7 +40,9 @@ void setup() {
   Serial.begin(serialBaud);
   while (!Serial && millis() < 10000L);
 
-  Serial.println("Opening SDI-12 bus...");
+  Serial.print("Opening SDI-12 bus on pin ");
+  Serial.print(dataPin);
+  Serial.println("...");
   mySDI12.begin();
   delay(500);  // allow things to settle
 
@@ -55,9 +57,10 @@ void setup() {
 
 void loop() {
   mySDI12.sendCommand(myCommand);
-  delay(300);                    // wait a while for a response
-  while (mySDI12.available()) {  // write the response to the screen
-    Serial.write(mySDI12.read());
-  }
+  uint32_t waitStart = millis();  // the sensor must return within 100ms
+  while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
+  String sdiResponse = mySDI12.readStringUntil('\n');
+  Serial.print(sdiResponse);
+  Serial.write('\n');
   delay(3000);  // print again in three seconds
 }

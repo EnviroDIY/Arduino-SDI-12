@@ -9,11 +9,6 @@
  *
  */
 
-/* ======================== Arduino SDI-12 =================================
-An Arduino library for SDI-12 communication with a wide variety of environmental
-sensors. This library provides a general software solution, without requiring
-   ======================== Arduino SDI-12 =================================*/
-
 #include "SDI12_boards.h"
 
 SDI12Timer::SDI12Timer() {}
@@ -35,8 +30,9 @@ uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
 #elif TIMER_INT_SIZE == 16 || TIMER_INT_SIZE == 32
 uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
   // divide the number of ticks by the ticks per bit
-  return static_cast<uint16_t>((dt + static_cast<sdi12timer_t>(RX_WINDOW_FUDGE)) /
-                               static_cast<sdi12timer_t>(TICKS_PER_BIT));
+  return static_cast<uint16_t>(
+    (static_cast<uint32_t>(dt) + static_cast<uint32_t>(RX_WINDOW_FUDGE)) /
+    static_cast<uint32_t>(TICKS_PER_BIT));
 }
 #else
 #error "Board timer is incorrectly configured!"
@@ -45,9 +41,7 @@ uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
 
 // Most 'standard' AVR boards
 #if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || \
-  defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) ||  \
-  defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__) ||   \
-  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
+  defined(__AVR_ATmega644P__) || defined(__AVR_ATmega644__)
 
 /**
  * @brief The value of timer control register 2A prior to being set for SDI-12.
@@ -86,6 +80,43 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
 void SDI12Timer::resetSDI12TimerPrescale(void) {
   TCCR2A = preSDI12_TCCR2A;
   TCCR2B = preSDI12_TCCR2B;
+}
+
+// AVR boards with a 16-bit Timer/Counter 3
+#elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
+  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__) ||    \
+  defined(__AVR_ATmega640__)
+
+/**
+ * @brief The value of timer control register 3A prior to being set for SDI-12.
+ */
+static uint8_t preSDI12_TCCR3A;
+/**
+ * @brief The value of timer control register 3B prior to being set for SDI-12.
+ */
+static uint8_t preSDI12_TCCR3B;
+/**
+ * @brief The value of timer control register 3C prior to being set for SDI-12.
+ */
+static uint8_t preSDI12_TCCR3C;
+
+sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
+  return TCNT3;
+}
+
+void SDI12Timer::configSDI12TimerPrescale(void) {
+  preSDI12_TCCR3A = TCCR3A;
+  preSDI12_TCCR3B = TCCR3B;
+  preSDI12_TCCR3C = TCCR3C;
+  TCCR3A          = 0x00;  // Normal operation; OC3A, OC3B, and OC3C disconnected
+  TCCR3B          = 0x03;  // Normal operation; prescaler set to CK/64
+  TCCR3C          = 0x00;  // No force output compare
+}
+
+void SDI12Timer::resetSDI12TimerPrescale(void) {
+  TCCR3A = preSDI12_TCCR3A;
+  TCCR3B = preSDI12_TCCR3B;
+  TCCR3C = preSDI12_TCCR3C;
 }
 
 // ATtiny boards (ie, adafruit trinket)
@@ -524,8 +555,12 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 // Espressif ESP32/ESP8266 boards, Particle boards, or any boards faster than 48MHz not
 // mentioned above
 // WARNING: I haven't tested the minimum speed that this will work at!
-#elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
-  defined(ARDUINO_GIGA) || F_CPU >= 48000000L
+// #elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
+//   defined(ARDUINO_GIGA) || F_CPU >= 48000000L
+
+#elif defined(ARDUINO_ARCH_STM32) || defined(STM32L4xx) || defined(ESP32) || \
+  defined(ESP8266) || defined(PARTICLE) || defined(ARDUINO_GIGA) || F_CPU >= 48000000L
+
 
 void SDI12Timer::configSDI12TimerPrescale(void) {}
 

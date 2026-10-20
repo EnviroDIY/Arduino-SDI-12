@@ -135,12 +135,17 @@
 /// Helper for strings stored in flash
 typedef const __FlashStringHelper* FlashString;
 
+/**
+ * @anchor sdi12_buffer_defines
+ * @name SDI-12 Data Buffer Defines
+ *
+ * @brief Defines for constants related to the buffer and messages sizes in SDI-12
+ *
+ * @note The following data buffer sizes does not include CR+LF and CRC
+ */
+/**@{*/
 /// a char not found in a valid ASCII numeric field
 #define NO_IGNORE_CHAR '\x01'
-
-/* SDI-12 Data Buffer Size Specification */
-// The following data buffer sizes does not include CR+LF and CRC
-
 /**
  * @brief The maximum number of characters in a single value in a data response.
  *
@@ -189,78 +194,46 @@ typedef const __FlashStringHelper* FlashString;
  */
 #define SDI12_BUFFER_SIZE 81
 #endif
+/**@}*/
 
-// SDI-12 Timing Specification
+/**
+ * @anchor sdi12_timing_defines
+ * @name SDI-12 Timing Defines
+ *
+ * @brief Defines for constants related to SDI-12 timing specifications
+ *
+ * @note Defines for timing and clocks for specific boards are in the SDI12_boards.h
+ * file.
+ */
+/**@{*/
 /**
  * @brief The size of a bit in microseconds
  *
  * 1200 baud = 1200 bits/second ~ 833.333 µs/bit
  */
 #define SDI12_BIT_WIDTH_MICROS static_cast<uint16_t>(833)
+
+#ifndef SDI12_LINE_BREAK_MICROS
 /**
+ * @def SDI12_LINE_BREAK_MICROS
  * @brief The required "break" before sending commands, >= 12ms.  The line level is HIGH
  * for the break.
  */
-#ifndef SDI12_LINE_BREAK_MICROS
 #define SDI12_LINE_BREAK_MICROS static_cast<uint16_t>(12100)
 #endif
+
+#ifndef SDI12_LINE_MARK_MICROS
 /**
+ * @def SDI12_LINE_MARK_MICROS
  * @brief The required mark before a command or response, >= 8.33ms.  The line level is
  * LOW for the marking.
  */
-#ifndef SDI12_LINE_MARK_MICROS
 #define SDI12_LINE_MARK_MICROS static_cast<uint16_t>(8400)
-#endif
-
-/**
- * Possible SDI-12 States
- *
- * WAITING_FOR_BREAK:
- * - Sensor (slave) is asleep, waiting for the data recorder (master) to hold the line
- * high for >= 12ms.  Or the data recorder has not initiated communication with a sensor
- * in too long and needs to re-alert it.
- * - Starts:
- *   - After a sensor receives an invalid address (return to sleep)
- *   - When the master wants to address a different sensor
- *   - After line has been in marking (LOW) for > 100 ms (sensor returns to sleep)
- *   - After the line has been in marking (LOW) for > 87 ms  (sensor awaits break
- * without sleeping, recorder must send break)
- * - Ends:
- *    - After 12 ms break has finished
- *
- * WAITING_FOR_MARKING:
- * - Sensor has received a >= 12ms HIGH break and is waiting for the data recorder to
- * send >= 8.33 ms of LOW marking.
- * - Data recorder has finished sending a command, has relinquished the line, and is
- * waiting for the sensor to hold the line LOW for >= 8.33 ms of marking
- * - Starts:
- *   - After line has been held continuously HIGH for >= 12ms
- * - Ends:
- *   - After the line has been in marking (LOW) for > 87 ms
- *
- * WAITING_FOR_START_BIT:
- * - Line has been held low for >= 8.33 ms of marking
- * - Ends:
- *   - > 15 ms after the last stop bit of a command (for the recorder/master)
- *   - > 1.66 ms after the last stop bit between characters within a command or response
- *
- */
-
-/**
- * @brief A mask for the rxState while waiting for a start bit; 0b11111111
- */
-#define WAITING_FOR_START_BIT 0xFF
-
-
-#ifndef SDI12_IGNORE_PARITY
-/**
- * @brief Check the value of the parity bit on reception
- */
-#define SDI12_CHECK_PARITY
 #endif
 
 #ifndef SDI12_WAKE_DELAY
 /**
+ * @def SDI12_WAKE_DELAY
  * @brief The amount of additional time in milliseconds that the sensor takes to wake
  * before being ready to receive a command.  Default is 0ms - meaning the sensor is
  * ready for a command by the end of the 12ms break.  Per protocol, the wake time must
@@ -268,25 +241,12 @@ typedef const __FlashStringHelper* FlashString;
  */
 #define SDI12_WAKE_DELAY 0
 #endif
+/**@}*/
 
-#ifndef SDI12_YIELD_MS
 /**
- * @brief The time to delay, in milliseconds, to allow the buffer to fill before
- * returning the value from the buffer.
- *
- * This may be needed for faster processors to account for the slow baud rate of SDI-12.
- * Without this, the available() function may return 0 while we're in the middle of
- * reading a character.
- *
- * There are 8.33 ms/character, so we delay by 8ms for fast processors to allow one
- * character to finish.
+ * @brief A mask for the rxState while waiting for a start bit; 0b11111111
  */
-#if F_CPU >= 48000000L
-#define SDI12_YIELD_MS 8
-#else
-#define SDI12_YIELD_MS 0
-#endif
-#endif
+#define WAITING_FOR_START_BIT 0xFF
 
 /**
  * Define SDI12_TX_DISABLE_INTERRUPTS at build time to disable *all* interrupts while
@@ -306,17 +266,6 @@ typedef const __FlashStringHelper* FlashString;
  * this if something else on the board cannot tolerate that.
  */
 // #define SDI12_TX_DISABLE_INTERRUPTS
-
-#ifndef SDI12_YIELD
-/**
- * @brief A delay function to allow the buffer to fill before returning the value from
- * the buffer.
- *
- * This may be needed for faster processors to account for the slow baud rate of SDI-12.
- */
-#define SDI12_YIELD() \
-  { delay(SDI12_YIELD_MS); }
-#endif
 
 /// @def NEED_LOOKAHEAD_ENUM
 /// @brief This macro is defined if lookahead options are needed.
@@ -355,6 +304,24 @@ enum LookaheadMode {
 #undef NEED_LOOKAHEAD_ENUM
 
 /**
+ * @brief Enumerated type to reference the type of supported binary data types
+ * for binary measurements
+ */
+typedef enum SDI12BinaryDataType_e : uint8_t {
+  kInvalidDataType = 0,  ///< Invalid data or Empty data type
+  kInt8DataType    = 1,  ///< Signed 8-bit integer
+  kUint8DataType   = 2,  ///< Unsigned 8-bit integer
+  kInt16DataType   = 3,  ///< Signed 16-bit integer
+  kUint16DataType  = 4,  ///< Unsigned 16-bit integer
+  kInt32DataType   = 5,  ///< Signed 32-bit integer
+  kUint32DataType  = 6,  ///< Unsigned 32-bit integer
+  kInt64DataType   = 7,  ///< Signed 64-bit integer
+  kUint64DataType  = 8,  ///< Unsigned 64-bit integer
+  kFloatDataType   = 9,  ///< IEEE 32-bit floating point single precision
+  kDoubleDataType  = 10  ///< IEEE 64-bit floating point double precision
+} SDI12BinaryDataType_e;
+
+/**
  * @brief The main class for SDI 12 instances
  */
 class SDI12 : public Stream {
@@ -374,9 +341,166 @@ class SDI12 : public Stream {
    * @brief The SDI12Timer instance to use for checking bit reception times.
    */
   static SDI12Timer sdi12timer;
+  /**@}*/
 
   /**
-   * @brief Stores the time of the previous RX transition in micros
+   * @anchor line_states
+   * @name Data Line States
+   *
+   * @brief Functions for maintaining the proper data line state.
+   *
+   * The Arduino is responsible for managing communication with the sensors.  Since all
+   * the data transfer happens on the same line, the state of the data line is very
+   * important.
+   *
+   * @section line_state_spec Specifications
+   *
+   * Per the SDI-12 specification, the voltage ranges for SDI-12 are:
+   *
+   * - When the pin is in the SDI12_HOLDING state, it is holding the line LOW so that
+   * interference does not unintentionally wake the sensors up.  The interrupt is
+   * disabled for the dataPin, because we are not expecting any SDI-12 traffic.
+   * - In the SDI12_TRANSMITTING state, we would like exclusive control of the Arduino,
+   * so we shut off all interrupts, and vary the voltage of the dataPin in order to wake
+   * up and send commands to the sensor.
+   * - In the SDI12_LISTENING state, we are waiting for a sensor to respond, so we drop
+   * the voltage level to LOW and relinquish control (INPUT).
+   * - If we would like to disable all SDI-12 functionality, then we set the system to
+   * the SDI12_DISABLED state, removing the interrupt associated with the dataPin.  For
+   * predictability, we set the pin to a LOW level high impedance state (INPUT).
+   *
+   * @section line_state_table As a Table
+   *
+   * Summarized in a table:
+   *
+   * | State               | Interrupts       | Pin Mode   | Pin Level |
+   * |---------------------|------------------|------------|-----------|
+   * | SDI12_DISABLED      | Pin Disable      | INPUT      | ---       |
+   * | SDI12_ENABLED       | Pin Disable      | INPUT      | ---       |
+   * | SDI12_HOLDING       | Pin Disable      | OUTPUT     | LOW       |
+   * | SDI12_TRANSMITTING  | All/Pin Disable  | OUTPUT     | VARYING   |
+   * | SDI12_LISTENING     | All Enable       | INPUT      | ---       |
+   *
+   *
+   * @section line_state_seq Sequencing
+   *
+   * Generally, this flow of line states is acceptable:
+   *
+   * `HOLDING --> TRANSMITTING --> LISTENING --> TRANSMITTING --> LISTENING`
+   *
+   * If you have interference, you should force a hold, using forceHold().
+   * The flow would then be:
+   *
+   * `HOLDING --> TRANSMITTING --> LISTENING -->` done reading, forceHold() `--->
+   * HOLDING`
+   *
+   * @see For a detailed explanation of interrupts see @ref interrupts_page
+   */
+  /**@{*/
+
+
+  /**
+   * Possible SDI-12 States
+   *
+   * LOW_POWER:
+   * - Sensor (slave) is asleep, also waiting for a break
+   * - Starts:
+   *   - After a sensor receives an invalid address (return to sleep)
+   *   - After line has been in marking (LOW) for > 100 ms (sensor returns to sleep)
+   * - Ends:
+   *   - Within 100 ms of receiving a >= 12ms break
+   * - Line State:
+   *   - Recorder: SDI12_HOLDING, SDI12_ENABLED, or SDI12_TRANSMITTING (to a different
+   * sensor)
+   *   - Sensor: SDI12_LISTENING
+   *
+   * WAITING_FOR_BREAK:
+   * - Sensor (slave) is asleep, waiting for the data recorder (master) to hold the line
+   * high for >= 12ms.  Or the data recorder has not initiated communication with a
+   * sensor in too long and needs to re-alert it.
+   * - NOTE: A break of < 6.5 ms must be ignored!
+   * - Starts:
+   *   - After a sensor receives an invalid address (return to sleep)
+   *   - When the master wants to address a different sensor
+   *   - After line has been in marking (LOW) for > 100 ms (sensor returns to sleep)
+   *   - After the line has been in marking (LOW) for > 87 ms  (sensor awaits break
+   * without sleeping, recorder must send break)
+   * - Ends:
+   *    - After 12 ms break has finished
+   * - Line State:
+   *   - Recorder: SDI12_HOLDING, SDI12_ENABLED, or SDI12_TRANSMITTING (to a different
+   * sensor)
+   *   - Sensor: SDI12_LISTENING
+   *
+   * SENDING_BREAK:
+   * - Line State:
+   *   - Recorder: SDI12_TRANSMITTING, Line HIGH (spacing)
+   *   - Sensor: SDI12_LISTENING (The sensor cannot issue a break!)
+   *
+   * WAITING_FOR_MARKING:
+   * - Sensor has received a >= 12ms HIGH break and is waiting for the data recorder to
+   * send >= 8.33 ms of LOW marking.
+   * - Data recorder has finished sending a command, has relinquished the line, and is
+   * waiting for the sensor to hold the line LOW for >= 8.33 ms of marking
+   * - Starts:
+   *   - After line has been held continuously HIGH for >= 12ms
+   * - Ends:
+   *   - After the line has been in marking (LOW) for > 87 ms
+   * - Line State:
+   *   - Recorder: SDI12_LISTENING
+   *   - Sensor: SDI12_LISTENING
+   *
+   * SENDING_MARKING:
+   * - Line State:
+   *   - Recorder: SDI12_TRANSMITTING (LOW) or SDI12_LISTENING
+   *   - Sensor: SDI12_TRANSMITTING (LOW) or SDI12_LISTENING
+   *
+   * WAITING_FOR_START_BIT:
+   * - Line has been held low for >= 8.33 ms of marking
+   * - Starts:
+   *   - After >= 8.33 ms of marking
+   * - Ends:
+   *   - > 15 ms after the last stop bit of a command (for the recorder/master)
+   *   - > 1.66 ms after the last stop bit between characters within a command or
+   * response
+   * - Line State:
+   *   - Recorder: SDI12_LISTENING
+   *   - Sensor: SDI12_LISTENING
+   *
+   * TRANSMITTING_DATA:
+   * - Line State:
+   *   - Recorder: SDI12_TRANSMITTING
+   *   - Sensor: SDI12_TRANSMITTING
+   */
+ private:
+  /**
+   * @brief The various SDI-12 line states.
+   */
+  typedef enum SDI12_STATES {
+    /** SDI-12 is disabled, pin mode INPUT, interrupts disabled for the pin */
+    SDI12_DISABLED,
+    /** SDI-12 is enabled, pin mode INPUT, interrupts disabled for the pin */
+    SDI12_ENABLED,
+    /** The line is being held LOW, pin mode OUTPUT, interrupts disabled for the pin */
+    SDI12_HOLDING,
+    /** Data is being transmitted by the SDI-12 master, pin mode OUTPUT, interrupts
+       disabled for the pin */
+    SDI12_TRANSMITTING,
+    /** The SDI-12 master is listening for a response from the slave, pin mode INPUT,
+       interrupts enabled for the pin */
+    SDI12_LISTENING
+  } SDI12_STATES;
+
+  /**
+   * @anchor sdi12_state_vars
+   * @name Variables used to track the timing and state of the instance
+   */
+  /**@{*/
+  /**
+   * @brief Stores the time of the previous RX transition in units of the specific board
+   * timer.
+   *
+   * This is used to track timing changes while actively receiving characters.
    */
   sdi12timer_t prevBitTCNT;
   /**
@@ -456,9 +580,8 @@ class SDI12 : public Stream {
   /**
    * @brief The buffer overflow status
    */
-  bool _bufferOverflow = false;
+  static volatile bool _bufferOverflow;
   /**@}*/
-
 
   /**
    * @anchor reading_buffer
@@ -526,7 +649,11 @@ class SDI12 : public Stream {
    */
   int available() override;
   /**
-   * @brief Reveal next byte in the Rx buffer without consuming it.
+   * @brief Reveal the next byte in the Rx buffer without consuming it.
+   *
+   * @param use_parity True to verify parity and return a character that excludes the
+   * parity bit.  If use_parity is set to true and the next character fails the parity
+   * check, -1 will be returned.
    *
    * @return The next byte in the character buffer.
    *
@@ -535,7 +662,20 @@ class SDI12 : public Stream {
    * the index addressed by _rxBufferHead is not changed). peek() returns -1 if there
    * are no characters to show.
    */
+  int peek(bool use_parity);
+  /**
+   * @brief Reveal the next byte **(7E1)** in the Rx buffer without consuming it.
+   * @return The next byte in the character buffer, or -1 if the buffer is empty or the
+   * next byte in the buffer doesn't pass parity check.
+   */
   int peek() override;
+  /**
+   * @brief Reveal the next byte **(8N1)** at the head of the Rx buffer without
+   * consuming it.
+   *
+   * @return The next byte in the character buffer, or -1 if the buffer is empty.
+   */
+  int peekBinary(void);
   /**
    * @brief Clear the Rx buffer by setting the head and tail pointers to the same value.
    *
@@ -544,7 +684,11 @@ class SDI12 : public Stream {
    */
   void clearBuffer();
   /**
-   * @brief Return next byte in the Rx buffer, consuming it
+   * @brief Return next byte in the Rx buffer, consuming it.
+   *
+   * @param use_parity True to verify parity and return a character that excludes the
+   * parity bit.  If use_parity is set to true and the next character fails the parity
+   * check, -1 will be returned.
    *
    * @return The next byte in the character buffer.
    *
@@ -553,13 +697,60 @@ class SDI12 : public Stream {
    * not be read from the buffer again. If you would rather see the character, but leave
    * the index to head intact, you should use peek();
    */
+  int read(bool use_parity);
+  /**
+   * @brief Return next byte in the Rx buffer **excluding parity bit**, consuming it.
+   *
+   * This is used for standard SDI-12 7E1 characters.
+   *
+   * @return The next byte in the character buffer, **7E1, excluding parity**.
+   */
   int read() override;
+
+  /**
+   * @brief Return the next byte in the Rx buffer **including the 8th bit**, consuming
+   * it.
+   *
+   * @return The next byte in the character buffer, **8N1, including 8th bit!**.
+   */
+  int readBinary(void);
+
+  /**
+   * @brief Return up to @p length bytes before timeout and store them in @p output.
+   *
+   * @param[out] output Location in memory where the bytes will be stored.
+   * @param[in] length Maximum number of bytes to read from the buffer.
+   * @return The number of bytes read from the buffer.
+   *
+   * readBinary(char* output, size_t length) attempts to read up to @p length bytes by
+   * incrementing the index of the buffer head using @see timedReadBinary().
+   * This action consumes the bytes, so they cannot be read from the buffer again.
+   * If the timeout expires first, the number of bytes returned is less than @p length.
+   * The bytes are stored at @p output in arrival order.
+   */
+  size_t readBinary(char* output, size_t length);
+  /**
+   * @brief Reads the next byte from the buffer (and moves the index ahead) with timeout
+   *
+   * @return int Byte data from buffer or -1 if buffer is empty or timeout during read
+   */
+  int timedReadBinary(void);
 
   /**
    * @brief Wait for sending to finish - because no TX buffering and the write function
    * is blocking, we don't need to do anything.
    */
   void flush() override {}
+
+  /**
+   * @brief Get the current stream timeout time.
+   * @return The current timeout time in milliseconds.
+   * @note Some cores do not implement getTimeout(), this function _hides_ the Stream
+   * class function on cores that do.
+   */
+  unsigned long getTimeout() {
+    return _timeout;
+  }
 
   /**
    * @brief Return the first valid (long) integer value from the current position.
@@ -591,8 +782,7 @@ class SDI12 : public Stream {
    * function!
    *
    * @note This function _hides_ the Stream class function to allow a custom value to be
-   * returned on timeout.  It cannot overwrite the Stream function because it is not
-   * virtual.
+   * returned on timeout.
    */
   long parseInt(LookaheadMode = SKIP_NONE, char = '+');
 
@@ -606,8 +796,7 @@ class SDI12 : public Stream {
    * next character is not part of an float.
    *
    * @note This function _hides_ the Stream class function to allow a custom value to be
-   * returned on timeout.  It cannot overwrite the Stream function because it is not
-   * virtual.
+   * returned on timeout.
    * @see @ref SDI12::parseInt(LookaheadMode, char)
    */
   float parseFloat(LookaheadMode = SKIP_NONE, char = '+');
@@ -707,26 +896,33 @@ class SDI12 : public Stream {
    * @brief The value to return if a parse or read times out with no return from the
    * sensor.
    *
-   * The timeout return for an Arduino stream object when no character is available in
-   * the Rx buffer is "0."  For environmental sensors (the typical SDI-12 users) 0 is a
-   * common result value.  To better distinguish between a timeout because of no
-   * sensor response and a true zero return, the timeout should be set to some value
-   * that is NOT a possible return from that sensor.  If the timeout is not set, -9999
-   * is used.
+   * The timeout return for parseInt and parseFloat of an Arduino stream object when no
+   * character is available in the Rx buffer is "0."  For environmental sensors (the
+   * typical SDI-12 users) 0 is a common result value.  To better distinguish between a
+   * timeout because of no sensor response and a true zero return, the timeout should be
+   * set to some value that is NOT a possible return from that sensor.  If the timeout
+   * is not set, -9999 is used.
+   *
+   * @attention This **only** applies to the parseInt and parseFloat functions of the
+   * SDI-12 object; it does not affect other read functions.  Calling read() or peek()
+   * when nothing is available in the Rx buffer will still behave as usual, returning
+   * -1.
    */
   int16_t TIMEOUT;
+
+  /**
+   * @brief Get the current value that will be returned IF a parse int or parse float
+   * times out with no return from the sensor.
+   * @return The current timeout value
+   * @copydetails TIMEOUT
+   */
+  int16_t getTimeoutValue();
+
   /**
    * @brief Set the value to return if a parse int or parse float times out with no
    * return from the sensor.
-   *
-   * The "standard" timeout return for an Arduino stream object when no character is
-   * available in the Rx buffer is "0."  For environmental sensors (the typical SDI-12
-   * users) 0 is a common result value.  To better distinguish between a timeout because
-   * of no sensor response and a true zero return, the timeout should be set to some
-   * value that is NOT a possible return from that sensor.  If the timeout is not set,
-   * -9999 is used.
-   *
    * @param value the value to return on timeout
+   * @copydetails TIMEOUT
    */
   void setTimeoutValue(int16_t value);
   /**
@@ -741,10 +937,6 @@ class SDI12 : public Stream {
    * @param dataPin  The data pin's digital pin number
    */
   void setDataPin(int8_t dataPin);
-#ifdef SDI12_CHECK_PARITY
-  /// Flag to denote a parity failure in the SDI-12 communication.
-  bool _parityFailure;
-#endif
   /**@}*/
 
 
@@ -807,80 +999,6 @@ class SDI12 : public Stream {
    */
   bool isActive();
   /**@}*/
-
-
-  /**
-   * @anchor line_states
-   * @name Data Line States
-   *
-   * @brief Functions for maintaining the proper data line state.
-   *
-   * The Arduino is responsible for managing communication with the sensors.  Since all
-   * the data transfer happens on the same line, the state of the data line is very
-   * important.
-   *
-   * @section line_state_spec Specifications
-   *
-   * Per the SDI-12 specification, the voltage ranges for SDI-12 are:
-   *
-   * - When the pin is in the SDI12_HOLDING state, it is holding the line LOW so that
-   * interference does not unintentionally wake the sensors up.  The interrupt is
-   * disabled for the dataPin, because we are not expecting any SDI-12 traffic.
-   * - In the SDI12_TRANSMITTING state, we would like exclusive control of the Arduino,
-   * so we shut off all interrupts, and vary the voltage of the dataPin in order to wake
-   * up and send commands to the sensor.
-   * - In the SDI12_LISTENING state, we are waiting for a sensor to respond, so we drop
-   * the voltage level to LOW and relinquish control (INPUT).
-   * - If we would like to disable all SDI-12 functionality, then we set the system to
-   * the SDI12_DISABLED state, removing the interrupt associated with the dataPin.  For
-   * predictability, we set the pin to a LOW level high impedance state (INPUT).
-   *
-   * @section line_state_table As a Table
-   *
-   * Summarized in a table:
-   *
-   * | State               | Interrupts       | Pin Mode   | Pin Level |
-   * |---------------------|------------------|------------|-----------|
-   * | SDI12_DISABLED      | Pin Disable      | INPUT      | ---       |
-   * | SDI12_ENABLED       | Pin Disable      | INPUT      | ---       |
-   * | SDI12_HOLDING       | Pin Disable      | OUTPUT     | LOW       |
-   * | SDI12_TRANSMITTING  | All/Pin Disable  | OUTPUT     | VARYING   |
-   * | SDI12_LISTENING     | All Enable       | INPUT      | ---       |
-   *
-   *
-   * @section line_state_seq Sequencing
-   *
-   * Generally, this flow of line states is acceptable:
-   *
-   * `HOLDING --> TRANSMITTING --> LISTENING --> TRANSMITTING --> LISTENING`
-   *
-   * If you have interference, you should force a hold, using forceHold().
-   * The flow would then be:
-   *
-   * `HOLDING --> TRANSMITTING --> LISTENING -->` done reading, forceHold() `--->
-   * HOLDING`
-   *
-   * @see For a detailed explanation of interrupts see @ref interrupts_page
-   */
-  /**@{*/
- private:
-  /**
-   * @brief The various SDI-12 line states.
-   */
-  typedef enum SDI12_STATES {
-    /** SDI-12 is disabled, pin mode INPUT, interrupts disabled for the pin */
-    SDI12_DISABLED,
-    /** SDI-12 is enabled, pin mode INPUT, interrupts disabled for the pin */
-    SDI12_ENABLED,
-    /** The line is being held LOW, pin mode OUTPUT, interrupts disabled for the pin */
-    SDI12_HOLDING,
-    /** Data is being transmitted by the SDI-12 master, pin mode OUTPUT, interrupts
-       disabled for the pin */
-    SDI12_TRANSMITTING,
-    /** The SDI-12 master is listening for a response from the slave, pin mode INPUT,
-       interrupts enabled for the pin */
-    SDI12_LISTENING
-  } SDI12_STATES;
 
 #ifndef __AVR__
   /**
@@ -985,36 +1103,63 @@ class SDI12 : public Stream {
    */
   void wakeSensors(int8_t extraWakeTime = 0);
   /**
-   * @brief Used to send a character out on the data line
+   * @brief Used to send a single character **(7E1)** out on the data line
    *
-   * @param out **uint8_t (char)** the character to write
+   * @param out The character to write
+   * @param use_parity True to calculate and include parity with the outgoing character.
+   * If true, the outgoing value will use the typical 7E1 parity used by SDI-12.  If
+   * false, the outgoing value will use 8N1, only used in data responses to high volume
+   * binary requests.
    *
-   * This function writes a character out to the data line.  SDI-12 specifies the
-   * general transmission format of a single character as:
+   * This function writes a character out to the data line.
+   *
+   * SDI-12 specifies the general transmission format of a single character as 7E1:
    * - 10 bits per data frame
    *     - 1 start bit
    *     - 7 data bits (least significant bit first)
    *     - 1 even parity bit
    *     - 1 stop bit
+   * The only exception is for data responses to high volume **binary** commands, which
+   * are sent as 8N1:
+   * - 10 bits per data frame
+   *     - 1 start bit
+   *     - 8 data bits (least significant bit first)
+   *     - 1 stop bit
    *
    * Recall that we are using inverse logic, so HIGH represents 0, and LOW represents
    * a 1.
    */
-  void writeChar(uint8_t out);
+  size_t writeChar(uint8_t out, bool use_parity);
 
  public:
   /**
-   * @brief Write out a byte on the SDI-12 line
+   * @brief Write out a byte using 7E1 parity on the SDI-12 line
    *
    * @param byte The character to write
    * @return The number of characters written
    *
    * Sets the state to transmitting, writes a character, and then sets the state back to
-   * listening.  This function must be implemented as part of the Arduino Stream
-   * instance, but is *NOT* intended to be used for SDI-12 objects.  Instead, use the
+   * listening.
+   *
+   * @warning This function must be implemented as part of the Arduino Stream instance,
+   * but is *NOT* intended to be used for SDI-12 objects.  Instead, use the
    * SDI12::sendCommand() or SDI12::sendResponse() functions.
    */
   virtual size_t write(uint8_t byte);
+  /**
+   * @brief Write out multiple bytes using 7E1 parity on the SDI-12 line
+   *
+   * @param buffer The data to write
+   * @param size The size of the data buffer to write
+   * @return The number of characters written
+   *
+   * Sets the state to transmitting, writes multiple characters, and then sets the state
+   * back to listening.
+   */
+  virtual size_t write(const uint8_t* buffer, size_t size);
+
+  template<typename T>
+  size_t writeBytes(T value);  // Writes out number of bytes little-endian
 
   /**
    * @brief Send a command out on the data line, acting as a data logger (master)
@@ -1100,7 +1245,7 @@ class SDI12 : public Stream {
    * @see For a detailed explanation of interrupts see @ref interrupts_page
    */
   /**@{*/
- private:
+ protected:
   /**
    * @brief Creates a blank slate for a new incoming character
    */
@@ -1119,7 +1264,7 @@ class SDI12 : public Stream {
    * person, that 8.33ms is trivial, but for even a "slow" 8MHz processor, that's over
    * 60,000 ticks sitting idle per character.
    */
-  void receiveISR();
+  virtual void receiveISR();
   /**
    * @brief Put a finished character into the SDI12 buffer
    *
@@ -1141,4 +1286,30 @@ class SDI12 : public Stream {
   /**@}*/
 };
 
+/**
+ * @brief Write out number of bytes on the SDI-12 line, least significant byte first
+ * (little-endian transmission)
+ *
+ * @tparam T @p value type
+ * @param value Data to be converted to byte chunks
+ * @return size_t sizeof( @p T ), number of bytes written out
+ *
+ * Sets the state to transmitting, starts writing byte chunks of @p value from
+ * least significant byte to most significant byte, and then sets the state back
+ * to listening.
+ */
+template<typename T>
+size_t SDI12::writeBytes(T value) {
+  setState(SDI12_TRANSMITTING);
+  size_t         count = sizeof(T);
+  const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&value);
+  for (size_t i = 0; i < count; i++) {
+    writeChar(bytes[i], false);  // write out lowest byte
+  }
+  setState(SDI12_LISTENING);
+  return count;
+}
+
 #endif  // SRC_SDI12_H_
+
+// cSpell:ignore Buendia ladyada Mikal Stroffregen Hagman Stoffregen

@@ -100,5 +100,5 @@
     "µsec"
   ],
   "ignoreWords": [],
-  "ignorePaths": ["platformio.ini", "*doxyfile*", ".vscode"]
+  "ignorePaths": ["platformio.ini", "*doxyfile*", ".vscode", "docs/Doxyfile", ".github/**/*.yaml", ".github/**/*.yml"]
 }

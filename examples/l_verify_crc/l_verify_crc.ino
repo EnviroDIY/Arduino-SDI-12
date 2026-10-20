@@ -35,7 +35,9 @@ void setup() {
   Serial.begin(serialBaud);
   while (!Serial && millis() < 10000L);
 
-  Serial.println("Opening SDI-12 bus...");
+  Serial.print("Opening SDI-12 bus on pin ");
+  Serial.print(dataPin);
+  Serial.println("...");
   mySDI12.begin();
   delay(500);  // allow things to settle
 
@@ -54,7 +56,6 @@ void setup() {
   mySDI12.sendCommand(command);
   Serial.print(">>>");
   Serial.println(command);
-  delay(30);
 
   sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
@@ -84,7 +85,6 @@ void loop() {
   Serial.println(myCommand);  // echo command to terminal
 
   mySDI12.sendCommand(myCommand);
-  delay(5);
 
   // wait for acknowledgement with format [address][ttt (3 char, seconds)][number of
   // measurements available, 0-9]
@@ -120,15 +120,12 @@ void loop() {
     }
   }
 
-
   // next command to request data from last measurement
   myCommand = String(sensorAddress) + "D0!";
   Serial.print(">>>");
   Serial.println(myCommand);  // echo command to terminal
 
   mySDI12.sendCommand(myCommand);
-  delay(30);  // wait a while for a response
-
 
   sdiResponse = mySDI12.readStringUntil('\n');
   sdiResponse.trim();
@@ -142,3 +139,5 @@ void loop() {
   }
   mySDI12.clearBuffer();
 }
+
+// cSpell:ignore Kertesz

@@ -39,7 +39,9 @@ void setup() {
   Serial.begin(serialBaud);
   while (!Serial && millis() < 10000L);
 
-  Serial.println("Opening SDI-12 bus...");
+  Serial.print("Opening SDI-12 bus on pin ");
+  Serial.print(dataPin);
+  Serial.println("...");
   mySDI12.begin();
   delay(500);  // allow things to settle
 
@@ -53,18 +55,22 @@ void setup() {
 }
 
 void loop() {
+  Serial.println("Press enter to start a new measurement...");
   do {  // wait for a response from the serial terminal to do anything
     delay(30);
   } while (!Serial.available());
-  Serial.read();  // simply hit enter in the terminal window or press send and the
-                  // characters get discarded but now the rest of the loop continues
+  while (Serial.available()) {
+    Serial.read();  // simply hit enter in the terminal window or press send and the
+                    // characters get discarded but now the rest of the loop continues
+  }
 
   // first command to take a measurement
   myCommand = String(sensorAddress) + "M!";
   Serial.println(myCommand);  // echo command to terminal
 
   mySDI12.sendCommand(myCommand);
-  delay(30);  // wait a while for a response
+  uint32_t waitStart = millis();  // the sensor must return within 100ms
+  while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
 
   while (mySDI12.available()) {  // build response string
     char c = mySDI12.read();
@@ -77,17 +83,16 @@ void loop() {
     Serial.println(sdiResponse);  // write the response to the screen
   mySDI12.clearBuffer();
 
-
   delay(1000);       // delay between taking reading and requesting data
   sdiResponse = "";  // clear the response string
-
 
   // next command to request data from last measurement
   myCommand = String(sensorAddress) + "D0!";
   Serial.println(myCommand);  // echo command to terminal
 
   mySDI12.sendCommand(myCommand);
-  delay(30);  // wait a while for a response
+  waitStart = millis();  // the sensor must return within 100ms
+  while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
 
   while (mySDI12.available()) {  // build string from response
     char c = mySDI12.read();
@@ -102,3 +107,5 @@ void loop() {
 
   // now go back to top and wait until user hits enter on terminal window
 }
+
+// cSpell:ignore Kertesz ISCO

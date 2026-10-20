@@ -92,7 +92,6 @@ void loop() {
   static boolean verbatim = false;
   static boolean feedback = true;
 
-
   // -- READ SERIAL (PC COMMS) DATA --
   // If serial data is available, read in a single byte and add it to
   // a String on each iteration
@@ -130,7 +129,6 @@ void loop() {
       }
     }
   }
-
 
   // Report completed SDI-12 messages back to serial interface
   if (sdiMsgReady) {
@@ -181,3 +179,5 @@ void loop() {
     serialMsgStr   = "";
   }
 }
+
+// cSpell:ignore Wasielewski

@@ -33,6 +33,9 @@ reviews:
         Each sentence should be on a new line.
         Markdown files should follow rules of markdownlint.
         Check C++ and Arduino code snippets as C++ code.
+    - path: 'ChangeLog.md'
+      instructions: >-
+        In addition to the general markdown review, check the completeness and accuracy of the changelog entries.
     - path: '**/*.dox'
       instructions: >-
         Review for grammar, spelling, and clarity.
@@ -45,8 +48,6 @@ reviews:
         Since this is an Arduino project, never suggest using the standard library (std::).
         For memory savings, prefer defines to const variables, and prefer using the F() macro for string literals longer than a single character.
         Files should be formatted according to the .clang-format file in the repo.
-        Template files used as includes should have the .tpp extension, and should not be included directly by the user.
-        Credential information should be removed by local smudge filters in the filters folder.
     - path: '**/*.h'
       instructions: >-
         Review the C++ code, point out issues relative to principles of clean code, expressiveness, and performance.
