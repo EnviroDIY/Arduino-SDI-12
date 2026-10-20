@@ -83,7 +83,8 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 
 // AVR boards with a 16-bit Timer/Counter 3
 #elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
-  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
+  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__) ||    \
+  defined(__AVR_ATmega640__)
 
 /**
  * @brief The value of timer control register 3A prior to being set for SDI-12.
@@ -556,9 +557,8 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
 // #elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
 //   defined(ARDUINO_GIGA) || F_CPU >= 48000000L
 
-#elif defined(ARDUINO_ARCH_STM32) || defined(STM32L4xx) || \
-      defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
-      defined(ARDUINO_GIGA) || F_CPU >= 48000000L
+#elif defined(ARDUINO_ARCH_STM32) || defined(STM32L4xx) || defined(ESP32) || \
+  defined(ESP8266) || defined(PARTICLE) || defined(ARDUINO_GIGA) || F_CPU >= 48000000L
 
 
 void SDI12Timer::configSDI12TimerPrescale(void) {}

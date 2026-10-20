@@ -116,7 +116,8 @@
 
 // AVR boards with a 16-bit Timer/Counter 3
 #elif defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || \
-  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__)
+  defined(__AVR_ATmega1284P__) || defined(__AVR_ATmega1284__) ||    \
+  defined(__AVR_ATmega640__)
 
 // Use Timer/Counter 3 on AVR boards that provide it
 #define TIMER_IN_USE_STR "Timer3"
@@ -262,9 +263,8 @@
 // #elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
 //   defined(ARDUINO_GIGA) || F_CPU >= 48000000L
 
-#elif defined(ARDUINO_ARCH_STM32) || \
-      defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
-      defined(ARDUINO_GIGA) || F_CPU >= 48000000L
+#elif defined(ARDUINO_ARCH_STM32) || defined(ESP32) || defined(ESP8266) || \
+  defined(PARTICLE) || defined(ARDUINO_GIGA) || F_CPU >= 48000000L
 
 
 #if defined(ARDUINO_GIGA)
