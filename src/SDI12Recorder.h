@@ -20,6 +20,25 @@
 #include "SDI12.h"
 #include "SDI12Protocol.h"
 
+#ifndef SDI12_RECORDER_RESPONSE_BUFFER_SIZE
+/**
+ * @brief Storage available for one complete ASCII sensor response.
+ *
+ * The default holds the maximum 81-character ASCII wire response (address, 75 value
+ * characters, three CRC characters, CR, and LF) plus a null terminator. Define this
+ * before including SDI12Recorder.h to select a different fixed capacity.
+ */
+#define SDI12_RECORDER_RESPONSE_BUFFER_SIZE 82
+#endif
+
+#if SDI12_RECORDER_RESPONSE_BUFFER_SIZE < 2
+#error "SDI12_RECORDER_RESPONSE_BUFFER_SIZE must allow data and a null terminator"
+#endif
+
+#if SDI12_RECORDER_RESPONSE_BUFFER_SIZE > 256
+#error "SDI12_RECORDER_RESPONSE_BUFFER_SIZE supports ASCII responses up to 255 bytes"
+#endif
+
 /**
  * @brief High-level SDI-12 recorder transaction executor.
  *
@@ -207,15 +226,42 @@ class SDI12Recorder {
   /**
    * @brief Retrieve the collected response, if successful.
    *
-   * @return A reference to the response string. The response includes the address
-   *         character and any data or parameter values, but not the CR+LF
-   *         terminator.
+   * @return The null-terminated response payload. Protocol envelope characters that
+   *         have already been validated, including the address, CRC, and CR+LF
+   *         terminator, are excluded.
    *
    * @note This is only valid if result() == RESULT_SUCCESS.
+   * @note The returned pointer remains valid until the response is cleared, another
+   *       command is started, or this recorder is destroyed.
    */
-  const String& response() const {
+  const char* response() const {
     return _response;
   }
+
+  /**
+   * @brief Retrieve the number of payload characters in response().
+   *
+   * @return The response payload length, excluding the null terminator.
+   */
+  size_t responseLength() const {
+    return _responseLength;
+  }
+
+  /**
+   * @brief Copy the response payload into an application-owned buffer.
+   *
+   * Copies at most @p capacity minus one characters and null-terminates the
+   * destination whenever @p destination is not null and @p capacity is greater than
+   * zero. Compare the return value with @p capacity to detect truncation.
+   *
+   * @param destination Buffer that will receive the response payload. May be null only
+   *                    when @p capacity is zero.
+   * @param capacity Total destination capacity, including its null terminator.
+   * @return The complete response payload length, excluding the null terminator.
+   *
+   * @note The response is only valid if result() == RESULT_SUCCESS.
+   */
+  size_t copyResponse(char* destination, size_t capacity) const;
 
   /**
    * @brief Cancel the current transaction and return to idle.
@@ -226,12 +272,13 @@ class SDI12Recorder {
   void cancel();
 
   /**
-   * @brief Clear the collected response and reset to receive mode.
+   * @brief Clear the collected response payload.
    *
-   * Useful for clearing state between multiple data requests for the same sensor.
+   * This does not change the current transaction phase or SDI-12 line state.
    */
   void clearResponse() {
-    _response = "";
+    _responseLength = 0;
+    _response[0]    = '\0';
   }
 
  private:
@@ -257,7 +304,8 @@ class SDI12Recorder {
   uint8_t _attemptCount;  ///< No-break retries in current break sequence (0-3)
 
   // Response collection
-  String         _response;
+  char           _response[SDI12_RECORDER_RESPONSE_BUFFER_SIZE];
+  uint8_t        _responseLength;
   RecorderResult _result;
 
   // Private helper methods
