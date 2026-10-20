@@ -580,7 +580,7 @@ class SDI12 : public Stream {
   /**
    * @brief The buffer overflow status
    */
-  static bool _bufferOverflow;
+  static volatile bool _bufferOverflow;
   /**@}*/
 
   /**
@@ -708,7 +708,8 @@ class SDI12 : public Stream {
   int read() override;
 
   /**
-   * @brief Return the next byte in the Rx buffer **including the 8th bit**, consuming it.
+   * @brief Return the next byte in the Rx buffer **including the 8th bit**, consuming
+   * it.
    *
    * @return The next byte in the character buffer, **8N1, including 8th bit!**.
    */

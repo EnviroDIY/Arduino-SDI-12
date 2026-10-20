@@ -26,7 +26,7 @@ SDI12Timer SDI12::sdi12timer;
 uint8_t          SDI12::_rxBuffer[SDI12_BUFFER_SIZE];  // The Rx buffer
 volatile uint8_t SDI12::_rxBufferTail   = 0;           // index of buff tail
 volatile uint8_t SDI12::_rxBufferHead   = 0;           // index of buff head
-bool             SDI12::_bufferOverflow = false;  // whether the buffer has overflowed
+volatile bool    SDI12::_bufferOverflow = false;  // whether the buffer has overflowed
 
 /* ================ Reading from the SDI-12 Buffer ==================================*/
 
