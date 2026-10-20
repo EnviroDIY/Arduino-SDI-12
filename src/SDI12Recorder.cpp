@@ -12,9 +12,7 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
   : _sdi12(sdi12),
     _address('0'),
     _txnStartTime(0),
-    _txnTimeoutMs(0),
-    _breakPolicy(BREAK_REQUIRED),
-    _responseFormat(RESPONSE_STANDARD),
+    _txnTimeoutMs(kDefaultTransactionTimeoutMs),
     _phase(PHASE_IDLE),
     _phaseStarted(false),
     _phaseStartTime(0),
@@ -28,15 +26,11 @@ SDI12Recorder::~SDI12Recorder() {
   if (_sdi12.isActive()) { cancel(); }
 }
 
-void SDI12Recorder::startCommand(char address, const String& command,
-                                 uint32_t timeoutMs, BreakPolicy breakPolicy,
-                                 ResponseFormat responseFormat) {
-  _address        = address;
-  _command        = command;
-  _txnStartTime   = millis();
-  _txnTimeoutMs   = timeoutMs;
-  _breakPolicy    = breakPolicy;
-  _responseFormat = responseFormat;
+void SDI12Recorder::startCommand(char address, const String& command) {
+  _address      = address;
+  _command      = command;
+  _txnStartTime = millis();
+  _txnTimeoutMs = kDefaultTransactionTimeoutMs;
 
   _breakCount   = 0;
   _attemptCount = 0;
@@ -102,7 +96,8 @@ const char* SDI12Recorder::resultDescription() const {
 // ============================================================================
 
 bool SDI12Recorder::_shouldTransmitBreak() const {
-  return _breakPolicy != BREAK_NONE;
+  // Require a break until command and bus context can safely determine otherwise.
+  return true;
 }
 
 void SDI12Recorder::_transitionTo(Phase nextPhase) {
@@ -239,8 +234,7 @@ void SDI12Recorder::_phase_validating() {
   // For now, just accept any response with valid address
   // Future: validate specific response formats per command type
 
-  // 3. Check CRC if present (if _responseFormat includes CRC)
-  // For now, skip CRC validation; it can be added later with a helper
+  // 3. Check CRC when the command-derived response policy requires one.
 
   // Success!
   _setResult(RESULT_SUCCESS);

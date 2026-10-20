@@ -37,7 +37,7 @@
  *
  * void loop() {
  *   if (!recorder.isBusy()) {
- *     recorder.startCommand('0', "0I!", 3000);
+ *     recorder.startCommand('0', "I");
  *     // ^^ Query sensor '0' for ID, wait up to 3s
  *   }
  *   recorder.update();  // Advance state machine each loop iteration
@@ -85,30 +85,6 @@ class SDI12Recorder {
     /// Transaction was cancelled by the application
     RESULT_CANCELLED = 0x0A
   } RecorderResult;
-
-  /**
-   * @brief Break policy: when should a break be transmitted before the command?
-   */
-  typedef enum BreakPolicy : uint8_t {
-    /// Always transmit a break before the command
-    BREAK_REQUIRED = 0x01,
-    /// Transmit a break only if the sensor address changed or timeout period expired
-    BREAK_OPTIONAL = 0x02,
-    /// Do not transmit a break; assume the sensor is already awake
-    BREAK_NONE = 0x03
-  } BreakPolicy;
-
-  /**
-   * @brief Expected response format and maximum length.
-   */
-  typedef enum ResponseFormat : uint8_t {
-    /// Standard response (up to 35 characters of data)
-    RESPONSE_STANDARD = 0x01,
-    /// Extended response (up to 75 characters of data, for concurrent or high-volume)
-    RESPONSE_EXTENDED = 0x02,
-    /// High-volume binary response (aDB#!)
-    RESPONSE_BINARY = 0x03
-  } ResponseFormat;
 
  private:
   /**
@@ -158,20 +134,18 @@ class SDI12Recorder {
    * validation, and retry logic until isDone() returns true.
    *
    * @param address The SDI-12 address (0-9, a-z, A-Z) of the sensor to query.
-   * @param command The command body to transmit (without address or '!' suffix).
-   *                For example, "I!" becomes "[address]I!" on the wire.
-   * @param timeoutMs Maximum time to wait for transaction completion, in milliseconds.
-   *                  This is the overall deadline, not a per-response timeout.
-   * @param breakPolicy When to transmit a break before the command (default:
-   *                    BREAK_REQUIRED).
-   * @param responseFormat Expected response format (default: RESPONSE_STANDARD).
+   * @param command The command body to transmit, without the address or terminating
+   *                exclamation point. For example, "I" becomes "[address]I!" on the
+   *                wire.
    *
    * @note If a transaction is already in progress, this method will cancel it and
    *       start a new one.
+   * @note Protocol policy such as break selection, response format, CRC validation,
+   *       and deadlines is owned by the recorder. The command-aware implementation
+   *       will infer it from the command and retained sensor context without changing
+   *       this API.
    */
-  void startCommand(char address, const String& command, uint32_t timeoutMs,
-                    BreakPolicy    breakPolicy    = BREAK_REQUIRED,
-                    ResponseFormat responseFormat = RESPONSE_STANDARD);
+  void startCommand(char address, const String& command);
 
   /**
    * @brief Advance the transaction state machine.
@@ -262,13 +236,14 @@ class SDI12Recorder {
 
  private:
   // References and configuration
-  SDI12&         _sdi12;         ///< The SDI12 transport instance
-  char           _address;       ///< Target sensor address
-  String         _command;       ///< Command to send (without address or '!')
-  uint32_t       _txnStartTime;  ///< millis() at transaction start
-  uint32_t       _txnTimeoutMs;  ///< Overall transaction deadline
-  BreakPolicy    _breakPolicy;
-  ResponseFormat _responseFormat;
+  SDI12&   _sdi12;         ///< The SDI12 transport instance
+  char     _address;       ///< Target sensor address
+  String   _command;       ///< Command to send (without address or '!')
+  uint32_t _txnStartTime;  ///< millis() at transaction start
+  uint32_t _txnTimeoutMs;  ///< Overall transaction deadline
+
+  /// Conservative transaction guard until command-derived deadlines are implemented.
+  static const uint32_t kDefaultTransactionTimeoutMs = 3000U;
 
   // Current phase and phase timings
   Phase    _phase;
