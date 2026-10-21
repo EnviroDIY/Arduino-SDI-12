@@ -12,6 +12,9 @@
 #define SRC_SDI12_BOARDS_H_
 
 #include <Arduino.h>
+
+#include "SDI12Config.h"  //  Include custom configuration
+
 /**
  * @def ISR_MEM_ACCESS
  * @brief Defines a memory access location, if needed for the interrupts service
@@ -71,15 +74,6 @@
  *
  * @see https://github.com/SlashDevin/NeoSWSerial/pull/13
  */
-
-/**
- * Define SDI12_RX_WINDOW_FUDGE at build time (ie, `-D SDI12_RX_WINDOW_FUDGE=416`) to
- * override the #RX_WINDOW_FUDGE selected for your board.  The value is in timer ticks,
- * which is *not* the same unit on every board - see the per-board sections below.  This
- * is a tuning knob for an unusual bus (long cable, slow edges, a sensor with a sloppy
- * baud rate); the default is right for a bus that meets the SDI-12 specification.
- */
-// #define SDI12_RX_WINDOW_FUDGE 416
 
 
 // Most 'standard' AVR boards
@@ -260,9 +254,6 @@
 // Espressif ESP32/ESP8266 boards, Particle boards, or any boards faster than 48MHz not
 // mentioned above
 // WARNING: I haven't actually tested the minimum speed that this will work at!
-// #elif defined(ESP32) || defined(ESP8266) || defined(PARTICLE) || \
-//   defined(ARDUINO_GIGA) || F_CPU >= 48000000L
-
 #elif defined(ARDUINO_ARCH_STM32) || defined(ESP32) || defined(ESP8266) || \
   defined(PARTICLE) || defined(ARDUINO_GIGA) || F_CPU >= 48000000L
 

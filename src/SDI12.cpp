@@ -859,25 +859,29 @@ void SDI12::charToBuffer(uint8_t c) {
 // Client code must call SDI12::handleInterrupt() in PCINT handler for the data pin
 #else
 
-#if defined(PCINT0_vect)
+#if defined(PCINT0_vect) && !defined(SDI12_PCINT1_ONLY) && \
+  !defined(SDI12_PCINT2_ONLY) && !defined(SDI12_PCINT3_ONLY)
 ISR(PCINT0_vect) {
   SDI12::handleInterrupt();
 }
 #endif
 
-#if defined(PCINT1_vect)
+#if defined(PCINT1_vect) && !defined(SDI12_PCINT0_ONLY) && \
+  !defined(SDI12_PCINT2_ONLY) && !defined(SDI12_PCINT3_ONLY)
 ISR(PCINT1_vect) {
   SDI12::handleInterrupt();
 }
 #endif
 
-#if defined(PCINT2_vect)
+#if defined(PCINT2_vect) && !defined(SDI12_PCINT0_ONLY) && \
+  !defined(SDI12_PCINT1_ONLY) && !defined(SDI12_PCINT3_ONLY)
 ISR(PCINT2_vect) {
   SDI12::handleInterrupt();
 }
 #endif
 
-#if defined(PCINT3_vect)
+#if defined(PCINT3_vect) && !defined(SDI12_PCINT0_ONLY) && \
+  !defined(SDI12_PCINT1_ONLY) && !defined(SDI12_PCINT2_ONLY)
 ISR(PCINT3_vect) {
   SDI12::handleInterrupt();
 }
