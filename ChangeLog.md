@@ -12,6 +12,18 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+### Added
+
+### Removed
+
+### Fixed
+
+***
+
+## [2.4.0]
+
+### Changed
+
 - Made `receiveISR()` virtual and protected so subclasses can customize receive handling.
 - Made the shared buffer-overflow state static and volatile across all `SDI12` instances.
 - Moved receive parity checking from the interrupt service routine into `read()` and `peek()` so standard 7E1 and high-volume binary 8N1 data can share the receive buffer.
@@ -292,7 +304,8 @@ The first "official" release of this interrupt-based SDI-12 library for AVR and 
 
 ***
 
-[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.3.4...HEAD
+[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.4.0
 [2.3.4]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.4
 [2.3.3]: https://github.com/similie/Arduino-SDI-12/releases/tag/v2.3.3
 [2.3.2]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.2
