@@ -237,7 +237,7 @@ enum LookaheadMode {
 // To handle external and pin change interrupts
 #include <EnableInterrupt.h>
 
-#elif not defined(__AVR__) && not defined(ARDUINO_ARCH_AVR)
+#elif not defined(__AVR__) && not defined(ARDUINO_ARCH_AVR) && not defined(DOXYGEN)
 // For compatibility with non AVR boards, we need these macros
 #define enableInterrupt(pin, userFunc, mode) \
   attachInterrupt(digitalPinToInterrupt(pin), userFunc, mode)
