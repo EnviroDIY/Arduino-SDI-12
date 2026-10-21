@@ -49,7 +49,7 @@
 /**
  * @brief The buffer size for incoming SDI-12 data.
  *
- * The default is 81 characters, which should be sufficient for most SDI-12 responses,
+ * The default is 82 characters, which should be sufficient for most SDI-12 responses,
  * including high-volume ASCII responses:
  * - address is a single (1) character
  * - values take a maximum value of 35 characters for standard responses, or 75
@@ -57,13 +57,14 @@
  * - CRC is 3 characters
  * - CR is a single character
  * - LF is a single character
+ * - reserve 1 empty space in the circular buffer
  *
  * If you need to use high volume **binary** responses, you may need to increase the
  * buffer size accordingly.
  * If your hard-pressed for memory and will not use high-volume ASCII responses, you can
- * drop this down to 41 characters.
+ * drop this down to 42 characters.
  */
-#define SDI12_BUFFER_SIZE 81
+#define SDI12_BUFFER_SIZE 82
 #endif
 
 //==============================================================
