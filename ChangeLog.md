@@ -12,7 +12,12 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- Increased the default buffer size from 81 to 82 characters.
+
 ### Added
+
+- Added a centralized configuration header for customizing SDI-12 buffering, interrupt behavior, and protocol timing.
+- Added options to select specific AVR pin-change interrupt vectors.
 
 ### Removed
 
