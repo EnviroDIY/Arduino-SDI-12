@@ -1,5 +1,5 @@
 /**
- * @file SDI12_ExtInts.h
+ * @file SDI12.h
  * @copyright Stroud Water Research Center
  * @license This library is published under the BSD-3 license.
  * @date August 2013
@@ -1207,9 +1207,6 @@ class SDI12 : public Stream {
    * On espressif boards (ESP8266 and ESP32), the ISR must be stored in IRAM
    */
   static void handleInterrupt();
-
-  /** on AVR boards, uncomment to use your own PCINT ISRs */
-#define SDI12_EXTERNAL_PCINT
   /**@}*/
 };
 

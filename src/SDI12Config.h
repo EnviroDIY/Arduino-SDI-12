@@ -39,7 +39,7 @@
  * @def SDI12_EXTERNAL_PCINT
  * @brief Use application-defined PCINT ISRs on AVR boards.
  */
-// #define SDI12_EXTERNAL_PCINT
+#define SDI12_EXTERNAL_PCINT
 //==============================================================
 
 //==============================================================
