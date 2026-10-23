@@ -14,7 +14,7 @@
  * Edited by Ruben Kertesz for ISCO Nile 502 2/10/2016
  */
 
-#include <SDI12_PCINT3.h>
+#include <SDI12.h>
 
 #ifndef SDI12_DATA_PIN
 #define SDI12_DATA_PIN 7

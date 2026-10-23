@@ -1,5 +1,5 @@
 /**
- * @file SDI12_PCINT3.cpp
+ * @file SDI12.cpp
  * @copyright Stroud Water Research Center
  * @license This library is published under the BSD-3 license.
  * @date August 2013
@@ -9,7 +9,7 @@
  */
 
 
-#include "SDI12_PCINT3.h"  //  Header file for this library
+#include "SDI12.h"  //  Header file for this library
 #if defined __AVR__
 #include <avr/interrupt.h>  // interrupt handling
 #include <util/parity.h>    // optimized parity bit handling
@@ -859,30 +859,29 @@ void SDI12::charToBuffer(uint8_t c) {
 // Client code must call SDI12::handleInterrupt() in PCINT handler for the data pin
 #else
 
-// #if defined(PCINT0_vect) && !defined(SDI12_PCINT1_ONLY) && \
-//   !defined(SDI12_PCINT2_ONLY) && !defined(SDI12_PCINT3_ONLY)
-// ISR(PCINT0_vect) {
-//   SDI12::handleInterrupt();
-// }
-// #endif
+#if defined(PCINT0_vect) && !defined(SDI12_PCINT1_ONLY) && \
+  !defined(SDI12_PCINT2_ONLY) && !defined(SDI12_PCINT3_ONLY)
+ISR(PCINT0_vect) {
+  SDI12::handleInterrupt();
+}
+#endif
 
-// #if defined(PCINT1_vect) && !defined(SDI12_PCINT0_ONLY) && \
-//   !defined(SDI12_PCINT2_ONLY) && !defined(SDI12_PCINT3_ONLY)
-// ISR(PCINT1_vect) {
-//   SDI12::handleInterrupt();
-// }
-// #endif
+#if defined(PCINT1_vect) && !defined(SDI12_PCINT0_ONLY) && \
+  !defined(SDI12_PCINT2_ONLY) && !defined(SDI12_PCINT3_ONLY)
+ISR(PCINT1_vect) {
+  SDI12::handleInterrupt();
+}
+#endif
 
-// #if defined(PCINT2_vect) && !defined(SDI12_PCINT0_ONLY) && \
-//   !defined(SDI12_PCINT1_ONLY) && !defined(SDI12_PCINT3_ONLY)
-// ISR(PCINT2_vect) {
-//   SDI12::handleInterrupt();
-// }
-// #endif
+#if defined(PCINT2_vect) && !defined(SDI12_PCINT0_ONLY) && \
+  !defined(SDI12_PCINT1_ONLY) && !defined(SDI12_PCINT3_ONLY)
+ISR(PCINT2_vect) {
+  SDI12::handleInterrupt();
+}
+#endif
 
-#if defined(PCINT3_vect)
-// && !defined(SDI12_PCINT0_ONLY) && \
-//   !defined(SDI12_PCINT1_ONLY) && !defined(SDI12_PCINT2_ONLY)
+#if defined(PCINT3_vect) && !defined(SDI12_PCINT0_ONLY) && \
+  !defined(SDI12_PCINT1_ONLY) && !defined(SDI12_PCINT2_ONLY)
 ISR(PCINT3_vect) {
   SDI12::handleInterrupt();
 }

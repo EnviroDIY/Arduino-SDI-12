@@ -6,7 +6,7 @@
  * @date March 2021
  */
 
-#include <SDI12_PCINT3.h>
+#include <SDI12.h>
 
 #ifndef SDI12_DATA_PIN
 #define SDI12_DATA_PIN 7

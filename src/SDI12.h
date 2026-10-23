@@ -1,5 +1,5 @@
 /**
- * @file SDI12_PCINT3.h
+ * @file SDI12.h
  * @copyright Stroud Water Research Center
  * @license This library is published under the BSD-3 license.
  * @date August 2013
@@ -122,8 +122,8 @@
  */
 
 
-#ifndef SRC_SDI12_PCINT3_H_
-#define SRC_SDI12_PCINT3_H_
+#ifndef SRC_SDI12_H_
+#define SRC_SDI12_H_
 
 //  Import Required Libraries
 #include <inttypes.h>  // integer types library
@@ -1234,6 +1234,6 @@ size_t SDI12::writeBytes(T value) {
   return count;
 }
 
-#endif  // SRC_SDI12_PCINT3_H_
+#endif  // SRC_SDI12_H_
 
 // cSpell:ignore Buendia ladyada Mikal Stroffregen Hagman Stoffregen
