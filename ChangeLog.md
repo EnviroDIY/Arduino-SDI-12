@@ -20,6 +20,23 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [2.5.0]
+
+### Changed
+
+- Increased the default buffer size from 81 to 82 characters.
+
+### Added
+
+- Added a centralized configuration header for customizing SDI-12 buffering, interrupt behavior, and protocol timing.
+- Added options to select specific AVR pin-change interrupt vectors.
+
+### Removed
+
+### Fixed
+
+***
+
 ## [2.4.0]
 
 ### Changed
@@ -304,7 +321,8 @@ The first "official" release of this interrupt-based SDI-12 library for AVR and 
 
 ***
 
-[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.5.0
 [2.4.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.4.0
 [2.3.4]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.4
 [2.3.3]: https://github.com/similie/Arduino-SDI-12/releases/tag/v2.3.3

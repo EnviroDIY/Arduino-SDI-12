@@ -32,13 +32,18 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
   - [Documentation](#documentation)
     - [Renaming Notice](#renaming-notice)
   - [Getting Started](#getting-started)
-  - [Library installation](#library-installation)
+  - [Library Installation](#library-installation)
   - [Origins and Inherited Limitations](#origins-and-inherited-limitations)
   - [Compatibility Considerations](#compatibility-considerations)
   - [Variants and Branches](#variants-and-branches)
-    - [EnviroDIY\_SDI12](#envirodiy_sdi12)
-    - [EnviroDIY\_SDI12\_PCINT3](#envirodiy_sdi12_pcint3)
-    - [EnviroDIY\_SDI12\_ExtInts](#envirodiy_sdi12_extints)
+    - [SDI12\_ExtInts](#sdi12_extints)
+    - [SDI12\_PCINT3](#sdi12_pcint3)
+  - [Advanced Library Configuration](#advanced-library-configuration)
+    - [AVR Interrupt Handling](#avr-interrupt-handling)
+    - [Response Buffer Size](#response-buffer-size)
+    - [Global Interrupts During Communication](#global-interrupts-during-communication)
+    - [Timing Options](#timing-options)
+    - [The Fudge Factor](#the-fudge-factor)
   - [Contribute](#contribute)
   - [License](#license)
   - [Credits](#credits)
@@ -57,16 +62,16 @@ Try running our [Example sketches](https://github.com/EnviroDIY/Arduino-SDI-12/t
 
 Full details on the library functionality can be found on github pages: <https://envirodiy.github.io/Arduino-SDI-12/>
 
-## Library installation
+## Library Installation
 
 This library is available through both the Arduino and PlatformIO library registries.
 
-Within the Arduino IDE, you can find the library in the library registry using the library search tool.
-The build and ingest logs for this library into the Arduino library registry are available [here](https://downloads.arduino.cc/libraries/logs/github.com/EnviroDIY/Arduino-SDI-12/).
+Within the Arduino IDE, you can find the library in the library registry using the [library manager](https://docs.arduino.cc/software/ide-v1/tutorials/installing-libraries/#using-the-library-manager).
+[The build and ingest logs for this library into the Arduino library registry are available.](https://downloads.arduino.cc/libraries/logs/github.com/EnviroDIY/Arduino-SDI-12/).
 The Arduino library registry should show newly available versions of this library within a few hours of a new release.
 
-[Here is the PlatformIO registry page.](https://registry.platformio.org/libraries/envirodiy/SDI-12)
-The library can be installed using the PlatformIO command `pio pkg install --library "envirodiy/SDI-12"`,
+The library is also available in [the PlatformIO registry page.](https://registry.platformio.org/libraries/envirodiy/SDI-12).
+It can be installed using the PlatformIO command `pio pkg install --library "envirodiy/SDI-12"`,
 You can also include this SDI-12 library as a dependency for a project by adding `envirodiy/SDI-12` to the [lib_deps](https://docs.platformio.org/en/latest/projectconf/sections/env/options/library/lib_deps.html) section of your platformio.ini configuration file.
 The PlatformIO library registry will should newly available versions of this library within minutes of a new release.
 
@@ -133,30 +138,68 @@ As we've described, the default "master" branch of this library will conflict wi
 To allow simultaneous use of SDI-12 and SoftwareSerial, we have created additional variants of these libraries that we maintain as separate branches of this repository.
 For background information, my be helpful to read our [Overview of Interrupts](https://github.com/EnviroDIY/Arduino-SDI-12/wiki/2b.-Overview-of-Interrupts) wiki page or this [Arduino Pin Change Interrupts article](https://thewanderingengineer.com/2014/08/11/arduino-pin-change-interrupts/).
 
-### EnviroDIY_SDI12<!--! {#mainpage_master} -->
+### SDI12_ExtInts<!--! {#mainpage_extints} -->
 
-EnviroDIY_SDI12 is the default master branch of this repository.
-It controls and monopolizes all pin change interrupt vectors, and can therefore have conflicts with any variant of SoftwareSerial and other libraries that use interrupts.
-
-### EnviroDIY_SDI12_PCINT3<!--! {#mainpage_pcint3} -->
-
-EnviroDIY_SDI12_PCINT3 is in the Mayfly branch of this repository, and was historically was called "SDI12_mod".
-It's been cropped to only control interrupt vector 3, or PCINT3 (D), which on the Mayfly (or Sodaq Mbili) corresponds to Pins D0-D7.
-It is designed to be compatible with [EnviroDIY_SoftwareSerial_PCINT12](https://github.com/EnviroDIY/SoftwareSerial_PCINT12) library (which controls interrupt vectors PCINT1 (B) & PCINT2 (C) / Mayfly pins D08-D15 & D16-D23) and [EnviroDIY PcInt PCINT0](https://github.com/EnviroDIY/PcInt_PCINT0) (which controls interrupt vectors PCINT0 (A) / Mayfly pins D24-D31/A0-A7).
-Note that different AtMega1284p boards have a different mapping from the physical PIN numbers to the listed digital PIN numbers that are printed on the board.
-One of the most helpful lists of pins and interrupts vectors is in the the [Pin/Port Bestiary wiki page for the Enable Interrupt library](https://github.com/GreyGnome/EnableInterrupt/wiki/Usage#PIN__PORT_BESTIARY).
-
-### EnviroDIY_SDI12_ExtInts<!--! {#mainpage_extints} -->
-
-EnviroDIY_SDI12_ExtInts is the ExtInt branch of this repository.
+SDI12_ExtInts is the ExtInt branch of this repository.
 It doesn't control any of the interrupts, but instead relies on an external interrupt management library (like [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt)) to assign the SDI-12 receive data function to the right pin.
 This is the least stable because there's some extra delay because the external library is involved, but the use of timers in the SDI-12 library greatly increases it's stability.
 It's also the easiest to get working in combination with any other pin change interrupt based library.
 It can be paired with the [EnviroDIY_SoftwareSerial_ExtInts](https://github.com/EnviroDIY/SoftwareSerial_ExternalInts) libraries (which is, by the way, extremely unstable).
+The only difference between the SDI12_ExtInts and the master version of this library is the name and the uncommented build flag `SDI12_EXTERNAL_PCINT` in the SDI12Config.h configuration header.
 
-If you would like to use a different pin change interrupt library, uncomment the line `#define SDI12_EXTERNAL_PCINT` in SDI12.h and recompile the library.
-Then, in your own code call `SDI12::handleInterrupt()` as the interrupt for the SDI12 pin using the other interrupt library.
+### SDI12_PCINT3<!--! {#mainpage_pcint3} -->
+
+SDI12_PCINT3 is in the PCINT3 branch of this repository, and was historically was called "SDI12_mod".
+It's been cropped to only control interrupt vector 3, or PCINT3 (D), which on the Mayfly (or Sodaq Mbili) corresponds to Pins D0-D7.
+It is designed to be compatible with [EnviroDIY_SoftwareSerial_PCINT12](https://github.com/EnviroDIY/SoftwareSerial_PCINT12) library (which controls interrupt vectors PCINT1 (B) & PCINT2 (C) / Mayfly pins D08-D15 & D16-D23) and [EnviroDIY PcInt PCINT0](https://github.com/EnviroDIY/PcInt_PCINT0) (which controls interrupt vectors PCINT0 (A) / Mayfly pins D24-D31/A0-A7).
+Note that different AtMega1284p boards have a different mapping from the physical PIN numbers to the listed digital PIN numbers that are printed on the board.
+One of the most helpful lists of pins and interrupts vectors is in the the [Pin/Port Bestiary wiki page for the Enable Interrupt library](https://github.com/GreyGnome/EnableInterrupt/wiki/Usage#PIN__PORT_BESTIARY).
+The only difference between the SDI12_PCINT3 and the master version of this library is the name and the uncommented build flag `SDI12_PCINT3_ONLY` in the SDI12Config.h configuration header.
+
+## Advanced Library Configuration
+
+This library can be configured through the SDI12Config.h header in the src folder of the library.
+If you are using PlatformIO, you can also configure the library through [build flags](https://docs.platformio.org/en/latest/projectconf/sections/env/options/build/build_flags.html)
+In the Arduino Command Line Interface ([CLI](https://docs.arduino.cc/arduino-cli/)), the `--build-property` option of the [compile command](https://docs.arduino.cc/arduino-cli/commands-reference/arduino-cli_compile/) also allows you to add build flags.
+
+### AVR Interrupt Handling
+
+AVR interrupts can be handed off to an external pin change interrupt managing library by removing the two comment slashes at the start of the line `// #define SDI12_EXTERNAL_PCINT` in the SDI12Config.h header or by compiling with the build flag `-D SDI12_EXTERNAL_PCINT`.
+In your own code call `SDI12::handleInterrupt()` as the interrupt for your SDI12 bus pin using the other interrupt library.
 Example j shows doing this in GreyGnome's [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) library.
+The [ExtInts branch](#sdi12_extints) is has this enabled by default
+
+You can also allow this library to manage the interrupt handling, but restrict the pin change interrupts it can manage to a specific interrupt vector using the configuration options or defining build flags `SDI12_PCINT0_ONLY`, `SDI12_PCINT1_ONLY`, `SDI12_PCINT2_ONLY`, or `SDI12_PCINT3_ONLY`.
+The [PCINT3](#sdi12_pcint3) branch uses only vector 3.
+
+### Response Buffer Size
+
+The response buffer size can be modified using the `SDI12_BUFFER_SIZE` value in SDI12Config.h or via a build flag.
+The default size is large enough for all standard and high volume ASCII SDI-12 commands and responses.
+If you are extremely space limited, you can decrease the size of the buffer.
+If you need high volume _binary_ responses, you will probably need to increase the size of the buffer.
+
+### Global Interrupts During Communication
+
+Processors running at 48MHz or faster are fast enough that a typical interrupt service routine cannot shift the bit timing past the SDI-12 tolerance, so since version 2.2.0 interrupts are left enabled while transmitting on those boards.
+On a board running an RTOS - an ESP32 running FreeRTOS alongside WiFi or a cellular modem, for instance - a task switch or another driver's long ISR can still stretch a bit far enough to garble a command.
+Defining `SDI12_TX_DISABLE_INTERRUPTS` restores the pre-2.2.0 behavior of holding interrupts off for the time-critical part of every character.
+
+### Timing Options
+
+> [!important]
+> Don't change these options without good reason!
+
+You can modify the default delay to wait for a sensor to wake, the exact length of the break, and the exact length of the mark using the `SDI12_WAKE_DELAY`, `SDI12_LINE_BREAK_MICROS`, and `SDI12_LINE_MARK_MICROS` options, respectively.
+The defaults should be correct for almost all uses.
+
+### The Fudge Factor
+
+> [!warning]
+> Don't change this unless you really know what you're doing!
+
+You can tweak the reception bit timing using the `SDI12_RX_WINDOW_FUDGE`.
+See the configuration file and the boards files for details.
 
 ## Contribute<!--! {#mainpage_contribute} -->
 

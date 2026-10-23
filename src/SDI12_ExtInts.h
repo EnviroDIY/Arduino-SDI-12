@@ -126,22 +126,23 @@
 #define SRC_SDI12_H_
 
 //  Import Required Libraries
+#include <inttypes.h>  // integer types library
+#include <Arduino.h>   // Arduino core library
+#include <Stream.h>    // Arduino Stream library
 
-#include <inttypes.h>      // integer types library
-#include <Arduino.h>       // Arduino core library
-#include <Stream.h>        // Arduino Stream library
+#include "SDI12Config.h"   //  Include custom configuration
 #include "SDI12_boards.h"  //  Include timer information
 
 /// Helper for strings stored in flash
 typedef const __FlashStringHelper* FlashString;
 
 /**
- * @anchor sdi12_buffer_defines
- * @name SDI-12 Data Buffer Defines
+ * @anchor sdi12_response_size_defines
+ * @name SDI-12 Response Size Defines
  *
- * @brief Defines for constants related to the buffer and messages sizes in SDI-12
+ * @brief Defines for constants related to messages sizes in SDI-12
  *
- * @note The following data buffer sizes does not include CR+LF and CRC
+ * @note The following data response sizes does not include CR+LF and CRC
  */
 /**@{*/
 /// a char not found in a valid ASCII numeric field
@@ -180,32 +181,9 @@ typedef const __FlashStringHelper* FlashString;
  * @see SDI12_VALUE_STR_SIZE
  */
 #define SDI12_HV_STR_SIZE 75
-
-#ifndef SDI12_BUFFER_SIZE
-/**
- * @brief The buffer size for incoming SDI-12 data.
- *
- * All responses should be less than 81 characters:
- * - address is a single (1) character
- * - values has a maximum value of 75 characters
- * - CRC is 3 characters
- * - CR is a single character
- * - LF is a single character
- */
-#define SDI12_BUFFER_SIZE 81
-#endif
 /**@}*/
 
-/**
- * @anchor sdi12_timing_defines
- * @name SDI-12 Timing Defines
- *
- * @brief Defines for constants related to SDI-12 timing specifications
- *
- * @note Defines for timing and clocks for specific boards are in the SDI12_boards.h
- * file.
- */
-/**@{*/
+
 /**
  * @brief The size of a bit in microseconds
  *
@@ -213,59 +191,8 @@ typedef const __FlashStringHelper* FlashString;
  */
 #define SDI12_BIT_WIDTH_MICROS static_cast<uint16_t>(833)
 
-#ifndef SDI12_LINE_BREAK_MICROS
-/**
- * @def SDI12_LINE_BREAK_MICROS
- * @brief The required "break" before sending commands, >= 12ms.  The line level is HIGH
- * for the break.
- */
-#define SDI12_LINE_BREAK_MICROS static_cast<uint16_t>(12100)
-#endif
-
-#ifndef SDI12_LINE_MARK_MICROS
-/**
- * @def SDI12_LINE_MARK_MICROS
- * @brief The required mark before a command or response, >= 8.33ms.  The line level is
- * LOW for the marking.
- */
-#define SDI12_LINE_MARK_MICROS static_cast<uint16_t>(8400)
-#endif
-
-#ifndef SDI12_WAKE_DELAY
-/**
- * @def SDI12_WAKE_DELAY
- * @brief The amount of additional time in milliseconds that the sensor takes to wake
- * before being ready to receive a command.  Default is 0ms - meaning the sensor is
- * ready for a command by the end of the 12ms break.  Per protocol, the wake time must
- * be less than 100 ms.
- */
-#define SDI12_WAKE_DELAY 0
-#endif
-/**@}*/
-
-/**
- * @brief A mask for the rxState while waiting for a start bit; 0b11111111
- */
+/// A mask for the rxState while waiting for a start bit; 0b11111111
 #define WAITING_FOR_START_BIT 0xFF
-
-/**
- * Define SDI12_TX_DISABLE_INTERRUPTS at build time to disable *all* interrupts while
- * transmitting each character, on a processor where this library would otherwise leave
- * them enabled.
- *
- * Processors running at 48MHz or faster are fast enough that a typical interrupt
- * service routine cannot shift the bit timing past the SDI-12 tolerance, so since
- * version 2.2.0 interrupts are left enabled while transmitting on those boards.  On a
- * board running an RTOS - an ESP32 running FreeRTOS alongside WiFi or a cellular modem,
- * for instance - a task switch or another driver's long ISR can still stretch a bit far
- * enough to garble a command.  Defining this macro restores the pre-2.2.0 behavior of
- * holding interrupts off for the time-critical part of every character.
- *
- * @warning On an ESP32 `noInterrupts()` masks interrupts for the entire core.  Each
- * character takes ~8.33ms, so a short command holds them off for ~35ms.  Do not define
- * this if something else on the board cannot tolerate that.
- */
-// #define SDI12_TX_DISABLE_INTERRUPTS
 
 /// @def NEED_LOOKAHEAD_ENUM
 /// @brief This macro is defined if lookahead options are needed.
@@ -1282,7 +1209,7 @@ class SDI12 : public Stream {
   static void handleInterrupt();
 
   /** on AVR boards, uncomment to use your own PCINT ISRs */
-  // #define SDI12_EXTERNAL_PCINT
+#define SDI12_EXTERNAL_PCINT
   /**@}*/
 };
 
