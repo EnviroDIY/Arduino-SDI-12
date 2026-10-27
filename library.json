@@ -13,20 +13,27 @@
       "email": "Kevin@elite-education.org"
     },
     {
-      "name": "Shannon Hicks",
-      "email": "shicks@stroudcenter.org"
-    },
-    {
       "name": "Sara Damiano",
       "email": "sdamiano@stroudcenter.org",
       "maintainer": true
+    },
+    {
+      "name": "Shannon Hicks",
+      "email": "shicks@stroudcenter.org"
     }
   ],
   "license": "BSD-3-Clause",
   "frameworks": "arduino",
   "platforms": ["atmelavr", "atmelsam", "espressif8266", "espressif32", "ststm32"],
   "export": {
-    "exclude": ["doc/*"]
+    "exclude": [
+      ".github/*",
+      "docs/*",
+      ".clang-format",
+      ".coderabbit.yaml",
+      ".markdownlint-cli2.yaml",
+      "cspell.json"
+    ]
   },
   "examples": ["examples/*/*.ino"]
 }
