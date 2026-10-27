@@ -19,10 +19,18 @@
 #ifndef SDI12_POWER_PIN
 #define SDI12_POWER_PIN 22
 #endif
+#ifndef SDI12_TERMINAL_BAUD
+#define SDI12_TERMINAL_BAUD 115200
+#endif
+#ifndef SDI12_PRINT_IO
+#define SDI12_PRINT_IO false
+#endif
 
-uint32_t serialBaud = 57600;           /*!< The baud rate for the output serial port */
-int8_t   dataPin    = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
-int8_t   powerPin   = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
+/* connection information */
+uint32_t serialBaud = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
+int8_t   dataPin    = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin   = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
+bool printIO = SDI12_PRINT_IO; /*!< Whether to print raw input/output from the bus */
 uint32_t wake_delay = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
 
 /** Define the SDI-12 bus */
@@ -173,46 +181,46 @@ void setup() {
 void loop() {
   boolean found = false;  // have we identified the sensor yet?
 
-  for (byte i = '0'; i <= '9'; i++) {  // scan address space 0-9
+  for (byte addr = '0'; addr <= '9'; addr++) {  // scan address space 0-9
     if (found) break;
     Serial.print("Checking address ");
-    Serial.print((char)i);
+    Serial.print((char)addr);
     Serial.print("...");
-    if (checkActive(i)) {
+    if (checkActive(addr, 3, printIO)) {
       Serial.println("Occupied");
       found      = true;
-      oldAddress = i;
-      printInfo(i);
+      oldAddress = addr;
+      printInfo(addr, printIO);
     } else {
       Serial.println("Vacant");
     }
   }
 
-  for (byte i = 'a'; i <= 'z'; i++) {  // scan address space a-z
+  for (byte addr = 'a'; addr <= 'z'; addr++) {  // scan address space a-z
     if (found) break;
     Serial.print("Checking address ");
-    Serial.print((char)i);
+    Serial.print((char)addr);
     Serial.print("...");
-    if (checkActive(i)) {
+    if (checkActive(addr, 3, printIO)) {
       Serial.println("Occupied");
       found      = true;
-      oldAddress = i;
-      printInfo(i);
+      oldAddress = addr;
+      printInfo(addr, printIO);
     } else {
       Serial.println("Vacant");
     }
   }
 
-  for (byte i = 'A'; i <= 'Z'; i++) {  // scan address space A-Z
+  for (byte addr = 'A'; addr <= 'Z'; addr++) {  // scan address space A-Z
     if (found) break;
     Serial.print("Checking address ");
-    Serial.print((char)i);
+    Serial.print((char)addr);
     Serial.print("...");
-    if (checkActive(i)) {
+    if (checkActive(addr, 3, printIO)) {
       Serial.println("Occupied");
       found      = true;
-      oldAddress = i;
-      printInfo(i);
+      oldAddress = addr;
+      printInfo(addr, printIO);
     } else {
       Serial.println("Vacant");
     }

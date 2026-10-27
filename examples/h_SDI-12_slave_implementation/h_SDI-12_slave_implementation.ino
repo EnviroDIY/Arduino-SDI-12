@@ -35,10 +35,13 @@
 #ifndef SDI12_POWER_PIN
 #define SDI12_POWER_PIN 22
 #endif
+#ifndef SDI12_SENSOR_ADDRESS
+#define SDI12_SENSOR_ADDRESS '5'
+#endif
 
-int8_t dataPin       = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
-int8_t powerPin      = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
-char   sensorAddress = '5';             /*!< The address of the SDI-12 sensor */
+int8_t dataPin       = SDI12_DATA_PIN;       /*!< The pin of the SDI-12 data bus */
+int8_t powerPin      = SDI12_POWER_PIN;      /*!< The sensor power pin (or -1) */
+char   sensorAddress = SDI12_SENSOR_ADDRESS; /*!< The address of the SDI-12 sensor */
 int    state         = 0;
 
 #define WAIT 0

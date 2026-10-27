@@ -18,12 +18,18 @@
 #ifndef SDI12_POWER_PIN
 #define SDI12_POWER_PIN 22
 #endif
+#ifndef SDI12_TERMINAL_BAUD
+#define SDI12_TERMINAL_BAUD 115200
+#endif
+#ifndef SDI12_SENSOR_ADDRESS
+#define SDI12_SENSOR_ADDRESS '2'
+#endif
 
 /* connection information */
-uint32_t serialBaud    = 115200; /*!< The baud rate for the output serial port */
-int8_t   dataPin       = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
-int8_t   powerPin      = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
-char     sensorAddress = '2';             /*!< The address of the SDI-12 sensor */
+uint32_t serialBaud    = SDI12_TERMINAL_BAUD;  /*!< The baud rate for the serial port */
+int8_t   dataPin       = SDI12_DATA_PIN;       /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin      = SDI12_POWER_PIN;      /*!< The sensor power pin (or -1) */
+char     sensorAddress = SDI12_SENSOR_ADDRESS; /*!< The address of the SDI-12 sensor */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(dataPin);

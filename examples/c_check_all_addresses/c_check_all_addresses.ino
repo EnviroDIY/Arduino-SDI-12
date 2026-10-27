@@ -27,9 +27,16 @@
 #ifndef SDI12_POWER_PIN
 #define SDI12_POWER_PIN 22
 #endif
+#ifndef SDI12_TERMINAL_BAUD
+#define SDI12_TERMINAL_BAUD 115200
+#endif
+#ifndef SDI12_PRINT_IO
+#define SDI12_PRINT_IO false
+#endif
 
-uint32_t serialBaud   = 115200; /*!< The baud rate for the output serial port */
-int8_t   powerPin     = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
+uint32_t serialBaud = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
+int8_t   powerPin   = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
+bool printIO = SDI12_PRINT_IO; /*!< Whether to print raw input/output from the bus */
 uint32_t wake_delay   = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
 int8_t   firstPin     = 3; /*! change to lowest pin number to search on your board */
 int8_t   lastPin      = 7; /*! change to highest pin number to search on your board */
@@ -185,7 +192,7 @@ void scanAddressSpace(SDI12& sdi) {
     Serial.print(i);
     Serial.print(" addr=");
     Serial.println(addr);
-    if (checkActive(sdi, addr)) { printInfo(sdi, addr); };
+    if (checkActive(sdi, addr, 3, printIO)) { printInfo(sdi, addr, printIO); };
   }
 }
 

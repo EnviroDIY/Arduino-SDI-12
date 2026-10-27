@@ -13,14 +13,19 @@
 #ifndef SDI12_POWER_PIN
 #define SDI12_POWER_PIN 22
 #endif
+#ifndef SDI12_TERMINAL_BAUD
+#define SDI12_TERMINAL_BAUD 115200
+#endif
 
 // #define TEST_PRINT_ARRAY
 
 /* connection information */
-#if F_CPU > 48000000L
-uint32_t serialBaud = 921600; /*!< The baud rate for the output serial port */
+#if F_CPU > 48000000L && !defined(SDI12_TERMINAL_BAUD)
+uint32_t serialBaud = 921600; /*!< The baud rate for the serial port */
+#elif !defined(SDI12_TERMINAL_BAUD)
+uint32_t serialBaud = 115200; /*!< The baud rate for the serial port */
 #else
-uint32_t serialBaud = 115200; /*!< The baud rate for the output serial port */
+uint32_t serialBaud = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
 #endif
 int8_t       dataPin    = SDI12_DATA_PIN;  /*!< The pin of the SDI-12 data bus */
 int8_t       powerPin   = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */

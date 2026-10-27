@@ -8,15 +8,11 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
-## [Unreleased]
+## [2.5.1]
 
 ### Changed
 
-### Added
-
-### Removed
-
-### Fixed
+- added more defines for SDI-12 sensor address and other configurable parameters to the examples
 
 ***
 
@@ -321,7 +317,8 @@ The first "official" release of this interrupt-based SDI-12 library for AVR and 
 
 ***
 
-[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.5.1...HEAD
+[2.5.1]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.5.1
 [2.5.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.5.0
 [2.4.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.4.0
 [2.3.4]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.3.4

@@ -31,15 +31,21 @@
 #ifndef SDI12_POWER_PIN
 #define SDI12_POWER_PIN 22
 #endif
+#ifndef SDI12_TERMINAL_BAUD
+#define SDI12_TERMINAL_BAUD 115200
+#endif
+#ifndef SDI12_PRINT_IO
+#define SDI12_PRINT_IO false
+#endif
 
 /* connection information */
-uint32_t serialBaud   = 115200;         /*!< The baud rate for the output serial port */
-int8_t   dataPin      = SDI12_DATA_PIN; /*!< The pin of the SDI-12 data bus */
-int8_t   powerPin     = SDI12_POWER_PIN; /*!< The sensor power pin (or -1) */
+uint32_t serialBaud = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
+int8_t   dataPin    = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
+int8_t   powerPin   = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
+bool printIO = SDI12_PRINT_IO; /*!< Whether to print raw input/output from the bus */
 uint32_t wake_delay   = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
 int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
-bool     printIO     = false;
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(dataPin);
@@ -404,10 +410,10 @@ void setup() {
 
   for (int8_t i = firstAddress; i <= lastAddress; i++) {
     char addr = decToChar(i);
-    if (checkActive(addr)) {
+    if (checkActive(addr, 3, printIO)) {
       numSensors++;
       isActive[i] = 1;
-      printInfo(addr);
+      printInfo(addr, printIO);
       Serial.println();
     }
   }
