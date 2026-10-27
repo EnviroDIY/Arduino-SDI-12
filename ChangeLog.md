@@ -8,6 +8,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [2.5.2]
+
+### Changed
+
+- Updated author and export exclusions in library properties and json files
+
+***
+
 ## [2.5.1]
 
 ### Changed
@@ -317,7 +325,8 @@ The first "official" release of this interrupt-based SDI-12 library for AVR and 
 
 ***
 
-[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.5.1...HEAD
+[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v2.5.2...HEAD
+[2.5.2]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.5.2
 [2.5.1]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.5.1
 [2.5.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.5.0
 [2.4.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.4.0
