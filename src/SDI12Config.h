@@ -186,7 +186,7 @@
 /**@}*/
 
 #if defined(DOXYGEN)
-#define SDI12_EXTERNAL_PCINT
+#define SDI12_INTERNAL_PCINT
 #define SDI12_PCINT0_ONLY
 #define SDI12_PCINT1_ONLY
 #define SDI12_PCINT2_ONLY

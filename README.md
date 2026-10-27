@@ -1,6 +1,6 @@
 # SDI-12 for Arduino<!--! {#mainpage} -->
 
-## Introduction<!--! {#mainpage_intro} -->
+## Introduction
 
 This is an Arduino library for SDI-12 communication with a wide variety of environmental sensors.
 It provides a general software solution, without requiring any additional hardware, to implement the SDI-12 communication protocol between an Arduino-based data logger and SDI-12-enabled sensors.
@@ -18,7 +18,7 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
 
 <!--! @endif -->
 
-### Renaming Notice<!--! {#mainpage_rename} -->
+### Renaming Notice
 
 > [!IMPORTANT]
 > **As of version 2.0.0 this library was renamed from "Arduino-SDI-12" to simply "SDI-12" to comply with requirements for inclusion in the Arduino.cc's IDE and Library Manager.**
@@ -54,7 +54,7 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
 
 <!--! @endif -->
 
-## Getting Started<!--! {#mainpage_getting_started} -->
+## Getting Started
 
 Learn more, below, about this library's:
 
@@ -79,7 +79,7 @@ It can be installed using the PlatformIO command `pio pkg install --library "env
 You can also include this SDI-12 library as a dependency for a project by adding `envirodiy/SDI-12` to the [lib_deps](https://docs.platformio.org/en/latest/projectconf/sections/env/options/library/lib_deps.html) section of your platformio.ini configuration file.
 The PlatformIO library registry will should newly available versions of this library within minutes of a new release.
 
-## Origins and Inherited Limitations<!--! {#mainpage_origins} -->
+## Origins and Inherited Limitations
 
 This library was developed from the [SoftwareSerial](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/SoftwareSerial) library that is a built-in [standard Arduino library](https://www.arduino.cc/en/Reference/Libraries).
 It was further modified to use a timer to improve read stability and decrease the amount of time universal interrupts are disabled using logic from [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
@@ -103,7 +103,7 @@ For ATmega1280, ATmega1284, ATmega1284P, and ATmega2560 boards, this library wil
 All 8MHz AVR boards will also have unresolvable prescaler conflicts with [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
 The pre-scaler values needed for the SDI-12 functionality are set in the begin() function and reset to their original values in the end() function.
 
-## Supported Boards<!--! {#mainpage_supported} -->
+## Supported Boards
 
 ### Tested Boards
 
@@ -166,13 +166,13 @@ For AVR boards, the ["Bestiary" of the EnableInterrupt library](https://github.c
 
 Note that not all of these pins are available with our [Variants and Branches](https://github.com/EnviroDIY/Arduino-SDI-12#variants-and-branches), below.
 
-## Variants and Branches<!--! {#mainpage_variants} -->
+## Variants and Branches
 
 As we've described, the default "master" branch of this library will conflict with SoftwareSerial and any other library that monopolizes all pin change interrupt vectors for all AVR boards.
 To allow simultaneous use of SDI-12 and SoftwareSerial, we have created additional variants of these libraries that we maintain as separate branches of this repository.
 For background information, my be helpful to read our [Overview of Interrupts](https://github.com/EnviroDIY/Arduino-SDI-12/wiki/2b.-Overview-of-Interrupts) wiki page or this [Arduino Pin Change Interrupts article](https://thewanderingengineer.com/2014/08/11/arduino-pin-change-interrupts/).
 
-### SDI12_InternalInts<!--! {#mainpage_extints} -->
+### SDI12_InternalInts
 
 SDI12_InternalInts is the InternalInts branch of this repository.
 It controls the AVR pin change interrupts internally, without relying on an external interrupt management library.
@@ -184,7 +184,7 @@ The only difference between the SDI12_InternalInts and the master version of thi
 > [!tip]
 > For non-AVR boards, the SDI12_InternalInts variant has no effect, as it only controls AVR pin change interrupts internally.
 
-### SDI12_PCINT3<!--! {#mainpage_pcint3} -->
+### SDI12_PCINT3
 
 SDI12_PCINT3 is in the PCINT3 branch of this repository, and was historically was called "SDI12_mod".
 It's been cropped to only control interrupt vector 3, or PCINT3 (D), which on the Mayfly (or Sodaq Mbili) corresponds to Pins D0-D7.
@@ -240,7 +240,7 @@ The defaults should be correct for almost all uses.
 You can tweak the reception bit timing using the `SDI12_RX_WINDOW_FUDGE`.
 See the configuration file and the boards files for details.
 
-## Contribute<!--! {#mainpage_contribute} -->
+## Contribute
 
 Open an [issue](https://github.com/EnviroDIY/Arduino-SDI-12/issues) to suggest and discuss potential changes/additions.
 
@@ -252,7 +252,7 @@ For power contributors:
 4. Push to the branch: `git push origin my-new-feature`
 5. Submit a pull request :D
 
-## License<!--! {#mainpage_license} -->
+## License
 
 The SDI12 library code is released under the GNU Lesser Public License (LGPL 2.1) -- See [LICENSE-examples.md](https://github.com/EnviroDIY/Arduino-SDI-12/blob/master/LICENSE) file for details.
 
@@ -260,7 +260,7 @@ Example Arduino sketches are released under the BSD 3-Clause License -- See [LIC
 
 Documentation is licensed as [Creative Commons Attribution-ShareAlike 4.0](https://creativecommons.org/licenses/by-sa/4.0/) (CC-BY-SA) copyright.
 
-## Credits<!--! {#mainpage_credits} -->
+## Credits
 
 [EnviroDIY](http://envirodiy.org/)™ is presented by the Stroud Water Research Center, with contributions from a community of enthusiasts sharing do-it-yourself ideas for environmental science and monitoring.
 
