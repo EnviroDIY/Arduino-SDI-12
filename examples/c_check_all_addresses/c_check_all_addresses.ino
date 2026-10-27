@@ -32,18 +32,15 @@
 #ifndef SDI12_TERMINAL_BAUD
 #define SDI12_TERMINAL_BAUD 115200
 #endif
-#ifndef SDI12_PRINT_IO
-#define SDI12_PRINT_IO false
-#endif
 
-uint32_t serialBaud = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
-int8_t   powerPin   = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
-bool printIO = SDI12_PRINT_IO; /*!< Whether to print raw input/output from the bus */
-uint32_t wake_delay   = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
-int8_t   firstPin     = 3; /*! change to lowest pin number to search on your board */
-int8_t   lastPin      = 7; /*! change to highest pin number to search on your board */
-int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
-int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
+uint32_t     serialBaud = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
+int8_t       powerPin   = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
+bool         printIO    = false; /*!< Whether to print raw input/output from the bus */
+uint32_t     wake_delay = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
+int8_t       firstPin   = 3; /*! change to lowest pin number to search on your board */
+int8_t       lastPin    = 7; /*! change to highest pin number to search on your board */
+const int8_t firstAddress = 0;  /* The first address to check (0='0') */
+const int8_t lastAddress  = 61; /* The last address to check (61='z') */
 
 /**
  * @brief converts allowable address characters ('0'-'9', 'a'-'z', 'A'-'Z') to a

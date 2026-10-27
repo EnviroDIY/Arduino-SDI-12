@@ -436,9 +436,9 @@ getResultsResult getResults(char address, int resultsExpected, bool verify_crc =
   }
 
   if (printIO) {
-    Serial.print("After ");
+    Serial.print("Used ");
     Serial.print(cmd_number);
-    Serial.print(" data commands got ");
+    Serial.print(" data commands to get ");
     Serial.print(resultsReceived);
     Serial.print(" results of the expected ");
     Serial.print(resultsExpected);
@@ -520,6 +520,8 @@ startMeasurementResult startMeasurement(char address, bool is_concurrent = false
   return return_result;
 }
 
+// This combines starting a non-concurrent measurement, waiting for a service request,
+// and getting results into a single function
 uint32_t takeMeasurement(char address, bool request_crc = false, String meas_type = "",
                          bool printIO = true) {
   startMeasurementResult startResult = startMeasurement(address, false, request_crc,

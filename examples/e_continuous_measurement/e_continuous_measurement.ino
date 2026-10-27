@@ -26,26 +26,43 @@
 #ifndef SDI12_TERMINAL_BAUD
 #define SDI12_TERMINAL_BAUD 115200
 #endif
-#ifndef SDI12_PRINT_IO
-#define SDI12_PRINT_IO false
-#endif
 
 /* connection information */
-uint32_t serialBaud   = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
-int8_t   dataPin      = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
-int8_t   powerPin     = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
-bool     printIO      = SDI12_PRINT_IO;
-uint32_t wake_delay   = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
-int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
-int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
+uint32_t     serialBaud = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
+int8_t       dataPin    = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
+int8_t       powerPin   = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
+bool         printIO    = false; /*!< Whether to print raw input/output from the bus */
+bool         useCRC     = false; /*!< Whether to use CRC checking */
+uint32_t     wake_delay = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
+const int8_t firstAddress = 0;  /* The first address to check (0='0') */
+const int8_t lastAddress  = 61; /* The last address to check (61='z') */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(dataPin);
 
-// keeps track of active addresses
-bool isActive[64];
+/** Define some testing specs */
+const int8_t n_addresses = (lastAddress - firstAddress) + 1;
 
+// keeps track of active addresses
+bool isActive[n_addresses];
+
+// The total number of sensors detected
 uint8_t numSensors = 0;
+
+struct startMeasurementResult {  // Structure declaration
+  String  returned_address;
+  uint8_t meas_time_s;
+  int     numberResults;
+};
+
+struct getResultsResult {  // Structure declaration
+  uint8_t resultsReceived;
+  uint8_t maxDataCommand;
+  bool    addressMatch;
+  bool    crcMatch;
+  bool    errorCode;
+  bool    success;
+};
 
 /**
  * @brief converts allowable address characters ('0'-'9', 'a'-'z', 'A'-'Z') to a
@@ -187,7 +204,8 @@ bool printInfo(char address, bool printIO = true) {
   return true;
 }
 
-bool getContinuousResults(char address, int resultsExpected) {
+bool getContinuousResults(char address, int resultsExpected, bool verify_crc = false,
+                          bool printIO = true) {
   uint8_t resultsReceived = 0;
   uint8_t cmd_number      = 0;
   uint8_t cmd_retries     = 0;
@@ -367,7 +385,7 @@ void loop() {
         Serial.print(millis());
         Serial.print(", ");
       }
-      getContinuousResults(addr, 0);
+      getContinuousResults(addr, 0, useCRC, printIO);
       Serial.println();
     }
   }

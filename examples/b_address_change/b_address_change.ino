@@ -24,16 +24,13 @@
 #ifndef SDI12_TERMINAL_BAUD
 #define SDI12_TERMINAL_BAUD 115200
 #endif
-#ifndef SDI12_PRINT_IO
-#define SDI12_PRINT_IO false
-#endif
 
 /* connection information */
 uint32_t serialBaud = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
 int8_t   dataPin    = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin   = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
-bool printIO = SDI12_PRINT_IO; /*!< Whether to print raw input/output from the bus */
-uint32_t wake_delay = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
+bool     printIO    = false; /*!< Whether to print raw input/output from the bus */
+uint32_t wake_delay = 0;     /*!< Extra time needed for the sensor to wake (0-100ms) */
 
 /** Define the SDI-12 bus */
 SDI12 mySDI12(dataPin);
