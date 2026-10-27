@@ -67,7 +67,7 @@
  * @def SDI12_PCINT3_ONLY
  * @brief Use the PCINT3 interrupt vector on AVR boards.
  */
-// #define SDI12_PCINT3_ONLY
+#define SDI12_PCINT3_ONLY
 //==============================================================
 
 //==============================================================
