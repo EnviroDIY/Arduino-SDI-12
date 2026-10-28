@@ -13,7 +13,7 @@
  * manufacturer info.
  */
 
-#include <SDI12.h>
+#include <SDI12Recorder.h>
 
 #ifndef SDI12_DATA_PIN
 #define SDI12_DATA_PIN 7
@@ -29,15 +29,9 @@ uint32_t serialBaud = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial por
 int8_t   dataPin    = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin   = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
 
-/** Define the SDI-12 bus */
-SDI12 mySDI12(dataPin);
-
-/**
-  '?' is a wildcard character which asks any and all sensors to respond
-  'I' indicates that the command wants information about the sensor
-  '!' finishes the command
-*/
-String myCommand = "?I!";
+/** Define the SDI-12 bus and recorder */
+SDI12         mySDI12(dataPin);
+SDI12Recorder mySDI12Recorder(mySDI12);
 
 void setup() {
   Serial.begin(serialBaud);
@@ -59,11 +53,20 @@ void setup() {
 }
 
 void loop() {
-  mySDI12.sendCommand(myCommand);
-  uint32_t waitStart = millis();  // the sensor must return within 100ms
-  while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
-  String sdiResponse = mySDI12.readStringUntil('\n');
-  Serial.print(sdiResponse);
-  Serial.write('\n');
+  // The wildcard query works only when exactly one sensor is attached to the bus.
+  const char address = mySDI12Recorder.queryAddress();
+  if (address == '\0') {
+    // A return of null for the address means nothing was found
+    mySDI12Recorder.printRecorderResult(Serial);
+    Serial.println();
+  } else {
+    SDI12Recorder::Identification sensorInfo;
+    if (mySDI12Recorder.identify(address, sensorInfo)) {
+      mySDI12Recorder.printSensorInfo(sensorInfo, Serial);
+    } else {
+      mySDI12Recorder.printRecorderResult(Serial);
+      Serial.println();
+    }
+  }
   delay(3000);  // print again in three seconds
 }

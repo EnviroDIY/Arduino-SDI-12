@@ -1,8 +1,12 @@
 # Example B: Changing the Address of your SDI-12 Sensor<!--! {#example_b_page} -->
 
-Communication with an SDI-12 sensor depends on its 1-character alphanumeric address (1-9, A-Z, a-z).  A sensor can also be programmed with an address of 0, but that address cannot always be used to get measurements from the sensor.  This sketch enables you to find and change the address of your sensor.
+Communication with an SDI-12 sensor depends on its one-character alphanumeric
+address (`0`-`9`, `a`-`z`, or `A`-`Z`). This sketch uses the blocking
+`SDI12Recorder` API to find a sensor, print its identification information, and
+change its address with a validated acknowledgement.
 
-First, physically connect your SDI-12 sensor to your device.  Some helpful hits for connecting it can be found here:  https://envirodiy.org/topic/logging-mayfly-with-decagon-sdi-12-sensor/#post-2129.
+First, physically connect your SDI-12 sensor to your device. Some helpful hints are
+available in this [EnviroDIY forum discussion](https://envirodiy.org/topic/logging-mayfly-with-decagon-sdi-12-sensor/#post-2129).
 
 Once your sensor is physically connected to your board, download this library and open this sketch.
 
@@ -11,9 +15,14 @@ You could also define the data pin in your platformio.ini: (`-D SDI12_DATA_PIN=#
 
 Set the pin to provide power to your sensor in line 20 (`#define SDI12_POWER_PIN 22`).  If your sensor is continuously powered, set the power pin to -1.
 
-Upload the sketch to your board.  After the upload finishes, open up the serial port monitor at a baud rate of 57600 (or whatever baud rate you set in line 23).
+Upload the sketch to your board. After the upload finishes, open the serial port
+monitor at 115200 baud, or at the baud rate configured by
+`SDI12_TERMINAL_BAUD`.
 
-In the serial monitor you will see it begin scanning through all possible SDI-12 addresses.  Once it has found an occupied address, it will stop and ask you to enter a new address.  Send your desired address to the serial port.  On the screen you should see "Readdressing Sensor." followed by "Success.  Re-scanning for verification."  The scan will begin again, stopping at your new address.  If you are now happy with the address you've selected, smile and close the serial port monitor.
+The sketch assumes exactly one sensor is attached. It queries that sensor's current
+address and asks you to enter a new address. Send your desired address to the serial
+port. After the sensor acknowledges the change, the sketch queries the bus again to
+verify the new address.
 
 If you are using a Meter Group Hydros 21 CTD sensor, change the channel to 1 in the serial monitor where prompted.
 

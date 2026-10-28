@@ -4,27 +4,12 @@
 *.exe
 *.out
 *.app
+**/__pycache__
 
 # Junk
 *.orig
 *.log
 *.bak
-
-# IDE project files
-.settings
-.pioenvs
-.piolibdeps
-.pio/*
-.clang_complete
-.gcc-flags.json
-platformio.ini
-extra_envs.ini
-lib/readme.txt
-include/readme.txt
-.history
-
-# VSCode
-.vscode
 
 # Filters
 .gitconfig
@@ -36,20 +21,37 @@ filters/*
 *.pem
 *.key
 
+# IDE project files
+.settings
+.history
+.clang_complete
+.gcc-flags.json
+
+# VSCode
+.vscode
+
 # PlatformIO
-pioScripts/*
-variants/*
-boards/*
-tests/*
-lib/*
+.pioenvs
+.piolibdeps
+.pio
+lib
+lib/readme.txt
+include
+include/readme.txt
+pioScripts
+variants
+boards
+tests
+platformio.ini
+extra_envs.ini
 platformio_extra_envs.ini
 pio_common_libdeps.ini
 
 # Arduino CLI
 continuous_integration/arduino_cli_local.yaml
+home/arduino
 
 # Local CI and Build Artifacts
-home/arduino/*
 continuous_integration_artifacts/*
 clang_format_all.bat
 generateKeywords.bat
@@ -58,26 +60,17 @@ clang-format-all.py
 runDoxygen.bat
 compile_commands.json
 buildCI.bat
+*.tar.gz
 
 # Other stuff
-pioScripts
-docs/Doxyfile.bak
 SDI12 Repo Token.txt
-*.tar.gz
-archive/*
+archive
+planning
 src/wakeUp.h
-**/__pycache__/**
 AGENTS.md
 .github/copilot-instructions.md
 .bumpversion.toml
 .clang-tidy
-.github/workflows/LibraryBuild.yml
 datasheets/*
 Datasheets.md
-docs/DoxygenLayout.xml_archive
-/pio_common_libdeps.ini
-src/SDI12_prints.print
-test/test_embedded/test_crc.hpp
-test/test_embedded/test_dtoa.hpp
-test/test_embedded/test_mbed_main.cpp
-test/test_snippet/test_snippet.cpp
+**/*.*_archive

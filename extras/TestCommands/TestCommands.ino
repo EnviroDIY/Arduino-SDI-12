@@ -41,16 +41,14 @@ const int8_t commandsToTest =
 SDI12 mySDI12(dataPin);
 
 /** Define some testing specs */
-const int8_t n_addresses = (lastAddress - firstAddress) + 1;
-
-/** Error codes, if returned */
-int8_t error_result_number = 7;
-float  no_error_value      = 0;
-
+/// The array of commands to test
+String commands[] = {"", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 /// variable that alternates output type back and forth between parsed and raw
 boolean flip = 0;
+/** The number of sensors found on the bus */
+uint8_t numSensors = 0;
 
-String commands[] = {"", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+const int8_t n_addresses = (lastAddress - firstAddress) + 1;
 
 // keeps track of active addresses
 bool isActive[n_addresses];
@@ -70,9 +68,12 @@ uint8_t expectedResults[n_addresses];
 // keeps track of the number of results returned
 uint8_t returnedResults[n_addresses];
 
-String  prev_result[n_addresses];
-String  this_result[n_addresses];
-uint8_t numSensors = 0;
+String prev_result[n_addresses];
+String this_result[n_addresses];
+
+/** Error codes, if returned */
+int8_t error_result_number = 7;
+float  no_error_value      = 0;
 
 struct startMeasurementResult {  // Structure declaration
   String  returned_address;
