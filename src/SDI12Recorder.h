@@ -480,8 +480,17 @@ class SDI12Recorder {
   uint32_t _breakEndTime;     ///< micros() when break ended
 
   // Attempt tracking (retry logic)
-  uint8_t _breakCount;    ///< Number of breaks issued (0-3)
-  uint8_t _attemptCount;  ///< No-break retries in current break sequence (0-3)
+  uint8_t _sequenceCount;  ///< Current retry sequence number (1-3)
+  uint8_t _breakCount;     ///< Number of breaks issued (0-3)
+  uint8_t _attemptCount;   ///< No-break retries in current sequence (0-2)
+
+  // Global bus history used only for first-attempt break selection
+  bool     _busHistoryKnown;      ///< Whether the retained bus history is usable
+  char     _lastAddress;          ///< Sensor addressed by the last bus operation
+  uint32_t _lastBusActivityTime;  ///< micros() when the bus most recently began marking
+  bool     _serviceRequestKnown;  ///< Whether a valid service request is retained
+  char _serviceRequestAddress;    ///< Address returned by the retained service request
+  uint32_t _serviceRequestTime;   ///< micros() when its response ended
 
   // Response collection
   char           _response[SDI12_RECORDER_RESPONSE_BUFFER_SIZE];
@@ -511,6 +520,7 @@ class SDI12Recorder {
   static bool    _isPrintableAscii(char value);
   void           _stripResponseEnvelope();
   bool           _shouldTransmitBreak() const;
+  void           _recordServiceRequest(char address, uint32_t markingStartTime);
   void           _transitionTo(Phase nextPhase);
   void           _setResult(RecorderResult reason);
 

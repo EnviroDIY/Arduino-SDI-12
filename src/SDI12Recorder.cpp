@@ -23,8 +23,15 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
     _phaseStartTime(0),
     _commandStopTime(0),
     _breakEndTime(0),
+    _sequenceCount(0),
     _breakCount(0),
     _attemptCount(0),
+    _busHistoryKnown(false),
+    _lastAddress('\0'),
+    _lastBusActivityTime(0),
+    _serviceRequestKnown(false),
+    _serviceRequestAddress('\0'),
+    _serviceRequestTime(0),
     _responseLength(0),
     _pendingReceiveEvents(SDI12::SDI12_RECEIVE_EVENT_NONE),
     _result(RESULT_NONE),
@@ -325,8 +332,10 @@ void SDI12Recorder::_rejectOperation(RecorderResult reason) {
 void SDI12Recorder::_beginOperation() {
   _startResult        = RESULT_NONE;
   _txnStartTime       = millis();
+  _sequenceCount      = 1;
   _breakCount         = 0;
   _attemptCount       = 0;
+  _breakEndTime       = 0;
   _retryFailureResult = RESULT_NONE;
   _resetAttemptReception();
   _clearOperationOutputs();
@@ -481,8 +490,31 @@ void SDI12Recorder::_stripResponseEnvelope() {
 }
 
 bool SDI12Recorder::_shouldTransmitBreak() const {
-  // Require a break until command and bus context can safely determine otherwise.
+#if defined(SDI12_RECORDER_ALWAYS_BREAK)
   return true;
+#else
+  // The only optimized first-attempt path is D0 immediately following a valid service
+  // request from the same sensor. All other new top-level commands require a break.
+  if (!_busHistoryKnown || !_serviceRequestKnown || _operation != OPERATION_DATA ||
+      _typedCommandLength != 4U || _typedCommand[1] != 'D' || _typedCommand[2] != '0' ||
+      _typedCommand[3] != '!' || _lastAddress != _address ||
+      _serviceRequestAddress != _address) {
+    return true;
+  }
+
+  const uint32_t now = micros();
+  return now - _lastBusActivityTime > SDI12Timing::kBreakRequiredAfterMarkingMicros ||
+    now - _serviceRequestTime > SDI12Timing::kBreakRequiredAfterMarkingMicros;
+#endif
+}
+
+void SDI12Recorder::_recordServiceRequest(char address, uint32_t markingStartTime) {
+  _busHistoryKnown       = true;
+  _lastAddress           = address;
+  _lastBusActivityTime   = markingStartTime;
+  _serviceRequestKnown   = true;
+  _serviceRequestAddress = address;
+  _serviceRequestTime    = markingStartTime;
 }
 
 void SDI12Recorder::_transitionTo(Phase nextPhase) {
@@ -504,15 +536,21 @@ void SDI12Recorder::_setResult(RecorderResult reason) {
 // ============================================================================
 
 void SDI12Recorder::_phase_break() {
-  if (!_shouldTransmitBreak()) {
+  // Retry sequences always begin with a break. Only the first sequence of a new
+  // top-level operation may use the optimized no-break path.
+  if (_sequenceCount == 1U && _breakCount == 0U && !_shouldTransmitBreak()) {
     _transitionTo(PHASE_PRECOMMAND_MARK);
     return;
   }
 
   if (!_phaseStarted) {
     _sdi12.startBreak();
-    _phaseStartTime = micros();
-    _phaseStarted   = true;
+    _phaseStartTime        = micros();
+    _lastBusActivityTime   = _phaseStartTime;
+    _busHistoryKnown       = false;
+    _serviceRequestKnown   = false;
+    _serviceRequestAddress = '\0';
+    _phaseStarted          = true;
     _breakCount++;
   }
 
@@ -535,6 +573,14 @@ void SDI12Recorder::_phase_precommand_mark() {
 }
 
 void SDI12Recorder::_phase_transmitting() {
+  // Re-check immediately before the optimized first transmission. The application may
+  // have delayed calling update() while the pre-command mark was in progress.
+  if (_sequenceCount == 1U && _breakCount == 0U && _attemptCount == 0U &&
+      _shouldTransmitBreak()) {
+    _transitionTo(PHASE_BREAK);
+    return;
+  }
+
   if (_operation == OPERATION_RAW_COMMAND) {
     _sdi12.writeChar(_address, true);
     for (unsigned int i = 0; i < _rawCommand.length(); ++i) {
@@ -547,7 +593,12 @@ void SDI12Recorder::_phase_transmitting() {
     }
   }
   _sdi12.forceListen();
-  _commandStopTime = micros();
+  _commandStopTime       = micros();
+  _busHistoryKnown       = true;
+  _lastAddress           = _address;
+  _lastBusActivityTime   = _commandStopTime;
+  _serviceRequestKnown   = false;
+  _serviceRequestAddress = '\0';
   _transitionTo(PHASE_WAITING_RESPONSE);
 }
 
@@ -601,6 +652,7 @@ void SDI12Recorder::_phase_receiving() {
       return;
     }
     receiveEvents |= _sdi12.takeReceiveEvents();
+    _lastBusActivityTime = micros();
   }
 
   // Check for errors
@@ -683,7 +735,8 @@ void SDI12Recorder::_phase_deciding_retry() {
     }
 
     // Too late in the window, or too many attempts. Need a new break.
-    if (_shouldTransmitBreak() && _breakCount < 3) {
+    if (_sequenceCount < 3U) {
+      _sequenceCount++;
       _attemptCount = 0;
       _resetAttemptReception();
       _transitionTo(PHASE_BREAK);
@@ -705,7 +758,8 @@ void SDI12Recorder::_phase_deciding_retry() {
   }
 
   // Too many attempts without break; need a new break
-  if (_shouldTransmitBreak() && _breakCount < 3) {
+  if (_sequenceCount < 3U) {
+    _sequenceCount++;
     _attemptCount = 0;
     _resetAttemptReception();
     _transitionTo(PHASE_BREAK);
