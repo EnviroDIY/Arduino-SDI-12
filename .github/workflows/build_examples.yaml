@@ -17,7 +17,7 @@ jobs:
     uses: EnviroDIY/workflows/.github/workflows/build_examples.yaml@main
     with:
       # # Comma-separated list of examples to build or "all" for all (default: all)
-      examples_to_build: "examples/a_wild_card,examples/b_address_change,examples/c_check_all_addresses,examples/d_simple_logger,examples/e_continuous_measurement,examples/f_basic_data_request,examples/g_terminal_window,examples/h_SDI-12_slave_implementation,examples/i_SDI-12_interface,examples/k_concurrent_logger,examples/l_verify_crc"
+      examples_to_build: "examples/a_wild_card,examples/b_address_change,examples/c_check_all_addresses,examples/d_simple_logger,examples/e_continuous_measurement,examples/g_terminal_window,examples/h_SDI-12_slave_implementation,examples/i_SDI-12_interface,examples/k_concurrent_logger"
 
       # # Comma-separated list of examples to ignore (mutually exclusive with examples_to_build)
       # examples_to_ignore: "examples/example_to_skip"
@@ -28,7 +28,6 @@ jobs:
       # # Comma-separated list of boards to skip with any compiler (default: empty)
       # # Mutually exclusive with boards_to_build
       # boards_to_ignore: ""
-    secrets: inherit
 
   build_ext_ints:
     name: Build the External Interrupt Example

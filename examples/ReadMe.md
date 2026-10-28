@@ -1,38 +1,36 @@
 # Examples using the SDI-12 Library<!--! {#examples_page} -->
 
-- Example A <!--! @subpage example_a_page -->
+- Example A: Wild Card <!--! @subpage example_a_page -->
   - Gets sensor information from a single attached sensor and prints it to the serial port
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/a_wild_card)
-- Example B <!--! @subpage example_b_page -->
+- Example B: Address Change <!--! @subpage example_b_page -->
   - Allows you to change the address of your SDI-12 Sensor
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/b_address_change)
-- Example C <!--! @subpage example_c_page -->
+- Example C: Check All Addresses <!--! @subpage example_c_page -->
   - Checks all addresses for active sensors, and prints their status to the serial port
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/c_check_all_addresses)
-- Example D <!--! @subpage example_d_page -->
+- Example D: Simple Logger <!--! @subpage example_d_page -->
   - Checks all addresses for active sensors, and logs data for each sensor every minute
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/d_simple_logger)
-- Example E <!--! @subpage example_e_page -->
+- Example E: Continuous Measurement <!--! @subpage example_e_page -->
   - Checks all addresses for active sensors, and requests continuous data output from all of the sensors
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/e_continuous_measurement)
-- Example F <!--! @subpage example_f_page -->
-  - Issues a data request to a single specified sensor
-  - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/f_basic_data_request)
-- Example G <!--! @subpage example_g_page -->
+- Example F: Basic Data Request <!--! @subpage example_f_page -->
+  - This has been deprecated; use the Simple Logger or Continuous Measurement examples instead.
+- Example G: Terminal Window <!--! @subpage example_g_page -->
   - Demonstrates using the Arduino as a command terminal for SDI-12 sensors.
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/g_terminal_window)
-- Example H <!--! @subpage example_h_page -->
+- Example H: SDI-12 Slave Implementation <!--! @subpage example_h_page -->
   - Demonstrates using SDI-12 in slave mode
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/h_SDI-12_slave_implementation)
-- Example I <!--! @subpage example_i_page -->
+- Example I: SDI-12 Interface <!--! @subpage example_i_page -->
   - Shows code for an Arduino-based USB dongle to translate between SDI-12 and a PC
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/i_SDI-12_interface)
-- Example J <!--! @subpage example_j_page -->
+- Example J: External PCInt Library <!--! @subpage example_j_page -->
   - Shows how to use an external PCInt library to call the interrupts for this library.
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/j_external_pcint_library)
-- Example K <!--! @subpage example_k_page -->
+- Example K: Concurrent Logger <!--! @subpage example_k_page -->
   - Shows how to request concurrent measurements
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/k_concurrent_logger)
-- Example L <!--! @subpage example_l_page -->
-  - Shows how to verify the CRC of received data
-  - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/l_verify_crc)
+- Example L: Verify CRC <!--! @subpage example_l_page -->
+  - This has been deprecated; use the Simple Logger or Continuous Measurement examples with CRC options instead.
