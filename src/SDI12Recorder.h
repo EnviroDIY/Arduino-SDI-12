@@ -17,27 +17,9 @@
 
 #include <Arduino.h>
 #include <inttypes.h>
+#include "SDI12Config.h"
 #include "SDI12.h"
 #include "SDI12Protocol.h"
-
-#ifndef SDI12_RECORDER_RESPONSE_BUFFER_SIZE
-/**
- * @brief Storage available for one complete ASCII sensor response.
- *
- * The default holds the maximum 81-character ASCII wire response (address, 75 value
- * characters, three CRC characters, CR, and LF) plus a null terminator. Define this
- * before including SDI12Recorder.h to select a different fixed capacity.
- */
-#define SDI12_RECORDER_RESPONSE_BUFFER_SIZE 82
-#endif
-
-#if SDI12_RECORDER_RESPONSE_BUFFER_SIZE < 2
-#error "SDI12_RECORDER_RESPONSE_BUFFER_SIZE must allow data and a null terminator"
-#endif
-
-#if SDI12_RECORDER_RESPONSE_BUFFER_SIZE > 256
-#error "SDI12_RECORDER_RESPONSE_BUFFER_SIZE supports ASCII responses up to 255 bytes"
-#endif
 
 /**
  * @brief High-level SDI-12 recorder transaction executor.
@@ -96,13 +78,31 @@ class SDI12Recorder {
     /// Response buffer overflowed before response completed
     RESULT_BUFFER_OVERFLOW = 0x06,
     /// Response-specific format validation failed
-    RESULT_INVALID_FORMAT = 0x07,
+    RESULT_MALFORMED_RESPONSE = 0x07,
     /// Response deadline (command-specific max time) was exceeded
     RESULT_RESPONSE_TIMEOUT = 0x08,
     /// Overall transaction deadline was exceeded (retries not attempted)
     RESULT_TRANSACTION_TIMEOUT = 0x09,
     /// Transaction was cancelled by the application
-    RESULT_CANCELLED = 0x0A
+    RESULT_CANCELLED = 0x0A,
+    /// The supplied sensor address is not valid for the requested operation
+    RESULT_INVALID_ADDRESS = 0x0B,
+    /// A command-specific argument is outside its permitted range
+    RESULT_INVALID_COMMAND_ARGUMENT = 0x0C,
+    /// A new operation was rejected because another operation is active
+    RESULT_BUSY = 0x0D,
+    /// No tracking slot is available for a new pending sensor transaction
+    RESULT_CONTEXT_CAPACITY = 0x0E,
+    /// The requested operation requires pending measurement context
+    RESULT_CONTEXT_REQUIRED = 0x0F,
+    /// The caller-provided data buffer cannot hold all advertised values
+    RESULT_DATA_BUFFER_TOO_SMALL = 0x10,
+    /// The sensor reported that its pending measurement was aborted
+    RESULT_MEASUREMENT_ABORTED = 0x11,
+    /// The advertised value count was not received by the end of D9
+    RESULT_INCOMPLETE_DATA = 0x12,
+    /// All protocol-required retry attempts were exhausted
+    RESULT_RETRIES_EXHAUSTED = 0x13
   } RecorderResult;
 
  private:
@@ -132,6 +132,19 @@ class SDI12Recorder {
     PHASE_DECIDING_RETRY = 0x07
   } Phase;
 
+  /** @brief Typed identity of the active recorder operation. */
+  typedef enum Operation : uint8_t {
+    OPERATION_NONE = 0x00,
+    OPERATION_ADDRESS_QUERY,
+    OPERATION_ACKNOWLEDGEMENT,
+    OPERATION_IDENTIFICATION,
+    OPERATION_CHANGE_ADDRESS,
+    OPERATION_MEASUREMENT,
+    OPERATION_CONCURRENT_MEASUREMENT,
+    OPERATION_DATA,
+    OPERATION_RAW_COMMAND
+  } Operation;
+
  public:
   /**
    * @brief Construct a recorder bound to an SDI12 transport instance.
@@ -157,12 +170,11 @@ class SDI12Recorder {
    *                exclamation point. For example, "I" becomes "[address]I!" on the
    *                wire.
    *
-   * @note If a transaction is already in progress, this method will cancel it and
-   *       start a new one.
+   * @note If a transaction is already in progress, the request is rejected with
+   *       RESULT_BUSY and the active transaction continues unchanged.
    * @note Protocol policy such as break selection, response format, CRC validation,
-   *       and deadlines is owned by the recorder. The command-aware implementation
-   *       will infer it from the command and retained sensor context without changing
-   *       this API.
+   *       and deadlines is owned by the recorder. Typed operations will supply their
+   *       identity directly instead of recovering it by parsing this command string.
    */
   void startCommand(char address, const String& command);
 
@@ -206,20 +218,22 @@ class SDI12Recorder {
   /**
    * @brief Retrieve the terminal result of the completed transaction.
    *
-   * @return The result code. Returns RESULT_NONE if the transaction is still in
-   *         progress.
+   * @return The result code. Returns RESULT_BUSY immediately after an operation was
+   *         rejected while another transaction is active. Otherwise returns
+   *         RESULT_NONE while the transaction is in progress.
    *
    * @see RecorderResult
    */
   RecorderResult result() const {
-    return _result;
+    return _startResult == RESULT_NONE ? _result : _startResult;
   }
 
   /**
    * @brief Retrieve a human-readable description of the result.
    *
    * @return A string describing the terminal result (e.g., "SUCCESS", "NO_RESPONSE").
-   *         Returns an empty string if the transaction is still in progress.
+   *         Returns "BUSY" after a rejected start request, or an empty string if the
+   *         transaction is still in progress and no start request was rejected.
    */
   const char* resultDescription() const;
 
@@ -283,11 +297,12 @@ class SDI12Recorder {
 
  private:
   // References and configuration
-  SDI12&   _sdi12;         ///< The SDI12 transport instance
-  char     _address;       ///< Target sensor address
-  String   _command;       ///< Command to send (without address or '!')
-  uint32_t _txnStartTime;  ///< millis() at transaction start
-  uint32_t _txnTimeoutMs;  ///< Overall transaction deadline
+  SDI12&    _sdi12;         ///< The SDI12 transport instance
+  Operation _operation;     ///< Identity supplied directly by the starting API
+  char      _address;       ///< Target sensor address
+  String    _command;       ///< Command to send (without address or '!')
+  uint32_t  _txnStartTime;  ///< millis() at transaction start
+  uint32_t  _txnTimeoutMs;  ///< Overall transaction deadline
 
   /// Conservative transaction guard until command-derived deadlines are implemented.
   static const uint32_t kDefaultTransactionTimeoutMs = 3000U;
@@ -307,6 +322,7 @@ class SDI12Recorder {
   char           _response[SDI12_RECORDER_RESPONSE_BUFFER_SIZE];
   uint8_t        _responseLength;
   RecorderResult _result;
+  RecorderResult _startResult;  ///< Immediate rejection of the latest start request
 
   // Private helper methods
   bool _shouldTransmitBreak() const;

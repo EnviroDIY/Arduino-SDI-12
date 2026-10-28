@@ -12,6 +12,7 @@
 
 SDI12Recorder::SDI12Recorder(SDI12& sdi12)
   : _sdi12(sdi12),
+    _operation(OPERATION_NONE),
     _address('0'),
     _txnStartTime(0),
     _txnTimeoutMs(kDefaultTransactionTimeoutMs),
@@ -23,7 +24,8 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
     _breakCount(0),
     _attemptCount(0),
     _responseLength(0),
-    _result(RESULT_NONE) {
+    _result(RESULT_NONE),
+    _startResult(RESULT_NONE) {
   _response[0] = '\0';
 }
 
@@ -32,6 +34,13 @@ SDI12Recorder::~SDI12Recorder() {
 }
 
 void SDI12Recorder::startCommand(char address, const String& command) {
+  if (isBusy()) {
+    _startResult = RESULT_BUSY;
+    return;
+  }
+
+  _startResult  = RESULT_NONE;
+  _operation    = OPERATION_RAW_COMMAND;
   _address      = address;
   _command      = command;
   _txnStartTime = millis();
@@ -80,7 +89,7 @@ void SDI12Recorder::cancel() {
 }
 
 const char* SDI12Recorder::resultDescription() const {
-  switch (_result) {
+  switch (result()) {
     case RESULT_NONE: return "";
     case RESULT_SUCCESS: return "SUCCESS";
     case RESULT_NO_RESPONSE: return "NO_RESPONSE";
@@ -88,10 +97,19 @@ const char* SDI12Recorder::resultDescription() const {
     case RESULT_WRONG_ADDRESS: return "WRONG_ADDRESS";
     case RESULT_CRC_ERROR: return "CRC_ERROR";
     case RESULT_BUFFER_OVERFLOW: return "BUFFER_OVERFLOW";
-    case RESULT_INVALID_FORMAT: return "INVALID_FORMAT";
+    case RESULT_MALFORMED_RESPONSE: return "MALFORMED_RESPONSE";
     case RESULT_RESPONSE_TIMEOUT: return "RESPONSE_TIMEOUT";
     case RESULT_TRANSACTION_TIMEOUT: return "TRANSACTION_TIMEOUT";
     case RESULT_CANCELLED: return "CANCELLED";
+    case RESULT_INVALID_ADDRESS: return "INVALID_ADDRESS";
+    case RESULT_INVALID_COMMAND_ARGUMENT: return "INVALID_COMMAND_ARGUMENT";
+    case RESULT_BUSY: return "BUSY";
+    case RESULT_CONTEXT_CAPACITY: return "CONTEXT_CAPACITY";
+    case RESULT_CONTEXT_REQUIRED: return "CONTEXT_REQUIRED";
+    case RESULT_DATA_BUFFER_TOO_SMALL: return "DATA_BUFFER_TOO_SMALL";
+    case RESULT_MEASUREMENT_ABORTED: return "MEASUREMENT_ABORTED";
+    case RESULT_INCOMPLETE_DATA: return "INCOMPLETE_DATA";
+    case RESULT_RETRIES_EXHAUSTED: return "RETRIES_EXHAUSTED";
     default: return "UNKNOWN";
   }
 }
@@ -119,6 +137,10 @@ void SDI12Recorder::_transitionTo(Phase nextPhase) {
   _phase          = nextPhase;
   _phaseStarted   = false;
   _phaseStartTime = micros();
+  if (nextPhase == PHASE_IDLE) {
+    _operation   = OPERATION_NONE;
+    _startResult = RESULT_NONE;
+  }
 }
 
 void SDI12Recorder::_setResult(RecorderResult reason) {

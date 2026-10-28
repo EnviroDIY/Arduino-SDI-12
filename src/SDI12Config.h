@@ -96,6 +96,56 @@
 #endif
 
 //==============================================================
+// Recorder configuration
+//==============================================================
+#if !defined(SDI12_RECORDER_CONTEXT_SLOTS) || defined(DOXYGEN)
+/**
+ * @def SDI12_RECORDER_CONTEXT_SLOTS
+ * @brief Maximum number of simultaneous pending sensor transactions retained by an
+ * SDI12Recorder.
+ *
+ * The default is three. Storage is allocated at compile time; no dynamic allocation is
+ * used. Increase this value only when more than three sensors must have pending
+ * measurements at the same time.
+ */
+#define SDI12_RECORDER_CONTEXT_SLOTS 3
+#endif
+
+#if SDI12_RECORDER_CONTEXT_SLOTS < 1
+#error "SDI12_RECORDER_CONTEXT_SLOTS must be at least 1"
+#endif
+
+#if !defined(SDI12_RECORDER_RESPONSE_BUFFER_SIZE) || defined(DOXYGEN)
+/**
+ * @def SDI12_RECORDER_RESPONSE_BUFFER_SIZE
+ * @brief Storage available for one complete ASCII sensor response.
+ *
+ * The default holds the maximum 81-character ASCII wire response (address, 75 value
+ * characters, three CRC characters, CR, and LF) plus a null terminator.
+ */
+#define SDI12_RECORDER_RESPONSE_BUFFER_SIZE 82
+#endif
+
+#if SDI12_RECORDER_RESPONSE_BUFFER_SIZE < 2
+#error "SDI12_RECORDER_RESPONSE_BUFFER_SIZE must allow data and a null terminator"
+#endif
+
+#if SDI12_RECORDER_RESPONSE_BUFFER_SIZE > 256
+#error "SDI12_RECORDER_RESPONSE_BUFFER_SIZE supports ASCII responses up to 255 bytes"
+#endif
+
+/**
+ * @def SDI12_RECORDER_ALWAYS_BREAK
+ * @brief Require a break before the first attempt of every new recorder operation.
+ *
+ * Leave this undefined to let SDI12Recorder omit the initial break only when known bus
+ * history makes that legal. This setting does not change the break and marking rules
+ * applied to retries within an operation.
+ */
+// #define SDI12_RECORDER_ALWAYS_BREAK
+//==============================================================
+
+//==============================================================
 // Define SDI12_TX_DISABLE_INTERRUPTS to disable *all* interrupts while transmitting
 // each character, on a >= 48MHz processor where this library would otherwise leave them
 // enabled.
@@ -192,6 +242,7 @@
 #define SDI12_PCINT3_ONLY
 #define SDI12_TX_DISABLE_INTERRUPTS
 #define SDI12_RX_WINDOW_FUDGE 433
+#define SDI12_RECORDER_ALWAYS_BREAK
 #endif
 
 /**@}*/

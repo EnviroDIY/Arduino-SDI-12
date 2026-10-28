@@ -167,10 +167,10 @@ In the Arduino Command Line Interface ([CLI](https://docs.arduino.cc/arduino-cli
 AVR interrupts can be handed off to an external pin change interrupt managing library by removing the two comment slashes at the start of the line `// #define SDI12_EXTERNAL_PCINT` in the SDI12Config.h header or by compiling with the build flag `-D SDI12_EXTERNAL_PCINT`.
 In your own code call `SDI12::handleInterrupt()` as the interrupt for your SDI12 bus pin using the other interrupt library.
 Example j shows doing this in GreyGnome's [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) library.
-The [ExtInts branch](#sdi12_extints) is has this enabled by default
+The [ExtInts branch](https://github.com/EnviroDIY/Arduino-SDI-12/tree/ExtInts) is has this enabled by default
 
 You can also allow this library to manage the interrupt handling, but restrict the pin change interrupts it can manage to a specific interrupt vector using the configuration options or defining build flags `SDI12_PCINT0_ONLY`, `SDI12_PCINT1_ONLY`, `SDI12_PCINT2_ONLY`, or `SDI12_PCINT3_ONLY`.
-The [PCINT3](#sdi12_pcint3) branch uses only vector 3.
+The [PCINT3](https://github.com/EnviroDIY/Arduino-SDI-12/tree/PCINT3) branch uses only vector 3.
 
 ### Response Buffer Size
 
