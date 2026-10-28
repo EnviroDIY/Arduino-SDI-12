@@ -94,7 +94,9 @@ class SDI12Recorder {
     /// The advertised value count was not received by the end of D9
     RESULT_INCOMPLETE_DATA = 0x12,
     /// All protocol-required retry attempts were exhausted
-    RESULT_RETRIES_EXHAUSTED = 0x13
+    RESULT_RETRIES_EXHAUSTED = 0x13,
+    /// Another recorder break interrupted a normal measurement workflow
+    RESULT_UNEXPECTED_BREAK = 0x14
   } RecorderResult;
 
   /** @brief Parsed response to an SDI-12 identification command. */
@@ -137,7 +139,11 @@ class SDI12Recorder {
     /// Validating response format and content
     PHASE_VALIDATING = 0x06,
     /// Determining whether to retry or terminate
-    PHASE_DECIDING_RETRY = 0x07
+    PHASE_DECIDING_RETRY = 0x07,
+    /// Waiting for a normal measurement service request or its advertised ready time
+    PHASE_WAITING_SERVICE_REQUEST = 0x08,
+    /// Receiving a normal measurement service request
+    PHASE_RECEIVING_SERVICE_REQUEST = 0x09
   } Phase;
 
   /** @brief Typed identity of the active recorder operation. */
@@ -246,6 +252,22 @@ class SDI12Recorder {
   void startChangeAddress(char oldAddress, char newAddress);
 
   /**
+   * @brief Start a non-blocking normal measurement request.
+   *
+   * Sends `aM!`, `aM1!` through `aM9!`, `aMC!`, or `aMC1!` through `aMC9!`.
+   * After validating the acknowledgement, the recorder remains busy until the sensor
+   * sends its service request or the advertised measurement time expires. On success,
+   * the pending data context is retained for a later data request.
+   *
+   * @param address Sensor address from `0`-`9`, `a`-`z`, or `A`-`Z`.
+   * @param measurementNumber Zero for the unnumbered command, or 1 through 9.
+   * @param requestCRC true to request the `MC` command family and require CRC on the
+   *                   later data response.
+   */
+  void startMeasurement(char address, uint8_t measurementNumber = 0U,
+                        bool requestCRC = false);
+
+  /**
    * @brief Begin a new transaction.
    *
    * Initiates a command-response transaction with a sensor. The transaction will
@@ -259,6 +281,8 @@ class SDI12Recorder {
    *
    * @note If a transaction is already in progress, the request is rejected with
    *       RESULT_BUSY and the active transaction continues unchanged.
+   * @note Transmitting a raw command invalidates retained measurement context for
+   *       @p address and does not establish replacement typed context.
    * @note Protocol policy such as break selection, response format, CRC validation,
    *       and deadlines is owned by the recorder. Typed operations will supply their
    *       identity directly instead of recovering it by parsing this command string.
@@ -389,6 +413,26 @@ class SDI12Recorder {
   }
 
   /**
+   * @brief Retrieve the advertised time for the most recent measurement request.
+   *
+   * @return Measurement time in seconds from a validated `atttn` response, or zero
+   *         when unavailable or when the sensor reported immediate readiness.
+   */
+  uint16_t measurementSeconds() const {
+    return _measurementSeconds;
+  }
+
+  /**
+   * @brief Retrieve the advertised value count for the most recent measurement.
+   *
+   * @return Expected number of values from a validated `atttn` response, or zero when
+   *         unavailable.
+   */
+  uint8_t expectedValueCount() const {
+    return _expectedValueCount;
+  }
+
+  /**
    * @brief Retrieve the collected response, if successful.
    *
    * @return The null-terminated response payload. Protocol envelope characters that
@@ -447,6 +491,23 @@ class SDI12Recorder {
   }
 
  private:
+  /** @brief Measurement phase retained for one sensor address. */
+  typedef enum ContextPhase : uint8_t {
+    CONTEXT_PHASE_NONE               = 0x00,
+    CONTEXT_PHASE_CONCURRENT_RUNNING = 0x01,
+    CONTEXT_PHASE_DATA_READY         = 0x02
+  } ContextPhase;
+
+  /** @brief Fixed per-address state retained between typed recorder operations. */
+  struct MeasurementContext {
+    char         address;
+    bool         occupied;
+    ContextPhase phase;
+    bool         crcExpected;
+    uint8_t      expectedValueCount;
+    uint32_t     readyAt;
+  };
+
   // References and configuration
   SDI12&    _sdi12;       ///< The SDI12 transport instance
   Operation _operation;   ///< Identity supplied directly by the starting API
@@ -492,6 +553,17 @@ class SDI12Recorder {
   char _serviceRequestAddress;    ///< Address returned by the retained service request
   uint32_t _serviceRequestTime;   ///< micros() when its response ended
 
+  // Per-address measurement context
+  MeasurementContext _contexts[SDI12_RECORDER_CONTEXT_SLOTS];
+  size_t             _reservedContextSlot;  ///< Slot reserved by the active operation
+  bool _contextInvalidationApplied;  ///< Whether first transmission applied policy
+
+  // Active normal-measurement workflow
+  bool     _measurementRequestsCRC;  ///< CRC policy to commit after readiness
+  uint16_t _measurementSeconds;      ///< Parsed `ttt` acknowledgement field
+  uint8_t  _expectedValueCount;      ///< Parsed `n` acknowledgement field
+  uint32_t _measurementWaitStart;    ///< millis() at acknowledgement completion
+
   // Response collection
   char           _response[SDI12_RECORDER_RESPONSE_BUFFER_SIZE];
   uint8_t        _responseLength;
@@ -506,14 +578,22 @@ class SDI12Recorder {
   Identification _identification;
 
   // Private helper methods
-  bool _rejectIfBusy();
-  void _rejectOperation(RecorderResult reason);
-  void _beginOperation();
-  void _beginTypedOperation(Operation operation, char address, uint8_t commandLength);
-  void _waitForCompletion();
-  void _resetAttemptReception();
-  void _clearOperationOutputs();
-  bool _collectResponseCharacters();
+  bool   _rejectIfBusy();
+  void   _rejectOperation(RecorderResult reason);
+  void   _beginOperation();
+  void   _beginTypedOperation(Operation operation, char address, uint8_t commandLength);
+  void   _waitForCompletion();
+  void   _resetAttemptReception();
+  void   _clearOperationOutputs();
+  size_t _findContext(char address) const;
+  size_t _reserveContext(char address) const;
+  void   _releaseContext(size_t slot);
+  void   _invalidateContext(char address);
+  void   _invalidateRunningContext(char address);
+  void   _invalidateAllContexts();
+  void   _applyContextInvalidationForTransmission();
+  void   _commitReadyMeasurementContext();
+  bool   _collectResponseCharacters();
   RecorderResult _validateResponse();
   RecorderResult _validateExpectedAddress(char expectedAddress) const;
   bool           _hasResponseTerminator() const;
@@ -546,6 +626,10 @@ class SDI12Recorder {
   void _phase_validating();
   /// @brief Handle the deciding retry phase of the transaction.
   void _phase_deciding_retry();
+  /// @brief Wait for a normal measurement service request or advertised ready time.
+  void _phase_waiting_service_request();
+  /// @brief Receive and validate a normal measurement service request.
+  void _phase_receiving_service_request();
 };
 
 #endif  // SRC_SDI12RECORDER_H_
