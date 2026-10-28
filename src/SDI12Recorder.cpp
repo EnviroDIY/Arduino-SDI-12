@@ -14,8 +14,10 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
   : _sdi12(sdi12),
     _operation(OPERATION_NONE),
     _address('0'),
+    _typedCommandLength(0),
     _txnStartTime(0),
     _txnTimeoutMs(kDefaultTransactionTimeoutMs),
+    _responseTimeoutMicros(kDefaultRawResponseTimeoutMicros),
     _phase(PHASE_IDLE),
     _phaseStarted(false),
     _phaseStartTime(0),
@@ -24,39 +26,108 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
     _breakCount(0),
     _attemptCount(0),
     _responseLength(0),
+    _pendingReceiveEvents(SDI12::SDI12_RECEIVE_EVENT_NONE),
     _result(RESULT_NONE),
-    _startResult(RESULT_NONE) {
-  _response[0] = '\0';
+    _retryFailureResult(RESULT_NONE),
+    _startResult(RESULT_NONE),
+    _queriedAddress('\0'),
+    _acknowledgedAddress('\0') {
+  _typedCommand[0] = '\0';
+  _response[0]     = '\0';
+  memset(&_identification, 0, sizeof(_identification));
 }
 
 SDI12Recorder::~SDI12Recorder() {
   if (_sdi12.isActive()) { cancel(); }
 }
 
-void SDI12Recorder::startCommand(char address, const String& command) {
-  if (isBusy()) {
-    _startResult = RESULT_BUSY;
+char SDI12Recorder::queryAddress() {
+  if (_rejectIfBusy()) { return '\0'; }
+  startQueryAddress();
+  _waitForCompletion();
+  return _result == RESULT_SUCCESS ? _queriedAddress : '\0';
+}
+
+bool SDI12Recorder::requestAcknowledgement(char address) {
+  if (_rejectIfBusy()) { return false; }
+  startRequestAcknowledgement(address);
+  _waitForCompletion();
+  return _result == RESULT_SUCCESS;
+}
+
+bool SDI12Recorder::identify(char address, Identification& identification) {
+  if (_rejectIfBusy()) { return false; }
+  startIdentify(address);
+  _waitForCompletion();
+  if (_result != RESULT_SUCCESS) { return false; }
+  identification = _identification;
+  return true;
+}
+
+bool SDI12Recorder::changeAddress(char oldAddress, char newAddress) {
+  if (_rejectIfBusy()) { return false; }
+  startChangeAddress(oldAddress, newAddress);
+  _waitForCompletion();
+  return _result == RESULT_SUCCESS;
+}
+
+void SDI12Recorder::startQueryAddress() {
+  if (_rejectIfBusy()) { return; }
+
+  _typedCommand[0] = '?';
+  _typedCommand[1] = '!';
+  _beginTypedOperation(OPERATION_ADDRESS_QUERY, '?', 2U);
+}
+
+void SDI12Recorder::startRequestAcknowledgement(char address) {
+  if (_rejectIfBusy()) { return; }
+  if (!SDI12Address::isValid(address)) {
+    _rejectOperation(RESULT_INVALID_ADDRESS);
     return;
   }
 
-  _startResult  = RESULT_NONE;
-  _operation    = OPERATION_RAW_COMMAND;
-  _address      = address;
-  _command      = command;
-  _txnStartTime = millis();
-  _txnTimeoutMs = kDefaultTransactionTimeoutMs;
+  _typedCommand[0] = address;
+  _typedCommand[1] = '!';
+  _beginTypedOperation(OPERATION_ACKNOWLEDGEMENT, address, 2U);
+}
 
-  _breakCount   = 0;
-  _attemptCount = 0;
-  clearResponse();
-  _result = RESULT_NONE;
+void SDI12Recorder::startIdentify(char address) {
+  if (_rejectIfBusy()) { return; }
+  if (!SDI12Address::isValid(address)) {
+    _rejectOperation(RESULT_INVALID_ADDRESS);
+    return;
+  }
 
-  // Always start with the break phase; the phase skips the break when policy forbids
-  // it.
-  _transitionTo(PHASE_BREAK);
+  _typedCommand[0] = address;
+  _typedCommand[1] = 'I';
+  _typedCommand[2] = '!';
+  _beginTypedOperation(OPERATION_IDENTIFICATION, address, 3U);
+}
 
-  // Make this recorder the active SDI12 instance
-  if (!_sdi12.isActive()) { _sdi12.setActive(); }
+void SDI12Recorder::startChangeAddress(char oldAddress, char newAddress) {
+  if (_rejectIfBusy()) { return; }
+  if (!SDI12Address::isValid(oldAddress) || !SDI12Address::isValid(newAddress)) {
+    _rejectOperation(RESULT_INVALID_ADDRESS);
+    return;
+  }
+
+  _typedCommand[0] = oldAddress;
+  _typedCommand[1] = 'A';
+  _typedCommand[2] = newAddress;
+  _typedCommand[3] = '!';
+  _beginTypedOperation(OPERATION_CHANGE_ADDRESS, oldAddress, 4U);
+}
+
+void SDI12Recorder::startCommand(char address, const String& command) {
+  if (_rejectIfBusy()) { return; }
+
+  _operation             = OPERATION_RAW_COMMAND;
+  _address               = address;
+  _rawCommand            = command;
+  _typedCommandLength    = 0U;
+  _txnTimeoutMs          = kDefaultTransactionTimeoutMs;
+  _responseTimeoutMicros = kDefaultRawResponseTimeoutMicros;
+  _beginOperation();
 }
 
 void SDI12Recorder::update() {
@@ -114,6 +185,114 @@ const char* SDI12Recorder::resultDescription() const {
   }
 }
 
+void SDI12Recorder::printRecorderResult(Stream& printStream) const {
+  switch (result()) {
+    case RESULT_NONE:
+      printStream.print(F("Transaction is in progress or has not been started"));
+      break;
+    case RESULT_SUCCESS:
+      printStream.print(
+        F("Transaction completed successfully; response is valid and available"));
+      break;
+    case RESULT_NO_RESPONSE:
+      printStream.print(F("No response was received within the maximum allowed time"));
+      break;
+    case RESULT_FRAMING_ERROR:
+      printStream.print(F("Response arrived but had invalid framing or parity"));
+      break;
+    case RESULT_WRONG_ADDRESS:
+      printStream.print(F("Response address does not match the command address"));
+      break;
+    case RESULT_CRC_ERROR:
+      printStream.print(F("CRC validation failed when CRC was requested"));
+      break;
+    case RESULT_BUFFER_OVERFLOW:
+      printStream.print(F("Response buffer overflowed before response completed"));
+      break;
+    case RESULT_MALFORMED_RESPONSE:
+      printStream.print(F("Response-specific format validation failed"));
+      break;
+    case RESULT_RESPONSE_TIMEOUT:
+      printStream.print(F("The command-specific response deadline was exceeded"));
+      break;
+    case RESULT_TRANSACTION_TIMEOUT:
+      printStream.print(F("The overall transaction deadline was exceeded"));
+      break;
+    case RESULT_CANCELLED:
+      printStream.print(F("Transaction was cancelled by the application"));
+      break;
+    case RESULT_INVALID_ADDRESS:
+      printStream.print(F("The supplied sensor address is not valid"));
+      break;
+    case RESULT_INVALID_COMMAND_ARGUMENT:
+      printStream.print(F("A command argument is outside its permitted range"));
+      break;
+    case RESULT_BUSY:
+      printStream.print(F("Another recorder operation is already active"));
+      break;
+    case RESULT_CONTEXT_CAPACITY:
+      printStream.print(F("No tracking slot is available for the sensor transaction"));
+      break;
+    case RESULT_CONTEXT_REQUIRED:
+      printStream.print(F("The operation requires pending measurement context"));
+      break;
+    case RESULT_DATA_BUFFER_TOO_SMALL:
+      printStream.print(F("The data buffer cannot hold all advertised values"));
+      break;
+    case RESULT_MEASUREMENT_ABORTED:
+      printStream.print(F("The sensor reported that its measurement was aborted"));
+      break;
+    case RESULT_INCOMPLETE_DATA:
+      printStream.print(
+        F("The advertised value count was not received by the end of D9"));
+      break;
+    case RESULT_RETRIES_EXHAUSTED:
+      printStream.print(F("All protocol-required retry attempts were exhausted"));
+      break;
+    default: printStream.print(F("Unknown recorder result")); break;
+  }
+}
+
+void SDI12Recorder::printPhase(Stream& printStream) const {
+  switch (_phase) {
+    case PHASE_IDLE: printStream.print(F("No transaction is active")); break;
+    case PHASE_BREAK:
+      printStream.print(F("Transmitting the wake-up break (spacing)"));
+      break;
+    case PHASE_PRECOMMAND_MARK:
+      printStream.print(F("Waiting for the pre-command marking minimum"));
+      break;
+    case PHASE_TRANSMITTING: printStream.print(F("Transmitting the command")); break;
+    case PHASE_WAITING_RESPONSE:
+      printStream.print(F("Waiting for the response start bit"));
+      break;
+    case PHASE_RECEIVING: printStream.print(F("Receiving response characters")); break;
+    case PHASE_VALIDATING:
+      printStream.print(F("Validating response format and content"));
+      break;
+    case PHASE_DECIDING_RETRY:
+      printStream.print(F("Determining whether to retry or terminate"));
+      break;
+    default: printStream.print(F("Unknown recorder phase")); break;
+  }
+}
+
+void SDI12Recorder::printSensorInfo(const Identification& identification,
+                                    Stream&               printStream) {
+  printStream.print(F("Address: "));
+  printStream.print(identification.address);
+  printStream.print(F(", SDI-12 Version: "));
+  printStream.print(identification.sdi12Version);
+  printStream.print(F(", Vendor ID: "));
+  printStream.print(identification.vendorID);
+  printStream.print(F(", Sensor Model: "));
+  printStream.print(identification.sensorModel);
+  printStream.print(F(", Sensor Version: "));
+  printStream.print(identification.sensorVersion);
+  printStream.print(F(", Sensor Info: "));
+  printStream.println(identification.sensorInfo);
+}
+
 size_t SDI12Recorder::copyResponse(char* destination, size_t capacity) const {
   if (destination != nullptr && capacity > 0) {
     const size_t copyLength = _responseLength < capacity - 1 ? _responseLength
@@ -127,6 +306,179 @@ size_t SDI12Recorder::copyResponse(char* destination, size_t capacity) const {
 // ============================================================================
 // Private helper methods
 // ============================================================================
+
+bool SDI12Recorder::_rejectIfBusy() {
+  if (!isBusy()) { return false; }
+  _startResult = RESULT_BUSY;
+  return true;
+}
+
+void SDI12Recorder::_rejectOperation(RecorderResult reason) {
+  _operation          = OPERATION_NONE;
+  _startResult        = RESULT_NONE;
+  _retryFailureResult = RESULT_NONE;
+  clearResponse();
+  _clearOperationOutputs();
+  _result = reason;
+}
+
+void SDI12Recorder::_beginOperation() {
+  _startResult        = RESULT_NONE;
+  _txnStartTime       = millis();
+  _breakCount         = 0;
+  _attemptCount       = 0;
+  _retryFailureResult = RESULT_NONE;
+  _resetAttemptReception();
+  _clearOperationOutputs();
+  _result = RESULT_NONE;
+
+  // Always start with the break phase; the phase skips the break when policy forbids
+  // it.
+  _transitionTo(PHASE_BREAK);
+
+  // Make this recorder the active SDI12 instance.
+  if (!_sdi12.isActive()) { _sdi12.setActive(); }
+}
+
+void SDI12Recorder::_beginTypedOperation(Operation operation, char address,
+                                         uint8_t commandLength) {
+  _operation                         = operation;
+  _address                           = address;
+  _typedCommandLength                = commandLength;
+  _typedCommand[_typedCommandLength] = '\0';
+  _txnTimeoutMs                      = kSimpleTransactionTimeoutMs;
+  _responseTimeoutMicros             = SDI12Timing::kNormalResponseMaxMicros;
+  _beginOperation();
+}
+
+void SDI12Recorder::_waitForCompletion() {
+  while (isBusy()) {
+    update();
+    yield();
+  }
+}
+
+void SDI12Recorder::_resetAttemptReception() {
+  clearResponse();
+  _sdi12.clearBuffer();
+  _sdi12.takeReceiveEvents();
+  _pendingReceiveEvents = SDI12::SDI12_RECEIVE_EVENT_NONE;
+}
+
+void SDI12Recorder::_clearOperationOutputs() {
+  _queriedAddress      = '\0';
+  _acknowledgedAddress = '\0';
+  memset(&_identification, 0, sizeof(_identification));
+}
+
+bool SDI12Recorder::_collectResponseCharacters() {
+  while (_sdi12.available() > 0) {
+    const int received = _sdi12.read();
+    if (received < 0) {
+      _setResult(RESULT_FRAMING_ERROR);
+      return false;
+    }
+
+    if (_responseLength + 1 >= SDI12_RECORDER_RESPONSE_BUFFER_SIZE) {
+      _sdi12.clearBuffer();
+      _setResult(RESULT_BUFFER_OVERFLOW);
+      return false;
+    }
+
+    _response[_responseLength++] = static_cast<char>(received);
+    _response[_responseLength]   = '\0';
+  }
+  return true;
+}
+
+SDI12Recorder::RecorderResult
+SDI12Recorder::_validateExpectedAddress(char expectedAddress) const {
+  if (_responseLength < 1U) { return RESULT_MALFORMED_RESPONSE; }
+  if (_response[0] == expectedAddress) { return RESULT_SUCCESS; }
+  if (SDI12Address::isValid(_response[0])) { return RESULT_WRONG_ADDRESS; }
+  return RESULT_MALFORMED_RESPONSE;
+}
+
+bool SDI12Recorder::_hasResponseTerminator() const {
+  return _responseLength >= 2U && _response[_responseLength - 2U] == '\r' &&
+    _response[_responseLength - 1U] == '\n';
+}
+
+bool SDI12Recorder::_isPrintableAscii(char value) {
+  const uint8_t byteValue = static_cast<uint8_t>(value);
+  return byteValue >= 0x20U && byteValue <= 0x7EU;
+}
+
+SDI12Recorder::RecorderResult SDI12Recorder::_validateResponse() {
+  if (_operation == OPERATION_RAW_COMMAND) {
+    if (_responseLength < 1U || _response[0] != _address) {
+      return RESULT_WRONG_ADDRESS;
+    }
+    return RESULT_SUCCESS;
+  }
+
+  if (_operation == OPERATION_ADDRESS_QUERY) {
+    if (_responseLength != 3U || !_hasResponseTerminator() ||
+        !SDI12Address::isValid(_response[0])) {
+      return RESULT_MALFORMED_RESPONSE;
+    }
+    _queriedAddress = _response[0];
+    return RESULT_SUCCESS;
+  }
+
+  char expectedAddress = _address;
+  if (_operation == OPERATION_CHANGE_ADDRESS) { expectedAddress = _typedCommand[2]; }
+
+  const RecorderResult addressResult = _validateExpectedAddress(expectedAddress);
+  if (addressResult != RESULT_SUCCESS) { return addressResult; }
+
+  if (_operation == OPERATION_ACKNOWLEDGEMENT ||
+      _operation == OPERATION_CHANGE_ADDRESS) {
+    if (_responseLength != 3U || !_hasResponseTerminator()) {
+      return RESULT_MALFORMED_RESPONSE;
+    }
+    _acknowledgedAddress = expectedAddress;
+    return RESULT_SUCCESS;
+  }
+
+  if (_operation == OPERATION_IDENTIFICATION) {
+    // address + 2 version + 8 vendor + 6 model + 3 sensor version + 0-13 info + CR/LF
+    if (_responseLength < 22U || _responseLength > 35U || !_hasResponseTerminator() ||
+        _response[1] < '0' || _response[1] > '9' || _response[2] < '0' ||
+        _response[2] > '9') {
+      return RESULT_MALFORMED_RESPONSE;
+    }
+    for (uint8_t i = 3U; i < _responseLength - 2U; ++i) {
+      if (!_isPrintableAscii(_response[i])) { return RESULT_MALFORMED_RESPONSE; }
+    }
+
+    Identification parsed = {};
+    parsed.address        = expectedAddress;
+    memcpy(parsed.sdi12Version, _response + 1, 2U);
+    memcpy(parsed.vendorID, _response + 3, 8U);
+    memcpy(parsed.sensorModel, _response + 11, 6U);
+    memcpy(parsed.sensorVersion, _response + 17, 3U);
+    const uint8_t informationLength = _responseLength - 22U;
+    memcpy(parsed.sensorInfo, _response + 20, informationLength);
+    _identification = parsed;
+    return RESULT_SUCCESS;
+  }
+
+  return RESULT_MALFORMED_RESPONSE;
+}
+
+void SDI12Recorder::_stripResponseEnvelope() {
+  if (_hasResponseTerminator()) {
+    _responseLength -= 2U;
+    _response[_responseLength] = '\0';
+  }
+
+  if (_responseLength > 0U) {
+    --_responseLength;
+    memmove(_response, _response + 1, _responseLength);
+    _response[_responseLength] = '\0';
+  }
+}
 
 bool SDI12Recorder::_shouldTransmitBreak() const {
   // Require a break until command and bus context can safely determine otherwise.
@@ -183,11 +535,17 @@ void SDI12Recorder::_phase_precommand_mark() {
 }
 
 void SDI12Recorder::_phase_transmitting() {
-  _sdi12.writeChar(_address, true);
-  for (unsigned int i = 0; i < _command.length(); ++i) {
-    _sdi12.writeChar(_command[i], true);
+  if (_operation == OPERATION_RAW_COMMAND) {
+    _sdi12.writeChar(_address, true);
+    for (unsigned int i = 0; i < _rawCommand.length(); ++i) {
+      _sdi12.writeChar(_rawCommand[i], true);
+    }
+    _sdi12.writeChar('!', true);
+  } else {
+    for (uint8_t i = 0U; i < _typedCommandLength; ++i) {
+      _sdi12.writeChar(_typedCommand[i], true);
+    }
   }
-  _sdi12.writeChar('!', true);
   _sdi12.forceListen();
   _commandStopTime = micros();
   _transitionTo(PHASE_WAITING_RESPONSE);
@@ -205,6 +563,8 @@ void SDI12Recorder::_phase_waiting_response() {
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_START_BIT_OBSERVED) {
     // Response has started; begin collecting characters
     clearResponse();
+    _pendingReceiveEvents = receiveEvents &
+      static_cast<uint8_t>(~SDI12::SDI12_RECEIVE_EVENT_START_BIT_OBSERVED);
     _transitionTo(PHASE_RECEIVING);
     return;
   }
@@ -220,27 +580,28 @@ void SDI12Recorder::_phase_waiting_response() {
 }
 
 void SDI12Recorder::_phase_receiving() {
-  // Collect available characters from the transport buffer
-  while (_sdi12.available() > 0) {
-    const int received = _sdi12.read();
-    if (received < 0) {
-      _setResult(RESULT_FRAMING_ERROR);
-      _transitionTo(PHASE_DECIDING_RETRY);
-      return;
-    }
+  uint8_t receiveEvents = _pendingReceiveEvents;
+  _pendingReceiveEvents = SDI12::SDI12_RECEIVE_EVENT_NONE;
 
-    if (_responseLength + 1 >= SDI12_RECORDER_RESPONSE_BUFFER_SIZE) {
-      _sdi12.clearBuffer();
-      _setResult(RESULT_BUFFER_OVERFLOW);
-      _transitionTo(PHASE_DECIDING_RETRY);
-      return;
-    }
-
-    _response[_responseLength++] = static_cast<char>(received);
-    _response[_responseLength]   = '\0';
+  // Consume events before draining so a completion already observed by the ISR has
+  // its corresponding bytes copied before validation.
+  receiveEvents |= _sdi12.takeReceiveEvents();
+  if (!_collectResponseCharacters()) {
+    _transitionTo(PHASE_DECIDING_RETRY);
+    return;
   }
 
-  uint8_t receiveEvents = _sdi12.takeReceiveEvents();
+  // An ISR may complete the response after the first event read but after the buffer
+  // appeared empty. Read the events again, then drain once more when completion was
+  // observed so the terminating CR/LF cannot be left in the transport buffer.
+  receiveEvents |= _sdi12.takeReceiveEvents();
+  if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED) {
+    if (!_collectResponseCharacters()) {
+      _transitionTo(PHASE_DECIDING_RETRY);
+      return;
+    }
+    receiveEvents |= _sdi12.takeReceiveEvents();
+  }
 
   // Check for errors
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_FRAMING_ERROR) {
@@ -261,11 +622,8 @@ void SDI12Recorder::_phase_receiving() {
     return;
   }
 
-  // Check for response timeout (command-specific max time).
-  // For most commands, this is around 1 second. For measurement commands,
-  // it depends on the sensor's advertised measurement time (ttt).
-  uint32_t elapsedMs = millis() - _txnStartTime;
-  if (elapsedMs > 2000) {  // Conservative upper bound
+  // Check for the command-specific response-completion deadline.
+  if (micros() - _commandStopTime > _responseTimeoutMicros) {
     _setResult(RESULT_RESPONSE_TIMEOUT);
     _transitionTo(PHASE_DECIDING_RETRY);
     return;
@@ -273,33 +631,14 @@ void SDI12Recorder::_phase_receiving() {
 }
 
 void SDI12Recorder::_phase_validating() {
-  // Validate the response
-  // 1. Check address matches
-  if (_responseLength < 1 || _response[0] != _address) {
-    _setResult(RESULT_WRONG_ADDRESS);
+  const RecorderResult validationResult = _validateResponse();
+  if (validationResult != RESULT_SUCCESS) {
+    _setResult(validationResult);
     _transitionTo(PHASE_DECIDING_RETRY);
     return;
   }
 
-  // 2. Check format (depends on command type)
-  // For now, just accept any response with valid address
-  // Future: validate specific response formats per command type
-
-  // 3. Check CRC when the command-derived response policy requires one.
-
-  // Strip the response terminator after it has served its framing purpose.
-  if (_responseLength >= 2 && _response[_responseLength - 2] == '\r' &&
-      _response[_responseLength - 1] == '\n') {
-    _responseLength -= 2;
-    _response[_responseLength] = '\0';
-  }
-
-  // Once validated, the address is protocol envelope rather than response payload.
-  // Command-aware CRC validation will similarly remove the three CRC characters before
-  // exposing the payload.
-  _responseLength--;
-  memmove(_response, _response + 1, _responseLength);
-  _response[_responseLength] = '\0';
+  _stripResponseEnvelope();
 
   // Success!
   _setResult(RESULT_SUCCESS);
@@ -313,6 +652,14 @@ void SDI12Recorder::_phase_deciding_retry() {
   // 3. Retry attempt and break sequence counters
 
   uint32_t elapsedMicrosSinceStop = micros() - _commandStopTime;
+
+  // Retain a substantive response failure when later retries receive nothing. This
+  // keeps a malformed, framing, CRC, or overflow result from being hidden by the
+  // final no-response attempt.
+  if (_result != RESULT_NONE && _result != RESULT_NO_RESPONSE &&
+      _retryFailureResult == RESULT_NONE) {
+    _retryFailureResult = _result;
+  }
 
   // For no-response failures, enforce the retry window:
   // - Earliest retry: 16.67 ms after stop bit
@@ -330,7 +677,7 @@ void SDI12Recorder::_phase_deciding_retry() {
     if (elapsedMicrosSinceStop <= RETRY_NO_RESPONSE_MAX_MICROS && _attemptCount < 2) {
       // Yes; increment attempt counter and try again
       _attemptCount++;
-      clearResponse();
+      _resetAttemptReception();
       _transitionTo(PHASE_PRECOMMAND_MARK);
       return;
     }
@@ -338,12 +685,13 @@ void SDI12Recorder::_phase_deciding_retry() {
     // Too late in the window, or too many attempts. Need a new break.
     if (_shouldTransmitBreak() && _breakCount < 3) {
       _attemptCount = 0;
-      clearResponse();
+      _resetAttemptReception();
       _transitionTo(PHASE_BREAK);
       return;
     }
 
     // All retries exhausted
+    if (_retryFailureResult != RESULT_NONE) { _setResult(_retryFailureResult); }
     _transitionTo(PHASE_IDLE);
     return;
   }
@@ -351,7 +699,7 @@ void SDI12Recorder::_phase_deciding_retry() {
   // For other failures (framing, wrong address, etc.), retry without a new break
   if (_attemptCount < 2) {
     _attemptCount++;
-    clearResponse();
+    _resetAttemptReception();
     _transitionTo(PHASE_PRECOMMAND_MARK);
     return;
   }
@@ -359,7 +707,7 @@ void SDI12Recorder::_phase_deciding_retry() {
   // Too many attempts without break; need a new break
   if (_shouldTransmitBreak() && _breakCount < 3) {
     _attemptCount = 0;
-    clearResponse();
+    _resetAttemptReception();
     _transitionTo(PHASE_BREAK);
     return;
   }

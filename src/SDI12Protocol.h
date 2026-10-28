@@ -12,6 +12,44 @@
 #include <stdint.h>
 
 /**
+ * @brief Conversion and validation for the 62 permitted SDI-12 sensor addresses.
+ *
+ * The numeric mapping follows the established library examples: `0` through `9` map
+ * to 0 through 9, `a` through `z` map to 10 through 35, and `A` through `Z` map to 36
+ * through 61. The wildcard `?` is not a sensor address.
+ */
+struct SDI12Address {
+  enum : uint8_t {
+    /** Number of valid SDI-12 sensor addresses. */
+    kAddressCount = 62U
+  };
+
+  /**
+   * @brief Check whether a character is a valid sensor address.
+   *
+   * @param address Character to check.
+   * @return true for `0`-`9`, `a`-`z`, or `A`-`Z`; otherwise false.
+   */
+  static bool isValid(char address);
+
+  /**
+   * @brief Convert a sensor address to its numeric index.
+   *
+   * @param address Valid sensor address character.
+   * @return Address index from 0 through 61, or -1 when @p address is invalid.
+   */
+  static int8_t toIndex(char address);
+
+  /**
+   * @brief Convert a numeric index to its sensor address character.
+   *
+   * @param index Address index from 0 through 61.
+   * @return The corresponding address, or the null character when @p index is invalid.
+   */
+  static char fromIndex(uint8_t index);
+};
+
+/**
  * @brief Normative SDI-12 timing limits in microseconds.
  *
  * These compile-time integral constants have no object storage. The transport,
@@ -41,7 +79,9 @@ struct SDI12Timing {
     /** Marking duration after which a sensor must return to standby. */
     kSensorStandbyMarkingMinMicros = 100000UL,
     /** Marking duration after which the next recorder command requires a break. */
-    kBreakRequiredAfterMarkingMicros = 87000UL
+    kBreakRequiredAfterMarkingMicros = 87000UL,
+    /** Maximum completion time for an ordinary ASCII response. */
+    kNormalResponseMaxMicros = 380000UL
   };
 };
 

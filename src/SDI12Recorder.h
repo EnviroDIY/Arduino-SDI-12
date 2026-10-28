@@ -34,23 +34,15 @@
  *
  * void setup() {
  *   mySDI12.begin(dataPin);
+ *   SDI12Recorder::Identification info;
+ *   if (recorder.identify('0', info)) {
+ *     Serial.println(info.vendorID);
+ *   } else {
+ *     Serial.println(recorder.resultDescription());
+ *   }
  * }
  *
- * void loop() {
- *   if (!recorder.isBusy()) {
- *     recorder.startCommand('0', "I");
- *     // ^^ Query sensor '0' for ID, wait up to 3s
- *   }
- *   recorder.update();  // Advance state machine each loop iteration
- *   if (recorder.isDone()) {
- *     if (recorder.result() == SDI12Recorder::RESULT_SUCCESS) {
- *       Serial.println(recorder.response());
- *     } else {
- *       Serial.print("Error: ");
- *       Serial.println(recorder.resultDescription());
- *     }
- *   }
- * }
+ * void loop() {}
  * @endcode
  */
 class SDI12Recorder {
@@ -104,6 +96,22 @@ class SDI12Recorder {
     /// All protocol-required retry attempts were exhausted
     RESULT_RETRIES_EXHAUSTED = 0x13
   } RecorderResult;
+
+  /** @brief Parsed response to an SDI-12 identification command. */
+  struct Identification {
+    /** Sensor address that returned the identification response. */
+    char address;
+    /** Two-character SDI-12 compatibility version, followed by a null terminator. */
+    char sdi12Version[3];
+    /** Eight-character vendor identification, followed by a null terminator. */
+    char vendorID[9];
+    /** Six-character sensor model, followed by a null terminator. */
+    char sensorModel[7];
+    /** Three-character sensor version, followed by a null terminator. */
+    char sensorVersion[4];
+    /** Optional sensor information of up to 13 characters, null-terminated. */
+    char sensorInfo[14];
+  };
 
  private:
   /**
@@ -159,11 +167,90 @@ class SDI12Recorder {
   ~SDI12Recorder();
 
   /**
+   * @brief Query the address of the only sensor attached to the bus, blocking until
+   * completion.
+   *
+   * Sends `?!` and accepts exactly one valid sensor address followed by CR/LF.
+   *
+   * @return The sensor address, or the null character on failure. Use result() for the
+   *         detailed terminal reason.
+   */
+  char queryAddress();
+
+  /**
+   * @brief Request acknowledgement from one sensor, blocking until completion.
+   *
+   * Sends `a!` and requires the addressed sensor to return exactly `a` followed by
+   * CR/LF.
+   *
+   * @param address Sensor address from `0`-`9`, `a`-`z`, or `A`-`Z`.
+   * @return true only when the correctly addressed acknowledgement is validated.
+   */
+  bool requestAcknowledgement(char address);
+
+  /**
+   * @brief Request and parse identification information, blocking until completion.
+   *
+   * Sends `aI!` and validates the fixed identification fields plus the optional
+   * 0-13 character sensor-information field.
+   *
+   * @param address Sensor address from `0`-`9`, `a`-`z`, or `A`-`Z`.
+   * @param identification Destination updated only after a validated response.
+   * @return true when @p identification was updated; otherwise false.
+   */
+  bool identify(char address, Identification& identification);
+
+  /**
+   * @brief Change a sensor address, blocking until completion.
+   *
+   * Sends `aAb!` and requires the sensor to acknowledge with the new address followed
+   * by CR/LF.
+   *
+   * @param oldAddress Current sensor address.
+   * @param newAddress New sensor address.
+   * @return true only when the new address is acknowledged.
+   */
+  bool changeAddress(char oldAddress, char newAddress);
+
+  /**
+   * @brief Start a non-blocking address query.
+   *
+   * Call update() until isOperationComplete() is true, then read queriedAddress()
+   * after a successful result.
+   */
+  void startQueryAddress();
+
+  /**
+   * @brief Start a non-blocking acknowledgement request.
+   *
+   * @param address Sensor address from `0`-`9`, `a`-`z`, or `A`-`Z`.
+   */
+  void startRequestAcknowledgement(char address);
+
+  /**
+   * @brief Start a non-blocking identification request.
+   *
+   * Call update() until isOperationComplete() is true, then read identification()
+   * after a successful result.
+   *
+   * @param address Sensor address from `0`-`9`, `a`-`z`, or `A`-`Z`.
+   */
+  void startIdentify(char address);
+
+  /**
+   * @brief Start a non-blocking address-change request.
+   *
+   * @param oldAddress Current sensor address.
+   * @param newAddress New sensor address.
+   */
+  void startChangeAddress(char oldAddress, char newAddress);
+
+  /**
    * @brief Begin a new transaction.
    *
    * Initiates a command-response transaction with a sensor. The transaction will
    * proceed asynchronously through wake-up, transmission, response collection,
-   * validation, and retry logic until isDone() returns true.
+   * validation, and retry logic until isOperationComplete() returns true.
    *
    * @param address The SDI-12 address (0-9, a-z, A-Z) of the sensor to query.
    * @param command The command body to transmit, without the address or terminating
@@ -198,20 +285,23 @@ class SDI12Recorder {
   /**
    * @brief Check if a transaction is currently active.
    *
-   * @return true if a transaction has been started with startCommand() and has not
-   * yet completed or been cancelled.
+   * @return true if an operation has been started and has not yet completed or been
+   *         cancelled.
    */
   bool isBusy() const {
     return _phase != PHASE_IDLE;
   }
 
   /**
-   * @brief Check if the current transaction has completed.
+   * @brief Check if the current executor operation has completed.
    *
-   * @return true if the transaction has reached a terminal state (success or
+   * @return true if the active operation has reached a terminal state (success or
    *         failure) and result() may be queried.
+   *
+   * @note This reports executor completion only. Future concurrent-measurement
+   *       readiness is retained and queried separately for each sensor address.
    */
-  bool isDone() const {
+  bool isOperationComplete() const {
     return _result != RESULT_NONE && !isBusy();
   }
 
@@ -236,6 +326,67 @@ class SDI12Recorder {
    *         transaction is still in progress and no start request was rejected.
    */
   const char* resultDescription() const;
+
+  /**
+   * @brief Print a human-readable description of the current recorder result.
+   *
+   * The text describes the same RecorderResult returned by result(). No trailing
+   * newline is printed.
+   *
+   * @param printStream Stream that will receive the description.
+   */
+  void printRecorderResult(Stream& printStream) const;
+
+  /**
+   * @brief Print a human-readable description of the current executor phase.
+   *
+   * No trailing newline is printed.
+   *
+   * @param printStream Stream that will receive the description.
+   */
+  void printPhase(Stream& printStream) const;
+
+  /**
+   * @brief Print parsed sensor identification fields with descriptive labels.
+   *
+   * A trailing newline is printed after the sensor-information field.
+   *
+   * @param identification Parsed identification information to print.
+   * @param printStream Stream that will receive the identification information.
+   */
+  static void printSensorInfo(const Identification& identification,
+                              Stream&               printStream);
+
+  /**
+   * @brief Retrieve the address returned by a successful address query.
+   *
+   * @return The queried sensor address, or the null character when no successful
+   *         address query is available.
+   */
+  char queriedAddress() const {
+    return _queriedAddress;
+  }
+
+  /**
+   * @brief Retrieve the address returned by a successful acknowledgement.
+   *
+   * This accessor applies to requestAcknowledgement() and changeAddress().
+   *
+   * @return The acknowledged address, or the null character when unavailable.
+   */
+  char acknowledgedAddress() const {
+    return _acknowledgedAddress;
+  }
+
+  /**
+   * @brief Retrieve the most recently parsed identification fields.
+   *
+   * @return Recorder-owned identification storage. Its fields are empty unless the
+   *         most recent identification operation completed successfully.
+   */
+  const Identification& identification() const {
+    return _identification;
+  }
 
   /**
    * @brief Retrieve the collected response, if successful.
@@ -297,15 +448,29 @@ class SDI12Recorder {
 
  private:
   // References and configuration
-  SDI12&    _sdi12;         ///< The SDI12 transport instance
-  Operation _operation;     ///< Identity supplied directly by the starting API
-  char      _address;       ///< Target sensor address
-  String    _command;       ///< Command to send (without address or '!')
-  uint32_t  _txnStartTime;  ///< millis() at transaction start
-  uint32_t  _txnTimeoutMs;  ///< Overall transaction deadline
+  SDI12&    _sdi12;       ///< The SDI12 transport instance
+  Operation _operation;   ///< Identity supplied directly by the starting API
+  char      _address;     ///< Target sensor address
+  String    _rawCommand;  ///< Raw command body (without address or '!')
+
+  enum : uint8_t {
+    /** Storage for the longest command in the typed Phase 6 scope, including null. */
+    kTypedCommandBufferSize = 6U
+  };
+
+  char    _typedCommand[kTypedCommandBufferSize];  ///< Complete typed wire command
+  uint8_t _typedCommandLength;                     ///< Typed command bytes before null
+
+  uint32_t _txnStartTime;           ///< millis() at transaction start
+  uint32_t _txnTimeoutMs;           ///< Overall transaction deadline
+  uint32_t _responseTimeoutMicros;  ///< Current response-completion deadline
 
   /// Conservative transaction guard until command-derived deadlines are implemented.
   static const uint32_t kDefaultTransactionTimeoutMs = 3000U;
+  /// Deadline that permits all retries of an ordinary typed response.
+  static const uint32_t kSimpleTransactionTimeoutMs = 5000U;
+  /// Conservative response deadline for the transitional raw command API.
+  static const uint32_t kDefaultRawResponseTimeoutMicros = 2000000UL;
 
   // Current phase and phase timings
   Phase    _phase;
@@ -321,13 +486,33 @@ class SDI12Recorder {
   // Response collection
   char           _response[SDI12_RECORDER_RESPONSE_BUFFER_SIZE];
   uint8_t        _responseLength;
+  uint8_t        _pendingReceiveEvents;
   RecorderResult _result;
+  RecorderResult _retryFailureResult;  ///< First non-NO_RESPONSE retry failure
   RecorderResult _startResult;  ///< Immediate rejection of the latest start request
 
+  // Recorder-owned parsed outputs
+  char           _queriedAddress;
+  char           _acknowledgedAddress;
+  Identification _identification;
+
   // Private helper methods
-  bool _shouldTransmitBreak() const;
-  void _transitionTo(Phase nextPhase);
-  void _setResult(RecorderResult reason);
+  bool _rejectIfBusy();
+  void _rejectOperation(RecorderResult reason);
+  void _beginOperation();
+  void _beginTypedOperation(Operation operation, char address, uint8_t commandLength);
+  void _waitForCompletion();
+  void _resetAttemptReception();
+  void _clearOperationOutputs();
+  bool _collectResponseCharacters();
+  RecorderResult _validateResponse();
+  RecorderResult _validateExpectedAddress(char expectedAddress) const;
+  bool           _hasResponseTerminator() const;
+  static bool    _isPrintableAscii(char value);
+  void           _stripResponseEnvelope();
+  bool           _shouldTransmitBreak() const;
+  void           _transitionTo(Phase nextPhase);
+  void           _setResult(RecorderResult reason);
 
   // Phase implementations
 
