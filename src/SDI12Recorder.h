@@ -115,6 +115,16 @@ class SDI12Recorder {
     char sensorInfo[14];
   };
 
+  /** @brief Retained measurement state for one sensor address. */
+  typedef enum MeasurementState : uint8_t {
+    /// No pending measurement context is retained for the address
+    MEASUREMENT_NONE = 0x00,
+    /// A concurrent measurement is still within its advertised measurement time
+    MEASUREMENT_RUNNING = 0x01,
+    /// Measurement data are ready to retrieve
+    MEASUREMENT_READY = 0x02
+  } MeasurementState;
+
  private:
   /**
    * @brief Internal phase of the transaction executor.
@@ -268,6 +278,42 @@ class SDI12Recorder {
                         bool requestCRC = false);
 
   /**
+   * @brief Start a non-blocking concurrent measurement request.
+   *
+   * Sends `aC!`, `aC1!` through `aC9!`, `aCC!`, or `aCC1!` through `aCC9!`.
+   * The executor operation completes after a valid `atttnn` acknowledgement while
+   * the per-address measurement context remains running or ready independently.
+   *
+   * @param address Sensor address from `0`-`9`, `a`-`z`, or `A`-`Z`.
+   * @param measurementNumber Zero for the unnumbered command, or 1 through 9.
+   * @param requestCRC true to request the `CC` command family and require CRC on the
+   *                   later data response.
+   */
+  void startConcurrentMeasurement(char address, uint8_t measurementNumber = 0U,
+                                  bool requestCRC = false);
+
+  /**
+   * @brief Retrieve the retained measurement state for one sensor address.
+   *
+   * Concurrent readiness is evaluated with rollover-safe elapsed-time arithmetic.
+   * This query does not start a bus operation or change executor completion state.
+   *
+   * @param address Sensor address to query.
+   * @return No context, concurrent measurement running, or data ready.
+   */
+  MeasurementState measurementState(char address) const;
+
+  /**
+   * @brief Check whether retained measurement data are ready for one sensor.
+   *
+   * @param address Sensor address to query.
+   * @return true when measurementState() is MEASUREMENT_READY.
+   */
+  bool isMeasurementReady(char address) const {
+    return measurementState(address) == MEASUREMENT_READY;
+  }
+
+  /**
    * @brief Begin a new transaction.
    *
    * Initiates a command-response transaction with a sensor. The transaction will
@@ -322,8 +368,8 @@ class SDI12Recorder {
    * @return true if the active operation has reached a terminal state (success or
    *         failure) and result() may be queried.
    *
-   * @note This reports executor completion only. Future concurrent-measurement
-   *       readiness is retained and queried separately for each sensor address.
+   * @note This reports executor completion only. Concurrent-measurement readiness is
+   *       retained and queried separately for each sensor address.
    */
   bool isOperationComplete() const {
     return _result != RESULT_NONE && !isBusy();
@@ -415,8 +461,9 @@ class SDI12Recorder {
   /**
    * @brief Retrieve the advertised time for the most recent measurement request.
    *
-   * @return Measurement time in seconds from a validated `atttn` response, or zero
-   *         when unavailable or when the sensor reported immediate readiness.
+   * @return Measurement time in seconds from a validated `atttn` or `atttnn`
+   *         response, or zero when unavailable or when the sensor reported immediate
+   *         readiness.
    */
   uint16_t measurementSeconds() const {
     return _measurementSeconds;
@@ -558,7 +605,7 @@ class SDI12Recorder {
   size_t             _reservedContextSlot;  ///< Slot reserved by the active operation
   bool _contextInvalidationApplied;  ///< Whether first transmission applied policy
 
-  // Active normal-measurement workflow
+  // Active measurement workflow
   bool     _measurementRequestsCRC;  ///< CRC policy to commit after readiness
   uint16_t _measurementSeconds;      ///< Parsed `ttt` acknowledgement field
   uint8_t  _expectedValueCount;      ///< Parsed `n` acknowledgement field
@@ -593,7 +640,9 @@ class SDI12Recorder {
   void   _invalidateAllContexts();
   void   _applyContextInvalidationForTransmission();
   void   _commitReadyMeasurementContext();
-  bool   _collectResponseCharacters();
+  void   _commitConcurrentMeasurementContext();
+  static bool    _readyAtReached(uint32_t readyAt);
+  bool           _collectResponseCharacters();
   RecorderResult _validateResponse();
   RecorderResult _validateExpectedAddress(char expectedAddress) const;
   bool           _hasResponseTerminator() const;
