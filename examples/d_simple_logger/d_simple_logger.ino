@@ -23,7 +23,12 @@
  * To address a sensor, please see Example B: b_address_change.ino
  */
 
+#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
+#include <EnableInterrupt.h>
+#endif
+
 #include <SDI12.h>
+#include <SDI12Protocol.h>
 #include <SDI12Recorder.h>
 
 #ifndef SDI12_DATA_PIN
@@ -40,7 +45,7 @@
 uint32_t serialBaud   = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
 int8_t   dataPin      = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin     = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
-uint32_t wake_delay   = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
+bool     useCRC       = false;               /*!< Whether to use CRC checking */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
 int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
 
@@ -67,7 +72,7 @@ bool printInfo(char address) {
 
 bool takeMeasurement(char i, uint8_t measurementNumber = 0U) {
   float  values[9];
-  size_t valueCount = mySDI12Recorder.measure(i, values, 9U, measurementNumber, false);
+  size_t valueCount = mySDI12Recorder.measure(i, values, 9U, measurementNumber, useCRC);
   if (mySDI12Recorder.result() != SDI12Recorder::RESULT_SUCCESS) {
     mySDI12Recorder.printRecorderResult(Serial);
     return false;
@@ -109,6 +114,12 @@ void setup() {
     Serial.println("Wait 5s...");
     delay(5000L);
   }
+
+#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
+  // Enable interrupts for the receive pin
+  pinMode(dataPin, INPUT_PULLUP);
+  enableInterrupt(dataPin, SDI12::handleInterrupt, CHANGE);
+#endif
 
   // Quickly scan the address space
   Serial.println("\n\nScanning all addresses, please wait...");

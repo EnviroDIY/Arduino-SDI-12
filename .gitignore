@@ -42,10 +42,10 @@ pioScripts
 variants
 boards
 tests
-platformio.ini
-extra_envs.ini
-platformio_extra_envs.ini
-pio_common_libdeps.ini
+/platformio.ini
+/extra_envs.ini
+/platformio_extra_envs.ini
+/pio_common_libdeps.ini
 
 # Arduino CLI
 continuous_integration/arduino_cli_local.yaml

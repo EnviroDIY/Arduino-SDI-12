@@ -401,7 +401,7 @@ pin */
      * @brief a bit mask for building a received character
      *
      * The mask has a single bit set, in the place of the active bit based on the
-     * #bitCount.
+     * #SDI12::CharacterDecoderState::bitCount.
      *
      * @remark Previously labeled rxMask
      */

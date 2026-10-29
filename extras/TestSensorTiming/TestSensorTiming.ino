@@ -6,6 +6,10 @@
  * @date March 2024
  */
 
+#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
+#include <EnableInterrupt.h>
+#endif
+
 #include <SDI12.h>
 
 #ifndef SDI12_DATA_PIN
@@ -587,6 +591,12 @@ void setup() {
     Serial.println("Wait 5s...");
     delay(5000L);
   }
+
+#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
+  // Enable interrupts for the receive pin
+  pinMode(dataPin, INPUT_PULLUP);
+  enableInterrupt(dataPin, SDI12::handleInterrupt, CHANGE);
+#endif
 }
 
 void loop() {
