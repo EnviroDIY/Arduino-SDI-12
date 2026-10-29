@@ -299,38 +299,42 @@ class SDI12Recorder {
    * @brief Request one continuous measurement and retrieve its values, blocking
    * until completion.
    *
-   * Sends `aR0!` through `aR9!`. Each data option is an independent measurement;
-   * options do not need to be requested in sequence. An address-only response is a
-   * successful zero-value result indicating that the sensor cannot provide the
-   * requested continuous measurement.
+   * Sends `aR0!` through `aR9!` or `aRC0!` through `aRC9!`. Each data option is an
+   * independent measurement; options do not need to be requested in sequence. An
+   * address-only response is a successful zero-value result indicating that the sensor
+   * cannot provide the requested continuous measurement.
    *
    * @param address Sensor address from `0`-`9`, `a`-`z`, or `A`-`Z`.
    * @param values Caller-owned destination for parsed values. May be null only when
    *               @p capacity is zero.
    * @param capacity Number of float elements available in @p values.
    * @param dataOption Continuous measurement data option from 0 through 9.
+   * @param requestCRC true to use the `RC` command family and validate the response
+   * CRC.
    * @return Number of values written on success, or zero on failure or a valid
    *         zero-value response. Use result() to distinguish those outcomes.
    */
   size_t requestContinuousData(char address, float* values, size_t capacity,
-                               uint8_t dataOption = 0U);
+                               uint8_t dataOption, bool requestCRC);
 
   /**
    * @brief Start a non-blocking continuous measurement data request.
    *
-   * Sends `aR0!` through `aR9!` and strictly validates the immediate data response.
-   * Call update() until isOperationComplete() is true. The caller-owned buffer must
-   * remain valid and must not be modified until the operation completes or is
-   * cancelled.
+   * Sends `aR0!` through `aR9!` or `aRC0!` through `aRC9!` and strictly validates the
+   * immediate data response. Call update() until isOperationComplete() is true. The
+   * caller-owned buffer must remain valid and must not be modified until the operation
+   * completes or is cancelled.
    *
    * @param address Sensor address from `0`-`9`, `a`-`z`, or `A`-`Z`.
    * @param values Caller-owned destination for parsed values. May be null only when
    *               @p capacity is zero.
    * @param capacity Number of float elements available in @p values.
    * @param dataOption Continuous measurement data option from 0 through 9.
+   * @param requestCRC true to use the `RC` command family and validate the response
+   * CRC.
    */
   void startRequestContinuousData(char address, float* values, size_t capacity,
-                                  uint8_t dataOption = 0U);
+                                  uint8_t dataOption, bool requestCRC);
 
   /**
    * @brief Retrieve all values from a retained measurement context.

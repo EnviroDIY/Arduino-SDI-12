@@ -204,16 +204,18 @@ void SDI12Recorder::startConcurrentMeasurement(char address, uint8_t measurement
 }
 
 size_t SDI12Recorder::requestContinuousData(char address, float* values,
-                                            size_t capacity, uint8_t dataOption) {
+                                            size_t capacity, uint8_t dataOption,
+                                            bool requestCRC) {
   if (_rejectIfBusy()) { return 0U; }
 
-  startRequestContinuousData(address, values, capacity, dataOption);
+  startRequestContinuousData(address, values, capacity, dataOption, requestCRC);
   _waitForCompletion();
   return _result == RESULT_SUCCESS ? _dataValueCount : 0U;
 }
 
 void SDI12Recorder::startRequestContinuousData(char address, float* values,
-                                               size_t capacity, uint8_t dataOption) {
+                                               size_t capacity, uint8_t dataOption,
+                                               bool requestCRC) {
   if (_rejectIfBusy()) { return; }
   if (!SDI12Address::isValid(address)) {
     _rejectOperation(RESULT_INVALID_ADDRESS);
@@ -224,11 +226,13 @@ void SDI12Recorder::startRequestContinuousData(char address, float* values,
     return;
   }
 
-  _typedCommand[0] = address;
-  _typedCommand[1] = 'R';
-  _typedCommand[2] = static_cast<char>('0' + dataOption);
-  _typedCommand[3] = '!';
-  _beginTypedOperation(OPERATION_CONTINUOUS_DATA, address, 4U);
+  uint8_t commandLength          = 0U;
+  _typedCommand[commandLength++] = address;
+  _typedCommand[commandLength++] = 'R';
+  if (requestCRC) { _typedCommand[commandLength++] = 'C'; }
+  _typedCommand[commandLength++] = static_cast<char>('0' + dataOption);
+  _typedCommand[commandLength++] = '!';
+  _beginTypedOperation(OPERATION_CONTINUOUS_DATA, address, commandLength);
 
   _dataValues            = values;
   _dataCapacity          = capacity;
@@ -236,7 +240,7 @@ void SDI12Recorder::startRequestContinuousData(char address, float* values,
   _dataCommandNumber     = dataOption;
   _dataValueCount        = 0U;
   _dataExpectedCount     = 0U;
-  _dataCRCExpected       = false;
+  _dataCRCExpected       = requestCRC;
   _txnTimeoutMs          = kDataTransactionTimeoutMs;
   _responseTimeoutMicros = kDataResponseTimeoutMicros;
 }

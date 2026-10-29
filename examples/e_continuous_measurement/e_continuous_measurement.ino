@@ -35,6 +35,7 @@
 uint32_t serialBaud   = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
 int8_t   dataPin      = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin     = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
+bool     useCRC       = false;               /*!< Whether to use CRC checking */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
 int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
 
@@ -66,7 +67,7 @@ bool printInfo(char address) {
 bool getContinuousResults(char address, uint8_t dataOption = 0U) {
   const size_t resultsReceived = mySDI12Recorder.requestContinuousData(
     address, continuousResults,
-    sizeof(continuousResults) / sizeof(continuousResults[0]), dataOption);
+    sizeof(continuousResults) / sizeof(continuousResults[0]), dataOption, useCRC);
   if (mySDI12Recorder.result() != SDI12Recorder::RESULT_SUCCESS) {
     mySDI12Recorder.printRecorderResult(Serial);
     return false;
