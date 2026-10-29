@@ -348,6 +348,7 @@ void SDI12Recorder::update() {
     case PHASE_TRANSMITTING: _phase_transmitting(); break;
     case PHASE_WAITING_RESPONSE: _phase_waiting_response(); break;
     case PHASE_RECEIVING: _phase_receiving(); break;
+    case PHASE_DRAINING_RESPONSE: _phase_draining_response(); break;
     case PHASE_VALIDATING: _phase_validating(); break;
     case PHASE_DECIDING_RETRY: _phase_deciding_retry(); break;
     case PHASE_WAITING_SERVICE_REQUEST: _phase_waiting_service_request(); break;
@@ -473,6 +474,9 @@ void SDI12Recorder::printPhase(Stream& printStream) const {
       printStream.print(F("Waiting for the response start bit"));
       break;
     case PHASE_RECEIVING: printStream.print(F("Receiving response characters")); break;
+    case PHASE_DRAINING_RESPONSE:
+      printStream.print(F("Discarding the invalid response before retrying"));
+      break;
     case PHASE_VALIDATING:
       printStream.print(F("Validating response format and content"));
       break;
@@ -1081,8 +1085,13 @@ void SDI12Recorder::_phase_waiting_response() {
     return;
   }
 
-  // Maximum time to wait for response start (16.67 ms per Appendix B)
-  const uint32_t RESPONSE_START_MAX_MICROS = 16670 + 400;  // +tolerance
+  // Maximum time to wait for response start (16.67 ms per Appendix B). Some field
+  // sensors incorrectly perform a new measurement after an R/RC command and delay
+  // their response for hundreds of milliseconds. For continuous data only, keep
+  // listening until the existing response deadline so a retry cannot collide with
+  // that late response. All response validation remains unchanged.
+  const uint32_t RESPONSE_START_MAX_MICROS =
+    _operation == OPERATION_CONTINUOUS_DATA ? _responseTimeoutMicros : 16670UL + 400UL;
 
   if (elapsedMicros > RESPONSE_START_MAX_MICROS) {
     // No response received in time
@@ -1099,7 +1108,10 @@ void SDI12Recorder::_phase_receiving() {
   // its corresponding bytes copied before validation.
   receiveEvents |= _sdi12.takeReceiveEvents();
   if (!_collectResponseCharacters()) {
-    _transitionTo(PHASE_DECIDING_RETRY);
+    // An invalid response must finish before the recorder retries. Preserve any
+    // completion event already observed and discard the remaining response bytes.
+    _pendingReceiveEvents = receiveEvents | _sdi12.takeReceiveEvents();
+    _transitionTo(PHASE_DRAINING_RESPONSE);
     return;
   }
 
@@ -1119,13 +1131,15 @@ void SDI12Recorder::_phase_receiving() {
   // Check for errors
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_FRAMING_ERROR) {
     _setResult(RESULT_FRAMING_ERROR);
-    _transitionTo(PHASE_DECIDING_RETRY);
+    _pendingReceiveEvents = receiveEvents;
+    _transitionTo(PHASE_DRAINING_RESPONSE);
     return;
   }
 
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW) {
     _setResult(RESULT_BUFFER_OVERFLOW);
-    _transitionTo(PHASE_DECIDING_RETRY);
+    _pendingReceiveEvents = receiveEvents;
+    _transitionTo(PHASE_DRAINING_RESPONSE);
     return;
   }
 
@@ -1140,6 +1154,35 @@ void SDI12Recorder::_phase_receiving() {
     _setResult(RESULT_RESPONSE_TIMEOUT);
     _transitionTo(PHASE_DECIDING_RETRY);
     return;
+  }
+}
+
+void SDI12Recorder::_phase_draining_response() {
+  uint8_t receiveEvents = _pendingReceiveEvents;
+  _pendingReceiveEvents = SDI12::SDI12_RECEIVE_EVENT_NONE;
+  receiveEvents |= _sdi12.takeReceiveEvents();
+
+  // The response is already invalid, so consume bytes without checking parity or
+  // retaining their contents. This keeps the transport buffer available until the
+  // sensor finishes transmitting CR/LF.
+  int available = _sdi12.available();
+  while (available > 0) {
+    _sdi12.readBinary();
+    available = _sdi12.available();
+  }
+  if (available < 0) { _sdi12.clearBuffer(); }
+
+  receiveEvents |= _sdi12.takeReceiveEvents();
+  if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED) {
+    _lastBusActivityTime = micros();
+    _transitionTo(PHASE_DECIDING_RETRY);
+    return;
+  }
+
+  // A malformed sensor may never terminate its response. Bound the drain with the
+  // same command-specific response deadline used for otherwise incomplete responses.
+  if (micros() - _commandStopTime > _responseTimeoutMicros) {
+    _transitionTo(PHASE_DECIDING_RETRY);
   }
 }
 

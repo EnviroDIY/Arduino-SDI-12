@@ -155,7 +155,9 @@ class SDI12Recorder {
     /// Receiving a normal measurement service request
     PHASE_RECEIVING_SERVICE_REQUEST = 0x09,
     /// Waiting for a concurrent measurement's advertised ready time
-    PHASE_WAITING_DATA_READY = 0x0A
+    PHASE_WAITING_DATA_READY = 0x0A,
+    /// Discarding the remainder of an invalid response before retrying
+    PHASE_DRAINING_RESPONSE = 0x0B
   } Phase;
 
   /** @brief Typed identity of the active recorder operation. */
@@ -780,6 +782,8 @@ class SDI12Recorder {
   void _phase_waiting_response();
   /// @brief Handle the receiving phase of the transaction.
   void _phase_receiving();
+  /// @brief Discard the remainder of an invalid response before retrying.
+  void _phase_draining_response();
   /// @brief Handle the validating phase of the transaction.
   void _phase_validating();
   /// @brief Handle the deciding retry phase of the transaction.
@@ -793,3 +797,5 @@ class SDI12Recorder {
 };
 
 #endif  // SRC_SDI12RECORDER_H_
+
+// cSpell:ignore atttnn atttn
