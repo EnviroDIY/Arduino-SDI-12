@@ -9,8 +9,8 @@
  *
  * This is a simple demonstration of the SDI-12 library for Arduino.
  *
- * It requests information about the attached sensor, including its address and
- * manufacturer info.
+ * It uses the wildcard query to find exactly one attached sensor and prints its
+ * identification information.
  */
 
 #if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
@@ -74,6 +74,9 @@ void loop() {
     if (mySDI12Recorder.identify(address, sensorInfo)) {
       mySDI12Recorder.printSensorInfo(sensorInfo, Serial);
     } else {
+      Serial.print("Identification failed for address ");
+      Serial.print(address);
+      Serial.print(": ");
       mySDI12Recorder.printRecorderResult(Serial);
       Serial.println();
     }

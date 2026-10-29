@@ -4,6 +4,11 @@
  * @license This example is published under the BSD-3 license.
  * @author Sara Damiano <sdamiano@stroudcenter.org>
  * @date March 2021
+ *
+ * @brief Tests a sensor's power-on warm-up time.
+ *
+ * This sketch increases the delay after sensor power-up until the sensor acknowledges
+ * its address and returns valid identification information.
  */
 
 #if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))

@@ -6,11 +6,11 @@
  *
  * @brief Example K:  Concurrent Measurements
  *
- * This is very similar to example B - finding all attached sensors and logging data
- * from them. Unlike example B, however, which waits for each sensor to complete a
- * measurement, this asks all sensors to take measurements concurrently and then waits
- * until each is finished to query for results. This can be much faster than waiting for
- * each sensor when you have multiple sensor attached.
+ * This is very similar to example D - finding all attached sensors and logging data
+ * from them. Unlike example D, however, which waits for each sensor to complete a
+ * measurement, this starts concurrent measurements on as many sensors as the recorder
+ * can track and queries each one when it is ready. This can be much faster than waiting
+ * for each sensor when you have multiple sensors attached.
  */
 
 #if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
@@ -30,18 +30,14 @@
 #ifndef SDI12_TERMINAL_BAUD
 #define SDI12_TERMINAL_BAUD 115200
 #endif
-#ifndef SDI12_PRINT_IO
-#define SDI12_PRINT_IO false
-#endif
 
 /* connection information */
 uint32_t serialBaud   = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
 int8_t   dataPin      = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin     = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
-bool     useCRC       = false;               /*!< Whether to use CRC checking */
-bool     printIO      = SDI12_PRINT_IO;
+bool     useCRC       = false;                /*!< Whether to use CRC checking */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
-int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
+int8_t   lastAddress  = 61; /* The last address in the address space to check (61='z') */
 
 /** Define the SDI-12 bus */
 SDI12         mySDI12(dataPin);
@@ -73,6 +69,9 @@ bool printInfo(char address) {
     mySDI12Recorder.printSensorInfo(sensorInfo, Serial);
     return true;
   } else {
+    Serial.print("Identification failed for address ");
+    Serial.print(address);
+    Serial.print(": ");
     mySDI12Recorder.printRecorderResult(Serial);
     Serial.println();
   }
@@ -89,10 +88,8 @@ bool getResults(char address, int resultsExpected) {
     yield();
   }
   if (mySDI12Recorder.result() != SDI12Recorder::RESULT_SUCCESS) {
-    if (printIO) {
-      mySDI12Recorder.printRecorderResult(Serial);
-      Serial.println();
-    }
+    mySDI12Recorder.printRecorderResult(Serial);
+    Serial.println();
     return false;
   }
 
@@ -111,10 +108,11 @@ int startConcurrentMeasurement(char i, uint8_t measurementNumber = 0U) {
     yield();
   }
   if (mySDI12Recorder.result() != SDI12Recorder::RESULT_SUCCESS) {
-    if (printIO) {
-      mySDI12Recorder.printRecorderResult(Serial);
-      Serial.println();
-    }
+    Serial.print(F("Could not start concurrent measurement for address "));
+    Serial.print(i);
+    Serial.print(F(": "));
+    mySDI12Recorder.printRecorderResult(Serial);
+    Serial.println();
     return 0;
   }
 
@@ -190,9 +188,6 @@ void setup() {
 }
 
 void loop() {
-  // starting line
-  if (printIO) { Serial.println("-------------"); }
-
   // re-zero before starting a new measurement round
   for (int8_t i = firstAddress; i <= lastAddress; i++) {
     millisReady[i]     = 0;
@@ -206,7 +201,6 @@ void loop() {
     char addr = SDI12Address::fromIndex(i);
     if (isActive[i]) {
       if (startConcurrentMeasurement(addr) > 0) { ++sensorsStarted; }
-      if (printIO) { Serial.println(); }
     }
   }
 
@@ -224,38 +218,15 @@ void loop() {
   uint8_t round               = 1;
 
   do {
-    if (printIO) {
-      Serial.print("Round ");
-      Serial.print(round);
-      Serial.print(" sensors to read: ");
-      Serial.print(sensorsStarted);
-      Serial.print(" finished sensors: ");
-      Serial.print(numReadingsRecorded);
-      Serial.println();
-    }
     for (int8_t i = firstAddress; i <= lastAddress; i++) {
       if (isActive[i]) {
         char addr = SDI12Address::fromIndex(i);
-        if (printIO) {
-          Serial.print(addr);
-          Serial.print(" - millis: ");
-          Serial.print(millis());
-          Serial.print(" ready at: ");
-          Serial.print(millisReady[i]);
-          Serial.print(" results expected: ");
-          Serial.print(expectedResults[i]);
-          Serial.print(" already returned: ");
-          Serial.print(returnedResults[i]);
-          Serial.println();
-        }
         if (isActive[i] && mySDI12Recorder.isMeasurementReady(addr) &&
             expectedResults[i] > 0 && (returnedResults[i] < expectedResults[i])) {
-          if (!printIO) {
-            Serial.print(millis() / 1000);
-            Serial.print(", ");
-            Serial.print(addr);
-            Serial.print(", ");
-          }
+          Serial.print(millis() / 1000);
+          Serial.print(", ");
+          Serial.print(addr);
+          Serial.print(", ");
           getResults(addr, expectedResults[i]);
           numReadingsRecorded++;
           Serial.println();

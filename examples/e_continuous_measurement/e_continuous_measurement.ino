@@ -5,12 +5,12 @@
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
  *
- * @brief Example D: Check all Addresses for Active Sensors and Log Data
+ * @brief Example E: Check all Addresses for Active Sensors and Request Continuous Data
  *
  * This is a simple demonstration of the SDI-12 library for Arduino.
  *
- * It discovers the address of all sensors active on a single bus and takes continuous
- * measurements from them.
+ * It discovers the address of all sensors active on a single bus and periodically
+ * requests their current continuous data without initiating a measurement.
  */
 
 #if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
@@ -35,9 +35,9 @@
 uint32_t serialBaud   = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
 int8_t   dataPin      = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin     = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
-bool     useCRC       = false;               /*!< Whether to use CRC checking */
+bool     useCRC       = false;                /*!< Whether to use CRC checking */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
-int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
+int8_t   lastAddress  = 61; /* The last address in the address space to check (61='z') */
 
 /** Define the SDI-12 bus */
 SDI12         mySDI12(dataPin);
@@ -58,6 +58,9 @@ bool printInfo(char address) {
     mySDI12Recorder.printSensorInfo(sensorInfo, Serial);
     return true;
   } else {
+    Serial.print("Identification failed for address ");
+    Serial.print(address);
+    Serial.print(": ");
     mySDI12Recorder.printRecorderResult(Serial);
     Serial.println();
   }

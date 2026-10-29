@@ -9,7 +9,8 @@
  *
  * This is a simple demonstration of the SDI-12 library for Arduino.
  *
- * It discovers the address of all sensors active and attached to the board.
+ * It searches the configured pin and address ranges and prints identification
+ * information for each active sensor.
  * THIS CAN BE *REALLY* SLOW TO RUN!!!
  *
  * Each sensor should have a unique address already - if not, multiple sensors may

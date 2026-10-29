@@ -4,6 +4,12 @@
  * @license This example is published under the BSD-3 license.
  * @author Sara Damiano <sdamiano@stroudcenter.org>
  * @date March 2024
+ *
+ * @brief Tests sensor wake timing and measurement reliability.
+ *
+ * This sketch varies either the power-on warm-up delay or the post-break wake delay,
+ * then repeatedly checks acknowledgement, identification, CRC-protected measurement
+ * results, and measurement duration for one sensor.
  */
 
 #if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))

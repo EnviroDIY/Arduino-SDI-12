@@ -5,7 +5,7 @@
 # to native line endings on checkout.
 *.c text
 *.h text
-*.ino text diff=cpp
+*.ino text diff=cpp filter=localExampleSettings
 *.cpp text diff=cpp
 *.py text diff=py
 

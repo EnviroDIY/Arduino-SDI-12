@@ -44,6 +44,9 @@ bool printInfo(char address) {
     mySDI12Recorder.printSensorInfo(sensorInfo, Serial);
     return true;
   } else {
+    Serial.print("Identification failed for address ");
+    Serial.print(address);
+    Serial.print(": ");
     mySDI12Recorder.printRecorderResult(Serial);
     Serial.println();
   }

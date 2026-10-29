@@ -45,9 +45,9 @@
 uint32_t serialBaud   = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
 int8_t   dataPin      = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin     = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
-bool     useCRC       = false;               /*!< Whether to use CRC checking */
+bool     useCRC       = false;                /*!< Whether to use CRC checking */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
-int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
+int8_t   lastAddress  = 61; /* The last address in the address space to check (61='z') */
 
 /** Define the SDI-12 bus */
 SDI12         mySDI12(dataPin);
@@ -64,6 +64,9 @@ bool printInfo(char address) {
     mySDI12Recorder.printSensorInfo(sensorInfo, Serial);
     return true;
   } else {
+    Serial.print("Identification failed for address ");
+    Serial.print(address);
+    Serial.print(": ");
     mySDI12Recorder.printRecorderResult(Serial);
     Serial.println();
   }
@@ -130,9 +133,6 @@ void setup() {
       numSensors++;
       isActive[i] = 1;
       printInfo(addr);
-    } else {
-      mySDI12Recorder.printRecorderResult(Serial);
-      Serial.println();
     }
   }
   Serial.print("Total number of sensors found:  ");
@@ -145,8 +145,8 @@ void setup() {
   }
 
   Serial.println();
-  Serial.println(
-    "Time Elapsed (ms), Sensor Address, Measurement 1, Measurement 2, ... etc.");
+  Serial.println("Time Elapsed (ms), Sensor Address, Measurement Number, Result 1, "
+                 "Result 2, ... etc.");
   Serial.println("-------------------------------------------------------------------"
                  "------------");
 }
@@ -160,6 +160,8 @@ void loop() {
         Serial.print(millis());
         Serial.print(", ");
         Serial.print(addr);
+        Serial.print(", ");
+        Serial.print(measurementNumber);
         Serial.print(", ");
         takeMeasurement(addr, measurementNumber);
         Serial.println();
