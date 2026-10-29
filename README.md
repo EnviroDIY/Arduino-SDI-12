@@ -190,8 +190,11 @@ Defining `SDI12_TX_DISABLE_INTERRUPTS` restores the pre-2.2.0 behavior of holdin
 > [!important]
 > Don't change these options without good reason!
 
-You can modify the default delay to wait for a sensor to wake, the exact length of the break, and the exact length of the mark using the `SDI12_WAKE_DELAY`, `SDI12_LINE_BREAK_MICROS`, and `SDI12_LINE_MARK_MICROS` options, respectively.
+You can modify the exact length of the break and mark using the `SDI12_LINE_BREAK_MICROS` and `SDI12_LINE_MARK_MICROS` options, respectively.
 The defaults should be correct for almost all uses.
+
+The deprecated `SDI12_WAKE_DELAY` option is used only as the default extra wake time for the deprecated `SDI12::sendCommand()` overloads.
+It is not used by `SDI12Recorder`.
 
 ### The Fudge Factor
 

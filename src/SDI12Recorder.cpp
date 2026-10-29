@@ -316,7 +316,7 @@ SDI12Recorder::MeasurementState SDI12Recorder::measurementState(char address) co
   return MEASUREMENT_NONE;
 }
 
-void SDI12Recorder::startCommand(char address, const String& command) {
+void SDI12Recorder::startRawCommand(char address, const String& command) {
   if (_rejectIfBusy()) { return; }
 
   _operation             = OPERATION_RAW_COMMAND;

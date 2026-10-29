@@ -207,10 +207,12 @@
 #if !defined(SDI12_WAKE_DELAY) || defined(DOXYGEN)
 /**
  * @def SDI12_WAKE_DELAY
- * @brief The default amount of additional time in milliseconds that the sensor takes to
- * wake before being ready to receive a command.  Default is 0ms - meaning the sensor is
- * ready for a command by the end of the 12ms break.  Per protocol, the wake time must
- * be less than 100 ms.
+ * @brief Deprecated default extra sensor wake time for SDI12::sendCommand().
+ *
+ * This option is used only as the default `extraWakeTime` argument for the deprecated
+ * SDI12::sendCommand() overloads. SDI12Recorder does not use it.
+ *
+ * @deprecated Used only by the deprecated SDI12::sendCommand() overloads.
  */
 #define SDI12_WAKE_DELAY 0
 #endif

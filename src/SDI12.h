@@ -1141,11 +1141,32 @@ pin */
    * takes to wake before being ready to receive a command.  Default is 0ms - meaning
    * the sensor is ready for a command by the end of the 12ms break.  Per protocol, the
    * wake time must be less than 100 ms.
+   *
+   * @deprecated Recorder applications should use the typed SDI12Recorder methods when
+   * an equivalent is available, or SDI12Recorder::startRawCommand() for
+   * manufacturer-specific or unsupported commands. This low-level API remains
+   * source-compatible.
    */
   void sendCommand(String& cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
-  /// @copydoc SDI12::sendCommand(String&, int8_t)
+  /**
+   * @copybrief SDI12::sendCommand(String&, int8_t)
+   * @param cmd The null-terminated command to send.
+   * @param extraWakeTime Additional sensor wake time in milliseconds.
+   * @deprecated Recorder applications should use the typed SDI12Recorder methods when
+   * an equivalent is available, or SDI12Recorder::startRawCommand() for
+   * manufacturer-specific or unsupported commands. This low-level API remains
+   * source-compatible.
+   */
   void sendCommand(const char* cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
-  /// @copydoc SDI12::sendCommand(String&, int8_t)
+  /**
+   * @copybrief SDI12::sendCommand(String&, int8_t)
+   * @param cmd The flash-resident command to send.
+   * @param extraWakeTime Additional sensor wake time in milliseconds.
+   * @deprecated Recorder applications should use the typed SDI12Recorder methods when
+   * an equivalent is available, or SDI12Recorder::startRawCommand() for
+   * manufacturer-specific or unsupported commands. This low-level API remains
+   * source-compatible.
+   */
   void sendCommand(FlashString cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
 
   /**
@@ -1157,11 +1178,32 @@ pin */
    * A publicly accessible function that sends out an 8.33 ms marking and a response
    * byte by byte on the data line.  This is needed if the Arduino is acting as an
    * SDI-12 device itself, not as a recorder for another SDI-12 device.
+   *
+   * @deprecated Prefer role-specific recorder or sensor APIs for new applications.
+   * SDI12Recorder provides the recorder-side typed API; a typed sensor-side replacement
+   * is not yet available. This low-level sensor compatibility API remains
+   * source-compatible.
    */
   void sendResponse(String& resp, bool addCRC = false);
-  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
+  /**
+   * @copybrief SDI12::sendResponse(String& resp, bool addCRC)
+   * @param resp The null-terminated response to send.
+   * @param addCRC True to append a CRC to the outgoing response.
+   * @deprecated Prefer role-specific recorder or sensor APIs for new applications.
+   * SDI12Recorder provides the recorder-side typed API; a typed sensor-side replacement
+   * is not yet available. This low-level sensor compatibility API remains
+   * source-compatible.
+   */
   void sendResponse(const char* resp, bool addCRC = false);
-  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
+  /**
+   * @copybrief SDI12::sendResponse(String& resp, bool addCRC)
+   * @param resp The flash-resident response to send.
+   * @param addCRC True to append a CRC to the outgoing response.
+   * @deprecated Prefer role-specific recorder or sensor APIs for new applications.
+   * SDI12Recorder provides the recorder-side typed API; a typed sensor-side replacement
+   * is not yet available. This low-level sensor compatibility API remains
+   * source-compatible.
+   */
   void sendResponse(FlashString resp, bool addCRC = false);
   ///@}
 

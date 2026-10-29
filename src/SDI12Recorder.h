@@ -399,26 +399,33 @@ class SDI12Recorder {
   }
 
   /**
-   * @brief Begin a new transaction.
+   * @brief Start a low-level raw command transaction.
    *
-   * Initiates a command-response transaction with a sensor. The transaction will
-   * proceed asynchronously through wake-up, transmission, response collection,
-   * validation, and retry logic until isOperationComplete() returns true.
+   * This secondary interface supports manufacturer-specific extended commands and
+   * commands that do not yet have a typed recorder operation. The recorder transmits
+   * @p address, the unchanged @p command body, and a terminating exclamation point.
+   * It applies the normal break and retry policy, but only requires a non-empty
+   * response whose first character matches @p address. The remainder of the response
+   * is retained without command-specific validation or CRC checking.
+   *
+   * Call update() until isOperationComplete() is true, then inspect result() and
+   * response(). Prefer a typed recorder method whenever one represents the desired
+   * standard command because typed methods provide command-specific validation and
+   * automatic multi-command workflows.
    *
    * @param address The SDI-12 address (0-9, a-z, A-Z) of the sensor to query.
    * @param command The command body to transmit, without the address or terminating
-   *                exclamation point. For example, "I" becomes "[address]I!" on the
+   *                exclamation point. For example, "X" becomes "[address]X!" on the
    *                wire.
    *
    * @note If a transaction is already in progress, the request is rejected with
    *       RESULT_BUSY and the active transaction continues unchanged.
-   * @note Transmitting a raw command invalidates retained measurement context for
-   *       @p address and does not establish replacement typed context.
-   * @note Protocol policy such as break selection, response format, CRC validation,
-   *       and deadlines is owned by the recorder. Typed operations will supply their
-   *       identity directly instead of recovering it by parsing this command string.
+   * @note Transmission invalidates retained measurement context for @p address. A raw
+   *       transaction never establishes replacement measurement or CRC context.
+   * @note The caller is responsible for interpreting the opaque response and for any
+   *       command-specific validation not described above.
    */
-  void startCommand(char address, const String& command);
+  void startRawCommand(char address, const String& command);
 
   /**
    * @brief Advance the transaction state machine.
@@ -673,7 +680,7 @@ class SDI12Recorder {
   static const uint32_t kSimpleTransactionTimeoutMs = 5000U;
   /// Deadline that permits all retries of one maximum-length ASCII data response.
   static const uint32_t kDataTransactionTimeoutMs = 12000U;
-  /// Conservative response deadline for the transitional raw command API.
+  /// Conservative response deadline for the low-level raw command API.
   static const uint32_t kDefaultRawResponseTimeoutMicros = 2000000UL;
   /// Maximum transmission time for an extended ASCII data response with CRC.
   static const uint32_t kDataResponseTimeoutMicros = 810400UL;
