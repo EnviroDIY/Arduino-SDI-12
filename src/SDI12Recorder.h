@@ -87,7 +87,7 @@ class SDI12Recorder {
     RESULT_CONTEXT_CAPACITY = 0x0E,
     /// The requested operation requires pending measurement context
     RESULT_CONTEXT_REQUIRED = 0x0F,
-    /// The caller-provided data buffer cannot hold all advertised values
+    /// The caller-provided data buffer cannot hold all returned values
     RESULT_DATA_BUFFER_TOO_SMALL = 0x10,
     /// The sensor reported that its pending measurement was aborted
     RESULT_MEASUREMENT_ABORTED = 0x11,
@@ -153,7 +153,9 @@ class SDI12Recorder {
     /// Waiting for a normal measurement service request or its advertised ready time
     PHASE_WAITING_SERVICE_REQUEST = 0x08,
     /// Receiving a normal measurement service request
-    PHASE_RECEIVING_SERVICE_REQUEST = 0x09
+    PHASE_RECEIVING_SERVICE_REQUEST = 0x09,
+    /// Waiting for a concurrent measurement's advertised ready time
+    PHASE_WAITING_DATA_READY = 0x0A
   } Phase;
 
   /** @brief Typed identity of the active recorder operation. */
@@ -166,6 +168,7 @@ class SDI12Recorder {
     OPERATION_MEASUREMENT,
     OPERATION_CONCURRENT_MEASUREMENT,
     OPERATION_DATA,
+    OPERATION_CONTINUOUS_DATA,
     OPERATION_RAW_COMMAND
   } Operation;
 
@@ -291,6 +294,82 @@ class SDI12Recorder {
    */
   void startConcurrentMeasurement(char address, uint8_t measurementNumber = 0U,
                                   bool requestCRC = false);
+
+  /**
+   * @brief Request one continuous measurement and retrieve its values, blocking
+   * until completion.
+   *
+   * Sends `aR0!` through `aR9!`. Each data option is an independent measurement;
+   * options do not need to be requested in sequence. An address-only response is a
+   * successful zero-value result indicating that the sensor cannot provide the
+   * requested continuous measurement.
+   *
+   * @param address Sensor address from `0`-`9`, `a`-`z`, or `A`-`Z`.
+   * @param values Caller-owned destination for parsed values. May be null only when
+   *               @p capacity is zero.
+   * @param capacity Number of float elements available in @p values.
+   * @param dataOption Continuous measurement data option from 0 through 9.
+   * @return Number of values written on success, or zero on failure or a valid
+   *         zero-value response. Use result() to distinguish those outcomes.
+   */
+  size_t requestContinuousData(char address, float* values, size_t capacity,
+                               uint8_t dataOption = 0U);
+
+  /**
+   * @brief Start a non-blocking continuous measurement data request.
+   *
+   * Sends `aR0!` through `aR9!` and strictly validates the immediate data response.
+   * Call update() until isOperationComplete() is true. The caller-owned buffer must
+   * remain valid and must not be modified until the operation completes or is
+   * cancelled.
+   *
+   * @param address Sensor address from `0`-`9`, `a`-`z`, or `A`-`Z`.
+   * @param values Caller-owned destination for parsed values. May be null only when
+   *               @p capacity is zero.
+   * @param capacity Number of float elements available in @p values.
+   * @param dataOption Continuous measurement data option from 0 through 9.
+   */
+  void startRequestContinuousData(char address, float* values, size_t capacity,
+                                  uint8_t dataOption = 0U);
+
+  /**
+   * @brief Retrieve all values from a retained measurement context.
+   *
+   * The recorder waits for a concurrent measurement to become ready, then generates
+   * `D0` through `D9` as needed. Each response is strictly validated and an optional
+   * CRC is checked according to the measurement that established the context.
+   *
+   * Call update() until isOperationComplete() is true. The caller-owned buffer must
+   * remain valid and must not be modified until the operation completes or is
+   * cancelled. Values from each accepted data block are appended exactly once.
+   *
+   * @param address Sensor address with retained measurement context.
+   * @param values Caller-owned destination for the parsed values. May be null only
+   *               when the advertised value count is zero.
+   * @param capacity Number of float elements available in @p values.
+   *
+   * @note If @p capacity is smaller than the advertised count, the operation is
+   *       rejected without transmitting and the context remains available.
+   */
+  void requestData(char address, float* values, size_t capacity);
+
+  /**
+   * @brief Perform a normal measurement and retrieve all of its values, blocking
+   * until completion.
+   *
+   * This convenience method drives startMeasurement(), update(), and requestData()
+   * without duplicating their command, validation, retry, or context logic.
+   *
+   * @param address Sensor address from `0`-`9`, `a`-`z`, or `A`-`Z`.
+   * @param values Caller-owned destination for parsed values.
+   * @param capacity Number of float elements available in @p values.
+   * @param measurementNumber Zero for the unnumbered command, or 1 through 9.
+   * @param requestCRC true to use the `MC` command family and validate response CRCs.
+   * @return Number of values written on success, or zero on failure. Use result() to
+   *         distinguish failure from a successful zero-value result.
+   */
+  size_t measure(char address, float* values, size_t capacity,
+                 uint8_t measurementNumber = 0U, bool requestCRC = false);
 
   /**
    * @brief Retrieve the retained measurement state for one sensor address.
@@ -480,6 +559,15 @@ class SDI12Recorder {
   }
 
   /**
+   * @brief Retrieve the number of values accepted by the current data workflow.
+   *
+   * @return Number of values written to the caller-owned data buffer.
+   */
+  size_t dataValueCount() const {
+    return _dataValueCount;
+  }
+
+  /**
    * @brief Retrieve the collected response, if successful.
    *
    * @return The null-terminated response payload. Protocol envelope characters that
@@ -577,8 +665,12 @@ class SDI12Recorder {
   static const uint32_t kDefaultTransactionTimeoutMs = 3000U;
   /// Deadline that permits all retries of an ordinary typed response.
   static const uint32_t kSimpleTransactionTimeoutMs = 5000U;
+  /// Deadline that permits all retries of one maximum-length ASCII data response.
+  static const uint32_t kDataTransactionTimeoutMs = 12000U;
   /// Conservative response deadline for the transitional raw command API.
   static const uint32_t kDefaultRawResponseTimeoutMicros = 2000000UL;
+  /// Maximum transmission time for an extended ASCII data response with CRC.
+  static const uint32_t kDataResponseTimeoutMicros = 810400UL;
 
   // Current phase and phase timings
   Phase    _phase;
@@ -611,6 +703,15 @@ class SDI12Recorder {
   uint8_t  _expectedValueCount;      ///< Parsed `n` acknowledgement field
   uint32_t _measurementWaitStart;    ///< millis() at acknowledgement completion
 
+  // Active ASCII data workflow
+  float*  _dataValues;         ///< Caller-owned destination retained during operation
+  size_t  _dataCapacity;       ///< Number of float elements in the caller buffer
+  size_t  _dataContextSlot;    ///< Retained context used by the data workflow
+  uint8_t _dataCommandNumber;  ///< Current `D` command or `R` data option
+  uint8_t _dataValueCount;     ///< Values accepted from completed data blocks
+  uint8_t _dataExpectedCount;  ///< Advertised total copied from retained context
+  bool    _dataCRCExpected;    ///< CRC policy copied from retained context
+
   // Response collection
   char           _response[SDI12_RECORDER_RESPONSE_BUFFER_SIZE];
   uint8_t        _responseLength;
@@ -641,12 +742,16 @@ class SDI12Recorder {
   void   _applyContextInvalidationForTransmission();
   void   _commitReadyMeasurementContext();
   void   _commitConcurrentMeasurementContext();
+  void   _startNextDataCommand();
   static bool    _readyAtReached(uint32_t readyAt);
   bool           _collectResponseCharacters();
   RecorderResult _validateResponse();
+  RecorderResult _validateDataResponse();
   RecorderResult _validateExpectedAddress(char expectedAddress) const;
   bool           _hasResponseTerminator() const;
   static bool    _isPrintableAscii(char value);
+  bool           _parseDataValues(uint8_t begin, uint8_t end, float* destination,
+                                  uint8_t& valueCount) const;
   void           _stripResponseEnvelope();
   bool           _shouldTransmitBreak() const;
   void           _recordServiceRequest(char address, uint32_t markingStartTime);
@@ -679,6 +784,8 @@ class SDI12Recorder {
   void _phase_waiting_service_request();
   /// @brief Receive and validate a normal measurement service request.
   void _phase_receiving_service_request();
+  /// @brief Wait until retained concurrent data may be requested.
+  void _phase_waiting_data_ready();
 };
 
 #endif  // SRC_SDI12RECORDER_H_

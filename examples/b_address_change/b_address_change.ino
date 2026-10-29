@@ -33,20 +33,16 @@ SDI12Recorder mySDI12Recorder(mySDI12);
 
 char oldAddress = '!';  // invalid address as placeholder
 
-/**
- * @brief gets identification information from a sensor, and prints it to the serial
- * port
- *
- * @param address a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
- */
-void printInfo(char address) {
+bool printInfo(char address) {
   SDI12Recorder::Identification sensorInfo;
   if (mySDI12Recorder.identify(address, sensorInfo)) {
     mySDI12Recorder.printSensorInfo(sensorInfo, Serial);
+    return true;
   } else {
     mySDI12Recorder.printRecorderResult(Serial);
     Serial.println();
   }
+  return false;
 }
 
 void setup() {

@@ -38,6 +38,13 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
     _measurementSeconds(0),
     _expectedValueCount(0),
     _measurementWaitStart(0),
+    _dataValues(nullptr),
+    _dataCapacity(0),
+    _dataContextSlot(SDI12_RECORDER_CONTEXT_SLOTS),
+    _dataCommandNumber(0),
+    _dataValueCount(0),
+    _dataExpectedCount(0),
+    _dataCRCExpected(false),
     _responseLength(0),
     _pendingReceiveEvents(SDI12::SDI12_RECEIVE_EVENT_NONE),
     _result(RESULT_NONE),
@@ -196,6 +203,103 @@ void SDI12Recorder::startConcurrentMeasurement(char address, uint8_t measurement
   _beginTypedOperation(OPERATION_CONCURRENT_MEASUREMENT, address, commandLength);
 }
 
+size_t SDI12Recorder::requestContinuousData(char address, float* values,
+                                            size_t capacity, uint8_t dataOption) {
+  if (_rejectIfBusy()) { return 0U; }
+
+  startRequestContinuousData(address, values, capacity, dataOption);
+  _waitForCompletion();
+  return _result == RESULT_SUCCESS ? _dataValueCount : 0U;
+}
+
+void SDI12Recorder::startRequestContinuousData(char address, float* values,
+                                               size_t capacity, uint8_t dataOption) {
+  if (_rejectIfBusy()) { return; }
+  if (!SDI12Address::isValid(address)) {
+    _rejectOperation(RESULT_INVALID_ADDRESS);
+    return;
+  }
+  if (dataOption > 9U || (capacity > 0U && values == nullptr)) {
+    _rejectOperation(RESULT_INVALID_COMMAND_ARGUMENT);
+    return;
+  }
+
+  _typedCommand[0] = address;
+  _typedCommand[1] = 'R';
+  _typedCommand[2] = static_cast<char>('0' + dataOption);
+  _typedCommand[3] = '!';
+  _beginTypedOperation(OPERATION_CONTINUOUS_DATA, address, 4U);
+
+  _dataValues            = values;
+  _dataCapacity          = capacity;
+  _dataContextSlot       = SDI12_RECORDER_CONTEXT_SLOTS;
+  _dataCommandNumber     = dataOption;
+  _dataValueCount        = 0U;
+  _dataExpectedCount     = 0U;
+  _dataCRCExpected       = false;
+  _txnTimeoutMs          = kDataTransactionTimeoutMs;
+  _responseTimeoutMicros = kDataResponseTimeoutMicros;
+}
+
+void SDI12Recorder::requestData(char address, float* values, size_t capacity) {
+  if (_rejectIfBusy()) { return; }
+  if (!SDI12Address::isValid(address)) {
+    _rejectOperation(RESULT_INVALID_ADDRESS);
+    return;
+  }
+
+  const size_t contextSlot = _findContext(address);
+  if (contextSlot >= SDI12_RECORDER_CONTEXT_SLOTS) {
+    _rejectOperation(RESULT_CONTEXT_REQUIRED);
+    return;
+  }
+
+  const MeasurementContext& context = _contexts[contextSlot];
+  if (capacity < context.expectedValueCount) {
+    _rejectOperation(RESULT_DATA_BUFFER_TOO_SMALL);
+    return;
+  }
+  if (context.expectedValueCount > 0U && values == nullptr) {
+    _rejectOperation(RESULT_INVALID_COMMAND_ARGUMENT);
+    return;
+  }
+
+  _typedCommand[0] = address;
+  _typedCommand[1] = 'D';
+  _typedCommand[2] = '0';
+  _typedCommand[3] = '!';
+  _beginTypedOperation(OPERATION_DATA, address, 4U);
+
+  _dataValues            = values;
+  _dataCapacity          = capacity;
+  _dataContextSlot       = contextSlot;
+  _dataCommandNumber     = 0U;
+  _dataValueCount        = 0U;
+  _dataExpectedCount     = context.expectedValueCount;
+  _dataCRCExpected       = context.crcExpected;
+  _expectedValueCount    = context.expectedValueCount;
+  _txnTimeoutMs          = kDataTransactionTimeoutMs;
+  _responseTimeoutMicros = kDataResponseTimeoutMicros;
+
+  if (context.phase == CONTEXT_PHASE_CONCURRENT_RUNNING &&
+      !_readyAtReached(context.readyAt)) {
+    _transitionTo(PHASE_WAITING_DATA_READY);
+  }
+}
+
+size_t SDI12Recorder::measure(char address, float* values, size_t capacity,
+                              uint8_t measurementNumber, bool requestCRC) {
+  if (_rejectIfBusy()) { return 0U; }
+
+  startMeasurement(address, measurementNumber, requestCRC);
+  _waitForCompletion();
+  if (_result != RESULT_SUCCESS) { return 0U; }
+
+  requestData(address, values, capacity);
+  _waitForCompletion();
+  return _result == RESULT_SUCCESS ? _dataValueCount : 0U;
+}
+
 SDI12Recorder::MeasurementState SDI12Recorder::measurementState(char address) const {
   const size_t slot = _findContext(address);
   if (slot >= SDI12_RECORDER_CONTEXT_SLOTS) { return MEASUREMENT_NONE; }
@@ -223,7 +327,7 @@ void SDI12Recorder::startCommand(char address, const String& command) {
 void SDI12Recorder::update() {
   // Check for overall transaction timeout
   if (_phase != PHASE_IDLE && _phase != PHASE_WAITING_SERVICE_REQUEST &&
-      _phase != PHASE_RECEIVING_SERVICE_REQUEST) {
+      _phase != PHASE_RECEIVING_SERVICE_REQUEST && _phase != PHASE_WAITING_DATA_READY) {
     uint32_t elapsed = millis() - _txnStartTime;
     if (elapsed > _txnTimeoutMs) {
       _setResult(RESULT_TRANSACTION_TIMEOUT);
@@ -244,6 +348,7 @@ void SDI12Recorder::update() {
     case PHASE_DECIDING_RETRY: _phase_deciding_retry(); break;
     case PHASE_WAITING_SERVICE_REQUEST: _phase_waiting_service_request(); break;
     case PHASE_RECEIVING_SERVICE_REQUEST: _phase_receiving_service_request(); break;
+    case PHASE_WAITING_DATA_READY: _phase_waiting_data_ready(); break;
   }
 }
 
@@ -331,7 +436,7 @@ void SDI12Recorder::printRecorderResult(Stream& printStream) const {
       printStream.print(F("The operation requires pending measurement context"));
       break;
     case RESULT_DATA_BUFFER_TOO_SMALL:
-      printStream.print(F("The data buffer cannot hold all advertised values"));
+      printStream.print(F("The data buffer cannot hold all returned values"));
       break;
     case RESULT_MEASUREMENT_ABORTED:
       printStream.print(F("The sensor reported that its measurement was aborted"));
@@ -375,6 +480,9 @@ void SDI12Recorder::printPhase(Stream& printStream) const {
       break;
     case PHASE_RECEIVING_SERVICE_REQUEST:
       printStream.print(F("Receiving the measurement service request"));
+      break;
+    case PHASE_WAITING_DATA_READY:
+      printStream.print(F("Waiting for concurrent measurement data readiness"));
       break;
     default: printStream.print(F("Unknown recorder phase")); break;
   }
@@ -476,6 +584,7 @@ void SDI12Recorder::_clearOperationOutputs() {
   _acknowledgedAddress = '\0';
   _measurementSeconds  = 0U;
   _expectedValueCount  = 0U;
+  _dataValueCount      = 0U;
   memset(&_identification, 0, sizeof(_identification));
 }
 
@@ -528,7 +637,8 @@ void SDI12Recorder::_applyContextInvalidationForTransmission() {
   switch (_operation) {
     case OPERATION_ADDRESS_QUERY: _invalidateAllContexts(); break;
     case OPERATION_ACKNOWLEDGEMENT:
-    case OPERATION_IDENTIFICATION: _invalidateRunningContext(_address); break;
+    case OPERATION_IDENTIFICATION:
+    case OPERATION_CONTINUOUS_DATA: _invalidateRunningContext(_address); break;
     case OPERATION_CHANGE_ADDRESS:
       _invalidateContext(_address);
       _invalidateContext(_typedCommand[2]);
@@ -564,6 +674,27 @@ void SDI12Recorder::_commitConcurrentMeasurementContext() {
   context.crcExpected         = _measurementRequestsCRC;
   context.expectedValueCount  = _expectedValueCount;
   context.readyAt = millis() + static_cast<uint32_t>(_measurementSeconds) * 1000UL;
+}
+
+void SDI12Recorder::_startNextDataCommand() {
+  ++_dataCommandNumber;
+  _typedCommand[0]            = _address;
+  _typedCommand[1]            = 'D';
+  _typedCommand[2]            = static_cast<char>('0' + _dataCommandNumber);
+  _typedCommand[3]            = '!';
+  _typedCommand[4]            = '\0';
+  _typedCommandLength         = 4U;
+  _txnStartTime               = millis();
+  _txnTimeoutMs               = kDataTransactionTimeoutMs;
+  _responseTimeoutMicros      = kDataResponseTimeoutMicros;
+  _sequenceCount              = 1U;
+  _breakCount                 = 0U;
+  _attemptCount               = 0U;
+  _retryFailureResult         = RESULT_NONE;
+  _contextInvalidationApplied = false;
+  _resetAttemptReception();
+  _result = RESULT_NONE;
+  _transitionTo(PHASE_BREAK);
 }
 
 bool SDI12Recorder::_readyAtReached(uint32_t readyAt) {
@@ -631,6 +762,10 @@ SDI12Recorder::RecorderResult SDI12Recorder::_validateResponse() {
   const RecorderResult addressResult = _validateExpectedAddress(expectedAddress);
   if (addressResult != RESULT_SUCCESS) { return addressResult; }
 
+  if (_operation == OPERATION_DATA || _operation == OPERATION_CONTINUOUS_DATA) {
+    return _validateDataResponse();
+  }
+
   if (_operation == OPERATION_ACKNOWLEDGEMENT ||
       _operation == OPERATION_CHANGE_ADDRESS) {
     if (_responseLength != 3U || !_hasResponseTerminator()) {
@@ -689,6 +824,111 @@ SDI12Recorder::RecorderResult SDI12Recorder::_validateResponse() {
   }
 
   return RESULT_MALFORMED_RESPONSE;
+}
+
+SDI12Recorder::RecorderResult SDI12Recorder::_validateDataResponse() {
+  if (!_hasResponseTerminator()) { return RESULT_MALFORMED_RESPONSE; }
+
+  uint8_t dataEnd = _responseLength - 2U;
+  if (_dataCRCExpected) {
+    if (_responseLength < 6U) { return RESULT_MALFORMED_RESPONSE; }
+    dataEnd = _responseLength - 5U;
+
+    const char savedCharacter    = _response[dataEnd];
+    _response[dataEnd]           = '\0';
+    const uint16_t calculatedCRC = _sdi12.calculateCRC(_response);
+    _response[dataEnd]           = savedCharacter;
+
+    const char calculatedCRC0 = static_cast<char>(0x40U | (calculatedCRC >> 12U));
+    const char calculatedCRC1 =
+      static_cast<char>(0x40U | ((calculatedCRC >> 6U) & 0x3FU));
+    const char calculatedCRC2 = static_cast<char>(0x40U | (calculatedCRC & 0x3FU));
+    if (_response[dataEnd] != calculatedCRC0 ||
+        _response[dataEnd + 1U] != calculatedCRC1 ||
+        _response[dataEnd + 2U] != calculatedCRC2) {
+      return RESULT_CRC_ERROR;
+    }
+  }
+
+  if (dataEnd == 1U) {
+    return _operation == OPERATION_CONTINUOUS_DATA ? RESULT_SUCCESS
+                                                   : RESULT_MEASUREMENT_ABORTED;
+  }
+  if (dataEnd < 1U) { return RESULT_MALFORMED_RESPONSE; }
+
+  uint8_t blockValueCount = 0U;
+  if (!_parseDataValues(1U, dataEnd, nullptr, blockValueCount)) {
+    return RESULT_MALFORMED_RESPONSE;
+  }
+  if (_operation == OPERATION_CONTINUOUS_DATA) {
+    if (blockValueCount > _dataCapacity) { return RESULT_DATA_BUFFER_TOO_SMALL; }
+  } else if (static_cast<uint16_t>(_dataValueCount) + blockValueCount >
+             _dataExpectedCount) {
+    return RESULT_MALFORMED_RESPONSE;
+  }
+
+  uint8_t writtenCount = 0U;
+  if (!_parseDataValues(1U, dataEnd, _dataValues + _dataValueCount, writtenCount) ||
+      writtenCount != blockValueCount) {
+    return RESULT_MALFORMED_RESPONSE;
+  }
+  _dataValueCount += writtenCount;
+
+  if (_dataCRCExpected) {
+    _response[dataEnd]         = '\r';
+    _response[dataEnd + 1U]    = '\n';
+    _responseLength            = dataEnd + 2U;
+    _response[_responseLength] = '\0';
+  }
+  return RESULT_SUCCESS;
+}
+
+bool SDI12Recorder::_parseDataValues(uint8_t begin, uint8_t end, float* destination,
+                                     uint8_t& valueCount) const {
+  valueCount       = 0U;
+  uint8_t position = begin;
+
+  while (position < end) {
+    const uint8_t fieldStart = position;
+    const char    sign       = _response[position++];
+    if (sign != '+' && sign != '-') { return false; }
+
+    bool    decimalSeen  = false;
+    uint8_t digitCount   = 0U;
+    float   value        = 0.0F;
+    float   decimalPlace = 0.1F;
+
+    while (position < end && _response[position] != '+' && _response[position] != '-') {
+      const char character = _response[position++];
+      if (character == '.') {
+        if (decimalSeen) { return false; }
+        decimalSeen = true;
+        continue;
+      }
+      if (character < '0' || character > '9') { return false; }
+
+      ++digitCount;
+      if (digitCount > 7U) { return false; }
+      const uint8_t digit = static_cast<uint8_t>(character - '0');
+      if (decimalSeen) {
+        value += static_cast<float>(digit) * decimalPlace;
+        decimalPlace *= 0.1F;
+      } else {
+        value = value * 10.0F + static_cast<float>(digit);
+      }
+    }
+
+    if (digitCount == 0U ||
+        position - fieldStart >
+          static_cast<uint8_t>(SDI12ResponseLimits::kValueMaxCharacters)) {
+      return false;
+    }
+    if (destination != nullptr) {
+      destination[valueCount] = sign == '-' ? -value : value;
+    }
+    ++valueCount;
+  }
+  return valueCount > 0U;
 }
 
 void SDI12Recorder::_stripResponseEnvelope() {
@@ -901,6 +1141,18 @@ void SDI12Recorder::_phase_receiving() {
 
 void SDI12Recorder::_phase_validating() {
   const RecorderResult validationResult = _validateResponse();
+  if (_operation == OPERATION_DATA && validationResult == RESULT_MEASUREMENT_ABORTED) {
+    _releaseContext(_dataContextSlot);
+    _setResult(RESULT_MEASUREMENT_ABORTED);
+    _transitionTo(PHASE_IDLE);
+    return;
+  }
+  if (_operation == OPERATION_CONTINUOUS_DATA &&
+      validationResult == RESULT_DATA_BUFFER_TOO_SMALL) {
+    _setResult(RESULT_DATA_BUFFER_TOO_SMALL);
+    _transitionTo(PHASE_IDLE);
+    return;
+  }
   if (validationResult != RESULT_SUCCESS) {
     _setResult(validationResult);
     _transitionTo(PHASE_DECIDING_RETRY);
@@ -929,6 +1181,29 @@ void SDI12Recorder::_phase_validating() {
 
   if (_operation == OPERATION_CONCURRENT_MEASUREMENT) {
     _commitConcurrentMeasurementContext();
+    _setResult(RESULT_SUCCESS);
+    _transitionTo(PHASE_IDLE);
+    return;
+  }
+
+  if (_operation == OPERATION_DATA) {
+    if (_dataValueCount == _dataExpectedCount) {
+      _releaseContext(_dataContextSlot);
+      _setResult(RESULT_SUCCESS);
+      _transitionTo(PHASE_IDLE);
+      return;
+    }
+    if (_dataCommandNumber >= 9U) {
+      _setResult(RESULT_INCOMPLETE_DATA);
+      _transitionTo(PHASE_IDLE);
+      return;
+    }
+
+    _startNextDataCommand();
+    return;
+  }
+
+  if (_operation == OPERATION_CONTINUOUS_DATA) {
     _setResult(RESULT_SUCCESS);
     _transitionTo(PHASE_IDLE);
     return;
@@ -1051,6 +1326,23 @@ void SDI12Recorder::_phase_receiving_service_request() {
     _setResult(RESULT_RESPONSE_TIMEOUT);
     _transitionTo(PHASE_IDLE);
   }
+}
+
+void SDI12Recorder::_phase_waiting_data_ready() {
+  if (_dataContextSlot >= SDI12_RECORDER_CONTEXT_SLOTS ||
+      !_contexts[_dataContextSlot].occupied ||
+      _contexts[_dataContextSlot].address != _address) {
+    _setResult(RESULT_CONTEXT_REQUIRED);
+    _transitionTo(PHASE_IDLE);
+    return;
+  }
+
+  MeasurementContext& context = _contexts[_dataContextSlot];
+  if (!_readyAtReached(context.readyAt)) { return; }
+
+  context.phase = CONTEXT_PHASE_DATA_READY;
+  _txnStartTime = millis();
+  _transitionTo(PHASE_BREAK);
 }
 
 void SDI12Recorder::_phase_deciding_retry() {
