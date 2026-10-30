@@ -106,13 +106,17 @@
  *
  * The default is three. Storage is allocated at compile time; no dynamic allocation is
  * used. Increase this value only when more than three sensors must have pending
- * measurements at the same time.
+ * measurements at the same time. The maximum is 255 slots.
  */
 #define SDI12_RECORDER_CONTEXT_SLOTS 3
 #endif
 
 #if SDI12_RECORDER_CONTEXT_SLOTS < 1
 #error "SDI12_RECORDER_CONTEXT_SLOTS must be at least 1"
+#endif
+
+#if SDI12_RECORDER_CONTEXT_SLOTS > 255
+#error "SDI12_RECORDER_CONTEXT_SLOTS cannot exceed 255"
 #endif
 
 #if !defined(SDI12_RECORDER_RESPONSE_BUFFER_SIZE) || defined(DOXYGEN)

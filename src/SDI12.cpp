@@ -24,12 +24,6 @@ constexpr uint32_t microsecondsToTicksCeil(uint32_t microseconds,
     (static_cast<uint64_t>(microseconds) * ticksPerSecond + 999999ULL) / 1000000ULL);
 }
 
-// Return true once an interval reaches its inclusive minimum.
-inline bool minimumReached(uint32_t elapsedTicks, uint32_t minimumTicks,
-                           bool alreadyLatched = false) {
-  return alreadyLatched || elapsedTicks >= minimumTicks;
-}
-
 // Calculate the real number of timer ticks needed for the minimum break and marking
 // durations based on the actual timer and the protocol values
 // NOTE: This will be done by the compiler at compile time.
@@ -509,8 +503,7 @@ void SDI12::serviceLineConditions() {
       // HIGH = break (spacing)
       // if the line is currently high, check if the break minimum has been reached
       if (pinLevel == HIGH &&
-          minimumReached(elapsedTicks, kMinimumBreakTicks,
-                         _lineObserver.breakMinimumReached)) {
+          (_lineObserver.breakMinimumReached || elapsedTicks >= kMinimumBreakTicks)) {
         // since we're now past the break minimum, set the breakMinimumReached flag if
         // it wasn't already set
         if (!_lineObserver.breakMinimumReached) {
@@ -520,8 +513,8 @@ void SDI12::serviceLineConditions() {
         // LOW = marking
         // if the line is currently low, check if the marking minimum has been reached
       } else if (pinLevel == LOW &&
-                 minimumReached(elapsedTicks, kMinimumMarkingTicks,
-                                _lineObserver.markingMinimumReached)) {
+                 (_lineObserver.markingMinimumReached ||
+                  elapsedTicks >= kMinimumMarkingTicks)) {
         // since we're now past the marking minimum, set the markingMinimumReached flag
         // if it wasn't already set
         if (!_lineObserver.markingMinimumReached) {
@@ -879,15 +872,15 @@ uint8_t ISR_MEM_ACCESS SDI12::observeLineEdge(sdi12timer_t timerTime,
   // edge; otherwise, it's a rising edge.
   if (_lineObserver.level == HIGH) {
     // The falling edge ends a HIGH/spacing interval and begins marking.
-    _lineObserver.breakMinimumReached = minimumReached(
-      elapsedTicks, kMinimumBreakTicks, _lineObserver.breakMinimumReached);
+    _lineObserver.breakMinimumReached = _lineObserver.breakMinimumReached ||
+      elapsedTicks >= kMinimumBreakTicks;
     if (_lineObserver.breakMinimumReached) {
       events |= SDI12_LINE_EVENT_BREAK_COMPLETED;
     }
   } else {
     // The rising edge ends a LOW/marking interval and may also be a start bit.
-    _lineObserver.markingMinimumReached = minimumReached(
-      elapsedTicks, kMinimumMarkingTicks, _lineObserver.markingMinimumReached);
+    _lineObserver.markingMinimumReached = _lineObserver.markingMinimumReached ||
+      elapsedTicks >= kMinimumMarkingTicks;
     if (_lineObserver.markingMinimumReached) {
       events |= SDI12_LINE_EVENT_MARKING_COMPLETED;
     }

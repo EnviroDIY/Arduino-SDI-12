@@ -38,7 +38,8 @@
  *   if (recorder.identify('0', info)) {
  *     Serial.println(info.vendorID);
  *   } else {
- *     Serial.println(recorder.resultDescription());
+ *     recorder.printRecorderResult(Serial);
+ *     Serial.println();
  *   }
  * }
  *
@@ -181,11 +182,6 @@ class SDI12Recorder {
    * @param sdi12 Reference to the SDI12 object that owns the data line.
    */
   explicit SDI12Recorder(SDI12& sdi12);
-
-  /**
-   * @brief Destructor.
-   */
-  ~SDI12Recorder();
 
   /**
    * @brief Query the address of the only sensor attached to the bus, blocking until
@@ -504,15 +500,6 @@ class SDI12Recorder {
   }
 
   /**
-   * @brief Retrieve a human-readable description of the result.
-   *
-   * @return A string describing the terminal result (e.g., "SUCCESS", "NO_RESPONSE").
-   *         Returns "BUSY" after a rejected start request, or an empty string if the
-   *         transaction is still in progress and no start request was rejected.
-   */
-  const char* resultDescription() const;
-
-  /**
    * @brief Print a human-readable description of the current recorder result.
    *
    * The text describes the same RecorderResult returned by result(). No trailing
@@ -704,12 +691,11 @@ class SDI12Recorder {
 
   /** @brief Fixed per-address state retained between typed recorder operations. */
   struct MeasurementContext {
-    char         address;
-    bool         occupied;
-    ContextPhase phase;
-    bool         crcExpected;
-    uint8_t      expectedValueCount;
     uint32_t     readyAt;
+    char         address;
+    ContextPhase phase;
+    uint8_t      expectedValueCount;
+    bool         crcExpected;
   };
 
   // References and configuration
@@ -746,25 +732,20 @@ class SDI12Recorder {
   bool     _phaseStarted;     ///< Whether the current phase action has started
   uint32_t _phaseStartTime;   ///< micros() at phase start
   uint32_t _commandStopTime;  ///< micros() when last command stop bit ended
-  uint32_t _breakEndTime;     ///< micros() when break ended
 
   // Attempt tracking (retry logic)
   uint8_t _sequenceCount;            ///< Current retry sequence number (1-3)
-  uint8_t _breakCount;               ///< Number of breaks issued (0-3)
+  bool    _breakTransmitted;         ///< Whether this top-level command sent a break
   uint8_t _attemptCount;             ///< No-break retries in current sequence (0-2)
   bool    _automaticRetriesEnabled;  ///< Whether the active operation may retry
 
-  // Global bus history used only for first-attempt break selection
-  bool     _busHistoryKnown;      ///< Whether the retained bus history is usable
-  char     _lastAddress;          ///< Sensor addressed by the last bus operation
-  uint32_t _lastBusActivityTime;  ///< micros() when the bus most recently began marking
-  bool     _serviceRequestKnown;  ///< Whether a valid service request is retained
-  char _serviceRequestAddress;    ///< Address returned by the retained service request
-  uint32_t _serviceRequestTime;   ///< micros() when its response ended
+  // Validated service request used only for first-attempt break selection
+  char _serviceRequestAddress;   ///< Address returned by the retained service request
+  uint32_t _serviceRequestTime;  ///< micros() when its response ended
 
   // Per-address measurement context
   MeasurementContext _contexts[SDI12_RECORDER_CONTEXT_SLOTS];
-  size_t             _reservedContextSlot;  ///< Slot reserved by the active operation
+  uint8_t            _reservedContextSlot;  ///< Slot reserved by the active operation
   bool _contextInvalidationApplied;  ///< Whether first transmission applied policy
 
   // Active measurement workflow
@@ -777,11 +758,10 @@ class SDI12Recorder {
 
   // Active ASCII data workflow
   float*  _dataValues;         ///< Caller-owned destination retained during operation
-  size_t  _dataCapacity;       ///< Number of float elements in the caller buffer
-  size_t  _dataContextSlot;    ///< Retained context used by the data workflow
+  uint8_t _dataCapacity;       ///< Relevant float elements in the caller buffer
+  uint8_t _dataContextSlot;    ///< Retained context used by the data workflow
   uint8_t _dataCommandNumber;  ///< Current `D` command or `R` data option
   uint8_t _dataValueCount;     ///< Values accepted from completed data blocks
-  uint8_t _dataExpectedCount;  ///< Advertised total copied from retained context
   bool    _dataCRCExpected;    ///< CRC policy copied from retained context
 
   // Response collection
@@ -798,25 +778,25 @@ class SDI12Recorder {
   Identification _identification;
 
   // Private helper methods
-  bool   _rejectIfBusy();
-  void   _rejectOperation(RecorderResult reason);
-  void   _beginOperation();
-  void   _beginTypedOperation(Operation operation, char address, uint8_t commandLength);
-  void   _waitForCompletion();
-  void   _resetAttemptReception();
-  void   _clearOperationOutputs();
-  size_t _findContext(char address) const;
-  size_t _reserveContext(char address) const;
-  void   _releaseContext(size_t slot);
-  void   _invalidateContext(char address);
-  void   _invalidateRunningContext(char address);
-  void   _invalidateAllContexts();
-  void   _applyContextInvalidationForTransmission();
-  void   _commitReadyMeasurementContext();
-  void   _commitConcurrentMeasurementContext();
-  void   _startDataRequest(char address, float* values, size_t capacity,
-                           bool waitUntilReady, bool automaticRetries);
-  void   _startNextDataCommand();
+  bool _rejectIfBusy();
+  void _rejectOperation(RecorderResult reason);
+  void _beginOperation();
+  void _beginTypedOperation(Operation operation, char address, uint8_t commandLength);
+  void _waitForCompletion();
+  void _resetAttemptReception();
+  void _clearOperationOutputs();
+  uint8_t        _findContext(char address) const;
+  uint8_t        _reserveContext(char address) const;
+  void           _releaseContext(uint8_t slot);
+  void           _invalidateContext(char address);
+  void           _invalidateRunningContext(char address);
+  void           _invalidateAllContexts();
+  void           _applyContextInvalidationForTransmission();
+  void           _commitReadyMeasurementContext();
+  void           _commitConcurrentMeasurementContext();
+  void           _startDataRequest(char address, float* values, size_t capacity,
+                                   bool waitUntilReady, bool automaticRetries);
+  void           _startNextDataCommand();
   static bool    _readyAtReached(uint32_t readyAt);
   bool           _collectResponseCharacters();
   RecorderResult _validateResponse();
@@ -828,7 +808,6 @@ class SDI12Recorder {
                                   uint8_t& valueCount) const;
   void           _stripResponseEnvelope();
   bool           _shouldTransmitBreak() const;
-  void           _recordServiceRequest(char address, uint32_t markingStartTime);
   void           _transitionTo(Phase nextPhase);
   void           _setResult(RecorderResult reason);
 

@@ -70,7 +70,6 @@ isValid	KEYWORD2
 toIndex	KEYWORD2
 fromIndex	KEYWORD2
 SDI12Recorder	KEYWORD2
-~SDI12Recorder	KEYWORD2
 queryAddress	KEYWORD2
 requestAcknowledgement	KEYWORD2
 identify	KEYWORD2
@@ -93,7 +92,6 @@ update	KEYWORD2
 isBusy	KEYWORD2
 isOperationComplete	KEYWORD2
 result	KEYWORD2
-resultDescription	KEYWORD2
 printRecorderResult	KEYWORD2
 printPhase	KEYWORD2
 queriedAddress	KEYWORD2

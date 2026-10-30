@@ -22,15 +22,10 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
     _phaseStarted(false),
     _phaseStartTime(0),
     _commandStopTime(0),
-    _breakEndTime(0),
     _sequenceCount(0),
-    _breakCount(0),
+    _breakTransmitted(false),
     _attemptCount(0),
     _automaticRetriesEnabled(true),
-    _busHistoryKnown(false),
-    _lastAddress('\0'),
-    _lastBusActivityTime(0),
-    _serviceRequestKnown(false),
     _serviceRequestAddress('\0'),
     _serviceRequestTime(0),
     _reservedContextSlot(SDI12_RECORDER_CONTEXT_SLOTS),
@@ -46,7 +41,6 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
     _dataContextSlot(SDI12_RECORDER_CONTEXT_SLOTS),
     _dataCommandNumber(0),
     _dataValueCount(0),
-    _dataExpectedCount(0),
     _dataCRCExpected(false),
     _responseLength(0),
     _pendingReceiveEvents(SDI12::SDI12_RECEIVE_EVENT_NONE),
@@ -59,10 +53,6 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
   _response[0]     = '\0';
   memset(_contexts, 0, sizeof(_contexts));
   memset(&_identification, 0, sizeof(_identification));
-}
-
-SDI12Recorder::~SDI12Recorder() {
-  if (_sdi12.isActive()) { cancel(); }
 }
 
 char SDI12Recorder::queryAddress() {
@@ -154,7 +144,7 @@ void SDI12Recorder::startMeasurement(char address, uint8_t measurementNumber,
     return;
   }
 
-  const size_t contextSlot = _reserveContext(address);
+  const uint8_t contextSlot = _reserveContext(address);
   if (contextSlot >= SDI12_RECORDER_CONTEXT_SLOTS) {
     _rejectOperation(RESULT_CONTEXT_CAPACITY);
     return;
@@ -186,7 +176,7 @@ void SDI12Recorder::startConcurrentMeasurement(char address, uint8_t measurement
     return;
   }
 
-  const size_t contextSlot = _reserveContext(address);
+  const uint8_t contextSlot = _reserveContext(address);
   if (contextSlot >= SDI12_RECORDER_CONTEXT_SLOTS) {
     _rejectOperation(RESULT_CONTEXT_CAPACITY);
     return;
@@ -237,12 +227,11 @@ void SDI12Recorder::startRequestContinuousData(char address, float* values,
   _typedCommand[commandLength++] = '!';
   _beginTypedOperation(OPERATION_CONTINUOUS_DATA, address, commandLength);
 
-  _dataValues            = values;
-  _dataCapacity          = capacity;
-  _dataContextSlot       = SDI12_RECORDER_CONTEXT_SLOTS;
+  _dataValues      = values;
+  _dataCapacity    = static_cast<uint8_t>(capacity > UINT8_MAX ? UINT8_MAX : capacity);
+  _dataContextSlot = SDI12_RECORDER_CONTEXT_SLOTS;
   _dataCommandNumber     = dataOption;
   _dataValueCount        = 0U;
-  _dataExpectedCount     = 0U;
   _dataCRCExpected       = requestCRC;
   _txnTimeoutMs          = kDataTransactionTimeoutMs;
   _responseTimeoutMicros = kDataResponseTimeoutMicros;
@@ -265,7 +254,7 @@ void SDI12Recorder::_startDataRequest(char address, float* values, size_t capaci
     return;
   }
 
-  const size_t contextSlot = _findContext(address);
+  const uint8_t contextSlot = _findContext(address);
   if (contextSlot >= SDI12_RECORDER_CONTEXT_SLOTS) {
     _rejectOperation(RESULT_CONTEXT_REQUIRED);
     return;
@@ -289,11 +278,9 @@ void SDI12Recorder::_startDataRequest(char address, float* values, size_t capaci
   _automaticRetriesEnabled = automaticRetries;
 
   _dataValues            = values;
-  _dataCapacity          = capacity;
   _dataContextSlot       = contextSlot;
   _dataCommandNumber     = 0U;
   _dataValueCount        = 0U;
-  _dataExpectedCount     = context.expectedValueCount;
   _dataCRCExpected       = context.crcExpected;
   _expectedValueCount    = context.expectedValueCount;
   _txnTimeoutMs          = kDataTransactionTimeoutMs;
@@ -319,7 +306,7 @@ size_t SDI12Recorder::measure(char address, float* values, size_t capacity,
 }
 
 SDI12Recorder::MeasurementState SDI12Recorder::measurementState(char address) const {
-  const size_t slot = _findContext(address);
+  const uint8_t slot = _findContext(address);
   if (slot >= SDI12_RECORDER_CONTEXT_SLOTS) { return MEASUREMENT_NONE; }
 
   const MeasurementContext& context = _contexts[slot];
@@ -332,6 +319,10 @@ SDI12Recorder::MeasurementState SDI12Recorder::measurementState(char address) co
 
 void SDI12Recorder::startRawCommand(char address, const String& command) {
   if (_rejectIfBusy()) { return; }
+  if (!SDI12Address::isValid(address)) {
+    _rejectOperation(RESULT_INVALID_ADDRESS);
+    return;
+  }
 
   _operation             = OPERATION_RAW_COMMAND;
   _address               = address;
@@ -374,33 +365,6 @@ void SDI12Recorder::update() {
 void SDI12Recorder::cancel() {
   _setResult(RESULT_CANCELLED);
   _transitionTo(PHASE_IDLE);
-}
-
-const char* SDI12Recorder::resultDescription() const {
-  switch (result()) {
-    case RESULT_NONE: return "";
-    case RESULT_SUCCESS: return "SUCCESS";
-    case RESULT_NO_RESPONSE: return "NO_RESPONSE";
-    case RESULT_FRAMING_ERROR: return "FRAMING_ERROR";
-    case RESULT_WRONG_ADDRESS: return "WRONG_ADDRESS";
-    case RESULT_CRC_ERROR: return "CRC_ERROR";
-    case RESULT_BUFFER_OVERFLOW: return "BUFFER_OVERFLOW";
-    case RESULT_MALFORMED_RESPONSE: return "MALFORMED_RESPONSE";
-    case RESULT_RESPONSE_TIMEOUT: return "RESPONSE_TIMEOUT";
-    case RESULT_TRANSACTION_TIMEOUT: return "TRANSACTION_TIMEOUT";
-    case RESULT_CANCELLED: return "CANCELLED";
-    case RESULT_INVALID_ADDRESS: return "INVALID_ADDRESS";
-    case RESULT_INVALID_COMMAND_ARGUMENT: return "INVALID_COMMAND_ARGUMENT";
-    case RESULT_BUSY: return "BUSY";
-    case RESULT_CONTEXT_CAPACITY: return "CONTEXT_CAPACITY";
-    case RESULT_CONTEXT_REQUIRED: return "CONTEXT_REQUIRED";
-    case RESULT_DATA_BUFFER_TOO_SMALL: return "DATA_BUFFER_TOO_SMALL";
-    case RESULT_MEASUREMENT_ABORTED: return "MEASUREMENT_ABORTED";
-    case RESULT_INCOMPLETE_DATA: return "INCOMPLETE_DATA";
-    case RESULT_RETRIES_EXHAUSTED: return "RETRIES_EXHAUSTED";
-    case RESULT_UNEXPECTED_BREAK: return "UNEXPECTED_BREAK";
-    default: return "UNKNOWN";
-  }
 }
 
 void SDI12Recorder::printRecorderResult(Stream& printStream) const {
@@ -559,10 +523,9 @@ void SDI12Recorder::_beginOperation() {
   _startResult                = RESULT_NONE;
   _txnStartTime               = millis();
   _sequenceCount              = 1;
-  _breakCount                 = 0;
+  _breakTransmitted           = false;
   _attemptCount               = 0;
   _automaticRetriesEnabled    = true;
-  _breakEndTime               = 0;
   _retryFailureResult         = RESULT_NONE;
   _contextInvalidationApplied = false;
   _resetAttemptReception();
@@ -614,24 +577,26 @@ void SDI12Recorder::_clearOperationOutputs() {
   memset(&_identification, 0, sizeof(_identification));
 }
 
-size_t SDI12Recorder::_findContext(char address) const {
-  for (size_t i = 0U; i < SDI12_RECORDER_CONTEXT_SLOTS; ++i) {
-    if (_contexts[i].occupied && _contexts[i].address == address) { return i; }
+uint8_t SDI12Recorder::_findContext(char address) const {
+  for (uint8_t i = 0U; i < SDI12_RECORDER_CONTEXT_SLOTS; ++i) {
+    if (_contexts[i].phase != CONTEXT_PHASE_NONE && _contexts[i].address == address) {
+      return i;
+    }
   }
   return SDI12_RECORDER_CONTEXT_SLOTS;
 }
 
-size_t SDI12Recorder::_reserveContext(char address) const {
-  const size_t existingSlot = _findContext(address);
+uint8_t SDI12Recorder::_reserveContext(char address) const {
+  const uint8_t existingSlot = _findContext(address);
   if (existingSlot < SDI12_RECORDER_CONTEXT_SLOTS) { return existingSlot; }
 
-  for (size_t i = 0U; i < SDI12_RECORDER_CONTEXT_SLOTS; ++i) {
-    if (!_contexts[i].occupied) { return i; }
+  for (uint8_t i = 0U; i < SDI12_RECORDER_CONTEXT_SLOTS; ++i) {
+    if (_contexts[i].phase == CONTEXT_PHASE_NONE) { return i; }
   }
   return SDI12_RECORDER_CONTEXT_SLOTS;
 }
 
-void SDI12Recorder::_releaseContext(size_t slot) {
+void SDI12Recorder::_releaseContext(uint8_t slot) {
   if (slot >= SDI12_RECORDER_CONTEXT_SLOTS) { return; }
   memset(&_contexts[slot], 0, sizeof(_contexts[slot]));
 }
@@ -641,7 +606,7 @@ void SDI12Recorder::_invalidateContext(char address) {
 }
 
 void SDI12Recorder::_invalidateRunningContext(char address) {
-  const size_t slot = _findContext(address);
+  const uint8_t slot = _findContext(address);
   if (slot < SDI12_RECORDER_CONTEXT_SLOTS &&
       _contexts[slot].phase == CONTEXT_PHASE_CONCURRENT_RUNNING) {
     if (_readyAtReached(_contexts[slot].readyAt)) {
@@ -681,26 +646,24 @@ void SDI12Recorder::_commitReadyMeasurementContext() {
   if (_reservedContextSlot >= SDI12_RECORDER_CONTEXT_SLOTS) { return; }
 
   MeasurementContext& context = _contexts[_reservedContextSlot];
-  context.address             = _address;
-  context.occupied            = true;
-  context.phase               = CONTEXT_PHASE_DATA_READY;
-  context.crcExpected         = _measurementRequestsCRC;
-  context.expectedValueCount  = _expectedValueCount;
   context.readyAt             = 0U;
+  context.address             = _address;
+  context.phase               = CONTEXT_PHASE_DATA_READY;
+  context.expectedValueCount  = _expectedValueCount;
+  context.crcExpected         = _measurementRequestsCRC;
 }
 
 void SDI12Recorder::_commitConcurrentMeasurementContext() {
   if (_reservedContextSlot >= SDI12_RECORDER_CONTEXT_SLOTS) { return; }
 
   MeasurementContext& context = _contexts[_reservedContextSlot];
-  context.address             = _address;
-  context.occupied            = true;
-  context.phase               = _measurementSeconds == 0U ? CONTEXT_PHASE_DATA_READY
-                                                          : CONTEXT_PHASE_CONCURRENT_RUNNING;
-  context.crcExpected         = _measurementRequestsCRC;
-  context.expectedValueCount  = _expectedValueCount;
   context.readyAt             = _measurementWaitStart +
     static_cast<uint32_t>(_measurementSeconds) * 1000UL;
+  context.address            = _address;
+  context.phase              = _measurementSeconds == 0U ? CONTEXT_PHASE_DATA_READY
+                                                         : CONTEXT_PHASE_CONCURRENT_RUNNING;
+  context.expectedValueCount = _expectedValueCount;
+  context.crcExpected        = _measurementRequestsCRC;
 }
 
 void SDI12Recorder::_startNextDataCommand() {
@@ -715,7 +678,7 @@ void SDI12Recorder::_startNextDataCommand() {
   _txnTimeoutMs               = kDataTransactionTimeoutMs;
   _responseTimeoutMicros      = kDataResponseTimeoutMicros;
   _sequenceCount              = 1U;
-  _breakCount                 = 0U;
+  _breakTransmitted           = false;
   _attemptCount               = 0U;
   _retryFailureResult         = RESULT_NONE;
   _contextInvalidationApplied = false;
@@ -890,7 +853,7 @@ SDI12Recorder::RecorderResult SDI12Recorder::_validateDataResponse() {
   if (_operation == OPERATION_CONTINUOUS_DATA) {
     if (blockValueCount > _dataCapacity) { return RESULT_DATA_BUFFER_TOO_SMALL; }
   } else if (static_cast<uint16_t>(_dataValueCount) + blockValueCount >
-             _dataExpectedCount) {
+             _expectedValueCount) {
     return RESULT_MALFORMED_RESPONSE;
   }
 
@@ -977,26 +940,14 @@ bool SDI12Recorder::_shouldTransmitBreak() const {
 #else
   // The only optimized first-attempt path is D0 immediately following a valid service
   // request from the same sensor. All other new top-level commands require a break.
-  if (!_busHistoryKnown || !_serviceRequestKnown || _operation != OPERATION_DATA ||
+  if (_serviceRequestAddress != _address || _operation != OPERATION_DATA ||
       _typedCommandLength != 4U || _typedCommand[1] != 'D' || _typedCommand[2] != '0' ||
-      _typedCommand[3] != '!' || _lastAddress != _address ||
-      _serviceRequestAddress != _address) {
+      _typedCommand[3] != '!') {
     return true;
   }
 
-  const uint32_t now = micros();
-  return now - _lastBusActivityTime > SDI12Timing::kBreakRequiredAfterMarkingMicros ||
-    now - _serviceRequestTime > SDI12Timing::kBreakRequiredAfterMarkingMicros;
+  return micros() - _serviceRequestTime > SDI12Timing::kBreakRequiredAfterMarkingMicros;
 #endif
-}
-
-void SDI12Recorder::_recordServiceRequest(char address, uint32_t markingStartTime) {
-  _busHistoryKnown       = true;
-  _lastAddress           = address;
-  _lastBusActivityTime   = markingStartTime;
-  _serviceRequestKnown   = true;
-  _serviceRequestAddress = address;
-  _serviceRequestTime    = markingStartTime;
 }
 
 void SDI12Recorder::_transitionTo(Phase nextPhase) {
@@ -1020,7 +971,7 @@ void SDI12Recorder::_setResult(RecorderResult reason) {
 void SDI12Recorder::_phase_break() {
   // Retry sequences always begin with a break. Only the first sequence of a new
   // top-level operation may use the optimized no-break path.
-  if (_sequenceCount == 1U && _breakCount == 0U && !_shouldTransmitBreak()) {
+  if (_sequenceCount == 1U && !_breakTransmitted && !_shouldTransmitBreak()) {
     _transitionTo(PHASE_PRECOMMAND_MARK);
     return;
   }
@@ -1028,16 +979,12 @@ void SDI12Recorder::_phase_break() {
   if (!_phaseStarted) {
     _sdi12.startBreak();
     _phaseStartTime        = micros();
-    _lastBusActivityTime   = _phaseStartTime;
-    _busHistoryKnown       = false;
-    _serviceRequestKnown   = false;
     _serviceRequestAddress = '\0';
     _phaseStarted          = true;
-    _breakCount++;
+    _breakTransmitted      = true;
   }
 
   if (micros() - _phaseStartTime >= SDI12_LINE_BREAK_MICROS) {
-    _breakEndTime = micros();
     _transitionTo(PHASE_PRECOMMAND_MARK);
   }
 }
@@ -1057,7 +1004,7 @@ void SDI12Recorder::_phase_precommand_mark() {
 void SDI12Recorder::_phase_transmitting() {
   // Re-check immediately before the optimized first transmission. The application may
   // have delayed calling update() while the pre-command mark was in progress.
-  if (_sequenceCount == 1U && _breakCount == 0U && _attemptCount == 0U &&
+  if (_sequenceCount == 1U && !_breakTransmitted && _attemptCount == 0U &&
       _shouldTransmitBreak()) {
     _transitionTo(PHASE_BREAK);
     return;
@@ -1078,10 +1025,6 @@ void SDI12Recorder::_phase_transmitting() {
   }
   _sdi12.forceListen();
   _commandStopTime       = micros();
-  _busHistoryKnown       = true;
-  _lastAddress           = _address;
-  _lastBusActivityTime   = _commandStopTime;
-  _serviceRequestKnown   = false;
   _serviceRequestAddress = '\0';
   _transitionTo(PHASE_WAITING_RESPONSE);
 }
@@ -1144,7 +1087,6 @@ void SDI12Recorder::_phase_receiving() {
       return;
     }
     receiveEvents |= _sdi12.takeReceiveEvents();
-    _lastBusActivityTime = micros();
   }
 
   // Check for errors
@@ -1193,7 +1135,6 @@ void SDI12Recorder::_phase_draining_response() {
 
   receiveEvents |= _sdi12.takeReceiveEvents();
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED) {
-    _lastBusActivityTime = micros();
     _transitionTo(PHASE_DECIDING_RETRY);
     return;
   }
@@ -1254,7 +1195,7 @@ void SDI12Recorder::_phase_validating() {
   }
 
   if (_operation == OPERATION_DATA) {
-    if (_dataValueCount == _dataExpectedCount) {
+    if (_dataValueCount == _expectedValueCount) {
       _releaseContext(_dataContextSlot);
       _setResult(RESULT_SUCCESS);
       _transitionTo(PHASE_IDLE);
@@ -1287,8 +1228,6 @@ void SDI12Recorder::_phase_waiting_service_request() {
   if (lineEvents &
       (SDI12::SDI12_LINE_EVENT_BREAK_THRESHOLD_REACHED |
        SDI12::SDI12_LINE_EVENT_BREAK_COMPLETED)) {
-    _busHistoryKnown       = false;
-    _serviceRequestKnown   = false;
     _serviceRequestAddress = '\0';
     _setResult(RESULT_UNEXPECTED_BREAK);
     _transitionTo(PHASE_IDLE);
@@ -1331,8 +1270,6 @@ void SDI12Recorder::_phase_receiving_service_request() {
   if (lineEvents &
       (SDI12::SDI12_LINE_EVENT_BREAK_THRESHOLD_REACHED |
        SDI12::SDI12_LINE_EVENT_BREAK_COMPLETED)) {
-    _busHistoryKnown       = false;
-    _serviceRequestKnown   = false;
     _serviceRequestAddress = '\0';
     _setResult(RESULT_UNEXPECTED_BREAK);
     _transitionTo(PHASE_IDLE);
@@ -1355,7 +1292,6 @@ void SDI12Recorder::_phase_receiving_service_request() {
       return;
     }
     receiveEvents |= _sdi12.takeReceiveEvents();
-    _lastBusActivityTime = micros();
   }
 
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_FRAMING_ERROR) {
@@ -1381,7 +1317,8 @@ void SDI12Recorder::_phase_receiving_service_request() {
       return;
     }
 
-    _recordServiceRequest(_address, _lastBusActivityTime);
+    _serviceRequestAddress             = _address;
+    _serviceRequestTime                = micros();
     _measurementServiceRequestReceived = true;
     _commitReadyMeasurementContext();
     _stripResponseEnvelope();
@@ -1399,7 +1336,7 @@ void SDI12Recorder::_phase_receiving_service_request() {
 
 void SDI12Recorder::_phase_waiting_data_ready() {
   if (_dataContextSlot >= SDI12_RECORDER_CONTEXT_SLOTS ||
-      !_contexts[_dataContextSlot].occupied ||
+      _contexts[_dataContextSlot].phase == CONTEXT_PHASE_NONE ||
       _contexts[_dataContextSlot].address != _address) {
     _setResult(RESULT_CONTEXT_REQUIRED);
     _transitionTo(PHASE_IDLE);
@@ -1466,7 +1403,8 @@ void SDI12Recorder::_phase_deciding_retry() {
     }
 
     // All retries exhausted
-    if (_retryFailureResult != RESULT_NONE) { _setResult(_retryFailureResult); }
+    _setResult(_retryFailureResult == RESULT_NONE ? RESULT_RETRIES_EXHAUSTED
+                                                  : _retryFailureResult);
     _transitionTo(PHASE_IDLE);
     return;
   }
