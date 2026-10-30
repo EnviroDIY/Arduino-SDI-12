@@ -26,6 +26,7 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
     _sequenceCount(0),
     _breakCount(0),
     _attemptCount(0),
+    _automaticRetriesEnabled(true),
     _busHistoryKnown(false),
     _lastAddress('\0'),
     _lastBusActivityTime(0),
@@ -38,6 +39,8 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
     _measurementSeconds(0),
     _expectedValueCount(0),
     _measurementWaitStart(0),
+    _measurementServiceRequestReceived(false),
+    _measurementServiceRequestMillis(0),
     _dataValues(nullptr),
     _dataCapacity(0),
     _dataContextSlot(SDI12_RECORDER_CONTEXT_SLOTS),
@@ -246,6 +249,16 @@ void SDI12Recorder::startRequestContinuousData(char address, float* values,
 }
 
 void SDI12Recorder::requestData(char address, float* values, size_t capacity) {
+  _startDataRequest(address, values, capacity, true, true);
+}
+
+void SDI12Recorder::requestDataImmediately(char address, float* values,
+                                           size_t capacity) {
+  _startDataRequest(address, values, capacity, false, false);
+}
+
+void SDI12Recorder::_startDataRequest(char address, float* values, size_t capacity,
+                                      bool waitUntilReady, bool automaticRetries) {
   if (_rejectIfBusy()) { return; }
   if (!SDI12Address::isValid(address)) {
     _rejectOperation(RESULT_INVALID_ADDRESS);
@@ -273,6 +286,7 @@ void SDI12Recorder::requestData(char address, float* values, size_t capacity) {
   _typedCommand[2] = '0';
   _typedCommand[3] = '!';
   _beginTypedOperation(OPERATION_DATA, address, 4U);
+  _automaticRetriesEnabled = automaticRetries;
 
   _dataValues            = values;
   _dataCapacity          = capacity;
@@ -285,7 +299,7 @@ void SDI12Recorder::requestData(char address, float* values, size_t capacity) {
   _txnTimeoutMs          = kDataTransactionTimeoutMs;
   _responseTimeoutMicros = kDataResponseTimeoutMicros;
 
-  if (context.phase == CONTEXT_PHASE_CONCURRENT_RUNNING &&
+  if (waitUntilReady && context.phase == CONTEXT_PHASE_CONCURRENT_RUNNING &&
       !_readyAtReached(context.readyAt)) {
     _transitionTo(PHASE_WAITING_DATA_READY);
   }
@@ -547,6 +561,7 @@ void SDI12Recorder::_beginOperation() {
   _sequenceCount              = 1;
   _breakCount                 = 0;
   _attemptCount               = 0;
+  _automaticRetriesEnabled    = true;
   _breakEndTime               = 0;
   _retryFailureResult         = RESULT_NONE;
   _contextInvalidationApplied = false;
@@ -588,11 +603,14 @@ void SDI12Recorder::_resetAttemptReception() {
 }
 
 void SDI12Recorder::_clearOperationOutputs() {
-  _queriedAddress      = '\0';
-  _acknowledgedAddress = '\0';
-  _measurementSeconds  = 0U;
-  _expectedValueCount  = 0U;
-  _dataValueCount      = 0U;
+  _queriedAddress                    = '\0';
+  _acknowledgedAddress               = '\0';
+  _measurementSeconds                = 0U;
+  _expectedValueCount                = 0U;
+  _dataValueCount                    = 0U;
+  _measurementWaitStart              = 0U;
+  _measurementServiceRequestReceived = false;
+  _measurementServiceRequestMillis   = 0U;
   memset(&_identification, 0, sizeof(_identification));
 }
 
@@ -681,7 +699,8 @@ void SDI12Recorder::_commitConcurrentMeasurementContext() {
                                                           : CONTEXT_PHASE_CONCURRENT_RUNNING;
   context.crcExpected         = _measurementRequestsCRC;
   context.expectedValueCount  = _expectedValueCount;
-  context.readyAt = millis() + static_cast<uint32_t>(_measurementSeconds) * 1000UL;
+  context.readyAt             = _measurementWaitStart +
+    static_cast<uint32_t>(_measurementSeconds) * 1000UL;
 }
 
 void SDI12Recorder::_startNextDataCommand() {
@@ -1227,6 +1246,7 @@ void SDI12Recorder::_phase_validating() {
   }
 
   if (_operation == OPERATION_CONCURRENT_MEASUREMENT) {
+    _measurementWaitStart = millis();
     _commitConcurrentMeasurementContext();
     _setResult(RESULT_SUCCESS);
     _transitionTo(PHASE_IDLE);
@@ -1278,6 +1298,7 @@ void SDI12Recorder::_phase_waiting_service_request() {
   uint8_t receiveEvents = _sdi12.takeReceiveEvents();
 
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_START_BIT_OBSERVED) {
+    _measurementServiceRequestMillis = millis() - _measurementWaitStart;
     clearResponse();
     _pendingReceiveEvents = receiveEvents &
       static_cast<uint8_t>(~SDI12::SDI12_RECEIVE_EVENT_START_BIT_OBSERVED);
@@ -1361,6 +1382,7 @@ void SDI12Recorder::_phase_receiving_service_request() {
     }
 
     _recordServiceRequest(_address, _lastBusActivityTime);
+    _measurementServiceRequestReceived = true;
     _commitReadyMeasurementContext();
     _stripResponseEnvelope();
     _setResult(RESULT_SUCCESS);
@@ -1406,6 +1428,11 @@ void SDI12Recorder::_phase_deciding_retry() {
   if (_result != RESULT_NONE && _result != RESULT_NO_RESPONSE &&
       _retryFailureResult == RESULT_NONE) {
     _retryFailureResult = _result;
+  }
+
+  if (!_automaticRetriesEnabled) {
+    _transitionTo(PHASE_IDLE);
+    return;
   }
 
   // For no-response failures, enforce the retry window:

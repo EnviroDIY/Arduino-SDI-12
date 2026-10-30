@@ -84,6 +84,7 @@ startConcurrentMeasurement	KEYWORD2
 requestContinuousData	KEYWORD2
 startRequestContinuousData	KEYWORD2
 requestData	KEYWORD2
+requestDataImmediately	KEYWORD2
 measure	KEYWORD2
 measurementState	KEYWORD2
 isMeasurementReady	KEYWORD2
@@ -99,6 +100,9 @@ queriedAddress	KEYWORD2
 acknowledgedAddress	KEYWORD2
 identification	KEYWORD2
 measurementSeconds	KEYWORD2
+measurementServiceRequestReceived	KEYWORD2
+measurementServiceRequestMillis	KEYWORD2
+measurementAcknowledgementMillis	KEYWORD2
 expectedValueCount	KEYWORD2
 dataValueCount	KEYWORD2
 response	KEYWORD2

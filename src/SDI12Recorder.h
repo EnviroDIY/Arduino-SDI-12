@@ -360,6 +360,29 @@ class SDI12Recorder {
   void requestData(char address, float* values, size_t capacity);
 
   /**
+   * @brief Attempt to retrieve all retained measurement values immediately.
+   *
+   * This diagnostic variant starts with `D0` immediately, even when a retained
+   * concurrent measurement has not reached its advertised ready time. It uses the
+   * same typed response parsing, CRC validation, and `D0` through `D9` workflow as
+   * requestData(), but transmits each data command only once. Disabling retries keeps
+   * a later successful response from being attributed to the original probe time.
+   *
+   * Call update() until isOperationComplete() is true. The caller-owned buffer must
+   * remain valid and must not be modified until the operation completes or is
+   * cancelled.
+   *
+   * @param address Sensor address with retained measurement context.
+   * @param values Caller-owned destination for the parsed values. May be null only
+   *               when the advertised value count is zero.
+   * @param capacity Number of float elements available in @p values.
+   *
+   * @warning An early data command may abort a concurrent measurement that is not yet
+   *          ready. Use requestData() for normal recorder operation.
+   */
+  void requestDataImmediately(char address, float* values, size_t capacity);
+
+  /**
    * @brief Perform a normal measurement and retrieve all of its values, blocking
    * until completion.
    *
@@ -562,6 +585,39 @@ class SDI12Recorder {
   }
 
   /**
+   * @brief Check whether the most recent normal measurement completed by service
+   * request.
+   *
+   * @return true when a validated service request ended the measurement wait; false
+   *         when the advertised time elapsed or no valid service request is available.
+   */
+  bool measurementServiceRequestReceived() const {
+    return _measurementServiceRequestReceived;
+  }
+
+  /**
+   * @brief Retrieve when the most recent normal-measurement service request began.
+   *
+   * @return Milliseconds from completion of the validated measurement acknowledgement
+   *         to observation of the service-request start bit. The value is valid only
+   *         when measurementServiceRequestReceived() returns true.
+   */
+  uint32_t measurementServiceRequestMillis() const {
+    return _measurementServiceRequestMillis;
+  }
+
+  /**
+   * @brief Retrieve when the most recent measurement acknowledgement was validated.
+   *
+   * @return The millis() timestamp captured after validating the acknowledgement for
+   *         a normal or concurrent measurement. The value is valid after a successful
+   *         measurement-start operation and until another operation is started.
+   */
+  uint32_t measurementAcknowledgementMillis() const {
+    return _measurementWaitStart;
+  }
+
+  /**
    * @brief Retrieve the advertised value count for the most recent measurement.
    *
    * @return Expected number of values from a validated `atttn` response, or zero when
@@ -693,9 +749,10 @@ class SDI12Recorder {
   uint32_t _breakEndTime;     ///< micros() when break ended
 
   // Attempt tracking (retry logic)
-  uint8_t _sequenceCount;  ///< Current retry sequence number (1-3)
-  uint8_t _breakCount;     ///< Number of breaks issued (0-3)
-  uint8_t _attemptCount;   ///< No-break retries in current sequence (0-2)
+  uint8_t _sequenceCount;            ///< Current retry sequence number (1-3)
+  uint8_t _breakCount;               ///< Number of breaks issued (0-3)
+  uint8_t _attemptCount;             ///< No-break retries in current sequence (0-2)
+  bool    _automaticRetriesEnabled;  ///< Whether the active operation may retry
 
   // Global bus history used only for first-attempt break selection
   bool     _busHistoryKnown;      ///< Whether the retained bus history is usable
@@ -711,10 +768,12 @@ class SDI12Recorder {
   bool _contextInvalidationApplied;  ///< Whether first transmission applied policy
 
   // Active measurement workflow
-  bool     _measurementRequestsCRC;  ///< CRC policy to commit after readiness
-  uint16_t _measurementSeconds;      ///< Parsed `ttt` acknowledgement field
-  uint8_t  _expectedValueCount;      ///< Parsed `n` acknowledgement field
-  uint32_t _measurementWaitStart;    ///< millis() at acknowledgement completion
+  bool     _measurementRequestsCRC;         ///< CRC policy to commit after readiness
+  uint16_t _measurementSeconds;             ///< Parsed `ttt` acknowledgement field
+  uint8_t  _expectedValueCount;             ///< Parsed `n` acknowledgement field
+  uint32_t _measurementWaitStart;           ///< millis() at acknowledgement completion
+  bool _measurementServiceRequestReceived;  ///< Whether a valid request ended the wait
+  uint32_t _measurementServiceRequestMillis;  ///< Request start after acknowledgement
 
   // Active ASCII data workflow
   float*  _dataValues;         ///< Caller-owned destination retained during operation
@@ -755,6 +814,8 @@ class SDI12Recorder {
   void   _applyContextInvalidationForTransmission();
   void   _commitReadyMeasurementContext();
   void   _commitConcurrentMeasurementContext();
+  void   _startDataRequest(char address, float* values, size_t capacity,
+                           bool waitUntilReady, bool automaticRetries);
   void   _startNextDataCommand();
   static bool    _readyAtReached(uint32_t readyAt);
   bool           _collectResponseCharacters();
