@@ -1,10 +1,10 @@
 /**
- * @example{lineno} m_non_blocking_measurement.ino
+ * @example{lineno} n_non_blocking_measurement.ino
  * @copyright Stroud Water Research Center
  * @license This example is published under the BSD-3 license.
  * @author Codex, at instruction of Sara Geleskie Damiano <sdamiano@stroudcenter.org>
  *
- * @brief Example M: Advanced non-blocking measurement workflow.
+ * @brief Example N: Advanced non-blocking measurement workflow.
  *
  * This example acknowledges and identifies one sensor, requests a CRC measurement,
  * demonstrates recovery from an undersized data buffer, and retrieves every value.

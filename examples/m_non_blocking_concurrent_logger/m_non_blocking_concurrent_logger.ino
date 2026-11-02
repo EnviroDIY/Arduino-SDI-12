@@ -1,10 +1,10 @@
 /**
- * @example{lineno} l_non_blocking_concurrent_logger.ino
+ * @example{lineno} m_non_blocking_concurrent_logger.ino
  * @copyright Stroud Water Research Center
  * @license This example is published under the BSD-3 license.
  * @author Codex, at instruction of Sara Geleskie Damiano <sdamiano@stroudcenter.org>
  *
- * @brief Example L: Non-blocking concurrent measurements.
+ * @brief Example M: Non-blocking concurrent measurements.
  *
  * This example discovers sensors, starts concurrent measurements, and retrieves each
  * result when ready. Every recorder transaction is advanced from loop() with update().

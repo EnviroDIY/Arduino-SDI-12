@@ -31,13 +31,15 @@
 - Example K: Concurrent Logger <!--! @subpage example_k_page -->
   - Shows how to request concurrent measurements
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/k_concurrent_logger)
-- Example L: Non-Blocking Concurrent Logger <!--! @subpage example_l_page -->
+- Example L: Verify CRC
+  - This has been deprecated; the other data logging examples all show how to handle CRC verification.
+- Example M: Non-Blocking Concurrent Logger <!--! @subpage example_m_page -->
   - Interleaves concurrent measurements without waiting inside a recorder operation
-  - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/l_non_blocking_concurrent_logger)
-- Example M: Non-Blocking Measurement <!--! @subpage example_m_page -->
+  - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/m_non_blocking_concurrent_logger)
+- Example N: Non-Blocking Measurement <!--! @subpage example_n_page -->
   - Demonstrates non-blocking acknowledgement, identification, CRC measurement,
     capacity-error handling, and complete data retrieval
-  - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/m_non_blocking_measurement)
+  - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/n_non_blocking_measurement)
 
 ## Advanced Examples
 
