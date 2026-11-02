@@ -29,7 +29,6 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
     _serviceRequestAddress('\0'),
     _serviceRequestTime(0),
     _reservedContextSlot(SDI12_RECORDER_CONTEXT_SLOTS),
-    _contextInvalidationApplied(false),
     _measurementRequestsCRC(false),
     _measurementSeconds(0),
     _expectedValueCount(0),
@@ -520,14 +519,13 @@ void SDI12Recorder::_rejectOperation(RecorderResult reason) {
 }
 
 void SDI12Recorder::_beginOperation() {
-  _startResult                = RESULT_NONE;
-  _txnStartTime               = millis();
-  _sequenceCount              = 1;
-  _breakTransmitted           = false;
-  _attemptCount               = 0;
-  _automaticRetriesEnabled    = true;
-  _retryFailureResult         = RESULT_NONE;
-  _contextInvalidationApplied = false;
+  _startResult             = RESULT_NONE;
+  _txnStartTime            = millis();
+  _sequenceCount           = 1;
+  _breakTransmitted        = false;
+  _attemptCount            = 0;
+  _automaticRetriesEnabled = true;
+  _retryFailureResult      = RESULT_NONE;
   _resetAttemptReception();
   _clearOperationOutputs();
   _result = RESULT_NONE;
@@ -622,8 +620,7 @@ void SDI12Recorder::_invalidateAllContexts() {
 }
 
 void SDI12Recorder::_applyContextInvalidationForTransmission() {
-  if (_contextInvalidationApplied) { return; }
-  _contextInvalidationApplied = true;
+  if (_sequenceCount != 1U || _attemptCount != 0U) { return; }
 
   switch (_operation) {
     case OPERATION_ADDRESS_QUERY: _invalidateAllContexts(); break;
@@ -668,20 +665,19 @@ void SDI12Recorder::_commitConcurrentMeasurementContext() {
 
 void SDI12Recorder::_startNextDataCommand() {
   ++_dataCommandNumber;
-  _typedCommand[0]            = _address;
-  _typedCommand[1]            = 'D';
-  _typedCommand[2]            = static_cast<char>('0' + _dataCommandNumber);
-  _typedCommand[3]            = '!';
-  _typedCommand[4]            = '\0';
-  _typedCommandLength         = 4U;
-  _txnStartTime               = millis();
-  _txnTimeoutMs               = kDataTransactionTimeoutMs;
-  _responseTimeoutMicros      = kDataResponseTimeoutMicros;
-  _sequenceCount              = 1U;
-  _breakTransmitted           = false;
-  _attemptCount               = 0U;
-  _retryFailureResult         = RESULT_NONE;
-  _contextInvalidationApplied = false;
+  _typedCommand[0]       = _address;
+  _typedCommand[1]       = 'D';
+  _typedCommand[2]       = static_cast<char>('0' + _dataCommandNumber);
+  _typedCommand[3]       = '!';
+  _typedCommand[4]       = '\0';
+  _typedCommandLength    = 4U;
+  _txnStartTime          = millis();
+  _txnTimeoutMs          = kDataTransactionTimeoutMs;
+  _responseTimeoutMicros = kDataResponseTimeoutMicros;
+  _sequenceCount         = 1U;
+  _breakTransmitted      = false;
+  _attemptCount          = 0U;
+  _retryFailureResult    = RESULT_NONE;
   _resetAttemptReception();
   _result = RESULT_NONE;
   _transitionTo(PHASE_BREAK);

@@ -746,7 +746,6 @@ class SDI12Recorder {
   // Per-address measurement context
   MeasurementContext _contexts[SDI12_RECORDER_CONTEXT_SLOTS];
   uint8_t            _reservedContextSlot;  ///< Slot reserved by the active operation
-  bool _contextInvalidationApplied;  ///< Whether first transmission applied policy
 
   // Active measurement workflow
   bool     _measurementRequestsCRC;         ///< CRC policy to commit after readiness

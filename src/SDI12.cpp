@@ -740,11 +740,6 @@ void SDI12::sendResponse(FlashString resp, bool addCRC) {
   setLineState(SDI12_LISTENING);  // return to listening state
 }
 
-/**
- * @brief The polynomial to match the CRC with; set in the SDI-12 specifications
- */
-#define POLY 0xa001
-
 uint16_t SDI12::calculateCRC(String& resp) {
   return calculateCRC(resp.c_str());
 }
@@ -758,7 +753,7 @@ uint16_t SDI12::calculateCRC(const char* resp) {
     for (int j = 0; j < 8; j++) {  // count = 1 to 8
       if (crc & 0x0001) {          // if the least significant bit of the CRC is one
         crc >>= 1;                 // right shift the CRC one bit
-        crc ^= POLY;  // set CRC equal to the exclusive OR of POLY and itself
+        crc ^= SDI12_CRC_POLY;     // XOR the shifted CRC with the protocol polynomial
       } else {
         crc >>= 1;  // right shift the CRC one bit
       }
@@ -776,9 +771,9 @@ uint16_t SDI12::calculateCRC(FlashString resp) {
     crc ^= static_cast<uint16_t>(response_char);  // Set the CRC equal to the exclusive
                                                   // OR of the character and itself
     for (int j = 0; j < 8; j++) {                 // count = 1 to 8
-      if (crc & 0x0001) {  // if the least significant bit of the CRC is one
-        crc >>= 1;         // right shift the CRC one bit
-        crc ^= POLY;       // set CRC equal to the exclusive OR of POLY and itself
+      if (crc & 0x0001) {       // if the least significant bit of the CRC is one
+        crc >>= 1;              // right shift the CRC one bit
+        crc ^= SDI12_CRC_POLY;  // XOR the shifted CRC with the protocol polynomial
       } else {
         crc >>= 1;  // right shift the CRC one bit
       }

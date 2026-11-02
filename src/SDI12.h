@@ -150,6 +150,9 @@ typedef const __FlashStringHelper* FlashString;
 /// a char not found in a valid ASCII numeric field
 #define NO_IGNORE_CHAR '\x01'
 
+/// The polynomial to match the CRC-16 with; set in the SDI-12 specifications
+#define SDI12_CRC_POLY 0xa001
+
 /// @def NEED_LOOKAHEAD_ENUM
 /// @brief This macro is defined if lookahead options are needed.
 #if defined(PARTICLE) || defined(ESP8266) ||          \
