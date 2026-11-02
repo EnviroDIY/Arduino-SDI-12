@@ -75,6 +75,7 @@
 //==============================================================
 #if !defined(SDI12_BUFFER_SIZE) || defined(DOXYGEN)
 /**
+ * @def SDI12_BUFFER_SIZE
  * @brief The buffer size for incoming SDI-12 data.
  *
  * The default is 82 characters, which should be sufficient for most SDI-12 responses,

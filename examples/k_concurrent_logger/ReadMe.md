@@ -4,6 +4,11 @@ This is very similar to example D - finding all attached sensors and logging dat
 Unlike example D, however, which waits for each sensor to complete a measurement, this asks all sensors to take measurements concurrently and then waits until each is finished to query for results.
 This can be much faster than waiting for each sensor when you have multiple sensor attached.
 
+The recorder retains each sensor's readiness, expected value count, and CRC
+policy in its fixed context table. The example starts as many active sensors as
+that table can hold, interleaves their measurement times, and retrieves complete
+data only after `isMeasurementReady()` reports that a sensor is ready.
+
 <!--! @section k_concurrent_logger_pio PlatformIO Configuration -->
 
 <!--! @include{lineno} k_concurrent_logger/platformio.ini -->

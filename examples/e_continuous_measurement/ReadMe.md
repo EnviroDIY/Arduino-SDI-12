@@ -4,6 +4,10 @@ This is a simple demonstration of the SDI-12 library for Arduino.
 
 It discovers the address of all sensors active on a single bus and takes continuous measurements from them.
 
+Each call to `SDI12Recorder::requestContinuousData()` requests one independent
+`R0` through `R9` response. The example can instead request `RC0` through `RC9`
+and validate the returned CRC by setting `useCRC` to `true`.
+
 Every SDI-12 device is different in the time it takes to take a measurement, and the amount of data it returns.  This sketch will not serve every sensor type, but it will likely be helpful in getting you started.
 
 Each sensor should have a unique address already - if not, multiple sensors may respond simultaneously to the same request and the output will not be readable by the Arduino.
