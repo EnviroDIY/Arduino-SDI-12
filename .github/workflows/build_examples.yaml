@@ -17,7 +17,7 @@ jobs:
     uses: EnviroDIY/workflows/.github/workflows/build_examples.yaml@main
     with:
       # # Comma-separated list of examples to build or "all" for all (default: all)
-      examples_to_build: "examples/a_wild_card,examples/b_address_change,examples/c_check_all_addresses,examples/d_simple_logger,examples/e_continuous_measurement,examples/g_terminal_interface,examples/h_SDI-12_slave_implementation,examples/k_concurrent_logger"
+      examples_to_build: "examples/a_wild_card,examples/b_address_change,examples/c_check_all_addresses,examples/d_simple_logger,examples/e_continuous_measurement,examples/g_terminal_interface,examples/h_SDI-12_slave_implementation,examples/k_concurrent_logger,examples/m_non_blocking_concurrent_logger,examples/n_non_blocking_measurement"
 
       # # Comma-separated list of examples to ignore (mutually exclusive with examples_to_build)
       # examples_to_ignore: "examples/example_to_skip"

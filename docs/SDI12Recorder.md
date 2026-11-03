@@ -25,9 +25,9 @@ the next bus operation. A caller-owned data buffer passed to `requestData()` or
 `startRequestContinuousData()` must remain valid and unchanged until the
 operation completes or is cancelled.
 
-The [non-blocking measurement example](@ref example_m_page) shows the complete
+The [non-blocking measurement example](@ref example_n_page) shows the complete
 acknowledgement, identification, measurement, and data sequence. The
-[non-blocking concurrent logger](@ref example_l_page) shows how one executor
+[non-blocking concurrent logger](@ref example_m_page) shows how one executor
 interleaves operations for several sensors.
 
 ## Measurements and Data Context<!--! {#recorder_measurement_context} -->
