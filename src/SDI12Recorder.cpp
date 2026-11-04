@@ -1281,27 +1281,33 @@ void SDI12Recorder::_phase_receiving_service_request() {
   receiveEvents |= _sdi12.takeReceiveEvents();
 
   if (!_collectResponseCharacters()) {
-    _transitionTo(PHASE_IDLE);
+    _resetAttemptReception();
+    _setResult(RESULT_NONE);
+    _transitionTo(PHASE_WAITING_SERVICE_REQUEST);
     return;
   }
 
   receiveEvents |= _sdi12.takeReceiveEvents();
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED) {
     if (!_collectResponseCharacters()) {
-      _transitionTo(PHASE_IDLE);
+      _resetAttemptReception();
+      _setResult(RESULT_NONE);
+      _transitionTo(PHASE_WAITING_SERVICE_REQUEST);
       return;
     }
     receiveEvents |= _sdi12.takeReceiveEvents();
   }
 
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_FRAMING_ERROR) {
-    _setResult(RESULT_FRAMING_ERROR);
-    _transitionTo(PHASE_IDLE);
+    _resetAttemptReception();
+    _setResult(RESULT_NONE);
+    _transitionTo(PHASE_WAITING_SERVICE_REQUEST);
     return;
   }
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW) {
-    _setResult(RESULT_BUFFER_OVERFLOW);
-    _transitionTo(PHASE_IDLE);
+    _resetAttemptReception();
+    _setResult(RESULT_NONE);
+    _transitionTo(PHASE_WAITING_SERVICE_REQUEST);
     return;
   }
 
@@ -1312,8 +1318,9 @@ void SDI12Recorder::_phase_receiving_service_request() {
       validationResult = RESULT_MALFORMED_RESPONSE;
     }
     if (validationResult != RESULT_SUCCESS) {
-      _setResult(validationResult);
-      _transitionTo(PHASE_IDLE);
+      _resetAttemptReception();
+      _setResult(RESULT_NONE);
+      _transitionTo(PHASE_WAITING_SERVICE_REQUEST);
       return;
     }
 
@@ -1329,7 +1336,9 @@ void SDI12Recorder::_phase_receiving_service_request() {
 
   const uint32_t waitTime = static_cast<uint32_t>(_measurementSeconds) * 1000UL;
   if (millis() - _measurementWaitStart >= waitTime) {
-    _setResult(RESULT_RESPONSE_TIMEOUT);
+    _resetAttemptReception();
+    _commitReadyMeasurementContext();
+    _setResult(RESULT_SUCCESS);
     _transitionTo(PHASE_IDLE);
   }
 }
