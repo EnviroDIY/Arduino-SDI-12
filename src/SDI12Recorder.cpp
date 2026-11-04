@@ -1418,15 +1418,16 @@ void SDI12Recorder::_phase_deciding_retry() {
     return;
   }
 
-  // For other failures (framing, wrong address, etc.), retry without a new break
-  if (_attemptCount < 2) {
+  // Retry other failures without a new break only while the sensor remains active.
+  if (elapsedMicrosSinceStop <= SDI12Timing::kBreakRequiredAfterMarkingMicros &&
+      _attemptCount < 2) {
     _attemptCount++;
     _resetAttemptReception();
     _transitionTo(PHASE_PRECOMMAND_MARK);
     return;
   }
 
-  // Too many attempts without break; need a new break
+  // The marking window expired or too many attempts were made; use a new break.
   if (_sequenceCount < 3U) {
     _sequenceCount++;
     _attemptCount = 0;
