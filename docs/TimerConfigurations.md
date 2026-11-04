@@ -242,7 +242,7 @@ On the ATTiny series (ATtiny25/V / ATtiny45/V / ATtiny85/V) boards, we use Timer
 
 #### ATmegaXU Selected Timers
 
-On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
+On the AtMega16U4 and AtMega32U4, we use the full 10-bit Timer/Counter 4.
 
 > Timer/Counter4 is a general purpose high speed Timer/Counter module, with three independent Output Compare Units, and with enhanced PWM support.
 >
@@ -259,9 +259,6 @@ On the AtMega16U4 and AtMega32U4, we use Timer/Counter 4 as an 8-bit timer.
 > - Five Independent Interrupt Sources (TOV4, OCF4A, OCF4B, OCF4D, FPF4)
 > - High Speed Asynchronous and Synchronous Clocking Modes
 > - Separate Prescaler Unit
-<!-- separator -->
-> [!NOTE]
-> We only utilize the low byte register of Timer 4, effectively using the 10-bit timer as an 8-bit timer.
 
 ## SAMD Boards
 

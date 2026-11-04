@@ -16,7 +16,7 @@ uint8_t parity_even_bit(uint8_t v) {
 #endif
 
 void printBIN(uint16_t c, uint8_t padding = 8, bool reverse = false) {
-  Serial.print("0b");
+  Serial.print(F("0b"));
   for (int8_t b = 0; b < padding; b++) {
     if (reverse) {
       Serial.print(bitRead(c, b));
@@ -27,8 +27,8 @@ void printBIN(uint16_t c, uint8_t padding = 8, bool reverse = false) {
 }
 
 void printHEX(uint8_t c) {
-  Serial.print("0x");
-  if (c < 0x10) { Serial.print("0"); }
+  Serial.print(F("0x"));
+  if (c < 0x10) { Serial.print('0'); }
   Serial.print(String(c, HEX));
 }
 
@@ -62,45 +62,45 @@ void setup() {
   // print info about the allowable characters
   for (uint8_t i = 0; i < 97; i++) {
     uint8_t c = sdi_chars[i];
-    Serial.print("\"");
+    Serial.print('\'');
     if (c == '\r') {
-      Serial.print("\\r");
+      Serial.print(F("\\r"));
     } else if (c == '\n') {
-      Serial.print("\\n");
+      Serial.print(F("\\n"));
     } else if (c == ' ') {
-      Serial.print("space");
+      Serial.print(F("space"));
     } else if (c == '"') {
-      Serial.print("quote");
+      Serial.print(F("quote"));
     } else {
       Serial.write(c);
     }
-    Serial.print("\", ");
+    Serial.print(F("\', "));
     Serial.print(String(c, DEC));
-    Serial.print(", ");
+    Serial.print(F(", "));
     printHEX(c);
-    Serial.print(", ");
+    Serial.print(F(", "));
     printBIN(c);
 
     uint8_t parityBit = parity_even_bit(c);  // Calculate the parity bit
-    Serial.print(", ");
+    Serial.print(F(", "));
     Serial.print(parityBit);
     uint8_t c_par = c | (parityBit << 7);  // Add parity bit to the outgoing character
-    Serial.print(", ");
+    Serial.print(F(", "));
     printBIN(c_par);
 
     // print in reverse to show transmission order (transmitted LSB first)
-    Serial.print(", ");
+    Serial.print(F(", "));
     printBIN(c_par, 8, true);
     // print the levels of each bit with the start and stop bits and separated columns
     // SDI-12 uses inverse logic, so a 0 bit is HIGH and a 1 bit is LOW
     // Start bit is HIGH (equivalent to data bit 0)
     // Stop bit is LOW (equivalent to data bit 1)
-    Serial.print(", 1");  // HIGH start bit
+    Serial.print(F(", 1"));  // HIGH start bit
     for (int8_t b = 0; b < 8; b++) {
-      Serial.print(", ");
+      Serial.print(F(", "));
       Serial.print(!bitRead(c_par, b));  // Inverse logic! Use !
     }
-    Serial.print(", 0");  // LOW stop bit
+    Serial.print(F(", 0"));  // LOW stop bit
     Serial.println();
   }
 }

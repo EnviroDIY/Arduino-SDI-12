@@ -1,3 +1,52 @@
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+~*
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
 # Compiled files, executables
 *.o
 *.a
@@ -5,79 +54,94 @@
 *.out
 *.app
 
-# Junk
+# Compressed and Backup Files
 *.orig
 *.log
 *.bak
+*.tar.gz
+*.zip
+sync.ffs_db
 
-# IDE project files
-.settings
-.pioenvs
-.piolibdeps
-.pio/*
+# Certificates
+*.pem
+*.pem.crt
+*.pem.cert
+*.pem.key
+*.crt
+*.cert
+*.key
+
+# Python
+__pycache__/
+
+# PyCharm
+.idea/
+
+# Atom
+.atomrc.cson
 .clang_complete
 .gcc-flags.json
-platformio.ini
-extra_envs.ini
-lib/readme.txt
-include/readme.txt
-.history
 
 # VSCode
 .vscode
-
-# Filters
-.gitconfig
-filters/*
-
-# Certificates
-*.cert
-*.crt
-*.pem
-*.key
+.history
 
 # PlatformIO
-pioScripts/*
-variants/*
-boards/*
-tests/*
-lib/*
+.settings
+.pio
+.pioenvs
+.piolibdeps
+lib
+lib/readme.txt
+/include
+include/readme.txt
+/tests
+tests/readme.txt
+/boards
+/variants
+/pioScripts
+.sconsign.dblite
+platformio.ini
+extra_envs.ini
+.clang-tidy
+compile_commands.json
 platformio_extra_envs.ini
 pio_common_libdeps.ini
 
 # Arduino CLI
+arduino_cli.log
 continuous_integration/arduino_cli_local.yaml
+home/arduino/*
+arduino_lint.md
+arduino_lint.json
 
 # Local CI and Build Artifacts
-home/arduino/*
+output_*.log
 continuous_integration_artifacts/*
 clang_format_all.bat
 generateKeywords.bat
 installWorkingDependencies.bat
-clang-format-all.py
 runDoxygen.bat
-compile_commands.json
 buildCI.bat
+run_mcss.bat
 
-# Other stuff
-pioScripts
-docs/Doxyfile.bak
-SDI12 Repo Token.txt
-*.tar.gz
-archive/*
-src/wakeUp.h
-**/__pycache__/**
+# Filters
+filters/*
+
+# Planning and Archive Folders
+/archive
+/planning
+**/*.*_archive
+
+# Local Agent Instructions
 AGENTS.md
 .github/copilot-instructions.md
 .bumpversion.toml
-.clang-tidy
-.github/workflows/LibraryBuild.yml
+
+# Other stuff
+SDI12 Repo Token.txt
+src/wakeUp.h
+AGENTS.md
+.github/copilot-instructions.md
 datasheets/*
 Datasheets.md
-docs/DoxygenLayout.xml_archive
-/pio_common_libdeps.ini
-src/SDI12_prints.print
-test/test_embedded/test_crc.hpp
-test/test_embedded/test_dtoa.hpp
-test/test_embedded/test_mbed_main.cpp
-test/test_snippet/test_snippet.cpp
