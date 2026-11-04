@@ -254,12 +254,14 @@ class SDI12 : public Stream {
     SDI12_RECEIVE_EVENT_START_BIT_OBSERVED = 0x01,
     /// A character was reconstructed
     SDI12_RECEIVE_EVENT_CHARACTER_COMPLETED = 0x02,
-    /// A command or response end was seen
+    /// A CR LF response terminator was seen
     SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED = 0x04,
     /// An incomplete character was reset
     SDI12_RECEIVE_EVENT_FRAMING_ERROR = 0x08,
     /// A character could not enter the buffer
-    SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW = 0x10
+    SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW = 0x10,
+    /// An exclamation-point command terminator was seen
+    SDI12_RECEIVE_EVENT_COMMAND_COMPLETED = 0x20
   } SDI12_RECEIVE_EVENT;
 
   /**

@@ -1050,11 +1050,16 @@ void ISR_MEM_ACCESS SDI12::routeEdge() {
 void SDI12::charToBuffer(uint8_t c) {
   publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_CHARACTER_COMPLETED);
 
-  const uint8_t character = c & 0x7F;
-  if (character == static_cast<uint8_t>('!') ||
-      (_previousCharacter == static_cast<uint8_t>('\r') &&
-       character == static_cast<uint8_t>('\n'))) {
-    publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED);
+  const uint8_t character       = c & 0x7F;
+  uint8_t       completionEvent = SDI12_RECEIVE_EVENT_NONE;
+  if (character == static_cast<uint8_t>('!')) {
+    completionEvent = SDI12_RECEIVE_EVENT_COMMAND_COMPLETED;
+  } else if (_previousCharacter == static_cast<uint8_t>('\r') &&
+             character == static_cast<uint8_t>('\n')) {
+    completionEvent = SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED;
+  }
+  if (completionEvent != SDI12_RECEIVE_EVENT_NONE) {
+    publishEvent(_receiveEventFlags, completionEvent);
     _lineObserver.breakMinimumReached   = false;
     _lineObserver.markingMinimumReached = false;
     _previousCharacter                  = 0;
