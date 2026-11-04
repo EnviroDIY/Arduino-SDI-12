@@ -36,7 +36,7 @@ filters/*
 .pio
 lib
 lib/readme.txt
-include
+/include
 include/readme.txt
 pioScripts
 variants

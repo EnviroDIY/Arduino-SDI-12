@@ -25,7 +25,7 @@ void setup() {
 #endif
 
   slaveSDI12.forceListen();  // sets SDIPIN as input to prepare for incoming message
-  Serial.println("Starting SDI-12 Spy");
+  Serial.println(F("Starting SDI-12 Spy"));
 }
 
 void loop() {

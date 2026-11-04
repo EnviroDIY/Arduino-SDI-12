@@ -37,12 +37,10 @@
   - Interleaves concurrent measurements without waiting inside a recorder operation
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/m_non_blocking_concurrent_logger)
 - Example N: Non-Blocking Measurement <!--! @subpage example_n_page -->
-  - Demonstrates non-blocking acknowledgement, identification, CRC measurement,
-    capacity-error handling, and complete data retrieval
+  - Demonstrates non-blocking acknowledgement, identification, CRC measurement, capacity-error handling, and complete data retrieval
   - [GitHub](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples/n_non_blocking_measurement)
 
 ## Advanced Examples
 
 - [Raw Extended Commands](extras/raw_extended_commands/ReadMe.md)
-  - Uses the recorder's secondary raw-command path for a manufacturer-specific
-    extended command
+  - Uses the recorder's secondary raw-command path for a manufacturer-specific extended command

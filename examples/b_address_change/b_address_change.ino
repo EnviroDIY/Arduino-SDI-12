@@ -44,9 +44,9 @@ bool printInfo(char address) {
     mySDI12Recorder.printSensorInfo(sensorInfo, Serial);
     return true;
   } else {
-    Serial.print("Identification failed for address ");
+    Serial.print(F("Identification failed for address "));
     Serial.print(address);
-    Serial.print(": ");
+    Serial.print(F(": "));
     mySDI12Recorder.printRecorderResult(Serial);
     Serial.println();
   }
@@ -58,23 +58,23 @@ void setup() {
   while (!Serial && millis() < 10000L);
   char tbuf[3] = {'\0'};
 
-  Serial.print("Opening SDI-12 bus on pin ");
+  Serial.print(F("Opening SDI-12 bus on pin "));
   Serial.print(dataPin);
-  Serial.print(" (");
+  Serial.print(F(" ("));
   Serial.print(itoa(dataPin, tbuf, 10));
-  Serial.print(")");
-  Serial.println("...");
+  Serial.print(')');
+  Serial.println(F("..."));
   mySDI12.begin();
   delay(500);  // allow things to settle
 
-  Serial.println("Timeout value: ");
+  Serial.println(F("Timeout value: "));
   Serial.println(mySDI12.TIMEOUT);
 
   // Power the sensors;
   if (powerPin >= 0) {
-    Serial.print("Powering up sensors with pin ");
+    Serial.print(F("Powering up sensors with pin "));
     Serial.print(String(powerPin));
-    Serial.println(", wait 10s...");
+    Serial.println(F(", wait 10s..."));
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
     delay(10000L);
@@ -91,38 +91,39 @@ void loop() {
   // The wildcard query works only when exactly one sensor is attached to the bus.
   oldAddress = mySDI12Recorder.queryAddress();
   if (oldAddress == '\0') {
-    Serial.print("No sensor detected: ");
+    Serial.print(F("No sensor detected: "));
     mySDI12Recorder.printRecorderResult(Serial);
     Serial.println();
-    Serial.println("Check physical connections and restart the Arduino.");
+    Serial.println(F("Check physical connections and restart the Arduino."));
     while (true);
   }
 
-  Serial.print("Sensor active at address ");
+  Serial.print(F("Sensor active at address "));
   Serial.print(oldAddress);
-  Serial.println(".");
+  Serial.println('.');
   printInfo(oldAddress);
 
-  Serial.println("Enter new address.");  // prompt for a new address
+  Serial.println(F("Enter new address."));  // prompt for a new address
   while (!Serial.available());
   char newAdd = Serial.read();
 
   // wait for valid response
   while (!SDI12Address::isValid(newAdd)) {
     if (newAdd != '\n' && newAdd != '\r' && newAdd != ' ') {
-      Serial.println("Not a valid address. Please enter '0'-'9', 'a'-'z', or 'A'-'Z'.");
+      Serial.println(
+        F("Not a valid address. Please enter '0'-'9', 'a'-'z', or 'A'-'Z'."));
     }
     while (!Serial.available());
     newAdd = Serial.read();
   }
 
-  Serial.println("Readdressing sensor.");
+  Serial.println(F("Readdressing sensor."));
   if (mySDI12Recorder.changeAddress(oldAddress, newAdd)) {
-    Serial.println("Success. Querying the sensor again for verification.");
+    Serial.println(F("Success. Querying the sensor again for verification."));
   } else {
-    Serial.print("Address change failed: ");
+    Serial.print(F("Address change failed: "));
     mySDI12Recorder.printRecorderResult(Serial);
     Serial.println();
-    Serial.println("Querying the bus again.");
+    Serial.println(F("Querying the bus again."));
   }
 }

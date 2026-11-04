@@ -69,9 +69,9 @@ bool printInfo(char address) {
     mySDI12Recorder.printSensorInfo(sensorInfo, Serial);
     return true;
   } else {
-    Serial.print("Identification failed for address ");
+    Serial.print(F("Identification failed for address "));
     Serial.print(address);
-    Serial.print(": ");
+    Serial.print(F(": "));
     mySDI12Recorder.printRecorderResult(Serial);
     Serial.println();
   }
@@ -130,28 +130,28 @@ void setup() {
   while (!Serial && millis() < 10000L);
   char tbuf[3] = {'\0'};
 
-  Serial.print("Opening SDI-12 bus on pin ");
+  Serial.print(F("Opening SDI-12 bus on pin "));
   Serial.print(dataPin);
-  Serial.print(" (");
+  Serial.print(F(" ("));
   Serial.print(itoa(dataPin, tbuf, 10));
-  Serial.print(")");
-  Serial.println("...");
+  Serial.print(')');
+  Serial.println(F("..."));
   mySDI12.begin();
   delay(500);  // allow things to settle
 
-  Serial.println("Timeout value: ");
+  Serial.println(F("Timeout value: "));
   Serial.println(mySDI12.TIMEOUT);
 
   // Power the sensors;
   if (powerPin >= 0) {
-    Serial.print("Powering up sensors with pin ");
+    Serial.print(F("Powering up sensors with pin "));
     Serial.print(String(powerPin));
-    Serial.println(", wait 10s...");
+    Serial.println(F(", wait 10s..."));
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
     delay(10000L);
   } else {
-    Serial.println("Wait 5s...");
+    Serial.println(F("Wait 5s..."));
     delay(5000L);
   }
 
@@ -162,7 +162,7 @@ void setup() {
 #endif
 
   // Quickly scan the address space
-  Serial.println("\n\nScanning all addresses, please wait...");
+  Serial.println(F("\n\nScanning all addresses, please wait..."));
 
   for (int8_t i = firstAddress; i <= lastAddress; i++) {
     char addr = SDI12Address::fromIndex(i);
@@ -172,7 +172,7 @@ void setup() {
       printInfo(addr);
     }
   }
-  Serial.print("Total number of sensors found:  ");
+  Serial.print(F("Total number of sensors found:  "));
   Serial.println(numSensors);
 
   if (numSensors == 0) {
@@ -182,7 +182,7 @@ void setup() {
   }
 
   Serial.println();
-  Serial.println("Time Elapsed (s), Measurement 1, Measurement 2, ... etc.");
+  Serial.println(F("Time Elapsed (s), Measurement 1, Measurement 2, ... etc."));
   Serial.println(
     "-------------------------------------------------------------------------------");
 }
@@ -224,9 +224,9 @@ void loop() {
         if (isActive[i] && mySDI12Recorder.isMeasurementReady(addr) &&
             expectedResults[i] > 0 && (returnedResults[i] < expectedResults[i])) {
           Serial.print(millis() / 1000);
-          Serial.print(", ");
+          Serial.print(F(", "));
           Serial.print(addr);
-          Serial.print(", ");
+          Serial.print(F(", "));
           getResults(addr, expectedResults[i]);
           numReadingsRecorded++;
           Serial.println();

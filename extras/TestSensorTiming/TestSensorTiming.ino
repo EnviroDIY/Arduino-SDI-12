@@ -84,7 +84,7 @@ void printRecorderFailure(const __FlashStringHelper* operation) {
 void printValues(size_t valueCount) {
   Serial.print(F("Values:"));
   for (size_t i = 0U; i < valueCount; ++i) {
-    Serial.print(i == 0U ? F(" ") : F(", "));
+    Serial.print(i == 0U ? ' ' : F(", "));
     Serial.print(values[i], 7);
   }
   Serial.println();
@@ -102,7 +102,7 @@ bool retrieveData(bool immediately, uint8_t expectedValues) {
     mySDI12Recorder.dataValueCount() == expectedValues;
 }
 
-bool testStandardMeasurement(uint8_t testNumber, uint32_t& readyMs) {
+bool testStandardMeasurement(uint16_t testNumber, uint32_t& readyMs) {
   mySDI12Recorder.startMeasurement(sensorAddress, measurementNumber, requestCRC);
   waitForRecorder();
   if (mySDI12Recorder.result() != SDI12Recorder::RESULT_SUCCESS) {
@@ -205,7 +205,7 @@ bool findConcurrentReadyTime(uint32_t& confirmedProbeDelayMs) {
     Serial.println(F(" times."));
 
     bool confirmed = true;
-    for (uint8_t confirmation = 1U; confirmation < SDI12_CONCURRENT_CONFIRMATIONS;
+    for (uint16_t confirmation = 1U; confirmation < SDI12_CONCURRENT_CONFIRMATIONS;
          ++confirmation) {
       if (!probeConcurrentMeasurement(probeDelay, advertisedMs, completedMs)) {
         confirmed = false;
@@ -272,9 +272,9 @@ void loop() {
   uint32_t standardTotal = 0U;
   uint32_t standardMin   = static_cast<uint32_t>(-1);
   uint32_t standardMax   = 0U;
-  uint8_t  standardValid = 0U;
+  uint16_t standardValid = 0U;
 
-  for (uint8_t test = 1U; test <= SDI12_STANDARD_TESTS; ++test) {
+  for (uint16_t test = 1U; test <= SDI12_STANDARD_TESTS; ++test) {
     uint32_t readyMs = 0U;
     if (!testStandardMeasurement(test, readyMs)) { continue; }
     standardTotal += readyMs;

@@ -41,7 +41,7 @@ int8_t   powerPin     = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) *
 int8_t   firstPin     = 3; /*! change to lowest pin number to search on your board */
 int8_t   lastPin      = 7; /*! change to highest pin number to search on your board */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
-int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
+int8_t   lastAddress  = 61; /* The last address in the address space to check (61='z') */
 
 /**
  * @brief gets identification information from a sensor, and prints it to the serial
@@ -64,9 +64,9 @@ void scanAddressSpace(SDI12Recorder& recorder) {
   // Quickly scan the address space
   for (int8_t i = firstAddress; i <= lastAddress; i++) {
     char addr = SDI12Address::fromIndex(i);
-    Serial.print("i=");
+    Serial.print(F("i="));
     Serial.print(i);
-    Serial.print(" addr=");
+    Serial.print(F(" addr="));
     Serial.println(addr);
     if (recorder.requestAcknowledgement(addr)) { printInfo(recorder, addr); }
   }
@@ -77,29 +77,30 @@ void setup() {
   while (!Serial && millis() < 10000L);
   char tbuf[3] = {'\0'};
 
-  Serial.println("//\n// Start Search for SDI-12 Devices \n// -----------------------");
+  Serial.println(
+    F("//\n// Start Search for SDI-12 Devices \n// -----------------------"));
 
   // Power the sensors;
   if (powerPin >= 0) {
-    Serial.print("Powering up sensors with pin ");
+    Serial.print(F("Powering up sensors with pin "));
     Serial.print(String(powerPin));
-    Serial.println(", wait 10s...");
+    Serial.println(F(", wait 10s..."));
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
     delay(10000L);
   } else {
-    Serial.println("Wait 5s...");
+    Serial.println(F("Wait 5s..."));
     delay(5000L);
   }
 
   for (int8_t pin = firstPin; pin <= lastPin; pin++) {
     if (pin != powerPin) {
-      Serial.print("Opening SDI-12 bus on pin ");
+      Serial.print(F("Opening SDI-12 bus on pin "));
       Serial.print(pin);
-      Serial.print(" (");
+      Serial.print(F(" ("));
       Serial.print(itoa(pin, tbuf, 10));
-      Serial.print(")");
-      Serial.println("...");
+      Serial.print(')');
+      Serial.println(F("..."));
       SDI12         mySDI12(pin);
       SDI12Recorder mySDI12Recorder(mySDI12);
       mySDI12.begin();
@@ -120,7 +121,8 @@ void setup() {
     }
   }
 
-  Serial.println("\n//\n// End Search for SDI-12 Devices \n// ---------------------");
+  Serial.println(
+    F("\n//\n// End Search for SDI-12 Devices \n// ---------------------"));
 
   // Cut power
   digitalWrite(powerPin, LOW);

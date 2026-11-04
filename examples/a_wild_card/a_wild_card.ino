@@ -41,15 +41,15 @@ void setup() {
   Serial.begin(serialBaud);
   while (!Serial && millis() < 10000L);
 
-  Serial.print("Opening SDI-12 bus on pin ");
+  Serial.print(F("Opening SDI-12 bus on pin "));
   Serial.print(dataPin);
-  Serial.println("...");
+  Serial.println(F("..."));
   mySDI12.begin();
   delay(500);  // allow things to settle
 
   // Power the sensors;
   if (powerPin >= 0) {
-    Serial.println("Powering up sensors...");
+    Serial.println(F("Powering up sensors..."));
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
     delay(200);
@@ -74,9 +74,9 @@ void loop() {
     if (mySDI12Recorder.identify(address, sensorInfo)) {
       mySDI12Recorder.printSensorInfo(sensorInfo, Serial);
     } else {
-      Serial.print("Identification failed for address ");
+      Serial.print(F("Identification failed for address "));
       Serial.print(address);
-      Serial.print(": ");
+      Serial.print(F(": "));
       mySDI12Recorder.printRecorderResult(Serial);
       Serial.println();
     }
