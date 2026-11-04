@@ -28,3 +28,8 @@ jobs:
       # # Comma-separated list of boards to skip with any compiler (default: empty)
       # # Mutually exclusive with boards_to_build
       # boards_to_ignore: ""
+
+      # # Semicolon-separated list of comma-separated compiler flags to expand the matrix
+      # # For the Arduino CLI, these will be passed to the compiler
+      # # For PlatformIO, these will be ignored and must be set in the platformio.ini file for each environment.
+      compiler_flags: "-D SDI12_EXTERNAL_PCINT"
