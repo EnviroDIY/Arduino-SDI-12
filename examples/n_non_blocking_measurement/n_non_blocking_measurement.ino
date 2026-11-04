@@ -54,14 +54,17 @@ enum WorkflowStage : uint8_t {
 };
 
 WorkflowStage stage          = START_ACKNOWLEDGEMENT;
+WorkflowStage restartStage   = START_MEASUREMENT;
 uint32_t      measurementEnd = 0U;
 
-void printFailure(const __FlashStringHelper* operation) {
+void printFailure(const __FlashStringHelper* operation,
+                  WorkflowStage              stageAfterWait = START_MEASUREMENT) {
   Serial.print(operation);
   Serial.print(F(" failed: "));
   mySDI12Recorder.printRecorderResult(Serial);
   Serial.println();
   measurementEnd = millis();
+  restartStage   = stageAfterWait;
   stage          = WAIT_NEXT_MEASUREMENT;
 }
 
@@ -97,7 +100,7 @@ void loop() {
     case WAIT_ACKNOWLEDGEMENT:
       if (mySDI12Recorder.isBusy()) { break; }
       if (mySDI12Recorder.result() != SDI12Recorder::RESULT_SUCCESS) {
-        printFailure(F("Acknowledgement"));
+        printFailure(F("Acknowledgement"), START_ACKNOWLEDGEMENT);
         break;
       }
       Serial.println(F("Sensor acknowledged."));
@@ -112,11 +115,12 @@ void loop() {
     case WAIT_IDENTIFICATION:
       if (mySDI12Recorder.isBusy()) { break; }
       if (mySDI12Recorder.result() != SDI12Recorder::RESULT_SUCCESS) {
-        printFailure(F("Identification"));
+        printFailure(F("Identification"), START_IDENTIFICATION);
         break;
       }
       mySDI12Recorder.printSensorInfo(mySDI12Recorder.identification(), Serial);
-      stage = START_MEASUREMENT;
+      restartStage = START_MEASUREMENT;
+      stage        = START_MEASUREMENT;
       break;
 
     case START_MEASUREMENT:
@@ -177,7 +181,7 @@ void loop() {
       break;
 
     case WAIT_NEXT_MEASUREMENT:
-      if (millis() - measurementEnd >= 10000UL) { stage = START_MEASUREMENT; }
+      if (millis() - measurementEnd >= 10000UL) { stage = restartStage; }
       break;
   }
 }

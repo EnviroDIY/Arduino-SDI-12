@@ -33,6 +33,7 @@ const int8_t   powerPin      = SDI12_POWER_PIN;
 const uint32_t serialBaud    = SDI12_TERMINAL_BAUD;
 const int8_t   firstAddress  = 0;
 const int8_t   lastAddress   = 7;
+const uint8_t  addressCount  = lastAddress - firstAddress + 1;
 const bool     useCRC        = true;
 const uint32_t loggingPeriod = 10000UL;
 
@@ -41,7 +42,7 @@ SDI12Recorder mySDI12Recorder(mySDI12);
 
 bool  isActive[lastAddress + 1]           = {};
 bool  measurementPending[lastAddress + 1] = {};
-float values[9];
+float values[99];
 
 enum LoggerPhase : uint8_t { SCAN_BUS, START_MEASUREMENTS, READ_MEASUREMENTS, PAUSE };
 
@@ -56,11 +57,25 @@ enum PendingOperation : uint8_t {
 LoggerPhase      loggerPhase      = SCAN_BUS;
 PendingOperation pendingOperation = NO_OPERATION;
 int8_t           nextAddress      = firstAddress;
+int8_t           startAddress     = firstAddress;
 int8_t           pendingIndex     = -1;
 uint8_t          sensorsFound     = 0U;
 uint8_t          sensorsStarted   = 0U;
 uint8_t          sensorsRead      = 0U;
+uint8_t          addressesChecked = 0U;
 uint32_t         roundEndMillis   = 0U;
+
+int8_t nextAddressAfter(int8_t address) {
+  return address < lastAddress ? address + 1 : firstAddress;
+}
+
+int8_t nextActiveAddressAfter(int8_t address) {
+  for (uint8_t i = 0U; i < addressCount; ++i) {
+    address = nextAddressAfter(address);
+    if (isActive[address]) { return address; }
+  }
+  return firstAddress;
+}
 
 void printOperationFailure(char address) {
   Serial.print(F("Address "));
@@ -116,7 +131,8 @@ void handleCompletedOperation() {
           loggerPhase = READ_MEASUREMENTS;
         }
       }
-      ++nextAddress;
+      nextAddress = nextAddressAfter(nextAddress);
+      ++addressesChecked;
       break;
 
     case DATA_RETRIEVAL:
@@ -173,14 +189,19 @@ void loop() {
       } else {
         Serial.print(F("Sensors found: "));
         Serial.println(sensorsFound);
-        nextAddress = firstAddress;
-        loggerPhase = START_MEASUREMENTS;
+        startAddress     = nextActiveAddressAfter(lastAddress);
+        nextAddress      = startAddress;
+        addressesChecked = 0U;
+        loggerPhase      = START_MEASUREMENTS;
       }
       break;
 
     case START_MEASUREMENTS:
-      while (nextAddress <= lastAddress && !isActive[nextAddress]) { ++nextAddress; }
-      if (nextAddress <= lastAddress) {
+      while (addressesChecked < addressCount && !isActive[nextAddress]) {
+        nextAddress = nextAddressAfter(nextAddress);
+        ++addressesChecked;
+      }
+      if (addressesChecked < addressCount) {
         pendingIndex = nextAddress;
         mySDI12Recorder.startConcurrentMeasurement(
           SDI12Address::fromIndex(pendingIndex), 0U, useCRC);
@@ -200,7 +221,7 @@ void loop() {
         const char address = SDI12Address::fromIndex(i);
         if (measurementPending[i] && mySDI12Recorder.isMeasurementReady(address)) {
           pendingIndex = i;
-          mySDI12Recorder.requestData(address, values, 9U);
+          mySDI12Recorder.requestData(address, values, 99U);
           pendingOperation = DATA_RETRIEVAL;
           break;
         }
@@ -212,10 +233,12 @@ void loop() {
         for (int8_t i = firstAddress; i <= lastAddress; ++i) {
           measurementPending[i] = false;
         }
-        sensorsStarted = 0U;
-        sensorsRead    = 0U;
-        nextAddress    = firstAddress;
-        loggerPhase    = START_MEASUREMENTS;
+        sensorsStarted   = 0U;
+        sensorsRead      = 0U;
+        startAddress     = nextActiveAddressAfter(startAddress);
+        nextAddress      = startAddress;
+        addressesChecked = 0U;
+        loggerPhase      = START_MEASUREMENTS;
       }
       break;
   }

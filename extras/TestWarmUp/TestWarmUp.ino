@@ -50,7 +50,7 @@ const char     sensorAddress = SDI12_SENSOR_ADDRESS;
 SDI12         mySDI12(dataPin);
 SDI12Recorder mySDI12Recorder(mySDI12);
 
-bool runWarmUpTest(uint8_t testNumber, uint32_t& acknowledgementMs,
+bool runWarmUpTest(uint16_t testNumber, uint32_t& acknowledgementMs,
                    uint32_t& identificationMs) {
   acknowledgementMs = static_cast<uint32_t>(-1);
   identificationMs  = static_cast<uint32_t>(-1);
@@ -74,8 +74,11 @@ bool runWarmUpTest(uint8_t testNumber, uint32_t& acknowledgementMs,
   digitalWrite(powerPin, HIGH);
 
   while (millis() - powerOnTime <= SDI12_MAX_WARM_UP_MS) {
-    if (mySDI12Recorder.requestAcknowledgement(sensorAddress)) {
-      acknowledgementMs = millis() - powerOnTime;
+    const bool     acknowledged = mySDI12Recorder.requestAcknowledgement(sensorAddress);
+    const uint32_t elapsedMs    = millis() - powerOnTime;
+    if (elapsedMs > SDI12_MAX_WARM_UP_MS) { break; }
+    if (acknowledged) {
+      acknowledgementMs = elapsedMs;
       Serial.print(F("First valid acknowledgement after "));
       Serial.print(acknowledgementMs);
       Serial.println(F(" ms."));
@@ -96,8 +99,11 @@ bool runWarmUpTest(uint8_t testNumber, uint32_t& acknowledgementMs,
 
   SDI12Recorder::Identification identification;
   while (millis() - powerOnTime <= SDI12_MAX_WARM_UP_MS) {
-    if (mySDI12Recorder.identify(sensorAddress, identification)) {
-      identificationMs = millis() - powerOnTime;
+    const bool     identified = mySDI12Recorder.identify(sensorAddress, identification);
+    const uint32_t elapsedMs  = millis() - powerOnTime;
+    if (elapsedMs > SDI12_MAX_WARM_UP_MS) { break; }
+    if (identified) {
+      identificationMs = elapsedMs;
       Serial.print(F("First valid identification after "));
       Serial.print(identificationMs);
       Serial.println(F(" ms."));
@@ -143,9 +149,9 @@ void loop() {
   uint32_t identificationTotal  = 0U;
   uint32_t acknowledgementMax   = 0U;
   uint32_t identificationMax    = 0U;
-  uint8_t  successfulTests      = 0U;
+  uint16_t successfulTests      = 0U;
 
-  for (uint8_t test = 1U; test <= SDI12_WARM_UP_TESTS; ++test) {
+  for (uint16_t test = 1U; test <= SDI12_WARM_UP_TESTS; ++test) {
     uint32_t acknowledgementMs = 0U;
     uint32_t identificationMs  = 0U;
     if (!runWarmUpTest(test, acknowledgementMs, identificationMs)) { continue; }
