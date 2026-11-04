@@ -1,76 +1,147 @@
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+~*
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# =========================
+# Operating System Files
+# =========================
+
+# OSX
+# =========================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
 # Compiled files, executables
 *.o
 *.a
 *.exe
 *.out
 *.app
-**/__pycache__
 
-# Junk
+# Compressed and Backup Files
 *.orig
 *.log
 *.bak
-
-# Filters
-.gitconfig
-filters/*
+*.tar.gz
+*.zip
+sync.ffs_db
 
 # Certificates
-*.cert
-*.crt
 *.pem
+*.pem.crt
+*.pem.cert
+*.pem.key
+*.crt
+*.cert
 *.key
 
-# IDE project files
-.settings
-.history
+# Python
+__pycache__/
+
+# PyCharm
+.idea/
+
+# Atom
+.atomrc.cson
 .clang_complete
 .gcc-flags.json
 
 # VSCode
 .vscode
+.history
 
 # PlatformIO
+.settings
+.pio
 .pioenvs
 .piolibdeps
-.pio
 lib
 lib/readme.txt
 /include
 include/readme.txt
-pioScripts
-variants
-boards
-tests
-/platformio.ini
-/extra_envs.ini
-/platformio_extra_envs.ini
-/pio_common_libdeps.ini
+/tests
+tests/readme.txt
+/boards
+/variants
+/pioScripts
+.sconsign.dblite
+platformio.ini
+extra_envs.ini
+.clang-tidy
+compile_commands.json
+platformio_extra_envs.ini
+pio_common_libdeps.ini
 
 # Arduino CLI
+arduino_cli.log
 continuous_integration/arduino_cli_local.yaml
-home/arduino
+home/arduino/*
+arduino_lint.md
+arduino_lint.json
 
 # Local CI and Build Artifacts
+output_*.log
 continuous_integration_artifacts/*
 clang_format_all.bat
 generateKeywords.bat
 installWorkingDependencies.bat
-clang-format-all.py
 runDoxygen.bat
-compile_commands.json
 buildCI.bat
-*.tar.gz
+run_mcss.bat
 
-# Other stuff
-SDI12 Repo Token.txt
-archive
-planning
-src/wakeUp.h
+# Filters
+filters/*
+
+# Planning and Archive Folders
+/archive
+/planning
+**/*.*_archive
+
+# Local Agent Instructions
 AGENTS.md
 .github/copilot-instructions.md
 .bumpversion.toml
-.clang-tidy
+
+# Other stuff
+SDI12 Repo Token.txt
+src/wakeUp.h
+AGENTS.md
+.github/copilot-instructions.md
 datasheets/*
 Datasheets.md
-**/*.*_archive

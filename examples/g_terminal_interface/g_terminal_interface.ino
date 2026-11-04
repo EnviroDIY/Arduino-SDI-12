@@ -52,7 +52,14 @@ void printHelp() {
   Serial.println(F("Anything else is sent to the SDI-12 bus."));
 }
 
-/** Process one complete line received from the serial port. */
+/**
+ * @brief Process one complete line received from the serial port.
+ *
+ * The PC must send one command at a time and wait for its SDI-12 transmission
+ * to finish before sending the next command. The sketch does not read the
+ * serial port while sendCommand() is running, so input received during the
+ * transmission can overflow the serial receive buffer.
+ */
 void processSerialMessage(String& message) {
   String lowerMessage = message;
   lowerMessage.toLowerCase();

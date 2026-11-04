@@ -6,6 +6,70 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+<!-- @tableofcontents{XML:1,HTML:1} -->
+
+<!--! @m_footernavigation -->
+
+<!--! @if GITHUB -->
+
+- [Changelog](#changelog)
+  - [Unreleased](#unreleased)
+  - [2.5.2](#252)
+  - [2.5.1](#251)
+  - [2.5.0](#250)
+  - [2.4.0](#240)
+  - [2.3.4](#234)
+  - [2.3.3](#233)
+  - [2.3.2](#232)
+  - [2.3.1](#231)
+  - [2.3.0 - 2025-03-04](#230---2025-03-04)
+  - [2.2.1 - 2024-12-09](#221---2024-12-09)
+  - [2.2.0 - 2024-08-14](#220---2024-08-14)
+  - [2.1.4 - 2021-05-05](#214---2021-05-05)
+  - [2.1.3 - 2021-03-24](#213---2021-03-24)
+  - [2.1.1 - 2020-08-20](#211---2020-08-20)
+  - [2.1.0 - 2020-07-10](#210---2020-07-10)
+  - [1.3.6 - 2019-08-29](#136---2019-08-29)
+  - [1.3.5 - 2019-07-01](#135---2019-07-01)
+  - [1.3.4 - 2019-10-29](#134---2019-10-29)
+  - [1.3.3 - 2018-05-11](#133---2018-05-11)
+  - [1.3.1 - 2018-04-06](#131---2018-04-06)
+  - [1.1.0 - 2018-03-15](#110---2018-03-15)
+  - [1.0.6 - 2018-03-09](#106---2018-03-09)
+  - [1.0.1 - 2017-05-16](#101---2017-05-16)
+
+
+<!--! @endif -->
+
+***
+
+## [Unreleased]
+
+### Changed
+
+- Reworked command sequencing around the new recorder workflow, including retry/break behavior and cancellation handling that returns the bus to listening mode.
+- Split shared protocol timing and response-limit definitions into dedicated protocol headers/source to simplify core transport maintenance.
+- Updated and reorganized example coverage toward recorder-driven and non-blocking usage patterns.
+
+### Added
+
+- Added the new `SDI12Recorder` API implementation for phased command/response orchestration.
+- Added non-blocking recorder examples, including `m_non_blocking_concurrent_logger` and `n_non_blocking_measurement`.
+- Added a terminal-style command example (`g_terminal_interface`) and an `examples/extras/raw_extended_commands` sketch for raw command workflows.
+- Added CI coverage for `SDI12_EXTERNAL_PCINT` example compilation.
+- Added the `SDI12_RECEIVE_EVENT_COMMAND_COMPLETED` keyword token.
+
+### Removed
+
+- Removed deprecated example sketches that were replaced by recorder-focused or reorganized examples (`f_basic_data_request`, `g_terminal_window`, `i_SDI-12_interface`, `j_external_pcint_library`, and `l_verify_crc`).
+- Removed `extras/TestCommands`.
+- **Potentially breaking**:  Removed the macros `SDI12_VALUE_STR_SIZE`, `SDI12_DATA_STR_SIZE`, and `SDI12_HV_STR_SIZE`.  The values can now be found in the `SDI12ResponseLimits` struct.  These numbers are defined by the protocol specification.
+
+### Fixed
+
+- Fixed parsing boundaries between command terminators (`!`) and response terminators (`CRLF`) to reduce malformed-response handling edge cases.
+- Fixed service-request and zero-value response handling edge cases in recorder-driven data collection.
+
 ***
 
 ## [2.5.2]
@@ -290,7 +354,7 @@ _Unset prescalers_
 
 ## [1.3.1] - 2018-04-06
 
-Added processor timer for greater stability
+_Added processor timer for greater stability_
 
 ### Added
 
@@ -305,15 +369,15 @@ Added processor timer for greater stability
 
 _Better integration inside other libraries_
 
-### Improvements
+### Added
 
 - Added notes and an empty constructor/populated begin method to allow this library to be more easily called inside of other libraries.
 
 ## [1.0.6] - 2018-03-09
 
-Fixed timeout values
+_Fixed timeout values_
 
-### Bug Fixes
+### Fixed
 
 - Fixes the time-out values for the ParseInt and ParseFloat to be -9999. This was the intended behavior all along, but at some point those functions changed in the stream library and the identically named functions within SDI-12 intended to "hide" the stream functions ceased to be called.
 
