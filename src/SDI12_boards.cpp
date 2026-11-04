@@ -160,7 +160,8 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   defined(__AVR_ATmega32U4__)
 
 sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
-  // TCNT4 reads both the high and low bytes of the 10-bit timer
+  // The macro `TCNT4` reads 16 bytes, including both the low (`TCNT4L`) and high bytes
+  // (`TCNT4H`) of the 10-bit timer
   return TCNT4;
 }
 
