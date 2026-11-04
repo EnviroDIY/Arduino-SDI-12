@@ -339,6 +339,7 @@ void SDI12Recorder::update() {
     uint32_t elapsed = millis() - _txnStartTime;
     if (elapsed > _txnTimeoutMs) {
       _setResult(RESULT_TRANSACTION_TIMEOUT);
+      _sdi12.forceListen();
       _transitionTo(PHASE_IDLE);
       return;
     }
@@ -362,6 +363,7 @@ void SDI12Recorder::update() {
 }
 
 void SDI12Recorder::cancel() {
+  if (_phase != PHASE_IDLE) { _sdi12.forceListen(); }
   _setResult(RESULT_CANCELLED);
   _transitionTo(PHASE_IDLE);
 }

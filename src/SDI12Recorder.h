@@ -666,8 +666,8 @@ class SDI12Recorder {
   /**
    * @brief Cancel the current transaction and return to idle.
    *
-   * Stops all retry logic and resets the transaction executor to PHASE_IDLE.
-   * The result will be set to RESULT_CANCELLED.
+   * Stops all retry logic, releases the SDI-12 transport to listening, and resets the
+   * transaction executor to PHASE_IDLE. The result will be set to RESULT_CANCELLED.
    */
   void cancel();
 
