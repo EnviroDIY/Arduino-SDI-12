@@ -839,8 +839,10 @@ SDI12Recorder::RecorderResult SDI12Recorder::_validateDataResponse() {
   }
 
   if (dataEnd == 1U) {
-    return _operation == OPERATION_CONTINUOUS_DATA ? RESULT_SUCCESS
-                                                   : RESULT_MEASUREMENT_ABORTED;
+    return _operation == OPERATION_CONTINUOUS_DATA ||
+        (_operation == OPERATION_DATA && _expectedValueCount == 0U)
+      ? RESULT_SUCCESS
+      : RESULT_MEASUREMENT_ABORTED;
   }
   if (dataEnd < 1U) { return RESULT_MALFORMED_RESPONSE; }
 
