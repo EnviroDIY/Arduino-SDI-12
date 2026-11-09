@@ -1,4 +1,5 @@
-#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && not defined(SDI12_INTERNAL_PCINT)
+#include <SDI12Config.h>
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && !defined(SDI12_INTERNAL_PCINT)
 #include <EnableInterrupt.h>
 #endif
 
@@ -17,12 +18,6 @@ void setup() {
   Serial.begin(115200);
   slaveSDI12.begin();
   delay(500);
-
-#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
-  // Enable interrupts for the receive pin
-  pinMode(dataPin, INPUT_PULLUP);
-  enableInterrupt(dataPin, SDI12::handleInterrupt, CHANGE);
-#endif
 
   slaveSDI12.forceListen();  // sets SDIPIN as input to prepare for incoming message
   Serial.println(F("Starting SDI-12 Spy"));

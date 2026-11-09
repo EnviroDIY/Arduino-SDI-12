@@ -115,7 +115,7 @@ This library has been tested and verified for:
 - Adafruit Feather 32u4 (AtMega32u4, identical to Arduino Leonardo)
 - Seeeduino Mega (AtMega 12850)
 - Adafruit Feather M0 (SAMD21G18, identical to Arduino Zero)EnviroDIY Stonefly (SAMD51N19A)
-- Adafruit Feather M0 (SAMD51J19A)
+- Adafruit Feather M4 (SAMD51J19A)
 - Adafruit Feather Huzzah (ESP12S/ESP8266)
 - Adafruit Feather Huzzah32 (ESP-WROOM-32/ESP32)
 
@@ -208,7 +208,8 @@ By default, AVR interrupts are handed off to GreyGnome's [EnableInterrupt](https
 You can remove that dependency and manage the interrupts with this library by removing the two comment slashes at the start of the line `// #define SDI12_INTERNAL_PCINT` in the SDI12Config.h header or by compiling with the build flag `-D SDI12_INTERNAL_PCINT`.
 In your own code call `SDI12::handleInterrupt()` as the interrupt for your SDI12 bus pin using the other interrupt library.
 
-You can also allow this library to manage the interrupt handling, but restrict the pin change interrupts it can manage to a specific interrupt vector using the configuration options or defining build flags `SDI12_PCINT0_ONLY`, `SDI12_PCINT1_ONLY`, `SDI12_PCINT2_ONLY`, or `SDI12_PCINT3_ONLY`.
+You can also allow this library to manage the interrupt handling, but restrict the pin change interrupts it can manage to a specific interrupt vector using the configuration options or defining the build flag `SDI12_INTERNAL_PCINT` **and** one of the build flags `SDI12_PCINT0_ONLY`, `SDI12_PCINT1_ONLY`, `SDI12_PCINT2_ONLY`, or `SDI12_PCINT3_ONLY`.
+Defining these flags has no effect on non-AVR boards.
 The [PCINT3](https://github.com/EnviroDIY/Arduino-SDI-12/tree/PCINT3) branch uses only vector 3.
 
 ### Response Buffer Size

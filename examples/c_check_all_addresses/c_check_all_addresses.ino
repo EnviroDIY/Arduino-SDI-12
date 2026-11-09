@@ -20,11 +20,11 @@
  * To address a sensor, please see Example B: b_address_change.ino
  */
 
-#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && not defined(SDI12_INTERNAL_PCINT)
+#include <SDI12Config.h>
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && !defined(SDI12_INTERNAL_PCINT)
 #include <EnableInterrupt.h>
 #endif
 
-#include <SDI12Protocol.h>
 #include <SDI12Recorder.h>
 
 #ifndef SDI12_DATA_PIN
@@ -106,18 +106,8 @@ void setup() {
       mySDI12.begin();
       delay(500);  // allow things to settle
 
-#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
-      // Enable interrupts for the receive pin
-      pinMode(pin, INPUT_PULLUP);
-      enableInterrupt(pin, SDI12::handleInterrupt, CHANGE);
-#endif
-
       scanAddressSpace(mySDI12Recorder);
       mySDI12.end();
-
-#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
-      disableInterrupt(pin);
-#endif
     }
   }
 

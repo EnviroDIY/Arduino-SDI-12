@@ -11,11 +11,11 @@
  * It discovers the address of the attached sensor and allows you to change it.
  */
 
-#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && not defined(SDI12_INTERNAL_PCINT)
+#include <SDI12Config.h>
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && !defined(SDI12_INTERNAL_PCINT)
 #include <EnableInterrupt.h>
 #endif
 
-#include <SDI12.h>
 #include <SDI12Recorder.h>
 
 #ifndef SDI12_DATA_PIN
@@ -79,12 +79,6 @@ void setup() {
     digitalWrite(powerPin, HIGH);
     delay(10000L);
   }
-
-#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
-  // Enable interrupts for the receive pin
-  pinMode(dataPin, INPUT_PULLUP);
-  enableInterrupt(dataPin, SDI12::handleInterrupt, CHANGE);
-#endif
 }
 
 void loop() {

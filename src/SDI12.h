@@ -189,7 +189,7 @@ enum LookaheadMode {
 #endif  // NEED_LOOKAHEAD_ENUM
 #undef NEED_LOOKAHEAD_ENUM
 
-#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && not defined(SDI12_INTERNAL_PCINT)
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && !defined(SDI12_INTERNAL_PCINT)
 // Unless we're forcing use of internal interrupts, use EnableInterrupt for AVR boards
 /// Required define for Enable Interrupts prevent compiler/linker crashes
 #define LIBCALL_ENABLEINTERRUPT

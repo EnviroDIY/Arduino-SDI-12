@@ -25,7 +25,7 @@
   "license": "BSD-3-Clause",
   "frameworks": "arduino",
   "platforms": ["atmelavr", "atmelsam", "espressif8266", "espressif32", "ststm32"],
-  "headers": ["SDI12.h", "SDI12Recorder.h"],
+  "headers": ["SDI12.h", "SDI12Recorder.h", "SDI12Protocol.h"],
   "dependencies": [
     {
       "name": "EnableInterrupt",

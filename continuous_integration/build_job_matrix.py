@@ -46,7 +46,7 @@ def build_custom_matrix(config: dict) -> list[dict]:
     boards = build_envs + build_fqbns
     inline_defines = config.get("inline_defines", [[]])
     # compiler_flags = config.get("compiler_flags", [[]])
-    compiler_flags = [["-D SDI12_EXTERNAL_PCINT"], []]
+    compiler_flags = [["-D SDI12_INTERNAL_PCINT"], []]
 
     # Read the PlatformIO config and build mapping dictionaries for boards and environments
     print("Reading the PlatformIO config...")
@@ -131,13 +131,13 @@ def build_custom_matrix(config: dict) -> list[dict]:
             "example": [os.path.join("extras", "TestCommands")],
             "board": [
                 "feather328p",
-                "feather328p_external_pcint",
+                "feather328p_internal_pcint",
                 "feather32u4",
-                "feather32u4_external_pcint",
+                "feather32u4_internal_pcint",
                 "leonardo",
-                "leonardo_external_pcint",
+                "leonardo_internal_pcint",
                 "uno",
-                "uno_external_pcint",
+                "uno_internal_pcint",
             ],
             "inline_defines": [[]],
             "compiler_flags": [[]],
