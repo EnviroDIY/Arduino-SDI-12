@@ -101,7 +101,7 @@ tests/readme.txt
 /variants
 /pioScripts
 .sconsign.dblite
-platformio.ini
+/platformio.ini
 extra_envs.ini
 .clang-tidy
 compile_commands.json

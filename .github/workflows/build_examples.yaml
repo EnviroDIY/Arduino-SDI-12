@@ -17,19 +17,39 @@ jobs:
     uses: EnviroDIY/workflows/.github/workflows/build_examples.yaml@main
     with:
       # # Comma-separated list of examples to build or "all" for all (default: all)
-      examples_to_build: "examples/a_wild_card,examples/b_address_change,examples/c_check_all_addresses,examples/d_simple_logger,examples/e_continuous_measurement,examples/g_terminal_interface,examples/h_SDI-12_slave_implementation,examples/k_concurrent_logger,examples/m_non_blocking_concurrent_logger,examples/n_non_blocking_measurement"
+      # examples_to_build: "examples/a_wild_card,examples/b_address_change,examples/c_check_all_addresses,examples/d_simple_logger,examples/e_continuous_measurement,examples/g_terminal_interface,examples/h_SDI-12_slave_implementation,examples/k_concurrent_logger,examples/m_non_blocking_concurrent_logger,examples/n_non_blocking_measurement"
 
       # # Comma-separated list of examples to ignore (mutually exclusive with examples_to_build)
-      # examples_to_ignore: "examples/example_to_skip"
+      examples_to_ignore: "extras/powerOn,extras/print_character_parity,extras/rx_window_model,extras/SDI12_spy"
 
       # # Comma-separated list of boards to build with all compilers "all" for all (default: all)
       # # Mutually exclusive with boards_to_ignore
-      boards_to_build: "mayfly,envirodiy_stonefly_m4,uno,megaatmega2560,leonardo,zeroUSB,arduino_nano_esp32,feather328p,feather32u4,adafruit_feather_m0,adafruit_feather_m4,huzzah,featheresp32,esp32-c3-devkitm-1,esp32-s3-devkitm-1"
+      # boards_to_build: "mayfly,envirodiy_stonefly_m4,uno,megaatmega2560,leonardo,zeroUSB,adafruit_feather_m4,huzzah,arduino_nano_esp32,esp32-c3-devkitm-1,esp32-c6-devkitm-1,esp32-s3-devkitm-1,uno_r4_wifi"
       # # Comma-separated list of boards to skip with any compiler (default: empty)
       # # Mutually exclusive with boards_to_build
       # boards_to_ignore: ""
+
+      # # Comma-separated list of Arduino FQBNs or board names to build with Arduino CLI or "all" for all (default: all)
+      # # Mutually exclusive with arduino_fqbns_to_ignore
+      arduino_fqbns_to_build: "mayfly,envirodiy_stonefly_m4,uno,megaatmega2560,leonardo,zeroUSB,adafruit_feather_m4,huzzah,arduino_nano_esp32,esp32-c3-devkitm-1,esp32-c6-devkitm-1,esp32-s3-devkitm-1,uno_r4_wifi"
+      # # Comma-separated list of Arduino FQBNs or board names to skip (default: empty)
+      # # Mutually exclusive with arduino_fqbns_to_build
+      # arduino_fqbns_to_ignore: ""
+
+      # # Comma-separated list of PlatformIO environments or board names to build or "all" for all (default: all)
+      # # Mutually exclusive with pio_envs_to_ignore
+      pio_envs_to_build: "all"
+      # # Comma-separated list of PlatformIO environments or board names to skip (default: empty)
+      # # Mutually exclusive with pio_envs_to_build
+      # pio_envs_to_ignore: ""
 
       # # Semicolon-separated list of comma-separated compiler flags to expand the matrix
       # # For the Arduino CLI, these will be passed to the compiler
       # # For PlatformIO, these will be ignored and must be set in the platformio.ini file for each environment.
       compiler_flags: "-D SDI12_EXTERNAL_PCINT;"
+
+      # # Comma-separated list of fields to group logs by (default: compiler,board,example,inline_defines)
+      log_grouping_fields: "compiler,board,example,compiler_flags"
+
+      # # Comma-separated list of fields to group jobs by (default: compiler,board)
+      job_grouping_fields: "compiler,board,compiler_flags"
