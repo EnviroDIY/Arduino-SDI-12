@@ -167,10 +167,10 @@ In the Arduino Command Line Interface ([CLI](https://docs.arduino.cc/arduino-cli
 AVR interrupts can be handed off to an external pin change interrupt managing library by removing the two comment slashes at the start of the line `// #define SDI12_EXTERNAL_PCINT` in the SDI12Config.h header or by compiling with the build flag `-D SDI12_EXTERNAL_PCINT`.
 In your own code call `SDI12::handleInterrupt()` as the interrupt for your SDI12 bus pin using the other interrupt library.
 Example j shows doing this in GreyGnome's [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) library.
-The [ExtInts branch](#sdi12_extints) is has this enabled by default
+The [ExtInts branch](https://github.com/EnviroDIY/Arduino-SDI-12/tree/ExtInts) is has this enabled by default
 
 You can also allow this library to manage the interrupt handling, but restrict the pin change interrupts it can manage to a specific interrupt vector using the configuration options or defining build flags `SDI12_PCINT0_ONLY`, `SDI12_PCINT1_ONLY`, `SDI12_PCINT2_ONLY`, or `SDI12_PCINT3_ONLY`.
-The [PCINT3](#sdi12_pcint3) branch uses only vector 3.
+The [PCINT3](https://github.com/EnviroDIY/Arduino-SDI-12/tree/PCINT3) branch uses only vector 3.
 
 ### Response Buffer Size
 
@@ -190,8 +190,11 @@ Defining `SDI12_TX_DISABLE_INTERRUPTS` restores the pre-2.2.0 behavior of holdin
 > [!important]
 > Don't change these options without good reason!
 
-You can modify the default delay to wait for a sensor to wake, the exact length of the break, and the exact length of the mark using the `SDI12_WAKE_DELAY`, `SDI12_LINE_BREAK_MICROS`, and `SDI12_LINE_MARK_MICROS` options, respectively.
+You can modify the exact length of the break and mark using the `SDI12_LINE_BREAK_MICROS` and `SDI12_LINE_MARK_MICROS` options, respectively.
 The defaults should be correct for almost all uses.
+
+The deprecated `SDI12_WAKE_DELAY` option is used only as the default extra wake time for the deprecated `SDI12::sendCommand()` overloads.
+It is not used by `SDI12Recorder`.
 
 ### The Fudge Factor
 

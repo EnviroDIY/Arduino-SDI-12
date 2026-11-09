@@ -75,6 +75,7 @@
 //==============================================================
 #if !defined(SDI12_BUFFER_SIZE) || defined(DOXYGEN)
 /**
+ * @def SDI12_BUFFER_SIZE
  * @brief The buffer size for incoming SDI-12 data.
  *
  * The default is 82 characters, which should be sufficient for most SDI-12 responses,
@@ -94,6 +95,60 @@
  */
 #define SDI12_BUFFER_SIZE 82
 #endif
+
+//==============================================================
+// Recorder configuration
+//==============================================================
+#if !defined(SDI12_RECORDER_CONTEXT_SLOTS) || defined(DOXYGEN)
+/**
+ * @def SDI12_RECORDER_CONTEXT_SLOTS
+ * @brief Maximum number of simultaneous pending sensor transactions retained by an
+ * SDI12Recorder.
+ *
+ * The default is three. Storage is allocated at compile time; no dynamic allocation is
+ * used. Increase this value only when more than three sensors must have pending
+ * measurements at the same time. The maximum is 255 slots.
+ */
+#define SDI12_RECORDER_CONTEXT_SLOTS 3
+#endif
+
+#if SDI12_RECORDER_CONTEXT_SLOTS < 1
+#error "SDI12_RECORDER_CONTEXT_SLOTS must be at least 1"
+#endif
+
+#if SDI12_RECORDER_CONTEXT_SLOTS > 255
+#error "SDI12_RECORDER_CONTEXT_SLOTS cannot exceed 255"
+#endif
+
+#if !defined(SDI12_RECORDER_RESPONSE_BUFFER_SIZE) || defined(DOXYGEN)
+/**
+ * @def SDI12_RECORDER_RESPONSE_BUFFER_SIZE
+ * @brief Storage available for one complete ASCII sensor response.
+ *
+ * The default holds the maximum 81-character ASCII wire response (address, 75 value
+ * characters, three CRC characters, CR, and LF) plus a null terminator.
+ */
+#define SDI12_RECORDER_RESPONSE_BUFFER_SIZE 82
+#endif
+
+#if SDI12_RECORDER_RESPONSE_BUFFER_SIZE < 4
+#error "SDI12_RECORDER_RESPONSE_BUFFER_SIZE must be at least 4"
+#endif
+
+#if SDI12_RECORDER_RESPONSE_BUFFER_SIZE > 256
+#error "SDI12_RECORDER_RESPONSE_BUFFER_SIZE supports ASCII responses up to 255 bytes"
+#endif
+
+/**
+ * @def SDI12_RECORDER_ALWAYS_BREAK
+ * @brief Require a break before the first attempt of every new recorder operation.
+ *
+ * Leave this undefined to let SDI12Recorder omit the initial break only when known bus
+ * history makes that legal. This setting does not change the break and marking rules
+ * applied to retries within an operation.
+ */
+// #define SDI12_RECORDER_ALWAYS_BREAK
+//==============================================================
 
 //==============================================================
 // Define SDI12_TX_DISABLE_INTERRUPTS to disable *all* interrupts while transmitting
@@ -157,10 +212,12 @@
 #if !defined(SDI12_WAKE_DELAY) || defined(DOXYGEN)
 /**
  * @def SDI12_WAKE_DELAY
- * @brief The default amount of additional time in milliseconds that the sensor takes to
- * wake before being ready to receive a command.  Default is 0ms - meaning the sensor is
- * ready for a command by the end of the 12ms break.  Per protocol, the wake time must
- * be less than 100 ms.
+ * @brief Deprecated default extra sensor wake time for SDI12::sendCommand().
+ *
+ * This option is used only as the default `extraWakeTime` argument for the deprecated
+ * SDI12::sendCommand() overloads. SDI12Recorder does not use it.
+ *
+ * @deprecated Used only by the deprecated SDI12::sendCommand() overloads.
  */
 #define SDI12_WAKE_DELAY 0
 #endif
@@ -192,6 +249,7 @@
 #define SDI12_PCINT3_ONLY
 #define SDI12_TX_DISABLE_INTERRUPTS
 #define SDI12_RX_WINDOW_FUDGE 433
+#define SDI12_RECORDER_ALWAYS_BREAK
 #endif
 
 /**@}*/

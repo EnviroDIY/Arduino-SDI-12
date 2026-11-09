@@ -1,7 +1,7 @@
 # Example A: Using the Wildcard - Getting Single Sensor Information<!--! {#example_a_page} -->
 
 This is a simple demonstration of the SDI-12 library for Arduino.
-It requests information about a single attached sensor, including its address and manufacturer info, and prints it to the serial port
+It uses the blocking `SDI12Recorder` API to query the address of a single attached sensor, request its identification information, and print the parsed fields to the serial port.
 
 <!--! @section a_wild_card_pio PlatformIO Configuration -->
 
