@@ -47,6 +47,8 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
+- **BREAKING** Made [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) a required dependency for AVR boards.
+- **BREAKING** Introduced the `SDI12_INTERNAL_PCINT` macro to control internal PCINT ISRs on AVR boards, replacing the previous `SDI12_EXTERNAL_PCINT` approach.
 - Reworked command sequencing around the new recorder workflow, including retry/break behavior and cancellation handling that returns the bus to listening mode.
 - Split shared protocol timing and response-limit definitions into dedicated protocol headers/source to simplify core transport maintenance.
 - Updated and reorganized example coverage toward recorder-driven and non-blocking usage patterns.

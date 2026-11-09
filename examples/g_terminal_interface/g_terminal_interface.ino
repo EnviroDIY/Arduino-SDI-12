@@ -14,7 +14,7 @@
  * SDI-12-interface examples.
  */
 
-#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && not defined(SDI12_INTERNAL_PCINT)
 #include <EnableInterrupt.h>
 #endif
 
