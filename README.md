@@ -113,8 +113,8 @@ This library has been tested and verified for:
 - EnviroDIY Stonefly (SAMD51)
 - Arduino Uno (AtMega328p)
 - Adafruit Feather 32u4 (AtMega32u4, identical to Arduino Leonardo)
-- Seeeduino Mega (AtMega 12850)
-- Adafruit Feather M0 (SAMD21G18, identical to Arduino Zero)EnviroDIY Stonefly (SAMD51N19A)
+- Seeeduino Mega (ATmega2560)
+- Adafruit Feather M0 (SAMD21G18, identical to Arduino Zero)
 - Adafruit Feather M4 (SAMD51J19A)
 - Adafruit Feather Huzzah (ESP12S/ESP8266)
 - Adafruit Feather Huzzah32 (ESP-WROOM-32/ESP32)
@@ -155,7 +155,7 @@ For AVR boards, the ["Bestiary" of the EnableInterrupt library](https://github.c
   - 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI)
 - **SAMD21xxx / Arduino Zero:**
   - Any pin (except 4 on the zero)
-- **SAMD51xxx / Arduino Zero:**
+- **SAMD51xxx / EnviroDIY Stonefly:**
   - Any pin
 - **ESP8266:**
   - Any GPIO, except GPIO16
@@ -205,8 +205,10 @@ In the Arduino Command Line Interface ([CLI](https://docs.arduino.cc/arduino-cli
 ### AVR Interrupt Handling
 
 By default, AVR interrupts are handed off to GreyGnome's [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) library.
-You can remove that dependency and manage the interrupts with this library by removing the two comment slashes at the start of the line `// #define SDI12_INTERNAL_PCINT` in the SDI12Config.h header or by compiling with the build flag `-D SDI12_INTERNAL_PCINT`.
-In your own code call `SDI12::handleInterrupt()` as the interrupt for your SDI12 bus pin using the other interrupt library.
+The examples include `EnableInterrupt.h` explicitly, which is recommended when a sketch uses or configures EnableInterrupt directly.
+For backward compatibility, this library also supplies a link-time fallback implementation, so existing sketches that include only an SDI-12 header do not need to add `#include <EnableInterrupt.h>`.
+You can instead allow this library full control of the AVR interrupts (and avoid using EnableInterrupt at runtime) by removing the two comment slashes at the start of the line `// #define SDI12_INTERNAL_PCINT` in the SDI12Config.h header or by compiling with the build flag `-D SDI12_INTERNAL_PCINT`.
+EnableInterrupt remains a declared dependency in library.properties and library.json even when `SDI12_INTERNAL_PCINT` is defined.
 
 You can also allow this library to manage the interrupt handling, but restrict the pin change interrupts it can manage to a specific interrupt vector using the configuration options or defining the build flag `SDI12_INTERNAL_PCINT` **and** one of the build flags `SDI12_PCINT0_ONLY`, `SDI12_PCINT1_ONLY`, `SDI12_PCINT2_ONLY`, or `SDI12_PCINT3_ONLY`.
 Defining these flags has no effect on non-AVR boards.
@@ -277,3 +279,5 @@ This project has benefited from the support from the following funding sources:
 - National Science Foundation, awards [EAR-0724971](http://www.nsf.gov/awardsearch/showAward?AWD_ID=0724971), [EAR-1331856](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1331856), [ACI-1339834](http://www.nsf.gov/awardsearch/showAward?AWD_ID=1339834)
 - William Penn Foundation, grant 158-15
 - Stroud Water Research Center endowment
+
+<!-- cSpell:ignore Seeeduino WROOM -->

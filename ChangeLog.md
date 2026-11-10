@@ -47,7 +47,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Changed
 
-- **BREAKING** Made [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) a required dependency for AVR boards.
+- Made [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) a required dependency for AVR boards while retaining compatibility with sketches that do not include its header directly.
 - **BREAKING** Introduced the `SDI12_INTERNAL_PCINT` macro to control internal PCINT ISRs on AVR boards, replacing the previous `SDI12_EXTERNAL_PCINT` approach.
 - Reworked command sequencing around the new recorder workflow, including retry/break behavior and cancellation handling that returns the bus to listening mode.
 - Split shared protocol timing and response-limit definitions into dedicated protocol headers/source to simplify core transport maintenance.
@@ -58,7 +58,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - Added the new `SDI12Recorder` API implementation for phased command/response orchestration.
 - Added non-blocking recorder examples, including `m_non_blocking_concurrent_logger` and `n_non_blocking_measurement`.
 - Added a terminal-style command example (`g_terminal_interface`) and an `examples/extras/raw_extended_commands` sketch for raw command workflows.
-- Added CI coverage for `SDI12_EXTERNAL_PCINT` example compilation.
+- Added CI coverage for `SDI12_INTERNAL_PCINT` example compilation.
 - Added the `SDI12_RECEIVE_EVENT_COMMAND_COMPLETED` keyword token.
 
 ### Removed
@@ -69,6 +69,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Fixed
 
+- Added a link-time fallback EnableInterrupt implementation to prevent missing symbols in existing AVR sketches without conflicting with sketches or libraries that provide EnableInterrupt themselves.
 - Fixed parsing boundaries between command terminators (`!`) and response terminators (`CRLF`) to reduce malformed-response handling edge cases.
 - Fixed service-request and zero-value response handling edge cases in recorder-driven data collection.
 

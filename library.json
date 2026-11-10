@@ -26,6 +26,9 @@
   "frameworks": "arduino",
   "platforms": ["atmelavr", "atmelsam", "espressif8266", "espressif32", "ststm32"],
   "headers": ["SDI12.h", "SDI12Recorder.h", "SDI12Protocol.h"],
+  "build": {
+    "libArchive": true
+  },
   "dependencies": [
     {
       "name": "EnableInterrupt",

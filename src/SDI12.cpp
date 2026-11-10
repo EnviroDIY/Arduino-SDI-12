@@ -11,6 +11,15 @@
 
 #include "SDI12.h"          // Header file for this library
 #include "SDI12Protocol.h"  // Shared SDI-12 protocol timing limits
+
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && !defined(SDI12_INTERNAL_PCINT)
+// Declare the EnableInterrupt API without defining its implementation or interrupt
+// vectors in this object file.
+#define LIBCALL_ENABLEINTERRUPT
+#include <EnableInterrupt.h>
+#undef LIBCALL_ENABLEINTERRUPT
+#endif
+
 #if defined __AVR__
 #include <avr/interrupt.h>  // interrupt handling
 #include <util/parity.h>    // optimized parity bit handling
@@ -1131,4 +1140,4 @@ ISR(PCINT3_vect) {
 
 #endif  // SDI12_INTERNAL_PCINT
 
-// cSpell:ignore PCICR
+// cSpell:ignore LIBCALL_ENABLEINTERRUPT PCICR

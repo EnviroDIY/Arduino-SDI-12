@@ -17,6 +17,10 @@ import os
 import re
 import json
 
+# # %%
+# local testing paths below
+# local testing paths above
+
 # %%
 # Import helper functions from the CI pipeline
 from build_utils import (
