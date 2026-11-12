@@ -96,7 +96,7 @@
  * While a series of bits is being transmitted on the dataline, the voltage level on
  * that line might look something like this:
  *
- * @code
+ * @code{.unparsed}
  *       _____       _____       _____       _____       _____     spacing
  * 5v   |     |     |     |     |     |     |     |     |     |
  *      |  0  |  1  |  0  |  1  |  0  |  1  |  0  |  1  |  0  | transition

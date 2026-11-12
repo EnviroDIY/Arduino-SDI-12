@@ -5,7 +5,6 @@
 # to native line endings on checkout.
 *.c text
 *.h text
-*.ino text diff=cpp filter=localExampleSettings
 *.cpp text diff=cpp
 *.py text diff=py
 
@@ -32,3 +31,7 @@ platformio.ini export-ignore
 
 # Shell Scripts
 *.sh export-ignore
+
+# Filters
+*.ino text diff=cpp filter=localExampleSettings
+continuous_integration/build_job_matrix.py text diff=python filter=localTestPaths

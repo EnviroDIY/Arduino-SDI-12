@@ -10,12 +10,11 @@
  * result when ready. Every recorder transaction is advanced from loop() with update().
  */
 
-#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
+#include <SDI12Config.h>
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && !defined(SDI12_INTERNAL_PCINT)
 #include <EnableInterrupt.h>
 #endif
 
-#include <SDI12.h>
-#include <SDI12Protocol.h>
 #include <SDI12Recorder.h>
 
 #ifndef SDI12_DATA_PIN
@@ -163,11 +162,6 @@ void setup() {
   }
 
   mySDI12.begin();
-
-#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
-  pinMode(dataPin, INPUT_PULLUP);
-  enableInterrupt(dataPin, SDI12::handleInterrupt, CHANGE);
-#endif
 
   Serial.println(F("Scanning the SDI-12 bus without blocking loop()."));
 }

@@ -102,6 +102,7 @@
   "ignoreWords": [],
   "ignorePaths": [
     "platformio.ini",
+    "keywords.txt",
     "*doxyfile*",
     ".vscode",
     "docs/Doxyfile",

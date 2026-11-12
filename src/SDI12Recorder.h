@@ -29,7 +29,7 @@
  * automatic retries according to the SDI-12 specification.
  *
  * Usage:
- * @code
+ * @code{.cpp}
  * SDI12Recorder recorder(mySDI12);
  *
  * void setup() {

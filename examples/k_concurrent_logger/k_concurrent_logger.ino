@@ -13,12 +13,11 @@
  * for each sensor when you have multiple sensors attached.
  */
 
-#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
+#include <SDI12Config.h>
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && !defined(SDI12_INTERNAL_PCINT)
 #include <EnableInterrupt.h>
 #endif
 
-#include <SDI12.h>
-#include <SDI12Protocol.h>
 #include <SDI12Recorder.h>
 
 #ifndef SDI12_DATA_PIN
@@ -154,12 +153,6 @@ void setup() {
     Serial.println(F("Wait 5s..."));
     delay(5000L);
   }
-
-#if defined(SDI12_EXTERNAL_PCINT) && (defined(__AVR__) || defined(ARDUINO_ARCH_AVR))
-  // Enable interrupts for the receive pin
-  pinMode(dataPin, INPUT_PULLUP);
-  enableInterrupt(dataPin, SDI12::handleInterrupt, CHANGE);
-#endif
 
   // Quickly scan the address space
   Serial.println(F("\n\nScanning all addresses, please wait..."));
