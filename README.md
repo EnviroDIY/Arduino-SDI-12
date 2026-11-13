@@ -33,15 +33,15 @@ Extensive documentation on the SDI-12 functions and classes is available here:  
     - [Renaming Notice](#renaming-notice)
   - [Getting Started](#getting-started)
   - [Library Installation](#library-installation)
-  - [Origins and Inherited Limitations](#origins-and-inherited-limitations)
+  - [Origins](#origins)
   - [Compatibility Considerations](#compatibility-considerations)
     - [Tested Boards](#tested-boards)
     - [Untested Boards](#untested-boards)
     - [Unsupported Boards](#unsupported-boards)
     - [Usable Pins](#usable-pins)
-  - [Variants and Branches](#variants-and-branches)
-    - [SDI12\_InternalInts](#sdi12_internalints)
-    - [SDI12\_PCINT3](#sdi12_pcint3)
+    - [Hidden Conflicts](#hidden-conflicts)
+      - [Disabled Interrupts](#disabled-interrupts)
+      - [Timer Prescaler Conflicts](#timer-prescaler-conflicts)
   - [Advanced Library Configuration](#advanced-library-configuration)
     - [AVR Interrupt Handling](#avr-interrupt-handling)
     - [Response Buffer Size](#response-buffer-size)
@@ -60,7 +60,6 @@ Learn more, below, about this library's:
 
 - [Origins and Inherited Limitations](https://github.com/EnviroDIY/Arduino-SDI-12#origins-and-inherited-limitations);
 - [Compatibility Considerations](https://github.com/EnviroDIY/Arduino-SDI-12#compatibility-considerations);
-- [Variants and Branches](https://github.com/EnviroDIY/Arduino-SDI-12#variants-and-branches) we created to overcome some limitations.
 
 Try running our [Example sketches](https://github.com/EnviroDIY/Arduino-SDI-12/tree/master/examples) with your Arduino board and SDI-12 sensor.
 
@@ -79,29 +78,11 @@ It can be installed using the PlatformIO command `pio pkg install --library "env
 You can also include this SDI-12 library as a dependency for a project by adding `envirodiy/SDI-12` to the [lib_deps](https://docs.platformio.org/en/latest/projectconf/sections/env/options/library/lib_deps.html) section of your platformio.ini configuration file.
 The PlatformIO library registry will should newly available versions of this library within minutes of a new release.
 
-## Origins and Inherited Limitations<!--! {#mainpage_origins} -->
+## Origins<!--! {#mainpage_origins} -->
 
 This library was developed from the [SoftwareSerial](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/SoftwareSerial) library that is a built-in [standard Arduino library](https://www.arduino.cc/en/Reference/Libraries).
 It was further modified to use a timer to improve read stability and decrease the amount of time universal interrupts are disabled using logic from [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
 In November of 2026, the [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt) library was made a required dependency for this library for AVR boards.
-
-The most obvious "limitation" is that this library will conflict with all other libraries that make use of pin change interrupts on **AVR** boards.
-You will be unable to compile them together.
-Some other libraries using pin change interrupts include [SoftwareSerial](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/SoftwareSerial), [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial), [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt/), [PinChangeInt](https://playground.arduino.cc/Main/PinChangeInt), [Servo](https://www.arduino.cc/en/Reference/Servo), and quite a number of other libraries.
-See the notes under [Variants and Branches](https://github.com/EnviroDIY/Arduino-SDI-12#variants-and-branches) below for advice in using this library in combination with such libraries.
-
-The one exception for pin change libraries is [EnableInterrupt](https://github.com/GreyGnome/EnableInterrupt), which this library depends on.
-
-Another non-trivial, but hidden limitation is that _all_ interrupts are disabled during most of the transmission of each character, which can interfere with other processes.
-That includes other pin-change interrupts, clock/timer interrupts, external interrupts, and every other type of processor interrupt.
-This is particularly problematic for SDI-12, because SDI-12 operates at a very slow baud rate (only 1200 baud).
-This translates to ~8.3 mS of "radio silence" from the processor for each character that goes out via SDI-12, which adds up to ~380-810ms per command!  Interrupts are enabled for the majority of the time while the processor is listening for responses.
-
-For ATmega168, ATmega328P, ATmega644, and ATmega644P AVR boards, this library will also conflict with the [tone](https://www.arduino.cc/reference/en/language/functions/advanced-io/tone/) function because of its utilization of timer 2.
-There will be no obvious compile error, but because SDI-12 and the tone library may use different clock-prescaler functions, the results for both might be rather unexpected.
-For ATmega1280, ATmega1284, ATmega1284P, and ATmega2560 boards, this library will silently conflict with the [Arduino Servo](https://docs.arduino.cc/libraries/servo/) library when Servo uses Timer 3.
-All 8MHz AVR boards will also have unresolvable prescaler conflicts with [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
-The pre-scaler values needed for the SDI-12 functionality are set in the begin() function and reset to their original values in the end() function.
 
 ## Compatibility Considerations<!--! {#mainpage_compatibility} -->
 
@@ -140,7 +121,7 @@ If you are interested in adding support for those boards, please send pull reque
 
 ### Usable Pins
 
-Due to the use of pin change interrupts, not all data pins are available for use with this SDI-12 library.
+Due to the use of pin change interrupts, not all AVR data pins are available for use with this SDI-12 library.
 Pin availability depends on the micro-controller.
 
 For AVR boards, the ["Bestiary" of the EnableInterrupt library](https://github.com/GreyGnome/EnableInterrupt?tab=readme-ov-file#pin--port-bestiary) is one of the best lists of usable pins.
@@ -164,37 +145,25 @@ For AVR boards, the ["Bestiary" of the EnableInterrupt library](https://github.c
 - **Particle (Boron LTE):**
   - Any digital GPIO
 
-Note that not all of these pins are available with our [Variants and Branches](https://github.com/EnviroDIY/Arduino-SDI-12#variants-and-branches), below.
+### Hidden Conflicts
 
-## Variants and Branches<!--! {#mainpage_variants} -->
+#### Disabled Interrupts
 
-As we've described, the default "master" branch of this library will conflict with SoftwareSerial and any other library that monopolizes all pin change interrupt vectors for all AVR boards.
-To allow simultaneous use of SDI-12 and SoftwareSerial, we have created additional variants of these libraries that we maintain as separate branches of this repository.
-For background information, my be helpful to read our [Overview of Interrupts](https://github.com/EnviroDIY/Arduino-SDI-12/wiki/2b.-Overview-of-Interrupts) wiki page or this [Arduino Pin Change Interrupts article](https://thewanderingengineer.com/2014/08/11/arduino-pin-change-interrupts/).
+For boards < 48MHz, such as most AVR boards, _all_ interrupts are disabled during most of the transmission of each character, which can interfere with other processes.
+That includes other pin-change interrupts, clock/timer interrupts, external interrupts, and every other type of processor interrupt.
+This is particularly problematic for SDI-12, because SDI-12 operates at a very slow baud rate (only 1200 baud).
+This translates to ~8.3 mS of "radio silence" from the processor for each character that goes out via SDI-12, which adds up to ~380-810ms per command!  Interrupts are enabled for the majority of the time while the processor is listening for responses.
 
-### SDI12_InternalInts
+#### Timer Prescaler Conflicts
 
-SDI12_InternalInts is the InternalInts branch of this repository.
-It controls the AVR pin change interrupts internally, without relying on an external interrupt management library.
-This can be more stable because it reduces the extra delay introduced by external libraries, but it will conflict with other libraries that also use pin change interrupts.
-It's also the easiest to get working in combination with any other pin change interrupt based library.
-It can be paired with the [EnviroDIY_SoftwareSerial_ExtInts](https://github.com/EnviroDIY/SoftwareSerial_ExternalInts) libraries (which is, by the way, extremely unstable).
-The only difference between the SDI12_InternalInts and the master version of this library is the name and the uncommented build flag `SDI12_INTERNAL_PCINT` in the SDI12Config.h configuration header.
+For ATmega168, ATmega328P, ATmega644, and ATmega644P AVR boards, this library will also conflict with the [tone](https://www.arduino.cc/reference/en/language/functions/advanced-io/tone/) function because of its utilization of timer 2.
+There will be no obvious compile error, but because SDI-12 and the tone library may use different clock-prescaler functions, the results for both might be rather unexpected.
+For ATmega1280, ATmega1284, ATmega1284P, and ATmega2560 boards, this library will silently conflict with the [Arduino Servo](https://docs.arduino.cc/libraries/servo/) library when Servo uses Timer 3.
+All 8MHz AVR boards will also have unresolvable prescaler conflicts with [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial).
+The pre-scaler values needed for the SDI-12 functionality are set in the begin() function and reset to their original values in the end() function.
 
-> [!tip]
-> For non-AVR boards, the SDI12_InternalInts variant has no effect, as it only controls AVR pin change interrupts internally.
-
-### SDI12_PCINT3<!--! {#mainpage_pcint3} -->
-
-SDI12_PCINT3 is in the PCINT3 branch of this repository, and was historically was called "SDI12_mod".
-It's been cropped to only control interrupt vector 3, or PCINT3 (D), which on the Mayfly (or Sodaq Mbili) corresponds to Pins D0-D7.
-It is designed to be compatible with [EnviroDIY_SoftwareSerial_PCINT12](https://github.com/EnviroDIY/SoftwareSerial_PCINT12) library (which controls interrupt vectors PCINT1 (B) & PCINT2 (C) / Mayfly pins D08-D15 & D16-D23) and [EnviroDIY PcInt PCINT0](https://github.com/EnviroDIY/PcInt_PCINT0) (which controls interrupt vectors PCINT0 (A) / Mayfly pins D24-D31/A0-A7).
-Note that different AtMega1284p boards have a different mapping from the physical PIN numbers to the listed digital PIN numbers that are printed on the board.
-One of the most helpful lists of pins and interrupts vectors is in the the [Pin/Port Bestiary wiki page for the Enable Interrupt library](https://github.com/GreyGnome/EnableInterrupt/wiki/Usage#PIN__PORT_BESTIARY).
-The only difference between the SDI12_PCINT3 and the master version of this library is the name and the uncommented build flag `SDI12_PCINT3_ONLY` in the SDI12Config.h configuration header.
-
-> [!tip]
-> For non-AVR boards, the SDI12_PCINT3 variant has no effect, as it only controls AVR pin change interrupts internally.
+On SAMD21 and SAMD51 boards, this library could potentially conflict with other libraries that manage change timer prescalers.
+I am unaware of any other libraries that currently conflict with this library on SAMD21 or SAMD51 boards due to timer prescaler management.
 
 ## Advanced Library Configuration
 
@@ -212,7 +181,10 @@ EnableInterrupt remains a declared dependency in library.properties and library.
 
 You can also allow this library to manage the interrupt handling, but restrict the pin change interrupts it can manage to a specific interrupt vector using the configuration options or defining the build flag `SDI12_INTERNAL_PCINT` **and** one of the build flags `SDI12_PCINT0_ONLY`, `SDI12_PCINT1_ONLY`, `SDI12_PCINT2_ONLY`, or `SDI12_PCINT3_ONLY`.
 Defining these flags has no effect on non-AVR boards.
-The [PCINT3](https://github.com/EnviroDIY/Arduino-SDI-12/tree/PCINT3) branch uses only vector 3.
+
+You will not be able to compile this library along with any other library that manages pin change interrupt vectors on AVR boards.
+Some other libraries managing interrupts include [SoftwareSerial](https://github.com/arduino/Arduino/tree/master/hardware/arduino/avr/libraries/SoftwareSerial), [NeoSWSerial](https://github.com/SlashDevin/NeoSWSerial), [PinChangeInt](https://playground.arduino.cc/Main/PinChangeInt), and [Servo](https://www.arduino.cc/en/Reference/Servo).
+Within a sketch, you can manage pin change interrupts using the functions provided by the EnableInterrupt library, such as `enableInterrupt()` and `disableInterrupt()`.
 
 ### Response Buffer Size
 
