@@ -19,25 +19,24 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
   - [2.5.0](#250)
   - [2.4.0](#240)
   - [2.3.4](#234)
-  - [2.3.3](#233)
+  - [2.3.3 _Restore reception on slow-edged buses (Similie fork)_](#233-restore-reception-on-slow-edged-buses-similie-fork)
   - [2.3.2](#232)
   - [2.3.1](#231)
   - [2.3.0 - 2025-03-04](#230---2025-03-04)
   - [2.2.1 - 2024-12-09](#221---2024-12-09)
-  - [2.2.0 - 2024-08-14](#220---2024-08-14)
-  - [2.1.4 - 2021-05-05](#214---2021-05-05)
-  - [2.1.3 - 2021-03-24](#213---2021-03-24)
-  - [2.1.1 - 2020-08-20](#211---2020-08-20)
-  - [2.1.0 - 2020-07-10](#210---2020-07-10)
-  - [1.3.6 - 2019-08-29](#136---2019-08-29)
-  - [1.3.5 - 2019-07-01](#135---2019-07-01)
-  - [1.3.4 - 2019-10-29](#134---2019-10-29)
-  - [1.3.3 - 2018-05-11](#133---2018-05-11)
-  - [1.3.1 - 2018-04-06](#131---2018-04-06)
-  - [1.1.0 - 2018-03-15](#110---2018-03-15)
-  - [1.0.6 - 2018-03-09](#106---2018-03-09)
-  - [1.0.1 - 2017-05-16](#101---2017-05-16)
-
+  - [2.2.0 - 2024-08-14 _CRC and SAMD51 Support_](#220---2024-08-14-crc-and-samd51-support)
+  - [2.1.4 - 2021-05-05 _Revert wake delay_](#214---2021-05-05-revert-wake-delay)
+  - [2.1.3 - 2021-03-24 _Migrate to GitHub Actions_](#213---2021-03-24-migrate-to-github-actions)
+  - [2.1.1 - 2020-08-20 _Patches for ATTiny_](#211---2020-08-20-patches-for-attiny)
+  - [2.1.0 - 2020-07-10 _Library Rename and ESP support_](#210---2020-07-10-library-rename-and-esp-support)
+  - [1.3.6 - 2019-08-29 _Fixed extra compiler warnings_](#136---2019-08-29-fixed-extra-compiler-warnings)
+  - [1.3.5 - 2019-07-01 _Removed SAMD Tone Conflict_](#135---2019-07-01-removed-samd-tone-conflict)
+  - [1.3.4 - 2019-10-29 _Timer class_](#134---2019-10-29-timer-class)
+  - [1.3.3 - 2018-05-11 _Unset prescalers_](#133---2018-05-11-unset-prescalers)
+  - [1.3.1 - 2018-04-06 _Added processor timer for greater stability_](#131---2018-04-06-added-processor-timer-for-greater-stability)
+  - [1.1.0 - 2018-03-15 _Better integration inside other libraries_](#110---2018-03-15-better-integration-inside-other-libraries)
+  - [1.0.6 - 2018-03-09 _Fixed timeout values_](#106---2018-03-09-fixed-timeout-values)
+  - [1.0.1 - 2017-05-16 _Initial Release_](#101---2017-05-16-initial-release)
 
 <!--! @endif -->
 
@@ -150,9 +149,7 @@ This is a re-release on the main repository of tag 2.3.3 from the [similie/Ardui
 
 ***
 
-## [2.3.3]
-
-_Restore reception on slow-edged buses (Similie fork)_
+## [2.3.3] _Restore reception on slow-edged buses (Similie fork)_
 
 This is a fork release from [similie/Arduino-SDI-12](https://github.com/similie/Arduino-SDI-12), made because ESP32 recorders that talked to older sensors reliably on v2.1.4 stopped reading them on v2.2.0 and later.  Everything added since v2.1.4 is kept; the changes here restore the receive tolerance and the transmit timing guarantee that v2.1.4 had, and make both adjustable at build time.
 
@@ -234,9 +231,7 @@ This is a fork release from [similie/Arduino-SDI-12](https://github.com/similie/
 
 ***
 
-## [2.2.0] - 2024-08-14
-
-_CRC and SAMD51 Support_
+## [2.2.0] - 2024-08-14 _CRC and SAMD51 Support_
 
 ### Changed
 
@@ -279,9 +274,7 @@ _CRC and SAMD51 Support_
 
 ***
 
-## [2.1.4] - 2021-05-05
-
-_Revert wake delay to 0ms_
+## [2.1.4] - 2021-05-05 _Revert wake delay_
 
 ### Changed
 
@@ -289,25 +282,19 @@ _Revert wake delay to 0ms_
   - In 92055d377b26fa862c43d1429de1ccbef054af01 this was bumped up to 10ms, which caused problems for several people.
   - The delay can now also be set using the build flag `-D SDI12_WAKE_DELAY=#`
 
-## [2.1.3] - 2021-03-24
-
-_Migrate to GitHub Actions_
+## [2.1.3] - 2021-03-24 _Migrate to GitHub Actions_
 
 ### Changed
 
 - Migrate from Travis to GitHub actions
 
-## [2.1.1] - 2020-08-20
-
-_Patches for ATTiny_
+## [2.1.1] - 2020-08-20 _Patches for ATTiny_
 
 ### Fixed
 
 - fixes for the timer and pre-scaler for the ATTiny, courtesy of \@gabbas1
 
-## [2.1.0] - 2020-07-10
-
-_Library Rename and ESP support_
+## [2.1.0] - 2020-07-10 _Library Rename and ESP support_
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3939731.svg)](https://doi.org/10.5281/zenodo.3939731)
 
@@ -319,26 +306,20 @@ _Library Rename and ESP support_
 - Add option of adding a delay before sending a command to allow the sensor to wake.  Take advantage of this by calling the function `sendCommand(command, extraWakeTime)`. This may resolve issues with some Campbell sensors that would not previous communicate with this library.  See <https://www.envirodiy.org/topic/campbell-scientific-cs-215-sdi-12-communication-issues-w-mayfly/#post-14103>
 - Adds Doxygen (Javadoc) style comments to **ALL** members of the library.  The generated documentation is available at <https://envirodiy.github.io/Arduino-SDI-12/>.
 
-## [1.3.6] - 2019-08-29
-
-_Fixed extra compiler warnings_
+## [1.3.6] - 2019-08-29 _Fixed extra compiler warnings_
 
 ### Fixed
 
 - A very minor update to fix compiler warnings found when using -Wextra in addition to -Wall.
 
-## [1.3.5] - 2019-07-01
-
-_Removed SAMD Tone Conflict_
+## [1.3.5] - 2019-07-01 _Removed SAMD Tone Conflict_
 
 ### Changed
 
 - SAMD boards will no longer have a conflict with the Tone functions in the Arduino core. AVR boards will still conflict. If you need to use Tone and SDI-12 together for some reason on an AVR boards, you must use the "delayBase" branch.
 - Examples were also updated and given platformio.ini files.
 
-## [1.3.4] - 2019-10-29
-
-_Timer class_
+## [1.3.4] - 2019-10-29 _Timer class_
 
 ### Changed
 
@@ -346,18 +327,14 @@ _Timer class_
 - NOTE: Maintaining interrupt control for SAMD processors as there are no interrupt vectors to be in conflict.
 Because the pin mode changes from input to output and back, allowing another library to control interrupts doesn't work.
 
-## [1.3.3] - 2018-05-11
-
-_Unset prescalers_
+## [1.3.3] - 2018-05-11 _Unset prescalers_
 
 ### Changed
 
 - Now unsetting timer prescalers and setting the isActive pointer to NULL in both the end and the destructor functions.
 - Also some clean-up of the examples.
 
-## [1.3.1] - 2018-04-06
-
-_Added processor timer for greater stability_
+## [1.3.1] - 2018-04-06 _Added processor timer for greater stability_
 
 ### Added
 
@@ -368,25 +345,19 @@ _Added processor timer for greater stability_
 - Made changes to the write functions to use the timer to reduce the amount of time that all system interrupts are off.
 - Forcing all SDI-12 objects to use the same buffer to reduce ram usage.
 
-## [1.1.0] - 2018-03-15
-
-_Better integration inside other libraries_
+## [1.1.0] - 2018-03-15 _Better integration inside other libraries_
 
 ### Added
 
 - Added notes and an empty constructor/populated begin method to allow this library to be more easily called inside of other libraries.
 
-## [1.0.6] - 2018-03-09
-
-_Fixed timeout values_
+## [1.0.6] - 2018-03-09 _Fixed timeout values_
 
 ### Fixed
 
 - Fixes the time-out values for the ParseInt and ParseFloat to be -9999. This was the intended behavior all along, but at some point those functions changed in the stream library and the identically named functions within SDI-12 intended to "hide" the stream functions ceased to be called.
 
-## [1.0.1] - 2017-05-16
-
-_Initial Release_
+## [1.0.1] - 2017-05-16 _Initial Release_
 
 The first "official" release of this interrupt-based SDI-12 library for AVR and SAMD Arduino boards.
 

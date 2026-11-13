@@ -41,6 +41,9 @@ SDI12 mySDI12(dataPin);
 bool commandMode = true; /*!< Add a missing ! to commands when true. */
 bool feedback    = true; /*!< Echo serial input and print interface messages. */
 
+const unsigned int maxSerialMessageLength = SDI12_BUFFER_SIZE -
+  1U; /*!< Maximum accepted serial input line length. */
+
 /** Print the commands understood by this interface. */
 void printHelp() {
   Serial.println(F("OPTIONS:"));
@@ -93,6 +96,7 @@ void processSerialMessage(String& message) {
 void readSerialInput() {
   static String serialMessage;
   static bool   previousWasCarriageReturn = false;
+  static bool   discardingLine            = false;
 
   if (!Serial.available()) { return; }
 
@@ -100,14 +104,24 @@ void readSerialInput() {
   if (incoming == '\r') {
     previousWasCarriageReturn = true;
     if (feedback) { Serial.println(); }
-    if (serialMessage.length() > 0) { processSerialMessage(serialMessage); }
+    if (!discardingLine && serialMessage.length() > 0) {
+      processSerialMessage(serialMessage);
+    }
+    serialMessage  = "";
+    discardingLine = false;
   } else if (incoming == '\n') {
     if (previousWasCarriageReturn) {
       previousWasCarriageReturn = false;
       return;
     }
     if (feedback) { Serial.println(); }
-    if (serialMessage.length() > 0) { processSerialMessage(serialMessage); }
+    if (!discardingLine && serialMessage.length() > 0) {
+      processSerialMessage(serialMessage);
+    }
+    serialMessage  = "";
+    discardingLine = false;
+  } else if (discardingLine) {
+    previousWasCarriageReturn = false;
   } else if (incoming == '\b' || incoming == 0x7F) {
     previousWasCarriageReturn = false;
     if (serialMessage.length() > 0) {
@@ -116,8 +130,14 @@ void readSerialInput() {
     }
   } else {
     previousWasCarriageReturn = false;
-    serialMessage += incoming;
-    if (feedback) { Serial.print(incoming); }
+    if (serialMessage.length() >= maxSerialMessageLength) {
+      serialMessage  = "";
+      discardingLine = true;
+      if (feedback) { Serial.println(F("\n[Serial input line too long; discarded]")); }
+    } else {
+      serialMessage += incoming;
+      if (feedback) { Serial.print(incoming); }
+    }
   }
 }
 
@@ -150,9 +170,8 @@ void setup() {
   Serial.print(dataPin);
   Serial.println(F("..."));
   mySDI12.begin();
-  delay(500);
-
   mySDI12.forceListen();
+  delay(500);
 
   printHelp();
 }

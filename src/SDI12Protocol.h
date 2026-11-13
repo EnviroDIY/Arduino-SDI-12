@@ -81,7 +81,22 @@ struct SDI12Timing {
     /** Marking duration after which the next recorder command requires a break. */
     kBreakRequiredAfterMarkingMicros = 87000UL,
     /** Maximum completion time for an ordinary ASCII response. */
-    kNormalResponseMaxMicros = 380000UL
+    kNormalResponseMaxMicros = 380000UL,
+    /** Conservative recorder transaction guard before command-derived deadlines. */
+    kRecorderDefaultTransactionTimeoutMillis = 3000UL,
+    /** Recorder deadline that permits all retries of an ordinary typed response. */
+    kRecorderSimpleTransactionTimeoutMillis = 5000UL,
+    /** Recorder deadline that permits all retries of one maximum-length data response.
+     */
+    kRecorderDataTransactionTimeoutMillis = 12000UL,
+    /** Conservative recorder response deadline for a raw extended command. */
+    kRecorderRawResponseTimeoutMicros = 2000000UL,
+    /** Maximum transmission time for an extended ASCII data response with CRC. */
+    kHighVolumeDataResponseMaxMicros = 810400UL,
+    /** Recorder wait for observing the complete first response start bit. */
+    kRecorderResponseStartMaxMicros = 17070UL,
+    /** Earliest recorder retry after a command receives no response. */
+    kNoResponseRetryMinMicros = 16670UL
   };
 };
 

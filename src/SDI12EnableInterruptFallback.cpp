@@ -15,13 +15,14 @@
 
 void EI_SerialPrint_P(const char* str) __attribute__((weak));
 void bogusFunctionPlaceholder(void) __attribute__((weak));
-void disableInterrupt(uint8_t interruptDesignator) __attribute__((weak));
-void enableInterrupt(uint8_t interruptDesignator, void (*userFunction)(void),
-                     uint8_t mode) __attribute__((weak));
+void disableInterruptFallback(uint8_t interruptDesignator);
+void enableInterruptFallback(uint8_t interruptDesignator, void (*userFunction)(void),
+                             uint8_t mode);
 
-// Make every externally visible EnableInterrupt symbol weak. This keeps the fallback
-// available to legacy sketches while allowing a strong implementation from any sketch
-// or required library object to replace it regardless of PlatformIO archive order.
+// Make the original externally visible EnableInterrupt symbols weak. This keeps the
+// fallback available to legacy sketches while allowing a strong implementation from
+// any sketch or required library object to replace it regardless of PlatformIO archive
+// order.
 #pragma weak arduinoInterruptedPin
 #pragma weak arduinoPinState
 #pragma weak externalFunctionPointer
@@ -57,5 +58,40 @@ void enableInterrupt(uint8_t interruptDesignator, void (*userFunction)(void),
 #pragma weak __vector_9
 #pragma weak __vector_10
 #pragma weak __vector_11
+#define disableInterrupt disableInterruptFallback
+#define enableInterrupt enableInterruptFallback
 #include <EnableInterrupt.h>
+#undef disableInterrupt
+#undef enableInterrupt
+
+void disableInterrupt(uint8_t interruptDesignator) __attribute__((weak));
+void enableInterrupt(uint8_t interruptDesignator, void (*userFunction)(void),
+                     uint8_t mode) __attribute__((weak));
+
+void enableInterrupt(uint8_t interruptDesignator, void (*userFunction)(void),
+                     uint8_t mode) {
+#if defined(digitalPinToInterrupt) && defined(NOT_AN_INTERRUPT)
+  if (!(interruptDesignator & PINCHANGEINTERRUPT)) {
+    const uint8_t interruptNumber = digitalPinToInterrupt(interruptDesignator);
+    if (interruptNumber != static_cast<uint8_t>(NOT_AN_INTERRUPT)) {
+      attachInterrupt(interruptNumber, userFunction, mode);
+      return;
+    }
+  }
+#endif
+  enableInterruptFallback(interruptDesignator, userFunction, mode);
+}
+
+void disableInterrupt(uint8_t interruptDesignator) {
+#if defined(digitalPinToInterrupt) && defined(NOT_AN_INTERRUPT)
+  if (!(interruptDesignator & PINCHANGEINTERRUPT)) {
+    const uint8_t interruptNumber = digitalPinToInterrupt(interruptDesignator);
+    if (interruptNumber != static_cast<uint8_t>(NOT_AN_INTERRUPT)) {
+      detachInterrupt(interruptNumber);
+      return;
+    }
+  }
+#endif
+  disableInterruptFallback(interruptDesignator);
+}
 #endif

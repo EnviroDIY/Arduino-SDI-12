@@ -35,6 +35,7 @@ const char     changedAddress = '1';
 const bool testAddressChange = false;
 const bool testImmediateData = false;
 const bool testCancellation  = false;
+const bool testRawCommand    = false;
 
 SDI12         mySDI12(dataPin);
 SDI12Recorder mySDI12Recorder(mySDI12);
@@ -200,6 +201,10 @@ void loop() {
     case WAIT_CONCURRENT_MEASUREMENT:
       if (mySDI12Recorder.isBusy()) { break; }
       printResult(F("Concurrent measurement"));
+      if (mySDI12Recorder.result() != SDI12Recorder::RESULT_SUCCESS) {
+        testStage = START_CONTINUOUS_DATA;
+        break;
+      }
       if (testImmediateData) {
         mySDI12Recorder.requestDataImmediately(sensorAddress, dataValues, 9U);
         testStage = WAIT_CONCURRENT_DATA;
@@ -239,6 +244,10 @@ void loop() {
       break;
 
     case START_RAW_COMMAND:
+      if (!testRawCommand) {
+        testStage = TEST_COMPLETE;
+        break;
+      }
       mySDI12Recorder.startRawCommand(sensorAddress, String("X"));
       if (testCancellation) {
         mySDI12Recorder.cancel();

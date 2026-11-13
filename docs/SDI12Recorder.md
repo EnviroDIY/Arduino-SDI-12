@@ -21,7 +21,8 @@ The [non-blocking concurrent logger](@ref example_m_page) shows how one executor
 
 ## Measurements and Data Context<!--! {#recorder_measurement_context} -->
 
-A successful normal or concurrent measurement retains the sensor address, CRC policy, expected value count, and readiness state. `requestData()` uses that context to generate and validate the required `D0` through `D9` commands.
+A successful normal or concurrent measurement retains the sensor address, CRC policy, expected value count, and readiness state.
+`requestData()` uses that context to generate and validate the required `D0` through `D9` commands.
 It releases the context after complete retrieval or a sensor-reported aborted measurement.
 Later transmissions also invalidate context that is no longer safe to use: an address query clears all contexts, an address change clears the old and new addresses, and a new measurement or raw command clears context for that sensor.
 
@@ -30,47 +31,38 @@ The default is three.
 Starting another measurement when every slot is occupied returns `RESULT_CONTEXT_CAPACITY` before transmitting.
 Increasing the setting uses more RAM in every recorder object, so beginner examples leave the default unchanged.
 
-If the caller's data buffer is smaller than the advertised value count,
-`requestData()` returns `RESULT_DATA_BUFFER_TOO_SMALL` without transmitting and
-leaves the measurement context available. The caller can then retry with a
-larger buffer.
+If the caller's data buffer is smaller than the advertised value count, `requestData()` returns `RESULT_DATA_BUFFER_TOO_SMALL` without transmitting and leaves the measurement context available.
+The caller can then retry with a larger buffer.
 
 ## Results and Responses<!--! {#recorder_results} -->
 
-Every operation publishes a `RecorderResult`. `RESULT_SUCCESS` is the only
-successful terminal result. Use `printRecorderResult()` for a readable
-diagnostic. Data operations also publish `dataValueCount()`, while address,
-identification, and measurement operations provide typed accessors documented
-with the `SDI12Recorder` class.
+Every operation publishes a `RecorderResult`.
+`RESULT_SUCCESS` is the only successful terminal result.
+Use `printRecorderResult()` for a readable diagnostic.
+Data operations also publish `dataValueCount()`, while address, identification, and measurement operations provide typed accessors documented with the `SDI12Recorder` class.
 
-The response payload returned by `response()` is recorder-owned. Use
-`copyResponse()` when the application must retain it after another operation.
+The response payload returned by `response()` is recorder-owned.
+Use `copyResponse()` when the application must retain it after another operation.
 
 ## Raw Extended Commands<!--! {#recorder_raw_commands} -->
 
-`startRawCommand()` is a secondary interface for manufacturer-specific commands
-that have no typed recorder method. Supply the sensor address and only the
-command body; the recorder adds the address and terminating exclamation point.
-It validates the returned address and retry timing but treats the remaining
-payload as opaque. The caller is responsible for command-specific parsing and
-validation.
+`startRawCommand()` is a secondary interface for manufacturer-specific commands that have no typed recorder method.
+Supply the sensor address and only the command body; the recorder adds the address and terminating exclamation point.
+It validates the returned address and retry timing but treats the remaining payload as opaque.
+The caller is responsible for command-specific parsing and validation.
 
-A raw command invalidates retained measurement context for its addressed
-sensor. Prefer typed methods for standard commands because they provide strict
-grammar and CRC validation and manage multi-command workflows automatically.
+A raw command invalidates retained measurement context for its addressed sensor.
+Prefer typed methods for standard commands because they provide strict grammar and CRC validation and manage multi-command workflows automatically.
 
-See the [raw extended-command example](@ref raw_extended_commands_page) for a
-minimal polling workflow.
+See the [raw extended-command example](@ref raw_extended_commands_page) for a minimal polling workflow.
 
 ## Configuration<!--! {#recorder_configuration} -->
 
 All user-selectable settings are in `SDI12Config.h`:
 
 - `SDI12_RECORDER_CONTEXT_SLOTS` controls retained measurement capacity.
-- `SDI12_RECORDER_RESPONSE_BUFFER_SIZE` controls recorder-owned ASCII response
-  storage.
-- `SDI12_RECORDER_ALWAYS_BREAK` disables the optimized legal no-break path for
-  the first attempt of a new operation.
+- `SDI12_RECORDER_RESPONSE_BUFFER_SIZE` controls recorder-owned ASCII response storage.
+- `SDI12_RECORDER_ALWAYS_BREAK` disables the optimized legal no-break path for the first attempt of a new operation.
 
 These are compile-time settings.
 Change them only when the application has a specific capacity or compatibility requirement.

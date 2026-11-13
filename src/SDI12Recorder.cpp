@@ -16,12 +16,13 @@ SDI12Recorder::SDI12Recorder(SDI12& sdi12)
     _address('0'),
     _typedCommandLength(0),
     _txnStartTime(0),
-    _txnTimeoutMs(kDefaultTransactionTimeoutMs),
-    _responseTimeoutMicros(kDefaultRawResponseTimeoutMicros),
+    _txnTimeoutMs(SDI12Timing::kRecorderDefaultTransactionTimeoutMillis),
+    _responseTimeoutMicros(SDI12Timing::kRecorderRawResponseTimeoutMicros),
     _phase(PHASE_IDLE),
     _phaseStarted(false),
     _phaseStartTime(0),
     _commandStopTime(0),
+    _responseStartTime(0),
     _sequenceCount(0),
     _breakTransmitted(false),
     _attemptCount(0),
@@ -232,8 +233,8 @@ void SDI12Recorder::startRequestContinuousData(char address, float* values,
   _dataCommandNumber     = dataOption;
   _dataValueCount        = 0U;
   _dataCRCExpected       = requestCRC;
-  _txnTimeoutMs          = kDataTransactionTimeoutMs;
-  _responseTimeoutMicros = kDataResponseTimeoutMicros;
+  _txnTimeoutMs          = SDI12Timing::kRecorderDataTransactionTimeoutMillis;
+  _responseTimeoutMicros = SDI12Timing::kHighVolumeDataResponseMaxMicros;
 }
 
 void SDI12Recorder::requestData(char address, float* values, size_t capacity) {
@@ -282,8 +283,8 @@ void SDI12Recorder::_startDataRequest(char address, float* values, size_t capaci
   _dataValueCount        = 0U;
   _dataCRCExpected       = context.crcExpected;
   _expectedValueCount    = context.expectedValueCount;
-  _txnTimeoutMs          = kDataTransactionTimeoutMs;
-  _responseTimeoutMicros = kDataResponseTimeoutMicros;
+  _txnTimeoutMs          = SDI12Timing::kRecorderDataTransactionTimeoutMillis;
+  _responseTimeoutMicros = SDI12Timing::kHighVolumeDataResponseMaxMicros;
 
   if (waitUntilReady && context.phase == CONTEXT_PHASE_CONCURRENT_RUNNING &&
       !_readyAtReached(context.readyAt)) {
@@ -327,8 +328,8 @@ void SDI12Recorder::startRawCommand(char address, const String& command) {
   _address               = address;
   _rawCommand            = command;
   _typedCommandLength    = 0U;
-  _txnTimeoutMs          = kDefaultTransactionTimeoutMs;
-  _responseTimeoutMicros = kDefaultRawResponseTimeoutMicros;
+  _txnTimeoutMs          = SDI12Timing::kRecorderDefaultTransactionTimeoutMillis;
+  _responseTimeoutMicros = SDI12Timing::kRecorderRawResponseTimeoutMicros;
   _beginOperation();
 }
 
@@ -546,8 +547,8 @@ void SDI12Recorder::_beginTypedOperation(Operation operation, char address,
   _address                           = address;
   _typedCommandLength                = commandLength;
   _typedCommand[_typedCommandLength] = '\0';
-  _txnTimeoutMs                      = kSimpleTransactionTimeoutMs;
-  _responseTimeoutMicros             = SDI12Timing::kNormalResponseMaxMicros;
+  _txnTimeoutMs          = SDI12Timing::kRecorderSimpleTransactionTimeoutMillis;
+  _responseTimeoutMicros = SDI12Timing::kNormalResponseMaxMicros;
   _beginOperation();
 }
 
@@ -563,6 +564,7 @@ void SDI12Recorder::_resetAttemptReception() {
   _sdi12.clearBuffer();
   _sdi12.takeReceiveEvents();
   _pendingReceiveEvents = SDI12::SDI12_RECEIVE_EVENT_NONE;
+  _responseStartTime    = 0U;
 }
 
 void SDI12Recorder::_clearOperationOutputs() {
@@ -674,8 +676,8 @@ void SDI12Recorder::_startNextDataCommand() {
   _typedCommand[4]       = '\0';
   _typedCommandLength    = 4U;
   _txnStartTime          = millis();
-  _txnTimeoutMs          = kDataTransactionTimeoutMs;
-  _responseTimeoutMicros = kDataResponseTimeoutMicros;
+  _txnTimeoutMs          = SDI12Timing::kRecorderDataTransactionTimeoutMillis;
+  _responseTimeoutMicros = SDI12Timing::kHighVolumeDataResponseMaxMicros;
   _sequenceCount         = 1U;
   _breakTransmitted      = false;
   _attemptCount          = 0U;
@@ -1041,6 +1043,7 @@ void SDI12Recorder::_phase_waiting_response() {
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_START_BIT_OBSERVED) {
     // Response has started; begin collecting characters
     clearResponse();
+    _responseStartTime    = micros();
     _pendingReceiveEvents = receiveEvents &
       static_cast<uint8_t>(~SDI12::SDI12_RECEIVE_EVENT_START_BIT_OBSERVED);
     _transitionTo(PHASE_RECEIVING);
@@ -1052,10 +1055,11 @@ void SDI12Recorder::_phase_waiting_response() {
   // their response for hundreds of milliseconds. For continuous data only, keep
   // listening until the existing response deadline so a retry cannot collide with
   // that late response. All response validation remains unchanged.
-  const uint32_t RESPONSE_START_MAX_MICROS =
-    _operation == OPERATION_CONTINUOUS_DATA ? _responseTimeoutMicros : 16670UL + 400UL;
+  const uint32_t responseStartMaxMicros = _operation == OPERATION_CONTINUOUS_DATA
+    ? _responseTimeoutMicros
+    : SDI12Timing::kRecorderResponseStartMaxMicros;
 
-  if (elapsedMicros > RESPONSE_START_MAX_MICROS) {
+  if (elapsedMicros > responseStartMaxMicros) {
     // No response received in time
     _setResult(RESULT_NO_RESPONSE);
     _transitionTo(PHASE_DECIDING_RETRY);
@@ -1110,8 +1114,12 @@ void SDI12Recorder::_phase_receiving() {
     return;
   }
 
-  // Check for the command-specific response-completion deadline.
-  if (micros() - _commandStopTime > _responseTimeoutMicros) {
+  // A continuous response may start late after a non-compliant sensor repeats its
+  // measurement. Once observed, allow the normal maximum response duration to finish.
+  // Other operations retain their command-stop-relative completion deadline.
+  const uint32_t responseCompletionStart =
+    _operation == OPERATION_CONTINUOUS_DATA ? _responseStartTime : _commandStopTime;
+  if (micros() - responseCompletionStart > _responseTimeoutMicros) {
     _setResult(RESULT_RESPONSE_TIMEOUT);
     _transitionTo(PHASE_DECIDING_RETRY);
     return;
@@ -1141,7 +1149,9 @@ void SDI12Recorder::_phase_draining_response() {
 
   // A malformed sensor may never terminate its response. Bound the drain with the
   // same command-specific response deadline used for otherwise incomplete responses.
-  if (micros() - _commandStopTime > _responseTimeoutMicros) {
+  const uint32_t responseCompletionStart =
+    _operation == OPERATION_CONTINUOUS_DATA ? _responseStartTime : _commandStopTime;
+  if (micros() - responseCompletionStart > _responseTimeoutMicros) {
     _transitionTo(PHASE_DECIDING_RETRY);
   }
 }
@@ -1246,13 +1256,13 @@ void SDI12Recorder::_phase_waiting_service_request() {
   }
 
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_FRAMING_ERROR) {
-    _setResult(RESULT_FRAMING_ERROR);
-    _transitionTo(PHASE_IDLE);
+    _resetAttemptReception();
+    _setResult(RESULT_NONE);
     return;
   }
   if (receiveEvents & SDI12::SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW) {
-    _setResult(RESULT_BUFFER_OVERFLOW);
-    _transitionTo(PHASE_IDLE);
+    _resetAttemptReception();
+    _setResult(RESULT_NONE);
     return;
   }
 
@@ -1385,16 +1395,14 @@ void SDI12Recorder::_phase_deciding_retry() {
   // - Earliest retry: 16.67 ms after stop bit
   // - Latest retry without break: 87 ms after stop bit
   if (_result == RESULT_NO_RESPONSE) {
-    const uint32_t RETRY_NO_RESPONSE_MIN_MICROS = 16670;
-    const uint32_t RETRY_NO_RESPONSE_MAX_MICROS = 87000;
-
     // Too early to retry?
-    if (elapsedMicrosSinceStop < RETRY_NO_RESPONSE_MIN_MICROS) {
+    if (elapsedMicrosSinceStop < SDI12Timing::kNoResponseRetryMinMicros) {
       return;  // Wait longer
     }
 
     // Can we retry without a new break?
-    if (elapsedMicrosSinceStop <= RETRY_NO_RESPONSE_MAX_MICROS && _attemptCount < 2) {
+    if (elapsedMicrosSinceStop <= SDI12Timing::kBreakRequiredAfterMarkingMicros &&
+        _attemptCount < 2) {
       // Yes; increment attempt counter and try again
       _attemptCount++;
       _resetAttemptReception();

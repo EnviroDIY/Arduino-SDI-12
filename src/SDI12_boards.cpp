@@ -185,6 +185,10 @@ static uint8_t preSDI12_TCCR4D;
  * @brief The value of timer control register 4E prior to being set for SDI-12.
  */
 static uint8_t preSDI12_TCCR4E;
+/**
+ * @brief The value of output compare register 4C prior to being set for SDI-12.
+ */
+static uint16_t preSDI12_OCR4C;
 
 void SDI12Timer::configSDI12TimerPrescale(void) {
   preSDI12_TCCR4A = TCCR4A;
@@ -192,6 +196,8 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   preSDI12_TCCR4C = TCCR4C;
   preSDI12_TCCR4D = TCCR4D;
   preSDI12_TCCR4E = TCCR4E;
+  preSDI12_OCR4C  = OCR4C;
+  preSDI12_OCR4C |= static_cast<uint16_t>(TC4H & 0x03U) << 8U;
   TCCR4A = 0x00;  // TCCR4A = 0x00 = "normal" operation - Normal port operation, OC4A &
                   // OC4B disconnected
 #if F_CPU == 16000000L
@@ -205,9 +211,13 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
                   // disconnected
   TCCR4D = 0x00;  // TCCR4D = 0x00 = No fault protection
   TCCR4E = 0x00;  // TCCR4E = 0x00 = No register locks or overrides
+  TC4H   = 0x03;
+  OCR4C  = 0xFF;  // Set the Timer4 rollover to its full 10-bit period (0x03FF)
 }
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {
+  TC4H   = static_cast<uint8_t>(preSDI12_OCR4C >> 8U);
+  OCR4C  = static_cast<uint8_t>(preSDI12_OCR4C);
   TCCR4A = preSDI12_TCCR4A;
   TCCR4B = preSDI12_TCCR4B;
   TCCR4C = preSDI12_TCCR4C;

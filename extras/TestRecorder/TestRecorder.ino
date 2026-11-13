@@ -84,9 +84,9 @@ int8_t error_result_number = 7;
 float  no_error_value      = 0;
 
 struct startMeasurementResult {  // Structure declaration
-  String  returned_address;
-  uint8_t meas_time_s;
-  int     numberResults;
+  String   returned_address;
+  uint16_t meas_time_s;
+  int      numberResults;
 };
 
 struct getResultsResult {  // Structure declaration
@@ -226,7 +226,11 @@ void testBeginnerCommands(char address, char newAddress) {
   mySDI12Recorder.identify(address, identification);
 
   if (mySDI12Recorder.changeAddress(address, newAddress)) {
-    mySDI12Recorder.changeAddress(newAddress, address);
+    if (!mySDI12Recorder.changeAddress(newAddress, address)) {
+      Serial.print(F("Could not restore the sensor address; address "));
+      Serial.print(newAddress);
+      Serial.println(F(" may still be active."));
+    }
   }
 
   mySDI12Recorder.measure(address, values, 9U, 0U, false);
@@ -427,7 +431,6 @@ void setup() {
 }
 
 void loop() {
-#if 0
   flip = !flip;  // flip the switch between concurrent and not
   Serial.print(F("\nStarting "));
   Serial.print(flip ? "concurrent" : "individual");
@@ -534,10 +537,10 @@ void loop() {
           if (this_result[pos] != "") { prev_result[pos] = this_result[pos]; }
 
           char addr = SDI12Address::fromIndex(address_number);
-          const SDI12Recorder::MeasurementState sensorMeasurementState =
-            mySDI12Recorder.measurementState(addr);
 
 #if defined(TEST_PRINT_ARRAY)
+          const SDI12Recorder::MeasurementState sensorMeasurementState =
+            mySDI12Recorder.measurementState(addr);
           Serial.print(address_number);
           Serial.print(F(",\t"));
           Serial.print(SDI12Address::fromIndex(address_number));
@@ -607,7 +610,6 @@ void loop() {
     Serial.print(F("Total Time for Concurrent Measurements: "));
     Serial.println(millis() - start);
   }
-  Serial.println(F("-------------------------------------------------------------------")
-                 "------------");
-#endif
+  Serial.println(F("-------------------------------------------------------------------"
+                   "------------"));
 }

@@ -716,22 +716,12 @@ class SDI12Recorder {
   uint32_t _txnTimeoutMs;           ///< Overall transaction deadline
   uint32_t _responseTimeoutMicros;  ///< Current response-completion deadline
 
-  /// Conservative transaction guard until command-derived deadlines are implemented.
-  static const uint32_t kDefaultTransactionTimeoutMs = 3000U;
-  /// Deadline that permits all retries of an ordinary typed response.
-  static const uint32_t kSimpleTransactionTimeoutMs = 5000U;
-  /// Deadline that permits all retries of one maximum-length ASCII data response.
-  static const uint32_t kDataTransactionTimeoutMs = 12000U;
-  /// Conservative response deadline for the low-level raw command API.
-  static const uint32_t kDefaultRawResponseTimeoutMicros = 2000000UL;
-  /// Maximum transmission time for an extended ASCII data response with CRC.
-  static const uint32_t kDataResponseTimeoutMicros = 810400UL;
-
   // Current phase and phase timings
   Phase    _phase;
-  bool     _phaseStarted;     ///< Whether the current phase action has started
-  uint32_t _phaseStartTime;   ///< micros() at phase start
-  uint32_t _commandStopTime;  ///< micros() when last command stop bit ended
+  bool     _phaseStarted;       ///< Whether the current phase action has started
+  uint32_t _phaseStartTime;     ///< micros() at phase start
+  uint32_t _commandStopTime;    ///< micros() when last command stop bit ended
+  uint32_t _responseStartTime;  ///< micros() when the current response was observed
 
   // Attempt tracking (retry logic)
   uint8_t _sequenceCount;            ///< Current retry sequence number (1-3)
@@ -777,38 +767,108 @@ class SDI12Recorder {
   Identification _identification;
 
   // Private helper methods
+
+  /** @brief Reject a new operation when the recorder is already busy.
+   * @return true when the operation was rejected; otherwise false. */
   bool _rejectIfBusy();
+  /** @brief Publish an immediate operation rejection.
+   * @param reason Result explaining why the operation was rejected. */
   void _rejectOperation(RecorderResult reason);
+  /** @brief Initialize execution state for an accepted operation. */
   void _beginOperation();
+  /** @brief Initialize a typed command operation.
+   * @param operation Operation represented by the command.
+   * @param address Target sensor address.
+   * @param commandLength Number of command bytes before the null terminator. */
   void _beginTypedOperation(Operation operation, char address, uint8_t commandLength);
+  /** @brief Run updates until the active blocking operation completes. */
   void _waitForCompletion();
+  /** @brief Clear receive state before an attempt or service-request retry. */
   void _resetAttemptReception();
+  /** @brief Clear parsed outputs associated with the previous operation. */
   void _clearOperationOutputs();
-  uint8_t        _findContext(char address) const;
-  uint8_t        _reserveContext(char address) const;
-  void           _releaseContext(uint8_t slot);
-  void           _invalidateContext(char address);
-  void           _invalidateRunningContext(char address);
-  void           _invalidateAllContexts();
-  void           _applyContextInvalidationForTransmission();
-  void           _commitReadyMeasurementContext();
-  void           _commitConcurrentMeasurementContext();
-  void           _startDataRequest(char address, float* values, size_t capacity,
-                                   bool waitUntilReady, bool automaticRetries);
-  void           _startNextDataCommand();
-  static bool    _readyAtReached(uint32_t readyAt);
-  bool           _collectResponseCharacters();
+  /** @brief Find retained measurement context for a sensor.
+   * @param address Sensor address to find.
+   * @return Matching slot, or `SDI12_RECORDER_CONTEXT_SLOTS` when none exists. */
+  uint8_t _findContext(char address) const;
+  /** @brief Find an existing or available context slot without modifying it.
+   * @param address Sensor address that will own the slot.
+   * @return Suitable slot, or `SDI12_RECORDER_CONTEXT_SLOTS` when none is available. */
+  uint8_t _reserveContext(char address) const;
+  /** @brief Release one retained measurement context.
+   * @param slot Context slot to release. */
+  void _releaseContext(uint8_t slot);
+  /** @brief Invalidate retained context for one sensor.
+   * @param address Sensor address whose context is invalidated. */
+  void _invalidateContext(char address);
+  /** @brief Invalidate only a still-running context for one sensor.
+   * @param address Sensor address whose running context is invalidated. */
+  void _invalidateRunningContext(char address);
+  /** @brief Invalidate every retained measurement context. */
+  void _invalidateAllContexts();
+  /** @brief Apply operation-specific context invalidation before the first attempt of
+   * the first retry sequence. */
+  void _applyContextInvalidationForTransmission();
+  /** @brief Commit the reserved normal-measurement context as ready. */
+  void _commitReadyMeasurementContext();
+  /** @brief Commit acknowledgement details for a concurrent measurement. */
+  void _commitConcurrentMeasurementContext();
+  /** @brief Start a typed data request using retained measurement context.
+   * @param address Target sensor address.
+   * @param values Caller-owned destination, which must be non-null when capacity is
+   * nonzero.
+   * @param capacity Number of float elements available in @p values.
+   * @param waitUntilReady Whether to wait for the retained ready time before
+   * transmitting.
+   * @param automaticRetries Whether the request may use automatic retries. */
+  void _startDataRequest(char address, float* values, size_t capacity,
+                         bool waitUntilReady, bool automaticRetries);
+  /** @brief Prepare and start the next `D` command in a data sequence. */
+  void _startNextDataCommand();
+  /** @brief Test a rollover-safe millisecond deadline.
+   * @param readyAt Deadline to test.
+   * @return true when the deadline has been reached; otherwise false. */
+  static bool _readyAtReached(uint32_t readyAt);
+  /** @brief Copy available transport characters into recorder response storage.
+   * @return true when all available characters were accepted; otherwise false. */
+  bool _collectResponseCharacters();
+  /** @brief Validate the active operation's complete response.
+   * @return Typed validation result. */
   RecorderResult _validateResponse();
+  /** @brief Validate and stage values from a complete data response.
+   * @return Typed validation result. */
   RecorderResult _validateDataResponse();
+  /** @brief Validate the address at the start of the response.
+   * @param expectedAddress Address required by the active operation.
+   * @return Address validation result. */
   RecorderResult _validateExpectedAddress(char expectedAddress) const;
-  bool           _hasResponseTerminator() const;
-  static bool    _isPrintableAscii(char value);
-  bool           _parseDataValues(uint8_t begin, uint8_t end, float* destination,
-                                  uint8_t& valueCount) const;
-  void           _stripResponseEnvelope();
-  bool           _shouldTransmitBreak() const;
-  void           _transitionTo(Phase nextPhase);
-  void           _setResult(RecorderResult reason);
+  /** @brief Test whether the collected response ends in `CRLF`.
+   * @return true when the response has the required terminator. */
+  bool _hasResponseTerminator() const;
+  /** @brief Test whether one byte is printable 7-bit ASCII.
+   * @param value Byte to test.
+   * @return true when @p value is printable ASCII. */
+  static bool _isPrintableAscii(char value);
+  /** @brief Parse signed ASCII values from a validated response range.
+   * @param begin First response index to parse.
+   * @param end One-past-last response index to parse.
+   * @param destination Optional output array; null is valid for validation-only
+   * parsing.
+   * @param valueCount Receives the number of parsed values.
+   * @return true when the complete range contains valid values; otherwise false. */
+  bool _parseDataValues(uint8_t begin, uint8_t end, float* destination,
+                        uint8_t& valueCount) const;
+  /** @brief Remove the validated address and `CRLF` envelope from the response. */
+  void _stripResponseEnvelope();
+  /** @brief Decide whether the next first attempt requires a break.
+   * @return true when a break must precede transmission. */
+  bool _shouldTransmitBreak() const;
+  /** @brief Change phases and reset the per-phase start latch.
+   * @param nextPhase Phase to enter. */
+  void _transitionTo(Phase nextPhase);
+  /** @brief Publish the current operation result.
+   * @param reason Result to publish. */
+  void _setResult(RecorderResult reason);
 
   // Phase implementations
 
@@ -822,7 +882,7 @@ class SDI12Recorder {
   void _phase_precommand_mark();
   /// @brief Handle the transmitting phase of the transaction.
   /// This blocks while the command is being transmitted.  All interrupts are disabled
-  /// while each charater is transmitted for processors under 48MHz.
+  /// while each character is transmitted for processors under 48MHz.
   void _phase_transmitting();
   /// @brief Handle the waiting for response phase of the transaction.
   void _phase_waiting_response();

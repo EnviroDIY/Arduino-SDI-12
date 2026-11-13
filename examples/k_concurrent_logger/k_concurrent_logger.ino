@@ -181,6 +181,8 @@ void setup() {
 }
 
 void loop() {
+  static int8_t firstAddressThisRound = firstAddress;
+
   // re-zero before starting a new measurement round
   for (int8_t i = firstAddress; i <= lastAddress; i++) {
     millisReady[i]     = 0;
@@ -189,8 +191,11 @@ void loop() {
   }
 
   // Start as many sensors as the configured recorder context table can retain.
-  uint8_t sensorsStarted = 0U;
-  for (int8_t i = firstAddress; i <= lastAddress; i++) {
+  uint8_t      sensorsStarted = 0U;
+  const int8_t addressCount   = lastAddress - firstAddress + 1;
+  for (int8_t offset = 0; offset < addressCount; ++offset) {
+    int8_t i = firstAddressThisRound + offset;
+    if (i > lastAddress) { i -= addressCount; }
     char addr = SDI12Address::fromIndex(i);
     if (isActive[i]) {
       if (startConcurrentMeasurement(addr) > 0) { ++sensorsStarted; }
@@ -228,6 +233,9 @@ void loop() {
     }
     round++;
   } while (numReadingsRecorded < sensorsStarted);
+
+  ++firstAddressThisRound;
+  if (firstAddressThisRound > lastAddress) { firstAddressThisRound = firstAddress; }
 
   delay(10000L);  // wait ten seconds between measurement attempts.
 }

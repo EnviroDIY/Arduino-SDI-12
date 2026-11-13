@@ -47,19 +47,17 @@ def build_custom_matrix(config: dict) -> list[dict]:
     examples_to_build = config.get("examples_to_build", [])
     build_envs = config.get("build_envs", [])
     build_fqbns = config.get("build_fqbns", [])
-    boards = build_envs + build_fqbns
     inline_defines = config.get("inline_defines", [[]])
-    # compiler_flags = config.get("compiler_flags", [[]])
-    compiler_flags = [["-D SDI12_INTERNAL_PCINT"], []]
+    compiler_flags = config.get("compiler_flags", [[]])
 
-    # Read the PlatformIO config and build mapping dictionaries for boards and environments
-    print("Reading the PlatformIO config...")
-    pio_ini_dir = os.path.dirname(config.get("pio_config_file"))  # type: ignore
-    pio_config = read_platformio_config(pio_ini_dir)
-    print("Building mapping dictionaries...")
-    pio_env_to_board, pio_env_to_platform, board_to_pio_env = build_pio_mappings(
-        pio_config
-    )
+    if "platformio" in compiler_list:
+        # Read the PlatformIO config and build mapping dictionaries for boards and
+        # environments only when PlatformIO jobs were requested.
+        print("Reading the PlatformIO config...")
+        pio_ini_dir = os.path.dirname(config.get("pio_config_file"))  # type: ignore
+        pio_config = read_platformio_config(pio_ini_dir)
+        print("Building mapping dictionaries...")
+        build_pio_mappings(pio_config)
 
     # %%
     print("=== Arduino-SDI-12 Custom Matrix Builder ===")
@@ -67,41 +65,45 @@ def build_custom_matrix(config: dict) -> list[dict]:
     # %%
     # expand the combination of boards, modems, and examples into a job matrix
 
-    p_cart_join = list(
-        dict_product(
-            {
-                "compiler": ["platformio"],
-                "example": examples_to_build,
-                "board": build_envs,
-                "inline_defines": inline_defines,
-                "compiler_flags": [[]],
-            }
+    p_cart_join = []
+    if "platformio" in compiler_list:
+        p_cart_join = list(
+            dict_product(
+                {
+                    "compiler": ["platformio"],
+                    "example": examples_to_build,
+                    "board": build_envs,
+                    "inline_defines": inline_defines,
+                    "compiler_flags": [[]],
+                }
+            )
         )
-    )
 
-    a_cart_join = list(
-        dict_product(
-            {
-                "compiler": ["arduino-cli"],
-                "example": examples_to_build,
-                "board": build_fqbns,
-                "inline_defines": inline_defines,
-                "compiler_flags": [[]],
-            }
+    a_cart_join = []
+    a_cart_join_ext = []
+    if "arduino-cli" in compiler_list:
+        a_cart_join = list(
+            dict_product(
+                {
+                    "compiler": ["arduino-cli"],
+                    "example": examples_to_build,
+                    "board": build_fqbns,
+                    "inline_defines": inline_defines,
+                    "compiler_flags": compiler_flags,
+                }
+            )
         )
-    )
-
-    a_cart_join_ext = list(
-        dict_product(
-            {
-                "compiler": ["arduino-cli"],
-                "example": examples_to_build,
-                "board": [fqbn for fqbn in build_fqbns if ":avr:" in fqbn],
-                "inline_defines": inline_defines,
-                "compiler_flags": [["-D SDI12_INTERNAL_PCINT"]],
-            }
+        a_cart_join_ext = list(
+            dict_product(
+                {
+                    "compiler": ["arduino-cli"],
+                    "example": examples_to_build,
+                    "board": [fqbn for fqbn in build_fqbns if ":avr:" in fqbn],
+                    "inline_defines": inline_defines,
+                    "compiler_flags": [["-D SDI12_INTERNAL_PCINT"]],
+                }
+            )
         )
-    )
 
     cart_join = p_cart_join + a_cart_join + a_cart_join_ext
     cart_join_list = [json.dumps(e) for e in cart_join]
