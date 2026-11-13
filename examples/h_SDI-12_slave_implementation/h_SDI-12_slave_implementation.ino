@@ -27,6 +27,11 @@
  *    hard-coded 9s interspersed throughout the code
  */
 
+#include <SDI12Config.h>
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && !defined(SDI12_INTERNAL_PCINT)
+#include <EnableInterrupt.h>
+#endif
+
 #include <SDI12.h>
 
 #ifndef SDI12_DATA_PIN
@@ -182,6 +187,7 @@ void formatOutputSDI(float* measurementValues, String* dValues, unsigned int max
 void setup() {
   slaveSDI12.begin();
   delay(500);
+
   slaveSDI12.forceListen();  // sets data pin as input to prepare for incoming message
 }
 

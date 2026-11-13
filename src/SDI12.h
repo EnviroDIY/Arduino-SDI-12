@@ -96,7 +96,7 @@
  * While a series of bits is being transmitted on the dataline, the voltage level on
  * that line might look something like this:
  *
- * @code
+ * @code{.unparsed}
  *       _____       _____       _____       _____       _____     spacing
  * 5v   |     |     |     |     |     |     |     |     |     |
  *      |  0  |  1  |  0  |  1  |  0  |  1  |  0  |  1  |  0  | transition
@@ -136,53 +136,6 @@
 /// Helper for strings stored in flash
 typedef const __FlashStringHelper* FlashString;
 
-/**
- * @anchor sdi12_response_size_defines
- * @name SDI-12 Response Size Defines
- *
- * @brief Defines for constants related to messages sizes in SDI-12
- *
- * @note The following data response sizes does not include CR+LF and CRC
- */
-/**@{*/
-/// a char not found in a valid ASCII numeric field
-#define NO_IGNORE_CHAR '\x01'
-/**
- * @brief The maximum number of characters in a single value in a data response.
- *
- * From SDI-12 Protocol v1.4, Table 11 The send data command (aD0!, aD1! . . . aD9!):
- * the value portion must be structred as pd.d
- * - p - the polarity sign (+ or -)
- * - d - numeric digits before the decimal place
- * - . - the decimal point (optional)
- * - d - numeric digits after the decimal point
- * - the maximum number of digits for a data value is 7, even without a decimal point
- * - the minimum number of digits for a data value (excluding the decimal point) is 1
- * - the maximum number of characters in a data value is 9 (the (polarity sign + 7
- * digits + the decimal point))
- * - The polarity symbol (+ or -) acts as a delimeter between the numeric values
- */
-#define SDI12_VALUE_STR_SIZE 9
-/**
- * @brief The maximum length of a standard data command response
- *
- * From SDI-12 Protocol v1.4, Section 4.4 SDI-12 Commands and Responses:
- * The maximum number of characters that can be returned in the [values] part of the
- * response to a D command is either 35 or 75. If the D command is issued to retrieve
- * data in response to a concurrent measurement command, or in response to a high-volume
- * ASCII measurement command, the maximum is 75. The maximum is also 75 in response to a
- * continuous measurement command. Otherwise, the maximum is 35.
- */
-#define SDI12_DATA_STR_SIZE 35
-/**
- * @brief The maximum length of a data response to a concurrent, continuous, or high
- * volume ASCII
- *
- * @see SDI12_VALUE_STR_SIZE
- */
-#define SDI12_HV_STR_SIZE 75
-/**@}*/
-
 
 /**
  * @brief The size of a bit in microseconds
@@ -193,6 +146,12 @@ typedef const __FlashStringHelper* FlashString;
 
 /// A mask for the rxState while waiting for a start bit; 0b11111111
 #define WAITING_FOR_START_BIT 0xFF
+
+/// a char not found in a valid ASCII numeric field
+#define NO_IGNORE_CHAR '\x01'
+
+/// The polynomial to match the CRC-16 with; set in the SDI-12 specifications
+#define SDI12_CRC_POLY 0xa001
 
 /// @def NEED_LOOKAHEAD_ENUM
 /// @brief This macro is defined if lookahead options are needed.
@@ -233,6 +192,8 @@ enum LookaheadMode {
 /**
  * @brief Enumerated type to reference the type of supported binary data types
  * for binary measurements
+ *
+ * The least significant byte is transferred first for multi-byte binary numbers.
  */
 typedef enum SDI12BinaryDataType_e : uint8_t {
   kInvalidDataType = 0,  ///< Invalid data or Empty data type
@@ -248,10 +209,61 @@ typedef enum SDI12BinaryDataType_e : uint8_t {
   kDoubleDataType  = 10  ///< IEEE 64-bit floating point double precision
 } SDI12BinaryDataType_e;
 
+class SDI12Recorder;
+
 /**
  * @brief The main class for SDI 12 instances
  */
 class SDI12 : public Stream {
+  friend class SDI12Recorder;
+
+ public:
+  /**
+   * @brief Line-condition events published by the transport ISR.
+   *
+   * Events are coalescing flags.
+   * The basic SDI12 class publishes them, and recorder or sensor classes consume all
+   * pending flags with takeLineEvents().  The events do not carry timestamps:
+   * Completion events flags are set when the interrupt service routine catches an edge.
+   * Threshold events event flags are set when the sensor or recorder calls the
+   * serviceLineConditions() function to check for them.
+   */
+  typedef enum SDI12_LINE_EVENT : uint8_t {
+    /// No line event is pending
+    SDI12_LINE_EVENT_NONE = 0x00,
+    /// Continuous spacing reached the minimum break duration
+    SDI12_LINE_EVENT_BREAK_THRESHOLD_REACHED = 0x01,
+    /// A spacing interval reached the break minimum and ended
+    SDI12_LINE_EVENT_BREAK_COMPLETED = 0x02,
+    /// Continuous marking reached the pre-character minimum
+    SDI12_LINE_EVENT_MARKING_THRESHOLD_REACHED = 0x04,
+    /// A marking interval reached the required minimum and ended
+    SDI12_LINE_EVENT_MARKING_COMPLETED = 0x08
+  } SDI12_LINE_EVENT;
+
+  /**
+   * @brief Character-receive events published by the transport ISR.
+   *
+   * Events describe observed transport facts, not retry or protocol-role policy. They
+   * are coalescing flags consumed by takeReceiveEvents().
+   */
+  typedef enum SDI12_RECEIVE_EVENT : uint8_t {
+    /// No receive event is pending
+    SDI12_RECEIVE_EVENT_NONE = 0x00,
+    /// A start bit was observed
+    SDI12_RECEIVE_EVENT_START_BIT_OBSERVED = 0x01,
+    /// A character was reconstructed
+    SDI12_RECEIVE_EVENT_CHARACTER_COMPLETED = 0x02,
+    /// A CR LF response terminator was seen
+    SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED = 0x04,
+    /// An incomplete character was reset
+    SDI12_RECEIVE_EVENT_FRAMING_ERROR = 0x08,
+    /// A character could not enter the buffer
+    SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW = 0x10,
+    /// An exclamation-point command terminator was seen
+    SDI12_RECEIVE_EVENT_COMMAND_COMPLETED = 0x20
+  } SDI12_RECEIVE_EVENT;
+
   /**
    * @anchor sdi12_statics
    * @name Static member variables
@@ -270,11 +282,11 @@ class SDI12 : public Stream {
   static SDI12Timer sdi12timer;
   /**@}*/
 
+
+ private:
+
   /**
-   * @anchor line_states
-   * @name Data Line States
-   *
-   * @brief Functions for maintaining the proper data line state.
+   * @brief Possible SDI-12 Data Line States
    *
    * The Arduino is responsible for managing communication with the sensors.  Since all
    * the data transfer happens on the same line, the state of the data line is very
@@ -303,7 +315,6 @@ class SDI12 : public Stream {
    * | State               | Interrupts       | Pin Mode   | Pin Level |
    * |---------------------|------------------|------------|-----------|
    * | SDI12_DISABLED      | Pin Disable      | INPUT      | ---       |
-   * | SDI12_ENABLED       | Pin Disable      | INPUT      | ---       |
    * | SDI12_HOLDING       | Pin Disable      | OUTPUT     | LOW       |
    * | SDI12_TRANSMITTING  | All/Pin Disable  | OUTPUT     | VARYING   |
    * | SDI12_LISTENING     | All Enable       | INPUT      | ---       |
@@ -320,149 +331,98 @@ class SDI12 : public Stream {
    *
    * `HOLDING --> TRANSMITTING --> LISTENING -->` done reading, forceHold() `--->
    * HOLDING`
-   *
-   * @see For a detailed explanation of interrupts see @ref interrupts_page
    */
-  /**@{*/
-
-
-  /**
-   * Possible SDI-12 States
-   *
-   * LOW_POWER:
-   * - Sensor (slave) is asleep, also waiting for a break
-   * - Starts:
-   *   - After a sensor receives an invalid address (return to sleep)
-   *   - After line has been in marking (LOW) for > 100 ms (sensor returns to sleep)
-   * - Ends:
-   *   - Within 100 ms of receiving a >= 12ms break
-   * - Line State:
-   *   - Recorder: SDI12_HOLDING, SDI12_ENABLED, or SDI12_TRANSMITTING (to a different
-   * sensor)
-   *   - Sensor: SDI12_LISTENING
-   *
-   * WAITING_FOR_BREAK:
-   * - Sensor (slave) is asleep, waiting for the data recorder (master) to hold the line
-   * high for >= 12ms.  Or the data recorder has not initiated communication with a
-   * sensor in too long and needs to re-alert it.
-   * - NOTE: A break of < 6.5 ms must be ignored!
-   * - Starts:
-   *   - After a sensor receives an invalid address (return to sleep)
-   *   - When the master wants to address a different sensor
-   *   - After line has been in marking (LOW) for > 100 ms (sensor returns to sleep)
-   *   - After the line has been in marking (LOW) for > 87 ms  (sensor awaits break
-   * without sleeping, recorder must send break)
-   * - Ends:
-   *    - After 12 ms break has finished
-   * - Line State:
-   *   - Recorder: SDI12_HOLDING, SDI12_ENABLED, or SDI12_TRANSMITTING (to a different
-   * sensor)
-   *   - Sensor: SDI12_LISTENING
-   *
-   * SENDING_BREAK:
-   * - Line State:
-   *   - Recorder: SDI12_TRANSMITTING, Line HIGH (spacing)
-   *   - Sensor: SDI12_LISTENING (The sensor cannot issue a break!)
-   *
-   * WAITING_FOR_MARKING:
-   * - Sensor has received a >= 12ms HIGH break and is waiting for the data recorder to
-   * send >= 8.33 ms of LOW marking.
-   * - Data recorder has finished sending a command, has relinquished the line, and is
-   * waiting for the sensor to hold the line LOW for >= 8.33 ms of marking
-   * - Starts:
-   *   - After line has been held continuously HIGH for >= 12ms
-   * - Ends:
-   *   - After the line has been in marking (LOW) for > 87 ms
-   * - Line State:
-   *   - Recorder: SDI12_LISTENING
-   *   - Sensor: SDI12_LISTENING
-   *
-   * SENDING_MARKING:
-   * - Line State:
-   *   - Recorder: SDI12_TRANSMITTING (LOW) or SDI12_LISTENING
-   *   - Sensor: SDI12_TRANSMITTING (LOW) or SDI12_LISTENING
-   *
-   * WAITING_FOR_START_BIT:
-   * - Line has been held low for >= 8.33 ms of marking
-   * - Starts:
-   *   - After >= 8.33 ms of marking
-   * - Ends:
-   *   - > 15 ms after the last stop bit of a command (for the recorder/master)
-   *   - > 1.66 ms after the last stop bit between characters within a command or
-   * response
-   * - Line State:
-   *   - Recorder: SDI12_LISTENING
-   *   - Sensor: SDI12_LISTENING
-   *
-   * TRANSMITTING_DATA:
-   * - Line State:
-   *   - Recorder: SDI12_TRANSMITTING
-   *   - Sensor: SDI12_TRANSMITTING
-   */
- private:
-  /**
-   * @brief The various SDI-12 line states.
-   */
-  typedef enum SDI12_STATES {
+  typedef enum SDI12_LINE_STATE : uint8_t {
     /** SDI-12 is disabled, pin mode INPUT, interrupts disabled for the pin */
     SDI12_DISABLED,
-    /** SDI-12 is enabled, pin mode INPUT, interrupts disabled for the pin */
-    SDI12_ENABLED,
-    /** The line is being held LOW, pin mode OUTPUT, interrupts disabled for the pin */
+    /** The line is being held LOW, pin mode OUTPUT, interrupts disabled for the pin.
+   This state should only ever be used by the recorder (master) */
     SDI12_HOLDING,
-    /** Data is being transmitted by the SDI-12 master, pin mode OUTPUT, interrupts
-       disabled for the pin */
+    /** Data is being transmitted, pin mode OUTPUT, interrupts disabled for the pin */
     SDI12_TRANSMITTING,
-    /** The SDI-12 master is listening for a response from the slave, pin mode INPUT,
-       interrupts enabled for the pin */
+    /** Listening for incoming line changes, pin mode INPUT, interrupts enabled for the
+pin */
     SDI12_LISTENING
-  } SDI12_STATES;
+  } SDI12_LINE_STATE;
 
   /**
    * @anchor sdi12_state_vars
    * @name Variables used to track the timing and state of the instance
    */
   /**@{*/
-  /**
-   * @brief Stores the time of the previous RX transition in units of the specific board
-   * timer.
-   *
-   * This is used to track timing changes while actively receiving characters.
-   */
-  sdi12timer_t prevBitTCNT;
-  /**
-   * @brief Tracks how many bits are accounted for on an incoming character.
-   *
-   * - if 0: indicates that we got a start bit
-   * - if >0: indicates the number of bits received
-   *
-   * 0 - got start bit
-   * 1 - got data bit 0
-   * 2 - got data bit 1
-   * 3 - got data bit 2
-   * 4 - got data bit 3
-   * 5 - got data bit 4
-   * 6 - got data bit 5
-   * 7 - got data bit 6
-   * 8 - got data bit 7 (parity)
-   * 9 - got stop bit
-   * 255 - waiting for next start bit
-   */
-  uint8_t rxState;
-  /**
-   * @brief a bit mask for building a received character
-   *
-   * The mask has a single bit set, in the place of the active bit based on the
-   * #rxState.
-   */
-  uint8_t rxMask;
-  /**
-   * @brief the value of the character being built
-   */
-  uint8_t rxValue;
+  /// The current electrical driver and data-pin state.
+  SDI12_LINE_STATE _lineState = SDI12_DISABLED;
+  /// Coalescing line events written by the ISR and consumed by recorder or sensor code.
+  volatile uint8_t _lineEventFlags = SDI12_LINE_EVENT_NONE;
+  /// Coalescing receive events written by the ISR and consumed by recorder or sensor
+  /// code.
+  volatile uint8_t _receiveEventFlags = SDI12_RECEIVE_EVENT_NONE;
   /**@}*/
 
+  /** @brief State used to classify completed spacing and marking intervals. */
+  struct LineObserverState {
+    sdi12timer_t intervalStart;  ///< Timer count when the current level was first seen
+    uint8_t      level;          ///< Current physical data-line level
+    bool         valid;          ///< Whether the interval start and level are valid
+    bool breakMinimumReached;    ///< Whether the current spacing met the break minimum
+    bool markingMinimumReached;  ///< Whether the current marking met its minimum
+  } _lineObserver = {0, LOW, false, false, false};
 
+  /**
+   * @brief Minimum state required to convert timed edges into one character.
+   */
+  struct CharacterDecoderState {
+    /**
+     * @brief Stores the time of the previous RX transition (decoder edge) in units of
+     * the specific board timer.
+     *
+     * This is used to track timing changes while actively receiving characters.
+     *
+     * @remark Previously labeled prevBitTCNT
+     */
+    sdi12timer_t previousEdge;
+    /**
+     * @brief Tracks how many bits are accounted for on an incoming character.
+     *
+     * - if 0: indicates that we got a start bit
+     * - if >0: indicates the number of bits received
+     *
+     * 0 - got start bit
+     * 1 - got data bit 0
+     * 2 - got data bit 1
+     * 3 - got data bit 2
+     * 4 - got data bit 3
+     * 5 - got data bit 4
+     * 6 - got data bit 5
+     * 7 - got data bit 6
+     * 8 - got data bit 7 (parity)
+     * 9 - got stop bit
+     * 255 - waiting for next start bit
+     *
+     * @remark Previously labeled rxState
+     */
+    uint8_t bitCount;
+    /**
+     * @brief a bit mask for building a received character
+     *
+     * The mask has a single bit set, in the place of the active bit based on the
+     * #SDI12::CharacterDecoderState::bitCount.
+     *
+     * @remark Previously labeled rxMask
+     */
+    uint8_t mask;
+    /**
+     * @brief the value of the character under construction
+     *
+     * @remark Previously labeled rxValue
+     */
+    uint8_t value;
+  } _decoder = {0, WAITING_FOR_START_BIT, 0, 0};
+
+  /// Previous seven-bit character used to recognize a response-ending CR LF pair.
+  uint8_t _previousCharacter = 0;
+
+ private:
   /**
    * @anchor sdi12_buffer
    * @name Buffer Setup
@@ -486,7 +446,6 @@ class SDI12 : public Stream {
    * http://en.wikipedia.org/wiki/Circular_buffer
    */
   /**@{*/
- private:
   /**
    * @brief A single incoming character buffer for ALL SDI-12 objects (Rx buffer)
    *
@@ -953,14 +912,46 @@ class SDI12 : public Stream {
    */
   void setPinInterrupts(bool enable);
   /**
-   * @brief Set the the state of the SDI12 object[s]
+   * @brief Set the the state of the SDI12 object
    *
    * @param state The state the SDI-12 object should be set to, from
-   * the SDI12_STATES enum.
+   * the SDI12_LINE_STATE enum.
    *
    * This is a private function, and only used internally.
    */
-  void setState(SDI12_STATES state);
+  void setLineState(SDI12_LINE_STATE state);
+  /**
+   * @brief Reset edge-history state when listening begins or line ownership changes.
+   *
+   * @param listening True when a new listening interval is beginning.
+   * @param timerTime The selected timer count at the start of that interval.
+   * @param pinLevel The physical data-line level at the start of that interval.
+   */
+  void resetEdgeState(bool listening, sdi12timer_t timerTime, uint8_t pinLevel);
+  /**
+   * @brief Atomically publish an ISR-owned event flag.
+   *
+   * @param flags The coalescing flag byte to update.
+   * @param event The event bits to publish.
+   */
+  static void publishEvent(volatile uint8_t& flags, uint8_t event);
+  /**
+   * @brief Atomically consume and clear a set of ISR-owned event flags.
+   *
+   * @param flags The coalescing flag byte to consume.
+   * @return The pending event bits before the flag byte was cleared.
+   */
+  static uint8_t takeEvents(volatile uint8_t& flags);
+  /**
+   * @brief Classify the line interval ending at one captured edge.
+   *
+   * @param timerTime The selected SDI-12 timer count at the edge.
+   * @param pinLevel The new physical data-line level.
+   * @return A bitwise combination of SDI12_LINE_EVENT values published for the edge.
+   */
+  uint8_t observeLineEdge(sdi12timer_t timerTime, uint8_t pinLevel);
+  /** @brief Route one captured edge to line observation and character decoding. */
+  void routeEdge();
 
  public:
   /**
@@ -979,7 +970,62 @@ class SDI12 : public Stream {
    * data line when not transmitting.
    */
   void forceListen();
-  /**@}*/
+
+  /**
+   * @brief Begin driving a recorder break without waiting for it to complete.
+   *
+   * This low-level operation takes ownership of the data line and drives spacing. The
+   * caller is responsible for maintaining the break for the required duration and
+   * following it with marking before transmitting a command.
+   */
+  void startBreak();
+
+  /**
+   * @brief Begin driving recorder marking without waiting for it to complete.
+   *
+   * This low-level operation takes ownership of the data line and drives marking. The
+   * caller is responsible for maintaining marking for the required duration.
+   */
+  void startMarking();
+
+  /**
+   * @brief Atomically consume all pending line-condition events.
+   *
+   * Multiple occurrences of the same event coalesce until this method is called. The
+   * recorder or sensor application must call this method outside an ISR.
+   *
+   * @return A bitwise combination of SDI12_LINE_EVENT values.
+   */
+  uint8_t takeLineEvents();
+
+  /**
+   * @brief Atomically consume all pending character-receive events.
+   *
+   * Multiple occurrences of the same event coalesce until this method is called. The
+   * recorder or sensor application must call this method outside an ISR.
+   *
+   * @return A bitwise combination of SDI12_RECEIVE_EVENT values.
+   */
+  uint8_t takeReceiveEvents();
+
+  /**
+   * @brief Service continuous line conditions that can reach a threshold without an
+   * edge.
+   *
+   * The recorder or sensor application calls this method outside the ISR. It reads
+   * only the board-selected bit timer. Call it often enough that the timer cannot
+   * complete an unobserved rollover after a threshold is reached. Once a break or
+   * marking minimum is latched, later timer rollover cannot undo it; the edge ending
+   * that interval consumes the latch.
+   *
+   * This method or the ending-edge classifier sets each latch. Latches are reset when
+   * listening begins, line ownership changes, an ending edge consumes them, a message
+   * completes, or a framing or buffer-overflow condition invalidates receive state.
+   *
+   * The 8 MHz, 8-bit Timer2 configuration cannot span either required minimum and
+   * remains a documented deferred exception.
+   */
+  void serviceLineConditions();
 
 
   /**
@@ -1100,12 +1146,71 @@ class SDI12 : public Stream {
    * takes to wake before being ready to receive a command.  Default is 0ms - meaning
    * the sensor is ready for a command by the end of the 12ms break.  Per protocol, the
    * wake time must be less than 100 ms.
+   *
+   * @deprecated Recorder applications should use the typed SDI12Recorder methods when
+   * an equivalent is available, or SDI12Recorder::startRawCommand() for
+   * manufacturer-specific or unsupported commands. This low-level API remains
+   * source-compatible.
    */
   void sendCommand(String& cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
-  /// @copydoc SDI12::sendCommand(String&, int8_t)
+  /**
+   * @copybrief SDI12::sendCommand(String&, int8_t)
+   * @param cmd The null-terminated command to send.
+   * @param extraWakeTime Additional sensor wake time in milliseconds.
+   * @deprecated Recorder applications should use the typed SDI12Recorder methods when
+   * an equivalent is available, or SDI12Recorder::startRawCommand() for
+   * manufacturer-specific or unsupported commands. This low-level API remains
+   * source-compatible.
+   */
   void sendCommand(const char* cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
-  /// @copydoc SDI12::sendCommand(String&, int8_t)
+  /**
+   * @copybrief SDI12::sendCommand(String&, int8_t)
+   * @param cmd The flash-resident command to send.
+   * @param extraWakeTime Additional sensor wake time in milliseconds.
+   * @deprecated Recorder applications should use the typed SDI12Recorder methods when
+   * an equivalent is available, or SDI12Recorder::startRawCommand() for
+   * manufacturer-specific or unsupported commands. This low-level API remains
+   * source-compatible.
+   */
   void sendCommand(FlashString cmd, int8_t extraWakeTime = SDI12_WAKE_DELAY);
+
+  /**
+   * @brief Send a response out on the data line (for slave use)
+   *
+   * @param resp the response to send
+   * @param addCRC True to append a CRC to the outgoing response
+   *
+   * A publicly accessible function that sends out an 8.33 ms marking and a response
+   * byte by byte on the data line.  This is needed if the Arduino is acting as an
+   * SDI-12 device itself, not as a recorder for another SDI-12 device.
+   *
+   * @deprecated Prefer role-specific recorder or sensor APIs for new applications.
+   * SDI12Recorder provides the recorder-side typed API; a typed sensor-side replacement
+   * is not yet available. This low-level sensor compatibility API remains
+   * source-compatible.
+   */
+  void sendResponse(String& resp, bool addCRC = false);
+  /**
+   * @copybrief SDI12::sendResponse(String& resp, bool addCRC)
+   * @param resp The null-terminated response to send.
+   * @param addCRC True to append a CRC to the outgoing response.
+   * @deprecated Prefer role-specific recorder or sensor APIs for new applications.
+   * SDI12Recorder provides the recorder-side typed API; a typed sensor-side replacement
+   * is not yet available. This low-level sensor compatibility API remains
+   * source-compatible.
+   */
+  void sendResponse(const char* resp, bool addCRC = false);
+  /**
+   * @copybrief SDI12::sendResponse(String& resp, bool addCRC)
+   * @param resp The flash-resident response to send.
+   * @param addCRC True to append a CRC to the outgoing response.
+   * @deprecated Prefer role-specific recorder or sensor APIs for new applications.
+   * SDI12Recorder provides the recorder-side typed API; a typed sensor-side replacement
+   * is not yet available. This low-level sensor compatibility API remains
+   * source-compatible.
+   */
+  void sendResponse(FlashString resp, bool addCRC = false);
+  ///@}
 
   /**
    * @brief Calculates the 16-bit Cyclic Redundancy Check (CRC) for an SDI-12 message.
@@ -1146,23 +1251,6 @@ class SDI12 : public Stream {
   bool verifyCRC(String& respWithCRC);
 
   /**
-   * @brief Send a response out on the data line (for slave use)
-   *
-   * @param resp the response to send
-   * @param addCRC True to append a CRC to the outgoing response
-   *
-   * A publicly accessible function that sends out an 8.33 ms marking and a response
-   * byte by byte on the data line.  This is needed if the Arduino is acting as an
-   * SDI-12 device itself, not as a recorder for another SDI-12 device.
-   */
-  void sendResponse(String& resp, bool addCRC = false);
-  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
-  void sendResponse(const char* resp, bool addCRC = false);
-  /// @copydoc SDI12::sendResponse(String& resp, bool addCRC)
-  void sendResponse(FlashString resp, bool addCRC = false);
-  ///@}
-
-  /**
    * @anchor interrupt_fxns
    * @name Interrupt Service Routine
    *
@@ -1178,18 +1266,11 @@ class SDI12 : public Stream {
    */
   void startChar();
   /**
-   * @brief The interrupt service routine (ISR) - the function responding to changes in
-   * rx line state.
+   * @brief Compatibility ISR callback that delegates to the transport edge router.
    *
-   * This function checks which direction the change of the interrupt was and then uses
-   * that to populate the bits of the character. Unlike SoftwareSerial which listens for
-   * a start bit and then halts all program and other ISR execution until the end of the
-   * character, this library grabs the time of the interrupt, does some quick math, and
-   * lets the processor move on.  The logic of creating a character this way is harder
-   * for a person to follow, but it pays off because we're not tieing up the processor
-   * in an ISR that lasts for 8.33ms for each character. [10 bits @ 1200 bits/s] For a
-   * person, that 8.33ms is trivial, but for even a "slow" 8MHz processor, that's over
-   * 60,000 ticks sitting idle per character.
+   * The default implementation sends the edge to the private router, which records the
+   * edge timing and pin level needed by the character decoder. The virtual callback is
+   * retained for compatibility with existing subclasses.
    */
   virtual void receiveISR();
   /**
@@ -1224,13 +1305,13 @@ class SDI12 : public Stream {
  */
 template<typename T>
 size_t SDI12::writeBytes(T value) {
-  setState(SDI12_TRANSMITTING);
+  setLineState(SDI12_TRANSMITTING);
   size_t         count = sizeof(T);
   const uint8_t* bytes = reinterpret_cast<const uint8_t*>(&value);
   for (size_t i = 0; i < count; i++) {
     writeChar(bytes[i], false);  // write out lowest byte
   }
-  setState(SDI12_LISTENING);
+  setLineState(SDI12_LISTENING);
   return count;
 }
 

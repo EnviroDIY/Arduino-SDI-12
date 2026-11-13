@@ -5,15 +5,20 @@
  * @author Kevin M.Smith <SDI12@ethosengineering.org>
  * @date August 2013
  *
- * @brief Example D: Check all Addresses for Active Sensors and Log Data
+ * @brief Example E: Check all Addresses for Active Sensors and Request Continuous Data
  *
  * This is a simple demonstration of the SDI-12 library for Arduino.
  *
- * It discovers the address of all sensors active on a single bus and takes continuous
- * measurements from them.
+ * It discovers the address of all sensors active on a single bus and periodically
+ * requests their current continuous data without initiating a measurement.
  */
 
-#include <SDI12.h>
+#include <SDI12Config.h>
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && !defined(SDI12_INTERNAL_PCINT)
+#include <EnableInterrupt.h>
+#endif
+
+#include <SDI12Recorder.h>
 
 #ifndef SDI12_DATA_PIN
 #define SDI12_DATA_PIN 7
@@ -24,272 +29,62 @@
 #ifndef SDI12_TERMINAL_BAUD
 #define SDI12_TERMINAL_BAUD 115200
 #endif
-#ifndef SDI12_PRINT_IO
-#define SDI12_PRINT_IO false
-#endif
 
 /* connection information */
 uint32_t serialBaud   = SDI12_TERMINAL_BAUD; /*!< The baud rate for the serial port */
 int8_t   dataPin      = SDI12_DATA_PIN;      /*!< The pin of the SDI-12 data bus */
 int8_t   powerPin     = SDI12_POWER_PIN;     /*!< The sensor power pin (or -1) */
-bool     printIO      = SDI12_PRINT_IO;
-uint32_t wake_delay   = 0; /*!< Extra time needed for the sensor to wake (0-100ms) */
+bool     useCRC       = false;                /*!< Whether to use CRC checking */
 int8_t   firstAddress = 0; /* The first address in the address space to check (0='0') */
-int8_t   lastAddress = 61; /* The last address in the address space to check (61='z') */
+int8_t   lastAddress  = 61; /* The last address in the address space to check (61='z') */
 
 /** Define the SDI-12 bus */
-SDI12 mySDI12(dataPin);
+SDI12         mySDI12(dataPin);
+SDI12Recorder mySDI12Recorder(mySDI12);
 
 // keeps track of active addresses
 bool isActive[64];
 
 uint8_t numSensors = 0;
 
-/**
- * @brief converts allowable address characters ('0'-'9', 'a'-'z', 'A'-'Z') to a
- * decimal number between 0 and 61 (inclusive) to cover the 62 possible
- * addresses.
- */
-byte charToDec(char i) {
-  if ((i >= '0') && (i <= '9')) return i - '0';
-  if ((i >= 'a') && (i <= 'z')) return i - 'a' + 10;
-  if ((i >= 'A') && (i <= 'Z'))
-    return i - 'A' + 36;
-  else
-    return i;
-}
+// A continuous response can contain at most 75 value characters. At the minimum
+// two characters per value (a sign and one digit), no more than 37 values can fit.
+float continuousResults[37];
 
-/**
- * @brief maps a decimal number between 0 and 61 (inclusive) to allowable
- * address characters '0'-'9', 'a'-'z', 'A'-'Z',
- *
- * THIS METHOD IS UNUSED IN THIS EXAMPLE, BUT IT MAY BE HELPFUL.
- */
-char decToChar(byte i) {
-  if (i < 10) return i + '0';
-  if ((i >= 10) && (i < 36)) return i + 'a' - 10;
-  if ((i >= 36) && (i <= 62))
-    return i + 'A' - 36;
-  else
-    return i;
-}
-
-// this checks for activity at a particular address
-// expects a char, '0'-'9', 'a'-'z', or 'A'-'Z'
-bool checkActive(char address, int8_t numPings = 3, bool printIO = false) {
-  String command = "";
-  command += (char)address;  // sends basic 'acknowledge' command [address][!]
-  command += "!";
-
-  for (int j = 0; j < numPings; j++) {  // goes through rapid contact attempts
-    if (printIO) {
-      Serial.print(">>>");
-      Serial.println(command);
-    }
-    mySDI12.clearBuffer();
-    mySDI12.sendCommand(command, wake_delay);
-    // wait for a response; the sensor must return within 100ms
-    uint32_t waitStart = millis();
-    while ((millis() - waitStart) < 150 && !mySDI12.available()) { yield(); }
-
-    // the sensor should just return its address followed by '\r\n'
-    if (mySDI12.available()) {
-      String sdiResponse_r = mySDI12.readStringUntil('\n');
-      String sdiResponse   = sdiResponse_r;
-      int    resLen        = sdiResponse.length();
-      if (printIO) {
-        sdiResponse_r.replace("\r", "←");
-        sdiResponse_r.replace("\n", "↓");
-        Serial.print("<<< '");
-        Serial.print(sdiResponse_r);
-        Serial.print("' (");
-        Serial.print(resLen);
-        Serial.println(")");
-      }
-      mySDI12.clearBuffer();
-
-      // check the address, return false if it's incorrect
-      String returnedAddress = sdiResponse.substring(0, 1);
-      if (printIO) {
-        Serial.print("returnedAddress '");
-        Serial.print(returnedAddress);
-        Serial.print("' (");
-        Serial.print(returnedAddress.length());
-        Serial.println(")");
-      }
-      if (returnedAddress == String(address)) {
-        if (printIO) {
-          Serial.print("Got response from '");
-          Serial.print(String(returnedAddress));
-          Serial.println("'");
-        }
-        return true;
-      } else {
-        if (printIO) {
-          Serial.println("Wrong address returned!");
-          Serial.print("Expected '");
-          Serial.print(String(address));
-          Serial.print("' Got '");
-          Serial.print(returnedAddress);
-          Serial.println("'");
-          // Serial.println(sdiResponse);
-        }
-      }
-    }
+bool printInfo(char address) {
+  SDI12Recorder::Identification sensorInfo;
+  if (mySDI12Recorder.identify(address, sensorInfo)) {
+    mySDI12Recorder.printSensorInfo(sensorInfo, Serial);
+    return true;
+  } else {
+    Serial.print(F("Identification failed for address "));
+    Serial.print(address);
+    Serial.print(F(": "));
+    mySDI12Recorder.printRecorderResult(Serial);
+    Serial.println();
   }
-
-  mySDI12.clearBuffer();
   return false;
 }
 
-/**
- * @brief gets identification information from a sensor, and prints it to the serial
- * port
- *
- * @param address a character between '0'-'9', 'a'-'z', or 'A'-'Z'.
- * @param printIO true to print the raw output and input from the command
- */
-bool printInfo(char address, bool printIO = true) {
-  String command = "";
-  command += (char)address;
-  command += "I!";
-  mySDI12.sendCommand(command, wake_delay);
-  if (printIO) {
-    Serial.print(">>>");
-    Serial.println(command);
+bool getContinuousResults(char address, uint8_t dataOption = 0U) {
+  const size_t resultsReceived = mySDI12Recorder.requestContinuousData(
+    address, continuousResults,
+    sizeof(continuousResults) / sizeof(continuousResults[0]), dataOption, useCRC);
+  if (mySDI12Recorder.result() != SDI12Recorder::RESULT_SUCCESS) {
+    mySDI12Recorder.printRecorderResult(Serial);
+    return false;
   }
 
-  String sdiResponse = mySDI12.readStringUntil('\n');
-  sdiResponse.trim();
-  // allccccccccmmmmmmvvvxxx...xx<CR><LF>
-  if (printIO) {
-    Serial.print("<<<");
-    Serial.println(sdiResponse);
+  if (resultsReceived == 0U) {
+    Serial.print(F("No continuous results available"));
+    return true;
   }
 
-  Serial.print("Address: ");
-  Serial.print(sdiResponse.substring(0, 1));  // address
-  Serial.print(", SDI-12 Version: ");
-  Serial.print(sdiResponse.substring(1, 3).toFloat() / 10);  // SDI-12 version number
-  Serial.print(", Vendor ID: ");
-  Serial.print(sdiResponse.substring(3, 11));  // vendor id
-  Serial.print(", Sensor Model: ");
-  Serial.print(sdiResponse.substring(11, 17));  // sensor model
-  Serial.print(", Sensor Version: ");
-  Serial.print(sdiResponse.substring(17, 20));  // sensor version
-  Serial.print(", Sensor ID: ");
-  Serial.print(sdiResponse.substring(20));  // sensor id
-  Serial.println();
-
-  if (sdiResponse.length() < 3) { return false; };
+  for (size_t i = 0U; i < resultsReceived; ++i) {
+    if (i > 0U) { Serial.print(F(", ")); }
+    Serial.print(continuousResults[i], 7);
+  }
   return true;
-}
-
-bool getContinuousResults(char address, int resultsExpected) {
-  uint8_t resultsReceived = 0;
-  uint8_t cmd_number      = 0;
-  uint8_t cmd_retries     = 0;
-  while (resultsReceived < resultsExpected && cmd_number <= 9 && cmd_retries < 5) {
-    bool    gotResults  = false;
-    uint8_t cmd_results = 0;
-
-    // Assemble the command based on how many commands we've already sent,
-    // starting with R0 and ending with R9
-    // SDI-12 command to get data [address][R][dataOption][!]
-    mySDI12.clearBuffer();
-    String command = "";
-    command += address;
-    command += "R";
-    command += cmd_number;
-    command += "!";
-    mySDI12.sendCommand(command, wake_delay);
-    if (printIO) {
-      Serial.print(">>>");
-      Serial.println(command);
-    }
-
-    // Wait for the first few characters to arrive.  The response from a continuous
-    // measurement request should always have more than three characters
-    uint32_t start = millis();
-    while (mySDI12.available() < 3 && (millis() - start) < 150) {}
-
-    // read the returned address to remove it from the buffer
-    char returnedAddress = mySDI12.read();
-    if (printIO) {
-      if (returnedAddress != address) {
-        Serial.println("Wrong address returned!");
-        Serial.print("Expected ");
-        Serial.print(String(address));
-        Serial.print(" Got ");
-        Serial.println(String(returnedAddress));
-      }
-      Serial.print("<<<");
-      Serial.write(returnedAddress);
-      Serial.print(", ");
-      Serial.println();
-    }
-
-    bool bad_read = false;
-    // While there is any data left in the buffer
-    while (mySDI12.available() && (millis() - start) < 3000) {
-      char c = mySDI12.peek();
-      // if there's a polarity sign, a number, or a decimal next in the
-      // buffer, start reading it as a float.
-      if (c == '-' || c == '+' || (c >= '0' && c <= '9') || c == '.') {
-        float result = mySDI12.parseFloat();
-        if (printIO) {
-          Serial.print("<<<");
-          Serial.println(String(result, 7));
-        } else {
-          Serial.print(String(result, 7));
-          Serial.print(", ");
-        }
-        if (result != -9999) {
-          gotResults = true;
-          cmd_results++;
-        }
-        // if we get to a new line, we've made it to the end of the response
-      } else if (c == '\r' || c == '\n') {
-        if (printIO) { Serial.write(c); }
-        mySDI12.read();
-      } else {
-        if (printIO) {
-          Serial.print(F("<<< INVALID CHARACTER IN RESPONSE:"));
-          Serial.write(c);
-          Serial.println();
-        }
-        // Read the character to make sure it's removed from the buffer
-        mySDI12.read();
-        bad_read = true;
-      }
-      delay(10);  // 1 character ~ 7.5ms
-    }
-    if (!gotResults) {
-      if (printIO) {
-        Serial.println(F("  No results received, will not continue requests!"));
-        break;  // don't do another loop if we got nothing
-      }
-    }
-    if (gotResults && !bad_read) {
-      resultsReceived = resultsReceived + cmd_results;
-      if (printIO) {
-        Serial.print(F("  Total Results Received: "));
-        Serial.print(resultsReceived);
-        Serial.print(F(", Remaining: "));
-        Serial.println(resultsExpected - resultsReceived);
-      }
-      cmd_number++;
-    } else {
-      // if we got a bad charater in the response, add one to the retry
-      // attempts but do not bump up the command number or transfer any
-      // results because we want to retry the same data command to try get
-      // a valid response
-      cmd_retries++;
-    }
-    mySDI12.clearBuffer();
-  }
-
-  return resultsReceived == resultsExpected;
 }
 
 void setup() {
@@ -297,44 +92,43 @@ void setup() {
   while (!Serial && millis() < 10000L);
   char tbuf[3] = {'\0'};
 
-  Serial.print("Opening SDI-12 bus on pin ");
+  Serial.print(F("Opening SDI-12 bus on pin "));
   Serial.print(dataPin);
-  Serial.print(" (");
+  Serial.print(F(" ("));
   Serial.print(itoa(dataPin, tbuf, 10));
-  Serial.print(")");
-  Serial.println("...");
+  Serial.print(')');
+  Serial.println(F("..."));
   mySDI12.begin();
   delay(500);  // allow things to settle
 
-  Serial.println("Timeout value: ");
+  Serial.println(F("Timeout value: "));
   Serial.println(mySDI12.TIMEOUT);
 
   // Power the sensors;
   if (powerPin >= 0) {
-    Serial.print("Powering up sensors with pin ");
+    Serial.print(F("Powering up sensors with pin "));
     Serial.print(String(powerPin));
-    Serial.println(", wait 10s...");
+    Serial.println(F(", wait 10s..."));
     pinMode(powerPin, OUTPUT);
     digitalWrite(powerPin, HIGH);
     delay(10000L);
   } else {
-    Serial.println("Wait 5s...");
+    Serial.println(F("Wait 5s..."));
     delay(5000L);
   }
 
   // Quickly scan the address space
-  Serial.println("\n\nScanning all addresses, please wait...");
+  Serial.println(F("\n\nScanning all addresses, please wait..."));
 
   for (int8_t i = firstAddress; i <= lastAddress; i++) {
-    char addr = decToChar(i);
-    if (checkActive(addr, 3, printIO)) {
+    char addr = SDI12Address::fromIndex(i);
+    if (mySDI12Recorder.requestAcknowledgement(addr)) {
       numSensors++;
       isActive[i] = 1;
-      printInfo(addr, printIO);
-      Serial.println();
+      printInfo(addr);
     }
   }
-  Serial.print("Total number of sensors found:  ");
+  Serial.print(F("Total number of sensors found:  "));
   Serial.println(numSensors);
 
   if (numSensors == 0) {
@@ -345,8 +139,7 @@ void setup() {
 
   Serial.println();
   Serial.println(
-    "Time Elapsed (s), Sensor Address, Est Measurement Time (s), Number Measurements, "
-    "Real Measurement Time (ms), Measurement 1, Measurement 2, ... etc.");
+    "Time Elapsed (ms), Sensor Address, Measurement 1, Measurement 2, ... etc.");
   Serial.println(
     "-------------------------------------------------------------------------------");
 }
@@ -354,18 +147,13 @@ void setup() {
 void loop() {
   // measure one at a time
   for (int8_t i = firstAddress; i <= lastAddress; i++) {
-    char addr = decToChar(i);
+    char addr = SDI12Address::fromIndex(i);
     if (isActive[i]) {
-      if (printIO) {
-        Serial.print(addr);
-        Serial.print(" - millis: ");
-        Serial.print(millis());
-        Serial.println();
-      } else {
-        Serial.print(millis());
-        Serial.print(", ");
-      }
-      getContinuousResults(addr, 0);
+      Serial.print(millis());
+      Serial.print(F(", "));
+      Serial.print(addr);
+      Serial.print(F(", "));
+      getContinuousResults(addr);
       Serial.println();
     }
   }

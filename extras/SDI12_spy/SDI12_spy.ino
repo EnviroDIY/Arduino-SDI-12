@@ -1,3 +1,8 @@
+#include <SDI12Config.h>
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && !defined(SDI12_INTERNAL_PCINT)
+#include <EnableInterrupt.h>
+#endif
+
 #include <SDI12.h>
 
 #ifndef SDI12_DATA_PIN
@@ -13,8 +18,9 @@ void setup() {
   Serial.begin(115200);
   slaveSDI12.begin();
   delay(500);
+
   slaveSDI12.forceListen();  // sets SDIPIN as input to prepare for incoming message
-  Serial.println("Starting SDI-12 Spy");
+  Serial.println(F("Starting SDI-12 Spy"));
 }
 
 void loop() {

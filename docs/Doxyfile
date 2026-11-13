@@ -1127,6 +1127,7 @@ EXCLUDE                = ../src/ReadMe.md \
                          ../boards \
                          ../variants \
                          ../archive \
+                         ../planning \
                          ../continuous_integration_artifacts
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
@@ -2601,7 +2602,6 @@ PREDEFINED             = DOXYGEN=1 \
                          __AVR_ATmega328P__ \
                          F_CPU=16000000L \
                          NEOSWSERIAL_EXTERNAL_PCINT \
-                         SDI12_EXTERNAL_PCINT \
                          SERIAL_PORT_USBVIRTUAL=0 \
                          ESP32
 

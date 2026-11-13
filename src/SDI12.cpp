@@ -9,11 +9,40 @@
  */
 
 
-#include "SDI12.h"  //  Header file for this library
+#include "SDI12.h"          // Header file for this library
+#include "SDI12Protocol.h"  // Shared SDI-12 protocol timing limits
+
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && !defined(SDI12_INTERNAL_PCINT)
+// Declare the EnableInterrupt API without defining its implementation or interrupt
+// vectors in this object file.
+#define LIBCALL_ENABLEINTERRUPT
+#include <EnableInterrupt.h>
+#undef LIBCALL_ENABLEINTERRUPT
+#endif
+
 #if defined __AVR__
 #include <avr/interrupt.h>  // interrupt handling
 #include <util/parity.h>    // optimized parity bit handling
 #endif
+
+namespace {
+// Convert microseconds to timer ticks, rounding upward.
+constexpr uint32_t microsecondsToTicksCeil(uint32_t microseconds,
+                                           uint32_t ticksPerSecond) {
+  return static_cast<uint32_t>(
+    (static_cast<uint64_t>(microseconds) * ticksPerSecond + 999999ULL) / 1000000ULL);
+}
+
+// Calculate the real number of timer ticks needed for the minimum break and marking
+// durations based on the actual timer and the protocol values
+// NOTE: This will be done by the compiler at compile time.
+enum : uint32_t {
+  kMinimumBreakTicks =
+    microsecondsToTicksCeil(SDI12Timing::kBreakMinMicros, TICKS_PER_SECOND),
+  kMinimumMarkingTicks = microsecondsToTicksCeil(
+    SDI12Timing::kPreCharacterMarkingMinMicros, TICKS_PER_SECOND)
+};
+}  // namespace
 
 /* ================  Set static constants ===========================================*/
 
@@ -186,6 +215,41 @@ float SDI12::parseFloat(LookaheadMode, char) {
 }
 
 /* ================ Constructor, Destructor, begin(), end(), and timeout ============*/
+void SDI12::resetEdgeState(bool listening, sdi12timer_t timerTime, uint8_t pinLevel) {
+  _lineObserver.intervalStart         = timerTime;
+  _lineObserver.level                 = pinLevel;
+  _lineObserver.valid                 = listening;
+  _lineObserver.breakMinimumReached   = false;
+  _lineObserver.markingMinimumReached = false;
+  _decoder.previousEdge               = timerTime;
+  _decoder.bitCount                   = WAITING_FOR_START_BIT;
+  _decoder.mask                       = 0;
+  _decoder.value                      = 0;
+  _previousCharacter                  = 0;
+}
+
+void ISR_MEM_ACCESS SDI12::publishEvent(volatile uint8_t& flags, uint8_t event) {
+  // ISR publication is inherently serialized. Recorder or sensor application callers
+  // disable interrupts around this byte update and their event read-clear pair.
+  flags |= event;
+}
+
+uint8_t SDI12::takeEvents(volatile uint8_t& flags) {
+#if defined(__AVR__)
+  const uint8_t savedStatus = SREG;
+  cli();
+  const uint8_t events = flags;
+  flags                = 0;
+  SREG                 = savedStatus;
+#else
+  noInterrupts();
+  const uint8_t events = flags;
+  flags                = 0;
+  interrupts();
+#endif
+  return events;
+}
+
 // Constructor
 SDI12::SDI12() {
   // SDI-12 protocol says sensors must respond within 15 milliseconds
@@ -226,7 +290,7 @@ void SDI12::begin() {
   attachInterrupt(digitalPinToInterrupt(_dataPin), nullptr, CHANGE);
   detachInterrupt(digitalPinToInterrupt(_dataPin));
 #endif
-  // setState(SDI12_HOLDING);
+  // setLineState(SDI12_HOLDING);
   setActive();
   // Set up the prescaler as needed for timers
   // This function is defined in SDI12_boards.h
@@ -240,7 +304,7 @@ void SDI12::begin(int8_t dataPin) {
 
 // End
 void SDI12::end() {
-  setState(SDI12_DISABLED);
+  setLineState(SDI12_DISABLED);
   if (isActive()) { _activeObject = nullptr; }
   // Set the timer prescalers back to original values
   sdi12timer.resetSDI12TimerPrescale();
@@ -270,7 +334,7 @@ int8_t SDI12::getDataPin() {
 // a method for setting the current object as the active object
 bool SDI12::setActive() {
   if (_activeObject != this) {
-    setState(SDI12_HOLDING);
+    setLineState(SDI12_HOLDING);
     _activeObject = this;
     return true;
   }
@@ -299,7 +363,9 @@ uint8_t SDI12::parity_even_bit(uint8_t v) {
 
 // a helper function to switch pin interrupts on or off
 void SDI12::setPinInterrupts(bool enable) {
-#if defined(__AVR__) && not defined(SDI12_EXTERNAL_PCINT)
+  // If we're using this library on an AVR board without the Enable Interrupts
+  // dependency
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && defined(SDI12_INTERNAL_PCINT)
   if (enable) {
     // Enable interrupts on the register with the pin of interest
     *digitalPinToPCICR(_dataPin) |= (1 << digitalPinToPCICRbit(_dataPin));
@@ -319,27 +385,40 @@ void SDI12::setPinInterrupts(bool enable) {
   }
   // if using AVR with external interrupts, do nothing
 #elif defined(__AVR__)
+  // Use the enableInterrupt function to attach the interrupt to the pin
+  // For AVR boards, this is defined in the EnableInterrupt library
+  // For other boards, this is defined in SDI12.h as a rename for attachInterrupt
   if (enable) {
-    return;
-  } else {
-    return;
+    enableInterrupt(_dataPin, handleInterrupt, CHANGE);
+  }
+  // Use the disableInterrupt function to detach the interrupt function from the pin
+  // For AVR boards, this is defined in the EnableInterrupt library
+  // For other boards, this is defined in SDI12.h as a rename for detachInterrupt
+  else {
+    disableInterrupt(_dataPin);
   }
 // For the particle, or other boards without the digitalPinToInterrupt define, use bare
 // attachInterrupt and detachInterrupt functions
 #elif defined(PARTICLE) || !defined(digitalPinToInterrupt)
   // Merely need to attach the interrupt function to the pin
-  if (enable) attachInterrupt(_dataPin, handleInterrupt, CHANGE);
+  if (enable) {
+    attachInterrupt(_dataPin, handleInterrupt, CHANGE);
+  }
   // Merely need to detach the interrupt function from the pin
-  else
+  else {
     detachInterrupt(_dataPin);
+  }
 // for other boards (SAMD/Espressif/??) use attachInterrupt and detachInterrupt
 // functions with digitalPinToInterrupt
 #else
   // Merely need to attach the interrupt function to the pin
-  if (enable) attachInterrupt(digitalPinToInterrupt(_dataPin), handleInterrupt, CHANGE);
+  if (enable) {
+    attachInterrupt(digitalPinToInterrupt(_dataPin), handleInterrupt, CHANGE);
+  }
   // Merely need to detach the interrupt function from the pin
-  else
+  else {
     detachInterrupt(digitalPinToInterrupt(_dataPin));
+  }
 #endif
 }
 
@@ -350,40 +429,46 @@ void SDI12::setPinInterrupts(bool enable) {
 // pull-up or pull-down configuration.
 // To disable both resistors on these other boards, we need to do a digitalWrite(pin,
 // LOW) after pinMode(INPUT).
-void SDI12::setState(SDI12_STATES state) {
+void SDI12::setLineState(SDI12_LINE_STATE state) {
+  _lineState = state;
   switch (state) {
     case SDI12_HOLDING:
       {
-        pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
-        digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
-        pinMode(_dataPin, OUTPUT);    // Pin mode = output
-        digitalWrite(_dataPin, LOW);  // Pin state = low - marking
-        setPinInterrupts(false);      // Interrupts disabled on data pin
+        setPinInterrupts(false);        // Interrupts disabled on data pin
+        resetEdgeState(false, 0, LOW);  // Recorded receive edges are no longer valid
+        pinMode(_dataPin, INPUT);       // Set to input so we can control the resistors
+        digitalWrite(_dataPin, LOW);    // When set to input, this turns off the pull-up
+        pinMode(_dataPin, OUTPUT);      // Pin mode = output
+        digitalWrite(_dataPin, LOW);    // Pin state = low - marking
         break;
       }
     case SDI12_TRANSMITTING:
       {
-        pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
-        digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
-        pinMode(_dataPin, OUTPUT);    // Pin mode = output
-        setPinInterrupts(false);      // Interrupts disabled on data pin
+        setPinInterrupts(false);        // Interrupts disabled on data pin
+        resetEdgeState(false, 0, LOW);  // Recorded receive edges are no longer valid
+        pinMode(_dataPin, INPUT);       // Set to input so we can control the resistors
+        digitalWrite(_dataPin, LOW);    // When set to input, this turns off the pull-up
+        pinMode(_dataPin, OUTPUT);      // Pin mode = output
         break;
       }
     case SDI12_LISTENING:
       {
+        setPinInterrupts(false);      // Reinitialize before accepting another edge
         pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
         digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
         interrupts();                 // Enable general interrupts
-        setPinInterrupts(true);       // Enable Rx interrupts on data pin
-        prevBitTCNT = READTIME;       // Set the last interrupt time to now
-        rxState     = WAITING_FOR_START_BIT;  // Set state to ready for new start bit
+        const uint8_t      pinLevel  = digitalRead(_dataPin);
+        const sdi12timer_t timerTime = READTIME;
+        resetEdgeState(true, timerTime, pinLevel);
+        setPinInterrupts(true);  // Enable Rx interrupts on data pin
         break;
       }
-    default:  // SDI12_DISABLED or SDI12_ENABLED
+    default:  // SDI12_DISABLED
       {
-        pinMode(_dataPin, INPUT);     // Set to input so we can control the resistors
-        digitalWrite(_dataPin, LOW);  // When set to input, this turns off the pull-up
-        setPinInterrupts(false);      // Interrupts disabled on data pin
+        setPinInterrupts(false);        // Interrupts disabled on data pin
+        resetEdgeState(false, 0, LOW);  // Recorded receive edges are no longer valid
+        pinMode(_dataPin, INPUT);       // Set to input so we can control the resistors
+        digitalWrite(_dataPin, LOW);    // When set to input, this turns off the pull-up
         break;
       }
   }
@@ -391,29 +476,101 @@ void SDI12::setState(SDI12_STATES state) {
 
 // forces a SDI12_HOLDING state.
 void SDI12::forceHold() {
-  setState(SDI12_HOLDING);
+  setLineState(SDI12_HOLDING);
 }
 
 // forces a SDI12_LISTENING state.
 void SDI12::forceListen() {
-  setState(SDI12_LISTENING);
+  setLineState(SDI12_LISTENING);
+}
+
+void SDI12::startBreak() {
+  if (_lineState != SDI12_TRANSMITTING) { setLineState(SDI12_TRANSMITTING); }
+  digitalWrite(_dataPin, HIGH);
+}
+
+void SDI12::startMarking() {
+  if (_lineState != SDI12_TRANSMITTING) { setLineState(SDI12_TRANSMITTING); }
+  digitalWrite(_dataPin, LOW);
+}
+
+uint8_t SDI12::takeLineEvents() {
+  return takeEvents(_lineEventFlags);
+}
+
+uint8_t SDI12::takeReceiveEvents() {
+  return takeEvents(_receiveEventFlags);
+}
+
+void SDI12::serviceLineConditions() {
+  // turn off interrupts while we check the line conditions
+#if defined(__AVR__)
+  const uint8_t savedStatus = SREG;
+  cli();
+#else
+  noInterrupts();
+#endif
+
+  if (_lineState == SDI12_LISTENING && _lineObserver.valid) {
+    const uint8_t      pinLevel  = digitalRead(_dataPin);
+    const sdi12timer_t timerTime = READTIME;
+
+    // Only act if the current pin level matches the observer's last known level.
+    // If an edge became pending while interrupts were disabled, leave it for the ISR.
+    if (pinLevel == _lineObserver.level) {
+      const uint32_t elapsedTicks = static_cast<uint32_t>(
+        SDI12Timer::timerDelta(timerTime, _lineObserver.intervalStart));
+
+      // NOTE: We're checkout outside of the ISR. This pin levels here do not mean the
+      // line just became high or low; it's just the line's current level
+
+      // HIGH = break (spacing)
+      // if the line is currently high, check if the break minimum has been reached
+      if (pinLevel == HIGH &&
+          (_lineObserver.breakMinimumReached || elapsedTicks >= kMinimumBreakTicks)) {
+        // since we're now past the break minimum, set the breakMinimumReached flag if
+        // it wasn't already set
+        if (!_lineObserver.breakMinimumReached) {
+          _lineObserver.breakMinimumReached = true;
+          publishEvent(_lineEventFlags, SDI12_LINE_EVENT_BREAK_THRESHOLD_REACHED);
+        }
+        // LOW = marking
+        // if the line is currently low, check if the marking minimum has been reached
+      } else if (pinLevel == LOW &&
+                 (_lineObserver.markingMinimumReached ||
+                  elapsedTicks >= kMinimumMarkingTicks)) {
+        // since we're now past the marking minimum, set the markingMinimumReached flag
+        // if it wasn't already set
+        if (!_lineObserver.markingMinimumReached) {
+          _lineObserver.markingMinimumReached = true;
+          publishEvent(_lineEventFlags, SDI12_LINE_EVENT_MARKING_THRESHOLD_REACHED);
+        }
+      }
+    }
+  }
+
+  // turn the interrupts back on
+#if defined(__AVR__)
+  SREG = savedStatus;
+#else
+  interrupts();
+#endif
 }
 
 /* ================ Waking Up and Talking To Sensors ================================*/
 // this function wakes up the entire sensor bus by sending a 12ms break followed by 8.33
 // ms of marking
 void SDI12::wakeSensors(int8_t extraWakeTime) {
-  setState(SDI12_TRANSMITTING);
+  startBreak();
   // Universal interrupts can be on while the break and marking happen because
   // timings for break and from the recorder are not critical.
   // Interrupts on the pin are disabled for the entire transmitting state
-  digitalWrite(_dataPin, HIGH);  // break is HIGH
   delayMicroseconds(
     SDI12_LINE_BREAK_MICROS);  // Required break of 12 milliseconds (12,000 µs)
   if (extraWakeTime > 0) {     // allow the sensors to wake, iff specified
     delay(static_cast<unsigned long>(extraWakeTime));
   }
-  digitalWrite(_dataPin, LOW);  // marking is LOW
+  startMarking();
   delayMicroseconds(
     SDI12_LINE_MARK_MICROS);  // Required marking of 8.33 milliseconds(8,333 µs)
 }
@@ -485,7 +642,7 @@ size_t SDI12::writeChar(uint8_t outChar, bool use_parity) {
   // We've used up roughly 150 clock cycles messing with parity, but a bit is 833µs, so
   // we've got time.
 
-  while (static_cast<sdi12timer_t>(READTIME - t0) <
+  while (SDI12Timer::timerDelta(READTIME, t0) <
          static_cast<sdi12timer_t>(TICKS_PER_BIT)) {}
   t0 = READTIME;  // advance start time
 
@@ -498,7 +655,7 @@ size_t SDI12::writeChar(uint8_t outChar, bool use_parity) {
       digitalWrite(_dataPin, HIGH);  // set the pin state to HIGH for 0's
     }
     // Hold the line for this bit duration
-    while (static_cast<sdi12timer_t>(READTIME - t0) <
+    while (SDI12Timer::timerDelta(READTIME, t0) <
            static_cast<sdi12timer_t>(TICKS_PER_BIT)) {}
     t0 = READTIME;  // advance start time
 
@@ -515,7 +672,7 @@ size_t SDI12::writeChar(uint8_t outChar, bool use_parity) {
   // Hold the line low until the end of the 10th bit
   sdi12timer_t bitTimeRemaining = static_cast<sdi12timer_t>(TICKS_PER_BIT) *
     (10 - lastHighBit);
-  while (static_cast<sdi12timer_t>(READTIME - t0) < bitTimeRemaining) {}
+  while (SDI12Timer::timerDelta(READTIME, t0) < bitTimeRemaining) {}
 
   return 1;  // return the number of characters written - just one
 }
@@ -524,21 +681,21 @@ size_t SDI12::writeChar(uint8_t outChar, bool use_parity) {
 // This allows you to use the stream print functions to send commands out on
 // the SDI-12, line, but it will not wake the sensors in advance of the command.
 size_t SDI12::write(uint8_t byte) {
-  setState(SDI12_TRANSMITTING);
-  writeChar(byte, true);      // write the character/byte
-  setState(SDI12_LISTENING);  // listen for reply
-  return 1;                   // 1 character sent
+  setLineState(SDI12_TRANSMITTING);
+  writeChar(byte, true);          // write the character/byte
+  setLineState(SDI12_LISTENING);  // listen for reply
+  return 1;                       // 1 character sent
 }
 
 // write multiple characters, only setting to transmitting and listening at the start
 // and end
 size_t SDI12::write(const uint8_t* buffer, size_t size) {
-  setState(SDI12_TRANSMITTING);
+  setLineState(SDI12_TRANSMITTING);
   size_t n = 0;
   while (size--) {
     n += writeChar(*buffer++, true);  // write the character/byte
   }
-  setState(SDI12_LISTENING);  // listen for reply
+  setLineState(SDI12_LISTENING);  // listen for reply
   return n;
 }
 
@@ -552,7 +709,7 @@ void SDI12::sendCommand(const char* cmd, int8_t extraWakeTime) {
   for (int unsigned i = 0; i < strlen(cmd); i++) {
     writeChar(cmd[i], true);  // write each character
   }
-  setState(SDI12_LISTENING);  // listen for reply
+  setLineState(SDI12_LISTENING);  // listen for reply
 }
 
 void SDI12::sendCommand(FlashString cmd, int8_t extraWakeTime) {
@@ -561,7 +718,7 @@ void SDI12::sendCommand(FlashString cmd, int8_t extraWakeTime) {
     // write each character
     writeChar(static_cast<char>(pgm_read_byte((const char*)cmd + i)), true);
   }
-  setState(SDI12_LISTENING);  // listen for reply
+  setLineState(SDI12_LISTENING);  // listen for reply
 }
 
 // This function sets up for a response to a separate data recorder by sending out a
@@ -573,7 +730,7 @@ void SDI12::sendResponse(String& resp, bool addCRC) {
 }
 
 void SDI12::sendResponse(const char* resp, bool addCRC) {
-  setState(SDI12_TRANSMITTING);               // Get ready to send data to the recorder
+  setLineState(SDI12_TRANSMITTING);           // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);                // marking is LOW
   delayMicroseconds(SDI12_LINE_MARK_MICROS);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen(resp); i++) {
@@ -586,11 +743,11 @@ void SDI12::sendResponse(const char* resp, bool addCRC) {
       writeChar(crc[i], true);  // write each character
     }
   }
-  setState(SDI12_LISTENING);  // return to listening state
+  setLineState(SDI12_LISTENING);  // return to listening state
 }
 
 void SDI12::sendResponse(FlashString resp, bool addCRC) {
-  setState(SDI12_TRANSMITTING);               // Get ready to send data to the recorder
+  setLineState(SDI12_TRANSMITTING);           // Get ready to send data to the recorder
   digitalWrite(_dataPin, LOW);                // marking is LOW
   delayMicroseconds(SDI12_LINE_MARK_MICROS);  // 8.33 ms marking before response
   for (int unsigned i = 0; i < strlen_P((PGM_P)resp); i++) {
@@ -604,13 +761,8 @@ void SDI12::sendResponse(FlashString resp, bool addCRC) {
       writeChar(crc[i], true);  // write each character
     }
   }
-  setState(SDI12_LISTENING);  // return to listening state
+  setLineState(SDI12_LISTENING);  // return to listening state
 }
-
-/**
- * @brief The polynomial to match the CRC with; set in the SDI-12 specifications
- */
-#define POLY 0xa001
 
 uint16_t SDI12::calculateCRC(String& resp) {
   return calculateCRC(resp.c_str());
@@ -625,7 +777,7 @@ uint16_t SDI12::calculateCRC(const char* resp) {
     for (int j = 0; j < 8; j++) {  // count = 1 to 8
       if (crc & 0x0001) {          // if the least significant bit of the CRC is one
         crc >>= 1;                 // right shift the CRC one bit
-        crc ^= POLY;  // set CRC equal to the exclusive OR of POLY and itself
+        crc ^= SDI12_CRC_POLY;     // XOR the shifted CRC with the protocol polynomial
       } else {
         crc >>= 1;  // right shift the CRC one bit
       }
@@ -643,9 +795,9 @@ uint16_t SDI12::calculateCRC(FlashString resp) {
     crc ^= static_cast<uint16_t>(response_char);  // Set the CRC equal to the exclusive
                                                   // OR of the character and itself
     for (int j = 0; j < 8; j++) {                 // count = 1 to 8
-      if (crc & 0x0001) {  // if the least significant bit of the CRC is one
-        crc >>= 1;         // right shift the CRC one bit
-        crc ^= POLY;       // set CRC equal to the exclusive OR of POLY and itself
+      if (crc & 0x0001) {       // if the least significant bit of the CRC is one
+        crc >>= 1;              // right shift the CRC one bit
+        crc ^= SDI12_CRC_POLY;  // XOR the shifted CRC with the protocol polynomial
       } else {
         crc >>= 1;  // right shift the CRC one bit
       }
@@ -697,20 +849,96 @@ void ISR_MEM_ACCESS SDI12::handleInterrupt() {
 
 // Creates a blank slate of bits for an incoming character
 void ISR_MEM_ACCESS SDI12::startChar() {
-  rxState = 0x00;  // 0b00000000, got a start bit
-  rxMask  = 0x01;  // 0b00000001, bit mask, lsb first
-  rxValue = 0x00;  // 0b00000000, RX character to be, a blank slate
+  _decoder.bitCount = 0x00;  // 0b00000000, got a start bit
+  _decoder.mask     = 0x01;  // 0b00000001, bit mask, lsb first
+  _decoder.value    = 0x00;  // 0b00000000, RX character to be, a blank slate
 }  // startChar
 
-// The actual interrupt service routine
+// Compatibility ISR callback; subclasses that override it retain the existing hook.
 void ISR_MEM_ACCESS SDI12::receiveISR() {
-  // time of this data transition (plus ISR latency)
-  sdi12timer_t thisBitTCNT = READTIME;
+  routeEdge();
+}
 
-  uint8_t pinLevel = digitalRead(_dataPin);  // current RX data level
+// Classify the interval that ended at this physical edge.
+// This is a helper called by the ISR.
+uint8_t ISR_MEM_ACCESS SDI12::observeLineEdge(sdi12timer_t timerTime,
+                                              uint8_t      pinLevel) {
+  // If we haven't seen a valid interval yet, initialize the observer with the current
+  // time and pin level and then quit
+  if (!_lineObserver.valid) {
+    _lineObserver.intervalStart = timerTime;
+    _lineObserver.level         = pinLevel;
+    _lineObserver.valid         = true;
+    return SDI12_LINE_EVENT_NONE;
+  }
+
+  // if the line observer was valid but the pin level hasn't changed, there's no event
+  // to report
+  if (pinLevel == _lineObserver.level) { return SDI12_LINE_EVENT_NONE; }
+
+  // check how long it's been since the last interrupt
+  const uint32_t elapsedTicks = static_cast<uint32_t>(
+    SDI12Timer::timerDelta(timerTime, _lineObserver.intervalStart));
+
+  // On the deferred 8 MHz, 8-bit Timer2 configuration these minimums exceed one
+  // counter cycle and therefore cannot be recognized here. Other supported timers span
+  // both thresholds; latching intervals with no ending edge from recorder or sensor
+  // application code belongs to the next phase.
+
+  // create a new event flag container for this edge
+  uint8_t events = SDI12_LINE_EVENT_NONE;
+  // If the previous level (from the observer) was HIGH, we're looking at a falling
+  // edge; otherwise, it's a rising edge.
+  if (_lineObserver.level == HIGH) {
+    // The falling edge ends a HIGH/spacing interval and begins marking.
+    _lineObserver.breakMinimumReached = _lineObserver.breakMinimumReached ||
+      elapsedTicks >= kMinimumBreakTicks;
+    if (_lineObserver.breakMinimumReached) {
+      events |= SDI12_LINE_EVENT_BREAK_COMPLETED;
+    }
+  } else {
+    // The rising edge ends a LOW/marking interval and may also be a start bit.
+    _lineObserver.markingMinimumReached = _lineObserver.markingMinimumReached ||
+      elapsedTicks >= kMinimumMarkingTicks;
+    if (_lineObserver.markingMinimumReached) {
+      events |= SDI12_LINE_EVENT_MARKING_COMPLETED;
+    }
+  }
+
+  _lineObserver.intervalStart         = timerTime;
+  _lineObserver.level                 = pinLevel;
+  _lineObserver.breakMinimumReached   = false;
+  _lineObserver.markingMinimumReached = false;
+  if (events != SDI12_LINE_EVENT_NONE) { publishEvent(_lineEventFlags, events); }
+  return events;
+}
+
+// This ISR:
+//   - Stamps the time and current pin level,
+//   - Routes the captured edge to line observation to check for events
+//   - and the character decoder.
+void ISR_MEM_ACCESS SDI12::routeEdge() {
+  // time of this data transition (plus ISR latency)
+  const sdi12timer_t thisBitTCNT = READTIME;
+  // current RX data level
+  const uint8_t pinLevel = digitalRead(_dataPin);
+  // pass the time and level to the observeLineEdge function which will determine if any
+  // line events occurred
+  const uint8_t lineEvents = observeLineEdge(thisBitTCNT, pinLevel);
+
+  // A completed break invalidates any partial character. The same falling edge is
+  // still observed above before character decoding decides that LOW cannot start one.
+  if ((lineEvents & SDI12_LINE_EVENT_BREAK_COMPLETED) != 0 &&
+      _decoder.bitCount != WAITING_FOR_START_BIT) {
+    publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_FRAMING_ERROR);
+    _lineObserver.breakMinimumReached   = false;
+    _lineObserver.markingMinimumReached = false;
+    _decoder.bitCount                   = WAITING_FOR_START_BIT;
+  }
 
   // Check how many bit times have passed since the last change
-  uint16_t rxBits = SDI12Timer::bitTimes(thisBitTCNT - prevBitTCNT);
+  uint16_t rxBits =
+    SDI12Timer::bitTimes(SDI12Timer::timerDelta(thisBitTCNT, _decoder.previousEdge));
 
 #if !(TICKS_PER_SECOND == 31250 && TIMER_INT_SIZE == 8)
   // if we haven't had a bit spacing between the last interrupt, just ignore and move on
@@ -720,13 +948,14 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
 #endif
 
   // Check if we're ready for a start bit, and if this could possibly be it.
-  if (rxState == WAITING_FOR_START_BIT) {
+  if (_decoder.bitCount == WAITING_FOR_START_BIT) {
     // If we are waiting for a start bit and the pin is low it's not a start bit, exit
     // Inverse logic start bit = HIGH
     if (pinLevel == LOW) { return; }
     // If the pin is HIGH, this should be a start bit.
-    // Thus call startChar(), which zeros the timer counter, sets the rxState to 0, and
-    // creates an empty character and a new mask with a 1 in the lowest place
+    // Thus call startChar(), which sets the decoder bit count to 0 and creates an empty
+    // character and a new mask with a 1 in the lowest place.
+    publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_START_BIT_OBSERVED);
     startChar();
   } else {
     // If we're not waiting for a start bit, it's because we're in the middle of an
@@ -735,8 +964,11 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
 
 #if TIMER_INT_SIZE > 8
     if (rxBits > 12) {
-      rxState =
-        WAITING_FOR_START_BIT;  // reset the rx state if more than 12 bits have passed
+      // reset the rx state if more than 12 bits have passed and note a framing error
+      publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_FRAMING_ERROR);
+      _lineObserver.breakMinimumReached   = false;
+      _lineObserver.markingMinimumReached = false;
+      _decoder.bitCount                   = WAITING_FOR_START_BIT;
       return;
     }
 #endif
@@ -744,14 +976,14 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     // Calculate how many *data+parity* bits should be left in the current character
     //      - Each character has a total of 10 bits, 1 start bit, 7 data bits, 1 parity
     // bit, and 1 stop bit
-    //      - The #rxState holds record of how many of the data + parity bits we've
-    // gotten (up to 8)
+    //      - The decoder bit count records how many data + parity bits we've gotten (up
+    // to 8)
     //      - We have to treat the parity bit as a data bit because we don't know its
     // state
     //      - Since we're mid character, we know the start bit is past which knocks us
     // down to 9
     //      - There will always be one left over for the stop bit, which will be LOW/1
-    uint8_t bitsLeft = 9 - rxState;
+    uint8_t bitsLeft = 9 - _decoder.bitCount;
     // If the number of bits passed since the last transition is more than then number
     // of bits left on the character we were working on, a new character must have
     // started.
@@ -764,9 +996,9 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     // (1) even parity bit - 1 LOW stop bit, last level change before line idle is the
     // end of the start bit)  Because we cannot detect the end of the stop bit, in
     // sequential characters the next change will be the next start bit and it will
-    // arrive with the rxState set to the middle of the last character.  So, since we
-    // cannot depend on the rxState telling us if we're WAITING_FOR_START_BIT, we have
-    // to figure it out by the time passed.
+    // arrive with the decoder in the middle of the last character. Since we cannot
+    // depend on its bit count telling us if we're waiting for a start bit, we have to
+    // figure it out by the time passed.
     bool nextCharStarted = (rxBits > bitsLeft);
 
     // Check how many data+parity bits have been sent in this frame.  This will be
@@ -783,8 +1015,8 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
     //    if nextCharStarted then bitsThisFrame = bitsLeft
     //                       else bitsThisFrame = rxBits
     uint8_t bitsThisFrame = nextCharStarted ? bitsLeft : rxBits;
-    // Tick up the rxState by the number of data+parity bits received in the frame
-    rxState += bitsThisFrame;
+    // Count the data+parity bits received in the frame.
+    _decoder.bitCount += bitsThisFrame;
 
     // Set all the bits received between the last change and this change
     if (pinLevel == HIGH) {
@@ -794,37 +1026,38 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
       while (bitsThisFrame-- > 0) {
         // for each of the bits that happened in this frame
 
-        rxValue |= rxMask;     // Add a 1 to the LSB/right-most place of our character
-                               // value from the mask
-        rxMask = rxMask << 1;  // Shift the 1 in the mask up by one position
+        _decoder.value |=
+          _decoder.mask;  // Add a 1 to the active place of our character value
+        _decoder.mask = _decoder.mask << 1;  // Shift the mask up one position
       }
       // And shift the 1 in the mask up by one more position for the current bit.
       // It's HIGH/0 now, so we don't use `|=` with the mask for this last one.
-      rxMask = rxMask << 1;
+      _decoder.mask = _decoder.mask << 1;
     } else {
       // If the current state is LOW (and it just became so), then this bit is LOW
       // but all bits between the last change and now must have been HIGH
 
       // pinLevel==LOW
       // previous bits were 0's so only this bit is a 1 (inverse logic - LOW = 1)
-      rxMask = rxMask << (bitsThisFrame -
-                          1);  // Shift the 1 in the mask up by the number of bits past
-      rxValue |= rxMask;  //  And add that shifted one to the character being created
+      _decoder.mask = _decoder.mask
+        << (bitsThisFrame - 1);  // Shift the mask up by the number of bits past
+      _decoder.value |=
+        _decoder.mask;  // Add that shifted one to the character being created
     }
 
     // If this was the 8th or more bit then the character and parity are complete.
     // The stop bit may still be outstanding
-    if (rxState > 7) {
+    if (_decoder.bitCount > 7) {
       // Mask out all but the least significant byte
       // parity handling will be taken care by respective read function
-      rxValue &= 0xFF;
-      charToBuffer(rxValue);  // Put the finished character into the buffer
+      _decoder.value &= 0xFF;
+      charToBuffer(_decoder.value);  // Put the finished character into the buffer
 
       // if this is LOW, or we haven't exceeded the number of bits in a
       // character (but have gotten all the data bits) then this should be a
       // stop bit and we can start looking for a new start bit.
       if ((pinLevel == LOW) || !nextCharStarted) {
-        rxState =
+        _decoder.bitCount =
           WAITING_FOR_START_BIT;  // reset the rx state, stop waiting for stop bit
       } else {
         // If we just switched to HIGH, or we've exceeded the total number of
@@ -834,14 +1067,36 @@ void ISR_MEM_ACCESS SDI12::receiveISR() {
       }
     }
   }
-  prevBitTCNT = thisBitTCNT;  // finally remember time stamp of this change!
+  _decoder.previousEdge = thisBitTCNT;  // finally remember this edge timestamp
 }
 
 // Put a new character in the buffer
 void SDI12::charToBuffer(uint8_t c) {
+  publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_CHARACTER_COMPLETED);
+
+  const uint8_t character       = c & 0x7F;
+  uint8_t       completionEvent = SDI12_RECEIVE_EVENT_NONE;
+  if (character == static_cast<uint8_t>('!')) {
+    completionEvent = SDI12_RECEIVE_EVENT_COMMAND_COMPLETED;
+  } else if (_previousCharacter == static_cast<uint8_t>('\r') &&
+             character == static_cast<uint8_t>('\n')) {
+    completionEvent = SDI12_RECEIVE_EVENT_MESSAGE_COMPLETED;
+  }
+  if (completionEvent != SDI12_RECEIVE_EVENT_NONE) {
+    publishEvent(_receiveEventFlags, completionEvent);
+    _lineObserver.breakMinimumReached   = false;
+    _lineObserver.markingMinimumReached = false;
+    _previousCharacter                  = 0;
+  } else {
+    _previousCharacter = character;
+  }
+
   // Check for a buffer overflow. If not, proceed.
   if ((_rxBufferTail + 1) % SDI12_BUFFER_SIZE == _rxBufferHead) {
     _bufferOverflow = true;
+    publishEvent(_receiveEventFlags, SDI12_RECEIVE_EVENT_BUFFER_OVERFLOW);
+    _lineObserver.breakMinimumReached   = false;
+    _lineObserver.markingMinimumReached = false;
   } else {
     // Save the character, advance buffer tail.
     _rxBuffer[_rxBufferTail] = c;
@@ -849,46 +1104,40 @@ void SDI12::charToBuffer(uint8_t c) {
   }
 }
 
-// Define AVR interrupts
+// Define AVR interrupts, if forcing the use of internal interrupts
+#if (defined(__AVR__) || defined(ARDUINO_ARCH_AVR)) && defined(SDI12_INTERNAL_PCINT)
+
 // Check if the various interrupt vectors are defined.  If they are the ISR is
 // instructed to call handleInterrupt() when they trigger.
-
-#if defined __AVR__  // Only AVR processors use interrupts like this
-
-#ifdef SDI12_EXTERNAL_PCINT
-// Client code must call SDI12::handleInterrupt() in PCINT handler for the data pin
-#else
 
 #if defined(PCINT0_vect) && !defined(SDI12_PCINT1_ONLY) && \
   !defined(SDI12_PCINT2_ONLY) && !defined(SDI12_PCINT3_ONLY)
 ISR(PCINT0_vect) {
   SDI12::handleInterrupt();
 }
-#endif
+#endif  // PCINT0_vect
 
 #if defined(PCINT1_vect) && !defined(SDI12_PCINT0_ONLY) && \
   !defined(SDI12_PCINT2_ONLY) && !defined(SDI12_PCINT3_ONLY)
 ISR(PCINT1_vect) {
   SDI12::handleInterrupt();
 }
-#endif
+#endif  // PCINT1_vect
 
 #if defined(PCINT2_vect) && !defined(SDI12_PCINT0_ONLY) && \
   !defined(SDI12_PCINT1_ONLY) && !defined(SDI12_PCINT3_ONLY)
 ISR(PCINT2_vect) {
   SDI12::handleInterrupt();
 }
-#endif
+#endif  // PCINT2_vect
 
 #if defined(PCINT3_vect) && !defined(SDI12_PCINT0_ONLY) && \
   !defined(SDI12_PCINT1_ONLY) && !defined(SDI12_PCINT2_ONLY)
 ISR(PCINT3_vect) {
   SDI12::handleInterrupt();
 }
-#endif
+#endif  // PCINT3_vect
 
-#endif  // SDI12_EXTERNAL_PCINT
+#endif  // SDI12_INTERNAL_PCINT
 
-#endif  // __AVR__
-
-// cSpell:ignore PCICR
+// cSpell:ignore LIBCALL_ENABLEINTERRUPT PCICR

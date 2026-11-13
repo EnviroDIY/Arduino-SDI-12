@@ -17,6 +17,17 @@ uint16_t SDI12Timer::mul8x8to16(uint8_t x, uint8_t y) {
   return x * y;
 }
 
+sdi12timer_t SDI12Timer::timerDelta(sdi12timer_t now, sdi12timer_t previous) {
+#if TIMER_INT_SIZE != TIMER_COUNTER_BITS
+  // if the timer integer size is different from the counter bits, we need to mask the
+  // result
+  return static_cast<sdi12timer_t>((now - previous) & TIMER_COUNTER_MASK);
+#else
+  // otherwise, skip the masking
+  return static_cast<sdi12timer_t>(now - previous);
+#endif
+}
+
 // Using an 8-bit timer, we need to do fanciness to get proper 16 bit results
 #if TIMER_INT_SIZE == 8
 uint16_t SDI12Timer::bitTimes(sdi12timer_t dt) {
@@ -149,6 +160,8 @@ void SDI12Timer::resetSDI12TimerPrescale(void) {
   defined(__AVR_ATmega32U4__)
 
 sdi12timer_t SDI12Timer::SDI12TimerRead(void) {
+  // The macro `TCNT4` reads 16 bytes, including both the low (`TCNT4L`) and high bytes
+  // (`TCNT4H`) of the 10-bit timer
   return TCNT4;
 }
 
@@ -172,6 +185,10 @@ static uint8_t preSDI12_TCCR4D;
  * @brief The value of timer control register 4E prior to being set for SDI-12.
  */
 static uint8_t preSDI12_TCCR4E;
+/**
+ * @brief The value of output compare register 4C prior to being set for SDI-12.
+ */
+static uint16_t preSDI12_OCR4C;
 
 void SDI12Timer::configSDI12TimerPrescale(void) {
   preSDI12_TCCR4A = TCCR4A;
@@ -179,6 +196,8 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
   preSDI12_TCCR4C = TCCR4C;
   preSDI12_TCCR4D = TCCR4D;
   preSDI12_TCCR4E = TCCR4E;
+  preSDI12_OCR4C  = OCR4C;
+  preSDI12_OCR4C |= static_cast<uint16_t>(TC4H & 0x03U) << 8U;
   TCCR4A = 0x00;  // TCCR4A = 0x00 = "normal" operation - Normal port operation, OC4A &
                   // OC4B disconnected
 #if F_CPU == 16000000L
@@ -192,9 +211,13 @@ void SDI12Timer::configSDI12TimerPrescale(void) {
                   // disconnected
   TCCR4D = 0x00;  // TCCR4D = 0x00 = No fault protection
   TCCR4E = 0x00;  // TCCR4E = 0x00 = No register locks or overrides
+  TC4H   = 0x03;
+  OCR4C  = 0xFF;  // Set the Timer4 rollover to its full 10-bit period (0x03FF)
 }
 
 void SDI12Timer::resetSDI12TimerPrescale(void) {
+  TC4H   = static_cast<uint8_t>(preSDI12_OCR4C >> 8U);
+  OCR4C  = static_cast<uint8_t>(preSDI12_OCR4C);
   TCCR4A = preSDI12_TCCR4A;
   TCCR4B = preSDI12_TCCR4B;
   TCCR4C = preSDI12_TCCR4C;
