@@ -284,7 +284,8 @@ void SDI12Recorder::_startDataRequest(char address, float* values, size_t capaci
   _dataCRCExpected       = context.crcExpected;
   _expectedValueCount    = context.expectedValueCount;
   _txnTimeoutMs          = SDI12Timing::kRecorderDataTransactionTimeoutMillis;
-  _responseTimeoutMicros = SDI12Timing::kHighVolumeDataResponseMaxMicros;
+  _responseTimeoutMicros = SDI12Timing::kRecorderResponseStartMaxMicros +
+    SDI12Timing::kHighVolumeDataResponseMaxMicros;
 
   if (waitUntilReady && context.phase == CONTEXT_PHASE_CONCURRENT_RUNNING &&
       !_readyAtReached(context.readyAt)) {
@@ -336,7 +337,8 @@ void SDI12Recorder::startRawCommand(char address, const String& command) {
 void SDI12Recorder::update() {
   // Check for overall transaction timeout
   if (_phase != PHASE_IDLE && _phase != PHASE_WAITING_SERVICE_REQUEST &&
-      _phase != PHASE_RECEIVING_SERVICE_REQUEST && _phase != PHASE_WAITING_DATA_READY) {
+      _phase != PHASE_RECEIVING_SERVICE_REQUEST && _phase != PHASE_WAITING_DATA_READY &&
+      _phase != PHASE_WAITING_ADDRESS_CHANGE) {
     uint32_t elapsed = millis() - _txnStartTime;
     if (elapsed > _txnTimeoutMs) {
       _setResult(RESULT_TRANSACTION_TIMEOUT);
@@ -360,6 +362,7 @@ void SDI12Recorder::update() {
     case PHASE_WAITING_SERVICE_REQUEST: _phase_waiting_service_request(); break;
     case PHASE_RECEIVING_SERVICE_REQUEST: _phase_receiving_service_request(); break;
     case PHASE_WAITING_DATA_READY: _phase_waiting_data_ready(); break;
+    case PHASE_WAITING_ADDRESS_CHANGE: _phase_waiting_address_change(); break;
   }
 }
 
@@ -677,11 +680,12 @@ void SDI12Recorder::_startNextDataCommand() {
   _typedCommandLength    = 4U;
   _txnStartTime          = millis();
   _txnTimeoutMs          = SDI12Timing::kRecorderDataTransactionTimeoutMillis;
-  _responseTimeoutMicros = SDI12Timing::kHighVolumeDataResponseMaxMicros;
-  _sequenceCount         = 1U;
-  _breakTransmitted      = false;
-  _attemptCount          = 0U;
-  _retryFailureResult    = RESULT_NONE;
+  _responseTimeoutMicros = SDI12Timing::kRecorderResponseStartMaxMicros +
+    SDI12Timing::kHighVolumeDataResponseMaxMicros;
+  _sequenceCount      = 1U;
+  _breakTransmitted   = false;
+  _attemptCount       = 0U;
+  _retryFailureResult = RESULT_NONE;
   _resetAttemptReception();
   _result = RESULT_NONE;
   _transitionTo(PHASE_BREAK);
@@ -840,31 +844,31 @@ SDI12Recorder::RecorderResult SDI12Recorder::_validateDataResponse() {
     }
   }
 
-  if (dataEnd == 1U) {
-    return _operation == OPERATION_CONTINUOUS_DATA ||
-        (_operation == OPERATION_DATA && _expectedValueCount == 0U)
-      ? RESULT_SUCCESS
-      : RESULT_MEASUREMENT_ABORTED;
-  }
   if (dataEnd < 1U) { return RESULT_MALFORMED_RESPONSE; }
+  if (dataEnd == 1U) {
+    if (_operation == OPERATION_CONTINUOUS_DATA) { return RESULT_SUCCESS; }
+    if (_operation != OPERATION_DATA || _expectedValueCount != 0U) {
+      return RESULT_MEASUREMENT_ABORTED;
+    }
+  } else {
+    uint8_t blockValueCount = 0U;
+    if (!_parseDataValues(1U, dataEnd, nullptr, blockValueCount)) {
+      return RESULT_MALFORMED_RESPONSE;
+    }
+    if (_operation == OPERATION_CONTINUOUS_DATA) {
+      if (blockValueCount > _dataCapacity) { return RESULT_DATA_BUFFER_TOO_SMALL; }
+    } else if (static_cast<uint16_t>(_dataValueCount) + blockValueCount >
+               _expectedValueCount) {
+      return RESULT_MALFORMED_RESPONSE;
+    }
 
-  uint8_t blockValueCount = 0U;
-  if (!_parseDataValues(1U, dataEnd, nullptr, blockValueCount)) {
-    return RESULT_MALFORMED_RESPONSE;
+    uint8_t writtenCount = 0U;
+    if (!_parseDataValues(1U, dataEnd, _dataValues + _dataValueCount, writtenCount) ||
+        writtenCount != blockValueCount) {
+      return RESULT_MALFORMED_RESPONSE;
+    }
+    _dataValueCount += writtenCount;
   }
-  if (_operation == OPERATION_CONTINUOUS_DATA) {
-    if (blockValueCount > _dataCapacity) { return RESULT_DATA_BUFFER_TOO_SMALL; }
-  } else if (static_cast<uint16_t>(_dataValueCount) + blockValueCount >
-             _expectedValueCount) {
-    return RESULT_MALFORMED_RESPONSE;
-  }
-
-  uint8_t writtenCount = 0U;
-  if (!_parseDataValues(1U, dataEnd, _dataValues + _dataValueCount, writtenCount) ||
-      writtenCount != blockValueCount) {
-    return RESULT_MALFORMED_RESPONSE;
-  }
-  _dataValueCount += writtenCount;
 
   if (_dataCRCExpected) {
     _response[dataEnd]         = '\r';
@@ -1227,6 +1231,12 @@ void SDI12Recorder::_phase_validating() {
     return;
   }
 
+  if (_operation == OPERATION_CHANGE_ADDRESS) {
+    _txnStartTime = millis();
+    _transitionTo(PHASE_WAITING_ADDRESS_CHANGE);
+    return;
+  }
+
   // Success!
   _setResult(RESULT_SUCCESS);
   _transitionTo(PHASE_IDLE);
@@ -1368,6 +1378,13 @@ void SDI12Recorder::_phase_waiting_data_ready() {
   context.phase = CONTEXT_PHASE_DATA_READY;
   _txnStartTime = millis();
   _transitionTo(PHASE_BREAK);
+}
+
+void SDI12Recorder::_phase_waiting_address_change() {
+  if (millis() - _txnStartTime >= 1000UL) {
+    _setResult(RESULT_SUCCESS);
+    _transitionTo(PHASE_IDLE);
+  }
 }
 
 void SDI12Recorder::_phase_deciding_retry() {

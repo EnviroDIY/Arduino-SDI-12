@@ -23,9 +23,6 @@ reviews:
   commit_status: true
   collapse_walkthrough: true
   profile: 'chill' # Options: quiet, chill, assertive
-  instructions: |
-    - Where available, review the repository's Agents.md or equivalent files for instructions and guidelines related to the repository.
-    - Ensure that the communication aligns with the SDI-12 v1.4 specifications available at https://www.sdi-12.org/current_specification/SDI-12_version-1_4-Jan-30-2021.pdf.
   path_filters:
     - '!**/dependencies.json'
     - '!**/example_dependencies.json'
@@ -37,6 +34,10 @@ reviews:
     - '!**/platformio.ini'
     - '!**/*Certificate*.h'
   path_instructions:
+    - path: '**/*'
+      instructions: |
+        - Where available, review the repository's Agents.md or equivalent files for instructions and guidelines related to the repository.
+        - Ensure that the communication aligns with the SDI-12 v1.4 specifications available at https://www.sdi-12.org/current_specification/SDI-12_version-1_4-Jan-30-2021.pdf.
     - path: '**/*.md'
       instructions: >-
         Review for grammar, spelling, and clarity.

@@ -158,7 +158,9 @@ class SDI12Recorder {
     /// Waiting for a concurrent measurement's advertised ready time
     PHASE_WAITING_DATA_READY = 0x0A,
     /// Discarding the remainder of an invalid response before retrying
-    PHASE_DRAINING_RESPONSE = 0x0B
+    PHASE_DRAINING_RESPONSE = 0x0B,
+    /// Waiting after a successful sensor address change
+    PHASE_WAITING_ADDRESS_CHANGE = 0x0C
   } Phase;
 
   /** @brief Typed identity of the active recorder operation. */
@@ -221,7 +223,8 @@ class SDI12Recorder {
    * @brief Change a sensor address, blocking until completion.
    *
    * Sends `aAb!` and requires the sensor to acknowledge with the new address followed
-   * by CR/LF.
+   * by CR/LF. After the acknowledgement, this function waits one second for the sensor
+   * to finish processing the address change.
    *
    * @param oldAddress Current sensor address.
    * @param newAddress New sensor address.
@@ -256,6 +259,9 @@ class SDI12Recorder {
 
   /**
    * @brief Start a non-blocking address-change request.
+   *
+   * The operation remains busy for one second after a valid acknowledgement so the
+   * sensor can finish processing the address change.
    *
    * @param oldAddress Current sensor address.
    * @param newAddress New sensor address.
@@ -900,6 +906,8 @@ class SDI12Recorder {
   void _phase_receiving_service_request();
   /// @brief Wait until retained concurrent data may be requested.
   void _phase_waiting_data_ready();
+  /// @brief Wait for a sensor to finish processing a successful address change.
+  void _phase_waiting_address_change();
 };
 
 #endif  // SRC_SDI12RECORDER_H_
