@@ -14,6 +14,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 - [Changelog](#changelog)
   - [Unreleased](#unreleased)
+  - [3.1.0](#310)
   - [3.0.0 _SDI12 Recorder_](#300-sdi12-recorder)
   - [2.5.2](#252)
   - [2.5.1](#251)
@@ -52,6 +53,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Removed
 
 ### Fixed
+
+***
+
+## [3.1.0]
+
+### Added
+
+- Added a getPhase() method to retrieve the current executor phase of the SDI12Recorder.
 
 ***
 
@@ -376,7 +385,8 @@ The first "official" release of this interrupt-based SDI-12 library for AVR and 
 
 ***
 
-[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/EnviroDIY/Arduino-SDI-12/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v3.1.0
 [3.0.0]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v3.0.0
 [2.5.2]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.5.2
 [2.5.1]: https://github.com/EnviroDIY/Arduino-SDI-12/releases/tag/v2.5.1

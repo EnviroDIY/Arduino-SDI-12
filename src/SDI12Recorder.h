@@ -516,6 +516,14 @@ class SDI12Recorder {
   void printRecorderResult(Stream& printStream) const;
 
   /**
+   * @brief Retrieve the current executor phase.
+   * @return The current phase of the executor.
+   */
+  Phase getPhase() const {
+    return _phase;
+  }
+
+  /**
    * @brief Print a human-readable description of the current executor phase.
    *
    * No trailing newline is printed.
